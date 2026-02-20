@@ -62,8 +62,9 @@ class PostController extends Controller
             'body'        => ['nullable', 'string'],
             'status'      => ['required', 'in:draft,published'],
             'category_id' => ['nullable', 'exists:categories,id'],
-            'tag_ids'     => ['nullable', 'array'],
-            'tag_ids.*'   => ['exists:tags,id'],
+            'tag_ids'          => ['nullable', 'array'],
+            'tag_ids.*'        => ['exists:tags,id'],
+            'featured_image_id' => ['nullable', 'exists:media,id'],
         ]);
 
         $tagIds = $validated['tag_ids'] ?? [];
@@ -90,19 +91,25 @@ class PostController extends Controller
             abort(403);
         }
 
-        $post->load('tags:id,name');
+        $post->load('tags:id,name', 'featuredImage:id,path,disk,alt');
 
         return Inertia::render('Posts/Edit', [
             'post' => [
-                'id'           => $post->id,
-                'title'        => $post->title,
-                'slug'         => $post->slug,
-                'excerpt'      => $post->excerpt,
-                'body'         => $post->body,
-                'status'       => $post->status,
-                'published_at' => $post->published_at?->toDateString(),
-                'category_id'  => $post->category_id,
-                'tag_ids'      => $post->tags->pluck('id'),
+                'id'                => $post->id,
+                'title'             => $post->title,
+                'slug'              => $post->slug,
+                'excerpt'           => $post->excerpt,
+                'body'              => $post->body,
+                'status'            => $post->status,
+                'published_at'      => $post->published_at?->toDateString(),
+                'category_id'       => $post->category_id,
+                'tag_ids'           => $post->tags->pluck('id'),
+                'featured_image_id' => $post->featured_image_id,
+                'featured_image'    => $post->featured_image_id ? [
+                    'id'  => $post->featuredImage->id,
+                    'url' => $post->featuredImage->url,
+                    'alt' => $post->featuredImage->alt,
+                ] : null,
             ],
             'categories' => Category::orderBy('name')->get(['id', 'name']),
             'tags'       => Tag::orderBy('name')->get(['id', 'name']),
@@ -121,8 +128,9 @@ class PostController extends Controller
             'body'        => ['nullable', 'string'],
             'status'      => ['required', 'in:draft,published'],
             'category_id' => ['nullable', 'exists:categories,id'],
-            'tag_ids'     => ['nullable', 'array'],
-            'tag_ids.*'   => ['exists:tags,id'],
+            'tag_ids'           => ['nullable', 'array'],
+            'tag_ids.*'         => ['exists:tags,id'],
+            'featured_image_id' => ['nullable', 'exists:media,id'],
         ]);
 
         $tagIds = $validated['tag_ids'] ?? [];

@@ -10,6 +10,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InstallController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -80,6 +81,13 @@ Route::middleware('installed')->group(function () {
         Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
         Route::post('/profile/avatar',   [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
         Route::delete('/profile/avatar', [ProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
+
+        // Media library
+        Route::get('/media',           [MediaController::class, 'index'])->name('media.index');
+        Route::post('/media',          [MediaController::class, 'store'])->name('media.store');
+        Route::patch('/media/{media}', [MediaController::class, 'update'])->name('media.update');
+        Route::delete('/media/bulk',   [MediaController::class, 'bulkDestroy'])->name('media.bulk-destroy');
+        Route::delete('/media/{media}', [MediaController::class, 'destroy'])->name('media.destroy');
     });
 
     // ── Auth + verified + administrator role ─────────────────────────────────

@@ -144,6 +144,40 @@
               </label>
             </div>
           </div>
+
+          <!-- Featured Image -->
+          <div class="rounded-lg border bg-card p-4">
+            <h3 class="text-sm font-medium mb-3">Featured Image</h3>
+            <div v-if="featuredImage" class="mb-3 relative group">
+              <img
+                :src="featuredImage.url"
+                :alt="featuredImage.alt ?? 'Featured image'"
+                class="w-full aspect-video object-cover rounded-md"
+              />
+              <button
+                type="button"
+                class="absolute top-1 right-1 w-6 h-6 rounded-full bg-background/80 flex items-center justify-center text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                @click="removeFeaturedImage"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+            <button
+              type="button"
+              class="w-full rounded-md border border-dashed px-3 py-2 text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+              @click="showMediaPicker = true"
+            >
+              {{ featuredImage ? 'Change image' : 'Select image' }}
+            </button>
+          </div>
+
+          <MediaPicker
+            v-model="showMediaPicker"
+            confirm-label="Use as featured image"
+            @select="onFeaturedImageSelect"
+          />
         </div>
       </div>
     </form>
@@ -151,9 +185,11 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { Head, useForm } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import TiptapEditor from "@/Components/TiptapEditor.vue";
+import MediaPicker from '@/Components/MediaPicker.vue'
 
 defineProps({
   categories: { type: Array, default: () => [] },
@@ -161,13 +197,27 @@ defineProps({
 });
 
 const form = useForm({
-  title:       "",
-  excerpt:     "",
-  body:        "",
-  status:      "draft",
-  category_id: null,
-  tag_ids:     [],
+  title:            "",
+  excerpt:          "",
+  body:             "",
+  status:           "draft",
+  category_id:      null,
+  tag_ids:          [],
+  featured_image_id: null,
 });
+
+const showMediaPicker = ref(false)
+const featuredImage   = ref(null)
+
+function onFeaturedImageSelect(media) {
+  featuredImage.value    = media
+  form.featured_image_id = media.id
+}
+
+function removeFeaturedImage() {
+  featuredImage.value    = null
+  form.featured_image_id = null
+}
 
 function submit() {
   form.post(route("posts.store"));

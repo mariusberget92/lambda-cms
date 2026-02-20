@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Media;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,6 +16,7 @@ class Post extends Model
     protected $fillable = [
         "user_id",
         "category_id",
+        "featured_image_id",
         "title",
         "slug",
         "excerpt",
@@ -42,6 +44,11 @@ class Post extends Model
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    public function featuredImage(): BelongsTo
+    {
+        return $this->belongsTo(Media::class, 'featured_image_id');
     }
 
     // ─── Scopes ───────────────────────────────────────────────────────────────

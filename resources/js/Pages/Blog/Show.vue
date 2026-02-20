@@ -38,6 +38,15 @@ function formatDate(date) {
       <!-- Title -->
       <h1 class="text-3xl font-bold tracking-tight leading-tight mb-4">{{ post.title }}</h1>
 
+      <!-- Featured image hero -->
+      <div v-if="post.featured_image_url" class="mb-8">
+        <img
+          :src="post.featured_image_url"
+          :alt="post.featured_image_alt ?? post.title"
+          class="w-full rounded-xl object-cover max-h-96"
+        />
+      </div>
+
       <!-- Author + date row -->
       <div class="flex items-center gap-3 mb-8 pb-8 border-b">
         <img

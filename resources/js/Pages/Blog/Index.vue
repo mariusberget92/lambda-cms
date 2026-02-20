@@ -33,8 +33,19 @@ function formatDate(date) {
         <article
           v-for="post in posts.data"
           :key="post.id"
-          class="border rounded-xl p-6 bg-card hover:shadow-sm transition-shadow"
+          class="border rounded-xl overflow-hidden bg-card hover:shadow-sm transition-shadow"
         >
+          <!-- Featured image -->
+          <div v-if="post.featured_image_url" class="w-full h-48 overflow-hidden">
+            <img
+              :src="post.featured_image_url"
+              :alt="post.title"
+              class="w-full h-full object-cover"
+              loading="lazy"
+            />
+          </div>
+
+          <div class="p-6">
           <!-- Category badge -->
           <div v-if="post.category" class="mb-2">
             <span class="inline-block text-xs font-medium bg-primary/10 text-primary px-2 py-0.5 rounded-full">
@@ -90,6 +101,7 @@ function formatDate(date) {
               {{ tag.name }}
             </span>
           </div>
+          </div><!-- end .p-6 -->
         </article>
       </div>
 
