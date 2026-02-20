@@ -16,24 +16,25 @@ class BlogController extends Controller
     public function index(): Response
     {
         $posts = Post::published()
-            ->with(['author:id,name,avatar', 'category:id,name,slug', 'tags:id,name,slug'])
+            ->with(['author:id,name,avatar', 'category:id,name,slug', 'tags:id,name,slug', 'featuredImage:id,path,disk'])
             ->orderByDesc('published_at')
             ->paginate(15)
             ->through(fn (Post $post) => [
-                'id'           => $post->id,
-                'title'        => $post->title,
-                'slug'         => $post->slug,
-                'excerpt'      => $post->excerpt,
-                'published_at' => $post->published_at?->toDateString(),
-                'author'       => [
+                'id'                  => $post->id,
+                'title'               => $post->title,
+                'slug'                => $post->slug,
+                'excerpt'             => $post->excerpt,
+                'published_at'        => $post->published_at?->toDateString(),
+                'featured_image_url'  => $post->featuredImage?->url,
+                'author'              => [
                     'name'       => $post->author->name,
                     'avatar_url' => $post->author->avatar_url,
                 ],
-                'category'     => $post->category ? [
+                'category'            => $post->category ? [
                     'name' => $post->category->name,
                     'slug' => $post->category->slug,
                 ] : null,
-                'tags'         => $post->tags->map(fn ($t) => [
+                'tags'                => $post->tags->map(fn ($t) => [
                     'name' => $t->name,
                     'slug' => $t->slug,
                 ]),
@@ -51,27 +52,29 @@ class BlogController extends Controller
     public function show(string $slug): Response
     {
         $post = Post::published()
-            ->with(['author:id,name,avatar', 'category:id,name,slug', 'tags:id,name,slug'])
+            ->with(['author:id,name,avatar', 'category:id,name,slug', 'tags:id,name,slug', 'featuredImage:id,path,disk,alt'])
             ->where('slug', $slug)
             ->firstOrFail();
 
         return Inertia::render('Blog/Show', [
             'post' => [
-                'id'           => $post->id,
-                'title'        => $post->title,
-                'slug'         => $post->slug,
-                'excerpt'      => $post->excerpt,
-                'body'         => $post->body,
-                'published_at' => $post->published_at?->toDateString(),
-                'author'       => [
+                'id'                  => $post->id,
+                'title'               => $post->title,
+                'slug'                => $post->slug,
+                'excerpt'             => $post->excerpt,
+                'body'                => $post->body,
+                'published_at'        => $post->published_at?->toDateString(),
+                'featured_image_url'  => $post->featuredImage?->url,
+                'featured_image_alt'  => $post->featuredImage?->alt,
+                'author'              => [
                     'name'       => $post->author->name,
                     'avatar_url' => $post->author->avatar_url,
                 ],
-                'category'     => $post->category ? [
+                'category'            => $post->category ? [
                     'name' => $post->category->name,
                     'slug' => $post->category->slug,
                 ] : null,
-                'tags'         => $post->tags->map(fn ($t) => [
+                'tags'                => $post->tags->map(fn ($t) => [
                     'name' => $t->name,
                     'slug' => $t->slug,
                 ]),
