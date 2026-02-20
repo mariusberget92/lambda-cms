@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(npm install:*)",
+      "Bash(test:*)",
+      "Bash(php artisan migrate:*)",
+      "Bash(php artisan migrate:fresh:*)",
+      "Bash(php artisan tinker:*)",
+      "Bash(ls -la \"C:\\\\Users\\\\mariu\\\\Herd\\\\lambda-cms\\\\storage\\\\app\"\" 2>&1 || echo \"Directory not found or error \")",
+      "Bash(del C:UsersmariuHerdlambda-cmswrite_profile.py)",
+      "Bash(Remove-Item \"C:\\\\Users\\\\mariu\\\\Herd\\\\lambda-cms\\\\write_profile.py\")",
+      "Bash(del \"C:\\\\Users\\\\mariu\\\\Herd\\\\lambda-cms\\\\write_profile.py\")",
+      "Bash(php artisan storage:link:*)",
+      "Bash(php artisan route:list:*)",
+      "Bash(php -r:*)",
+      "WebFetch(domain:spatie.be)",
+      "Bash(composer require:*)",
+      "Bash(php artisan vendor:publish:*)",
+      "Bash(del \"C:\\\\Users\\\\mariu\\\\Herd\\\\lambda-cms\\\\write_vue_files.py\")",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(Remove-Item -Recurse -Force \"C:\\\\Users\\\\mariu\\\\Herd\\\\lambda-cms\\\\.git\" -ErrorAction SilentlyContinue)",
+      "Bash(Write-Host \"done\")",
+      "Bash(dir:*)",
+      "Bash(echo:*)",
+      "Bash(git -C \"C:\\\\Users\\\\mariu\\\\Herd\\\\lambda-cms\" log --oneline -15)",
+      "Bash(gh:*)",
+      "Bash(gh auth:*)",
+      "Bash(where:*)",
+      "Bash(\"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" auth status)",
+      "Bash(git -C \"C:\\\\Users\\\\mariu\\\\Herd\\\\lambda-cms\" init)",
+      "Bash(git -C \"C:\\\\Users\\\\mariu\\\\Herd\\\\lambda-cms\" add .)",
+      "Bash(git -C \"C:\\\\Users\\\\mariu\\\\Herd\\\\lambda-cms\" status --short)",
+      "Bash(git -C \"C:\\\\Users\\\\mariu\\\\Herd\\\\lambda-cms\" ls-files:*)"
+    ]
+  }
+}

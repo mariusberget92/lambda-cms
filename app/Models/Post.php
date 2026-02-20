@@ -1,0 +1,94 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Str;
+
+class Post extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        "user_id",
+        "category_id",
+        "title",
+        "slug",
+        "excerpt",
+        "body",
+        "status",
+        "published_at",
+    ];
+
+    protected $casts = [
+        "published_at" => "datetime",
+    ];
+
+    // ─── Relationships ────────────────────────────────────────────────────────
+
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(User::class, "user_id");
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class);
+    }
+
+    // ─── Scopes ───────────────────────────────────────────────────────────────
+
+    public function scopePublished($query)
+    {
+        return $query->where("status", "published");
+    }
+
+    public function scopeDraft($query)
+    {
+        return $query->where("status", "draft");
+    }
+
+    public function scopeSearch($query, ?string $term)
+    {
+        if (blank($term)) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($term) {
+            $q->where("title", "like", "%{$term}%")
+              ->orWhere("excerpt", "like", "%{$term}%");
+        });
+    }
+
+    // ─── Helpers ──────────────────────────────────────────────────────────────
+
+    public static function generateSlug(string $title, ?int $excludeId = null): string
+    {
+        $slug = Str::slug($title);
+        $original = $slug;
+        $count = 1;
+
+        while (
+            static::where("slug", $slug)
+                ->when($excludeId, fn ($q) => $q->where("id", "!=", $excludeId))
+                ->exists()
+        ) {
+            $slug = $original . "-" . $count++;
+        }
+
+        return $slug;
+    }
+
+    public function isPublished(): bool
+    {
+        return $this->status === "published";
+    }
+}
