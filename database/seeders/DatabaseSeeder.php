@@ -24,38 +24,28 @@ class DatabaseSeeder extends Seeder
 
         $adminRole->syncPermissions(Permission::all());
         $userRole->syncPermissions(['manage posts', 'manage categories', 'manage tags']);
+    }
 
-        // ── Admin user ───────────────────────────────────────────────────────
-        $admin = User::factory()->create([
-            'name'              => 'Admin',
-            'email'             => 'admin@lambda.test',
-            'email_verified_at' => now(),
+    /**
+     * Seed a default "Hello World" post assigned to the given admin user.
+     * Called by InstallController after the admin user has been created.
+     */
+    public function seedDefaultPost(User $adminUser): void
+    {
+        $category = Category::firstOrCreate(
+            ['name' => 'General'],
+            ['description' => 'General posts and announcements.'],
+        );
+
+        Post::create([
+            'user_id'      => $adminUser->id,
+            'category_id'  => $category->id,
+            'title'        => 'Hello World',
+            'slug'         => 'hello-world',
+            'excerpt'      => 'Welcome to Lambda CMS — your new content management system is ready.',
+            'body'         => '<h2>Welcome to Lambda CMS!</h2><p>You\'ve successfully installed Lambda CMS. This is your first post. You can edit or delete it, then start writing your own content.</p><p>Head over to the <a href="/dashboard">dashboard</a> to get started.</p>',
+            'status'       => 'published',
+            'published_at' => now(),
         ]);
-        $admin->assignRole('administrator');
-
-        // ── Categories ───────────────────────────────────────────────────────
-        $categories = collect([
-            ['name' => 'Technology',  'description' => 'Articles about software, hardware and the digital world.'],
-            ['name' => 'Design',      'description' => 'UI/UX, visual design and creative process.'],
-            ['name' => 'Business',    'description' => 'Entrepreneurship, strategy and growth.'],
-            ['name' => 'Tutorials',   'description' => 'Step-by-step guides and how-tos.'],
-        ])->map(fn ($data) => Category::factory()->create($data));
-
-        // ── Tags ─────────────────────────────────────────────────────────────
-        $tags = collect(['Laravel', 'Vue.js', 'Tailwind CSS', 'JavaScript', 'PHP', 'Open Source', 'Productivity', 'Career'])
-            ->map(fn ($name) => Tag::factory()->create(['name' => $name]));
-
-        // ── Posts ────────────────────────────────────────────────────────────
-        Post::factory(5)->published()->create(['user_id' => $admin->id])
-            ->each(function (Post $post) use ($categories, $tags) {
-                $post->update(['category_id' => $categories->random()->id]);
-                $post->tags()->sync($tags->random(rand(1, 3))->pluck('id'));
-            });
-
-        Post::factory(3)->draft()->create(['user_id' => $admin->id])
-            ->each(function (Post $post) use ($categories, $tags) {
-                $post->update(['category_id' => $categories->random()->id]);
-                $post->tags()->sync($tags->random(rand(1, 2))->pluck('id'));
-            });
     }
 }
