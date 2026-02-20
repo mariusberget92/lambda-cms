@@ -28,14 +28,12 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
-
-        if ($validated['email'] !== $user->email) {
-            $validated['email_verified_at'] = null;
-        }
+        $emailChanged = $validated['email'] !== $user->email;
 
         $user->update($validated);
 
-        if (is_null($user->fresh()->email_verified_at)) {
+        if ($emailChanged) {
+            $user->forceFill(['email_verified_at' => null])->save();
             $user->sendEmailVerificationNotification();
         }
 
