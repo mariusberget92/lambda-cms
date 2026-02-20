@@ -8,10 +8,16 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureNotInstalled
 {
+    /**
+     * Redirect away from the installer if the app is already installed.
+     *
+     * Installation state is tracked via a lock file at storage/app/installed,
+     * which is written by InstallController as the final step of the wizard.
+     */
     public function handle(Request $request, Closure $next): Response
     {
-        if (file_exists(storage_path("app/installed"))) {
-            return redirect("/");
+        if (file_exists(storage_path('app/installed'))) {
+            return redirect('/');
         }
 
         return $next($request);
