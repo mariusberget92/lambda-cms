@@ -70,10 +70,25 @@
         </ToolbarButton>
       </div>
 
+      <div class="toolbar-divider"/>
+      <div class="toolbar-group">
+        <ToolbarButton @click="pickerOpen = true" title="Insert image">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+        </ToolbarButton>
+      </div>
+
       <div class="ml-auto flex items-center text-xs text-muted-foreground/70 select-none pr-1">
         {{ wordCount }} words
       </div>
     </div>
+
+    <MediaPicker
+      v-model="pickerOpen"
+      confirm-label="Insert image"
+      @select="(m) => insertImage(m.url, m.alt)"
+    />
 
     <!-- Content -->
     <EditorContent :editor="editor" class="editor-body" />
@@ -81,13 +96,15 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, watch } from "vue";
+import { ref, computed, onBeforeUnmount, watch } from "vue";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import CharacterCount from "@tiptap/extension-character-count";
 import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
+import Image from "@tiptap/extension-image";
+import MediaPicker from "@/Components/MediaPicker.vue";
 
 const ToolbarButton = {
   props: { active: Boolean, disabled: Boolean },
@@ -100,6 +117,8 @@ const props = defineProps({
 });
 const emit = defineEmits(["update:modelValue"]);
 
+const pickerOpen = ref(false)
+
 const editor = useEditor({
   content: props.modelValue,
   extensions: [
@@ -108,6 +127,7 @@ const editor = useEditor({
     Placeholder.configure({ placeholder: props.placeholder }),
     CharacterCount,
     TextAlign.configure({ types: ["heading", "paragraph"] }),
+    Image.configure({ inline: false }),
   ],
   editorProps: { attributes: { class: "prose-editor" } },
   onUpdate({ editor }) {
@@ -123,6 +143,11 @@ watch(() => props.modelValue, (value) => {
 
 const wordCount = computed(() => editor.value?.storage.characterCount.words() ?? 0);
 onBeforeUnmount(() => editor.value?.destroy());
+
+function insertImage(url, alt) {
+  editor.value?.chain().focus().setImage({ src: url, alt: alt ?? '' }).run()
+}
+defineExpose({ insertImage })
 </script>
 
 <style scoped>
@@ -193,4 +218,10 @@ onBeforeUnmount(() => editor.value?.destroy());
 :deep(.prose-editor .text-left)   { text-align: left; }
 :deep(.prose-editor .text-center) { text-align: center; }
 :deep(.prose-editor .text-right)  { text-align: right; }
+:deep(.prose-editor img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  margin: 0.75rem 0;
+}
 </style>
