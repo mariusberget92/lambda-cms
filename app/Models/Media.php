@@ -23,6 +23,7 @@ class Media extends Model
         'width',
         'height',
         'alt',
+        'description',
     ];
 
     protected $casts = [

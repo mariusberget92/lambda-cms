@@ -92,7 +92,7 @@ class MediaTest extends TestCase
         $response->assertStatus(422);
     }
 
-    // ── Update (alt text) ─────────────────────────────────────────────────────
+    // ── Update (alt text + description) ──────────────────────────────────────
 
     public function test_owner_can_update_alt_text(): void
     {
@@ -109,6 +109,23 @@ class MediaTest extends TestCase
 
         $response->assertOk();
         $this->assertDatabaseHas('media', ['id' => $media->id, 'alt' => 'A beautiful sunset']);
+    }
+
+    public function test_owner_can_update_description(): void
+    {
+        $this->markAsInstalled();
+        $this->seedRolesAndPermissions();
+        Storage::fake('public');
+
+        $user  = User::factory()->create()->assignRole('user');
+        $media = Media::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($user)->patch(route('media.update', $media), [
+            'description' => 'A photo taken during the evening in Oslo.',
+        ]);
+
+        $response->assertOk();
+        $this->assertDatabaseHas('media', ['id' => $media->id, 'description' => 'A photo taken during the evening in Oslo.']);
     }
 
     public function test_non_owner_cannot_update_alt_text(): void

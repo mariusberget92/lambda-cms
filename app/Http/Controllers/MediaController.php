@@ -99,6 +99,7 @@ class MediaController extends Controller
             'width'             => $width,
             'height'            => $height,
             'alt'               => null,
+            'description'       => null,
         ]);
 
         return response()->json($this->toArray($media));
@@ -111,7 +112,8 @@ class MediaController extends Controller
         }
 
         $validated = $request->validate([
-            'alt' => ['nullable', 'string', 'max:255'],
+            'alt'         => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:2000'],
         ]);
 
         $media->update($validated);
@@ -168,6 +170,7 @@ class MediaController extends Controller
             'width'             => $media->width,
             'height'            => $media->height,
             'alt'               => $media->alt,
+            'description'       => $media->description,
             'created_at'        => $media->created_at->toDateTimeString(),
             'uploader'          => $media->uploader ? $media->uploader->name : null,
         ];
