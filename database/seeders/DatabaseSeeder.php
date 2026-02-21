@@ -37,9 +37,8 @@ class DatabaseSeeder extends Seeder
             ['description' => 'General posts and announcements.'],
         );
 
-        Post::create([
+        $post = Post::create([
             'user_id'      => $adminUser->id,
-            'category_id'  => $category->id,
             'title'        => 'Hello World',
             'slug'         => 'hello-world',
             'excerpt'      => 'Welcome to Lambda CMS — your new content management system is ready.',
@@ -47,5 +46,6 @@ class DatabaseSeeder extends Seeder
             'status'       => 'published',
             'published_at' => now(),
         ]);
+        $post->categories()->sync([$category->id]);
     }
 }

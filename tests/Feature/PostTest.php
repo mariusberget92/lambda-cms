@@ -256,10 +256,7 @@ class PostTest extends TestCase
 
     public function test_categories_are_synced_on_store(): void
     {
-        $this->markAsInstalled();
-        $this->seedRolesAndPermissions();
-
-        $user = User::factory()->create()->assignRole('user');
+        $user = $this->makeUser();
         $cat1 = Category::factory()->create();
         $cat2 = Category::factory()->create();
 
@@ -277,10 +274,7 @@ class PostTest extends TestCase
 
     public function test_categories_are_synced_on_update(): void
     {
-        $this->markAsInstalled();
-        $this->seedRolesAndPermissions();
-
-        $user = User::factory()->create()->assignRole('user');
+        $user = $this->makeUser();
         $post = Post::factory()->create(['user_id' => $user->id]);
         $cat1 = Category::factory()->create();
         $cat2 = Category::factory()->create();
