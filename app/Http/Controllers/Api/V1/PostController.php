@@ -20,7 +20,7 @@ class PostController extends Controller
 
         $posts = Post::published()
             ->with(['author:id,name', 'categories:id,name,slug', 'tags:id,name,slug', 'featuredImage:id,path,disk,alt,width,height'])
-            ->when($request->input('category'), fn ($q, $slug) => $q->whereHas('category', fn ($c) => $c->where('slug', $slug)))
+            ->when($request->input('category'), fn ($q, $slug) => $q->whereHas('categories', fn ($c) => $c->where('slug', $slug)))
             ->when($request->input('tag'), fn ($q, $slug) => $q->whereHas('tags', fn ($t) => $t->where('slug', $slug)))
             ->when($request->input('search'), fn ($q, $term) => $q->search($term))
             ->latest('published_at')

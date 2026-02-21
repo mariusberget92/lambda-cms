@@ -253,4 +253,48 @@ class PostTest extends TestCase
         $post = Post::where('title', 'Tagged Post')->first();
         $this->assertCount(2, $post->tags);
     }
+
+    public function test_categories_are_synced_on_store(): void
+    {
+        $this->markAsInstalled();
+        $this->seedRolesAndPermissions();
+
+        $user = User::factory()->create()->assignRole('user');
+        $cat1 = Category::factory()->create();
+        $cat2 = Category::factory()->create();
+
+        $this->actingAs($user)->post(route('posts.store'), [
+            'title'        => 'Multi cat post',
+            'status'       => 'draft',
+            'category_ids' => [$cat1->id, $cat2->id],
+        ]);
+
+        $post = Post::where('title', 'Multi cat post')->first();
+        $this->assertCount(2, $post->categories);
+        $this->assertTrue($post->categories->contains($cat1));
+        $this->assertTrue($post->categories->contains($cat2));
+    }
+
+    public function test_categories_are_synced_on_update(): void
+    {
+        $this->markAsInstalled();
+        $this->seedRolesAndPermissions();
+
+        $user = User::factory()->create()->assignRole('user');
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $cat1 = Category::factory()->create();
+        $cat2 = Category::factory()->create();
+        $post->categories()->sync([$cat1->id]);
+
+        $this->actingAs($user)->put(route('posts.update', $post), [
+            'title'        => $post->title,
+            'status'       => $post->status,
+            'category_ids' => [$cat2->id],
+        ]);
+
+        $post->refresh();
+        $this->assertCount(1, $post->categories);
+        $this->assertTrue($post->categories->contains($cat2));
+        $this->assertFalse($post->categories->contains($cat1));
+    }
 }
