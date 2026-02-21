@@ -98,20 +98,35 @@
             </div>
           </div>
 
-          <!-- Category -->
+          <!-- Categories -->
           <div class="rounded-lg border bg-card p-4">
-            <h3 class="text-sm font-medium mb-3">Category</h3>
-            <select
-              v-model="form.category_id"
-              class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            >
-              <option :value="null">— None —</option>
-              <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
-            </select>
-            <p v-if="categories.length === 0" class="mt-2 text-xs text-muted-foreground">
+            <h3 class="text-sm font-medium mb-3">Categories</h3>
+            <div v-if="categories.length === 0" class="text-xs text-muted-foreground">
               No categories yet.
               <a :href="route('categories.create')" class="underline hover:text-foreground">Create one</a>
-            </p>
+            </div>
+            <div v-else class="flex flex-wrap gap-2">
+              <label
+                v-for="cat in categories"
+                :key="cat.id"
+                class="flex items-center gap-1.5 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  :value="cat.id"
+                  v-model="form.category_ids"
+                  class="accent-primary rounded"
+                />
+                <span
+                  class="text-xs px-2 py-0.5 rounded-full border transition-colors"
+                  :class="form.category_ids.includes(cat.id)
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'text-muted-foreground border-border hover:border-foreground'"
+                >
+                  {{ cat.name }}
+                </span>
+              </label>
+            </div>
           </div>
 
           <!-- Tags -->
@@ -201,7 +216,7 @@ const form = useForm({
   excerpt:          "",
   body:             "",
   status:           "draft",
-  category_id:      null,
+  category_ids:     [],
   tag_ids:          [],
   featured_image_id: null,
 });
