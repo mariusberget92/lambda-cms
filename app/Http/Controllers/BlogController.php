@@ -16,7 +16,7 @@ class BlogController extends Controller
     public function index(): Response
     {
         $posts = Post::published()
-            ->with(['author:id,name,avatar', 'category:id,name,slug', 'tags:id,name,slug', 'featuredImage:id,path,disk'])
+            ->with(['author:id,name,avatar', 'categories:id,name,slug', 'tags:id,name,slug', 'featuredImage:id,path,disk'])
             ->orderByDesc('published_at')
             ->paginate(15)
             ->through(fn (Post $post) => [
@@ -30,10 +30,7 @@ class BlogController extends Controller
                     'name'       => $post->author->name,
                     'avatar_url' => $post->author->avatar_url,
                 ],
-                'category'            => $post->category ? [
-                    'name' => $post->category->name,
-                    'slug' => $post->category->slug,
-                ] : null,
+                'categories'          => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug])->values(),
                 'tags'                => $post->tags->map(fn ($t) => [
                     'name' => $t->name,
                     'slug' => $t->slug,
@@ -52,7 +49,7 @@ class BlogController extends Controller
     public function show(string $slug): Response
     {
         $post = Post::published()
-            ->with(['author:id,name,avatar', 'category:id,name,slug', 'tags:id,name,slug', 'featuredImage:id,path,disk,alt'])
+            ->with(['author:id,name,avatar', 'categories:id,name,slug', 'tags:id,name,slug', 'featuredImage:id,path,disk,alt'])
             ->where('slug', $slug)
             ->firstOrFail();
 
@@ -70,10 +67,7 @@ class BlogController extends Controller
                     'name'       => $post->author->name,
                     'avatar_url' => $post->author->avatar_url,
                 ],
-                'category'            => $post->category ? [
-                    'name' => $post->category->name,
-                    'slug' => $post->category->slug,
-                ] : null,
+                'categories'          => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug])->values(),
                 'tags'                => $post->tags->map(fn ($t) => [
                     'name' => $t->name,
                     'slug' => $t->slug,

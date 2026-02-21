@@ -46,10 +46,14 @@ function formatDate(date) {
           </div>
 
           <div class="p-6">
-          <!-- Category badge -->
-          <div v-if="post.category" class="mb-2">
-            <span class="inline-block text-xs font-medium bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-              {{ post.category.name }}
+          <!-- Category badges -->
+          <div v-if="post.categories?.length" class="mb-2 flex flex-wrap gap-1">
+            <span
+              v-for="cat in post.categories"
+              :key="cat.slug"
+              class="inline-block text-xs font-medium bg-primary/10 text-primary px-2 py-0.5 rounded-full"
+            >
+              {{ cat.name }}
             </span>
           </div>
 
