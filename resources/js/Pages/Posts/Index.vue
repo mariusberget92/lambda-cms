@@ -64,6 +64,7 @@
           <tr>
             <th class="text-left font-medium px-4 py-3">Title</th>
             <th class="text-left font-medium px-4 py-3 hidden sm:table-cell">Author</th>
+            <th class="text-left font-medium px-4 py-3 hidden md:table-cell">Categories</th>
             <th class="text-left font-medium px-4 py-3 hidden md:table-cell">Status</th>
             <th class="text-left font-medium px-4 py-3 hidden lg:table-cell">Date</th>
             <th class="px-4 py-3 w-10"></th>
@@ -71,7 +72,7 @@
         </thead>
         <tbody class="divide-y divide-border">
           <tr v-if="posts.data.length === 0">
-            <td colspan="5" class="px-4 py-12 text-center text-muted-foreground">
+            <td colspan="6" class="px-4 py-12 text-center text-muted-foreground">
               <svg class="w-8 h-8 mx-auto mb-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
@@ -88,6 +89,10 @@
               <div v-if="post.excerpt" class="text-xs text-muted-foreground line-clamp-1 mt-0.5 hidden sm:block">{{ post.excerpt }}</div>
             </td>
             <td class="px-4 py-3 hidden sm:table-cell text-muted-foreground">{{ post.author }}</td>
+            <td class="px-4 py-3 hidden md:table-cell text-muted-foreground text-xs">
+              <span v-if="post.categories?.length">{{ post.categories.map(c => c.name).join(', ') }}</span>
+              <span v-else class="text-muted-foreground/50">—</span>
+            </td>
             <td class="px-4 py-3 hidden md:table-cell">
               <span
                 class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium"
