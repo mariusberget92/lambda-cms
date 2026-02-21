@@ -13,7 +13,7 @@ class PostController extends Controller
 {
     public function index(Request $request)
     {
-        $posts = Post::with('author:id,name', 'category:id,name', 'tags:id,name')
+        $posts = Post::with('author:id,name', 'categories:id,name', 'tags:id,name')
             ->search($request->input('search'))
             ->when(
                 $request->input('status'),
@@ -21,7 +21,7 @@ class PostController extends Controller
             )
             ->when(
                 $request->input('category'),
-                fn ($q, $categoryId) => $q->where('category_id', $categoryId)
+                fn ($q, $categoryId) => $q->whereHas('categories', fn ($c) => $c->where('categories.id', $categoryId))
             )
             ->latest()
             ->paginate(15)
@@ -35,7 +35,7 @@ class PostController extends Controller
                 'published_at' => $post->published_at?->toDateString(),
                 'created_at'   => $post->created_at->toDateString(),
                 'author'       => $post->author->name,
-                'category'     => $post->category?->name,
+                'categories'   => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name])->values(),
                 'tags'         => $post->tags->pluck('name'),
             ]);
 
@@ -61,14 +61,16 @@ class PostController extends Controller
             'excerpt'     => ['nullable', 'string', 'max:500'],
             'body'        => ['nullable', 'string'],
             'status'      => ['required', 'in:draft,published'],
-            'category_id' => ['nullable', 'exists:categories,id'],
+            'category_ids'   => ['nullable', 'array'],
+            'category_ids.*' => ['exists:categories,id'],
             'tag_ids'          => ['nullable', 'array'],
             'tag_ids.*'        => ['exists:tags,id'],
             'featured_image_id' => ['nullable', 'exists:media,id'],
         ]);
 
-        $tagIds = $validated['tag_ids'] ?? [];
-        unset($validated['tag_ids']);
+        $tagIds      = $validated['tag_ids'] ?? [];
+        $categoryIds = $validated['category_ids'] ?? [];
+        unset($validated['tag_ids'], $validated['category_ids']);
 
         $validated['slug']    = Post::generateSlug($validated['title']);
         $validated['user_id'] = $request->user()->id;
@@ -79,6 +81,7 @@ class PostController extends Controller
 
         $post = Post::create($validated);
         $post->tags()->sync($tagIds);
+        $post->categories()->sync($categoryIds);
 
         return redirect()
             ->route('posts.index')
@@ -91,7 +94,7 @@ class PostController extends Controller
             abort(403);
         }
 
-        $post->load('tags:id,name', 'featuredImage:id,path,disk,alt');
+        $post->load('tags:id,name', 'categories:id,name', 'featuredImage:id,path,disk,alt');
 
         return Inertia::render('Posts/Edit', [
             'post' => [
@@ -102,7 +105,7 @@ class PostController extends Controller
                 'body'              => $post->body,
                 'status'            => $post->status,
                 'published_at'      => $post->published_at?->toDateString(),
-                'category_id'       => $post->category_id,
+                'category_ids'      => $post->categories->pluck('id'),
                 'tag_ids'           => $post->tags->pluck('id'),
                 'featured_image_id' => $post->featured_image_id,
                 'featured_image'    => $post->featured_image_id ? [
@@ -127,14 +130,16 @@ class PostController extends Controller
             'excerpt'     => ['nullable', 'string', 'max:500'],
             'body'        => ['nullable', 'string'],
             'status'      => ['required', 'in:draft,published'],
-            'category_id' => ['nullable', 'exists:categories,id'],
+            'category_ids'   => ['nullable', 'array'],
+            'category_ids.*' => ['exists:categories,id'],
             'tag_ids'           => ['nullable', 'array'],
             'tag_ids.*'         => ['exists:tags,id'],
             'featured_image_id' => ['nullable', 'exists:media,id'],
         ]);
 
-        $tagIds = $validated['tag_ids'] ?? [];
-        unset($validated['tag_ids']);
+        $tagIds      = $validated['tag_ids'] ?? [];
+        $categoryIds = $validated['category_ids'] ?? [];
+        unset($validated['tag_ids'], $validated['category_ids']);
 
         $validated['slug'] = Post::generateSlug($validated['title'], $post->id);
 
@@ -146,6 +151,7 @@ class PostController extends Controller
 
         $post->update($validated);
         $post->tags()->sync($tagIds);
+        $post->categories()->sync($categoryIds);
 
         return redirect()
             ->route('posts.index')
