@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
@@ -86,6 +87,12 @@ class InstallController extends Controller
             $request->validate([
                 'driver' => ['required', 'in:sqlite,mysql'],
             ]);
+
+            // Ensure the SQLite database file exists before migrations run
+            $sqlitePath = database_path('database.sqlite');
+            if (! file_exists($sqlitePath)) {
+                touch($sqlitePath);
+            }
 
             $this->writeEnv([
                 'DB_CONNECTION' => 'sqlite',
@@ -172,25 +179,47 @@ class InstallController extends Controller
 
         Artisan::call('config:clear');
 
-        // Run migrations and seed
+        // Run migrations (idempotent — safe to run even if partially applied)
         Artisan::call('migrate', ['--force' => true]);
-        Artisan::call('db:seed', ['--force' => true, '--class' => 'DatabaseSeeder']);
 
-        // Create admin user
+        // Switch session and cache to database AFTER migrations have run,
+        // so a failed install never leaves the app in a state where it tries
+        // to query a sessions table that doesn't exist yet.
+        $this->writeEnv([
+            'SESSION_DRIVER' => 'database',
+            'CACHE_STORE'    => 'database',
+        ]);
+
+        Artisan::call('config:clear');
+
+        // Retrieve admin data from session before the transaction clears it
         $adminData = $request->session()->get('install.admin');
         $request->session()->forget('install.admin');
 
-        $user = User::create([
-            'name'              => $adminData['name'],
-            'email'             => $adminData['email'],
-            'password'          => Hash::make($adminData['password']),
-            'email_verified_at' => now(),
-        ]);
-        $user->assignRole('administrator');
+        // Wrap seeding + user creation in a transaction so any crash leaves no partial state
+        $user = DB::transaction(function () use ($adminData) {
+            Artisan::call('db:seed', ['--force' => true, '--class' => 'DatabaseSeeder']);
 
-        // Seed default "Hello World" post via seeder
-        $seeder = new DatabaseSeeder();
-        $seeder->seedDefaultPost($user);
+            // Use firstOrCreate so a retry after a partial failure doesn't violate the unique constraint
+            $user = User::firstOrCreate(
+                ['email' => $adminData['email']],
+                [
+                    'name'              => $adminData['name'],
+                    'password'          => Hash::make($adminData['password']),
+                    'email_verified_at' => now(),
+                ]
+            );
+
+            if (! $user->hasRole('administrator')) {
+                $user->assignRole('administrator');
+            }
+
+            // Seed default "Hello World" post
+            $seeder = new DatabaseSeeder();
+            $seeder->seedDefaultPost($user);
+
+            return $user;
+        });
 
         // Mark as installed
         file_put_contents(storage_path('app/installed'), now()->toDateTimeString());

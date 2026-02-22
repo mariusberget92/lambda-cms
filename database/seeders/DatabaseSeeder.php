@@ -34,7 +34,10 @@ class DatabaseSeeder extends Seeder
     {
         $category = Category::firstOrCreate(
             ['name' => 'General'],
-            ['description' => 'General posts and announcements.'],
+            [
+                'slug'        => Category::generateSlug('General'),
+                'description' => 'General posts and announcements.',
+            ],
         );
 
         $post = Post::create([
