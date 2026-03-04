@@ -6,7 +6,7 @@
     <Transition name="fade">
       <div
         v-if="$page.props.flash?.error"
-        class="flex items-center gap-2 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 mb-6"
+        class="flex items-center gap-2 rounded-md bg-status-error-bg border border-status-error-border px-4 py-3 text-sm text-status-error-fg mb-6"
       >
         <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
@@ -38,8 +38,8 @@
       <div class="rounded-lg border bg-card p-5">
         <div class="flex items-center justify-between mb-3">
           <p class="text-sm font-medium text-muted-foreground">Published</p>
-          <div class="w-8 h-8 rounded-md bg-green-100 flex items-center justify-center">
-            <svg class="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <div class="w-8 h-8 rounded-md bg-status-success-bg flex items-center justify-center">
+            <svg class="w-4 h-4 text-status-success-fg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
           </div>
@@ -50,8 +50,8 @@
       <div class="rounded-lg border bg-card p-5">
         <div class="flex items-center justify-between mb-3">
           <p class="text-sm font-medium text-muted-foreground">Drafts</p>
-          <div class="w-8 h-8 rounded-md bg-amber-100 flex items-center justify-center">
-            <svg class="w-4 h-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <div class="w-8 h-8 rounded-md bg-status-warning-bg flex items-center justify-center">
+            <svg class="w-4 h-4 text-status-warning-fg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
             </svg>
           </div>
