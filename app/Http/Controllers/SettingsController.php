@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Mail\TestMail;
+use App\Models\Setting;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
+use Inertia\Inertia;
+use Inertia\Response;
+
+class SettingsController extends Controller
+{
+    public function index(): Response
+    {
+        $settings = Setting::all()->keyBy('key')->map(fn ($s) => $s->value);
+
+        return Inertia::render('Settings/Index', [
+            'settings' => $settings,
+        ]);
+    }
+
+    public function update(string $group, Request $request): RedirectResponse
+    {
+        $validated = match ($group) {
+            'site'   => $request->validate([
+                'site\\.name' => ['required', 'string', 'max:100'],
+                'site\\.url'  => ['required', 'url', 'max:255'],
+            ]),
+            'locale' => $request->validate([
+                'locale\\.timezone'    => ['required', 'string', Rule::in(\DateTimeZone::listIdentifiers())],
+                'locale\\.date_format' => ['required', 'string', 'max:20'],
+            ]),
+            'media'  => $request->validate([
+                'media\\.max_upload_mb'    => ['required', 'integer', 'min:1', 'max:100'],
+                'media\\.resize_max_width' => ['required', 'integer', 'min:320', 'max:8000'],
+            ]),
+            'mail'   => $request->validate([
+                'mail\\.driver'       => ['required', 'string', Rule::in(['smtp', 'log', 'mailgun'])],
+                'mail\\.host'         => ['nullable', 'string', 'max:255'],
+                'mail\\.port'         => ['nullable', 'integer'],
+                'mail\\.username'     => ['nullable', 'string', 'max:255'],
+                'mail\\.password'     => ['nullable', 'string', 'max:255'],
+                'mail\\.from_address' => ['required', 'email'],
+                'mail\\.from_name'    => ['required', 'string', 'max:100'],
+                'mail\\.encryption'   => ['nullable', Rule::in(['tls', 'ssl', ''])],
+            ]),
+            default  => abort(404),
+        };
+
+        foreach ($validated as $key => $value) {
+            Setting::set($key, $value ?? '');
+        }
+
+        return back()->with('status', 'Settings saved.');
+    }
+
+    public function testEmail(Request $request): RedirectResponse
+    {
+        // Apply current mail settings at runtime
+        $driver = Setting::get('mail.driver', 'log');
+        Config::set('mail.default', $driver);
+        Config::set('mail.mailers.smtp.host',       Setting::get('mail.host', ''));
+        Config::set('mail.mailers.smtp.port',       Setting::get('mail.port', 587));
+        Config::set('mail.mailers.smtp.username',   Setting::get('mail.username', ''));
+        Config::set('mail.mailers.smtp.password',   Setting::get('mail.password', ''));
+        Config::set('mail.mailers.smtp.encryption', Setting::get('mail.encryption', 'tls') ?: null);
+        Config::set('mail.from.address', Setting::get('mail.from_address', ''));
+        Config::set('mail.from.name',    Setting::get('mail.from_name', ''));
+
+        try {
+            Mail::to($request->user()->email)->send(new TestMail());
+            return back()->with('mail_status', 'Test email sent successfully to ' . $request->user()->email);
+        } catch (\Throwable $e) {
+            return back()->with('mail_error', 'Failed to send test email: ' . $e->getMessage());
+        }
+    }
+}
