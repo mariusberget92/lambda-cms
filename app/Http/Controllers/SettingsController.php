@@ -7,6 +7,7 @@ use App\Models\Setting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -16,7 +17,16 @@ class SettingsController extends Controller
 {
     public function index(): Response
     {
-        $settings = Setting::all()->keyBy('key')->map(fn ($s) => $s->value);
+        $settings = Setting::all()->keyBy('key')->map(function ($s) {
+            // Mask the mail password — it is write-only from the UI perspective.
+            // The frontend password field is always empty on load; saving a blank
+            // value is handled by the update() action which skips empty passwords.
+            if ($s->key === 'mail.password') {
+                return '';
+            }
+
+            return $s->value;
+        });
 
         return Inertia::render('Settings/Index', [
             'settings' => $settings,
@@ -75,7 +85,8 @@ class SettingsController extends Controller
             Mail::to($request->user()->email)->send(new TestMail());
             return back()->with('mail_status', 'Test email sent successfully to ' . $request->user()->email);
         } catch (\Throwable $e) {
-            return back()->with('mail_error', 'Failed to send test email: ' . $e->getMessage());
+            Log::error('Settings test email failed', ['exception' => $e->getMessage()]);
+            return back()->with('mail_error', 'Failed to send test email. Please check your mail configuration and try again.');
         }
     }
 }
