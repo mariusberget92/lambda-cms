@@ -35,12 +35,11 @@ class Setting extends Model
      */
     public static function set(string $key, mixed $value): void
     {
-        $affected = static::where('key', $key)->update(['value' => (string) $value]);
-
-        if ($affected === 0) {
+        if (! static::where('key', $key)->exists()) {
             throw new \InvalidArgumentException("Setting key '{$key}' does not exist.");
         }
 
+        static::where('key', $key)->update(['value' => (string) $value]);
         app(SettingService::class)->bust();
     }
 }

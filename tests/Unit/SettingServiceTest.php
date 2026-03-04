@@ -92,4 +92,14 @@ class SettingServiceTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         Setting::set('nonexistent.key', 'value');
     }
+
+    public function test_set_does_not_throw_when_value_unchanged(): void
+    {
+        Setting::create(['group' => 'site', 'key' => 'site.name', 'value' => 'Same', 'type' => 'string']);
+
+        // Should not throw even though the value is the same
+        Setting::set('site.name', 'Same');
+
+        $this->assertDatabaseHas('settings', ['key' => 'site.name', 'value' => 'Same']);
+    }
 }
