@@ -117,8 +117,17 @@
     <!-- Main area -->
     <div class="flex flex-col flex-1 overflow-hidden">
       <!-- Topbar -->
-      <header class="flex items-center justify-between h-16 px-6 border-b shrink-0">
+      <header class="flex items-center justify-between h-16 px-6 border-b border-border bg-background shrink-0">
         <h1 class="text-sm font-semibold">{{ title }}</h1>
+        <button
+          @click="toggleTheme"
+          class="inline-flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+          :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+          :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+        >
+          <Sun v-if="isDark" class="w-4 h-4" />
+          <Moon v-else class="w-4 h-4" />
+        </button>
       </header>
 
       <!-- Page content -->
@@ -130,9 +139,11 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
+import { Sun, Moon } from "lucide-vue-next";
 import SidebarLink from "@/Components/SidebarLink.vue";
+import { useTheme } from "@/composables/useTheme.js";
 
 defineProps({
   title: {
@@ -155,4 +166,10 @@ const userInitials = computed(() =>
 function logout() {
   router.post(route("logout"));
 }
+
+const { isDark, initTheme, toggleTheme } = useTheme()
+
+onMounted(() => {
+  initTheme()
+})
 </script>
