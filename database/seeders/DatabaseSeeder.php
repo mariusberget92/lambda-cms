@@ -14,6 +14,10 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->call([
+            SettingsSeeder::class,
+        ]);
+
         // ── Roles & Permissions ──────────────────────────────────────────────
         foreach (['manage posts', 'manage categories', 'manage tags', 'manage users'] as $name) {
             Permission::firstOrCreate(['name' => $name]);
