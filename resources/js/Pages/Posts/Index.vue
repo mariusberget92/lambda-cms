@@ -23,7 +23,7 @@
     <Transition name="fade">
       <div
         v-if="$page.props.flash?.status"
-        class="mb-4 flex items-center gap-2 rounded-md bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700"
+        class="mb-4 flex items-center gap-2 rounded-md bg-status-success-bg border border-status-success-border px-4 py-3 text-sm text-status-success-fg"
       >
         <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -97,10 +97,10 @@
               <span
                 class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium"
                 :class="post.status === 'published'
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-amber-100 text-amber-700'"
+                  ? 'bg-status-success-bg text-status-success-fg'
+                  : 'bg-status-warning-bg text-status-warning-fg'"
               >
-                <span class="w-1.5 h-1.5 rounded-full" :class="post.status === 'published' ? 'bg-green-500' : 'bg-amber-500'"></span>
+                <span class="w-1.5 h-1.5 rounded-full" :class="post.status === 'published' ? 'bg-status-success-fg' : 'bg-status-warning-fg'"></span>
                 {{ post.status === 'published' ? 'Published' : 'Draft' }}
               </span>
             </td>
