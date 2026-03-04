@@ -63,11 +63,11 @@ class SettingServiceTest extends TestCase
         // Prime the cache
         $service = new SettingService();
         $service->all();
-        $this->assertTrue(Cache::has('settings.all'));
+        $this->assertTrue(Cache::has(SettingService::CACHE_KEY));
 
         // set() should bust it
         Setting::set('site.name', 'New');
-        $this->assertFalse(Cache::has('settings.all'));
+        $this->assertFalse(Cache::has(SettingService::CACHE_KEY));
     }
 
     public function test_all_uses_cache(): void
@@ -77,6 +77,19 @@ class SettingServiceTest extends TestCase
         $service = new SettingService();
         $service->all(); // primes cache
 
-        $this->assertTrue(Cache::has('settings.all'));
+        $this->assertTrue(Cache::has(SettingService::CACHE_KEY));
+    }
+
+    public function test_get_casts_boolean_false(): void
+    {
+        Setting::create(['group' => 'site', 'key' => 'site.maintenance', 'value' => '0', 'type' => 'boolean']);
+
+        $this->assertFalse(Setting::get('site.maintenance'));
+    }
+
+    public function test_set_throws_for_unknown_key(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Setting::set('nonexistent.key', 'value');
     }
 }

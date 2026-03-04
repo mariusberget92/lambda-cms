@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Cache;
 
 class SettingService
 {
-    private const CACHE_KEY = 'settings.all';
+    public const CACHE_KEY = 'settings.all';
     private const CACHE_TTL = 3600; // 1 hour
 
     public function all(): Collection

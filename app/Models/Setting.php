@@ -25,7 +25,7 @@ class Setting extends Model
 
         return match ($setting->type) {
             'integer' => (int) $setting->value,
-            'boolean' => (bool) $setting->value,
+            'boolean' => filter_var($setting->value, FILTER_VALIDATE_BOOLEAN),
             default   => (string) ($setting->value ?? ''),
         };
     }
@@ -35,7 +35,12 @@ class Setting extends Model
      */
     public static function set(string $key, mixed $value): void
     {
-        static::where('key', $key)->update(['value' => (string) $value]);
+        $affected = static::where('key', $key)->update(['value' => (string) $value]);
+
+        if ($affected === 0) {
+            throw new \InvalidArgumentException("Setting key '{$key}' does not exist.");
+        }
+
         app(SettingService::class)->bust();
     }
 }
