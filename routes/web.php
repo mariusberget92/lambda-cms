@@ -12,6 +12,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -93,5 +94,9 @@ Route::middleware('installed')->group(function () {
     // ── Auth + verified + administrator role ─────────────────────────────────
     Route::middleware(['auth', 'verified', 'role:administrator'])->group(function () {
         Route::resource('users', UserController::class)->except(['show']);
+
+        Route::get('/settings',             [SettingsController::class, 'index'])->name('settings.index');
+        Route::put('/settings/{group}',     [SettingsController::class, 'update'])->name('settings.update');
+        Route::post('/settings/test-email', [SettingsController::class, 'testEmail'])->name('settings.test-email');
     });
 });
