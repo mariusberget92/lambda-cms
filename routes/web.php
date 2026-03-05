@@ -12,6 +12,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -37,6 +38,11 @@ Route::middleware('installed')->group(function () {
     // ── Public blog ──────────────────────────────────────────────────────────
     Route::get('/',             [BlogController::class, 'index'])->name('home');
     Route::get('/blog/{slug}',  [BlogController::class, 'show'])->name('blog.show');
+
+    // Comment submission (public, rate-limited)
+    Route::post('/blog/{post:slug}/comments', [CommentController::class, 'store'])
+        ->middleware('throttle:comments')
+        ->name('comments.store');
 
     // ── Guest-only ───────────────────────────────────────────────────────────
     Route::middleware('guest')->group(function () {
@@ -94,6 +100,12 @@ Route::middleware('installed')->group(function () {
     // ── Auth + verified + administrator role ─────────────────────────────────
     Route::middleware(['auth', 'verified', 'role:administrator'])->group(function () {
         Route::resource('users', UserController::class)->except(['show']);
+
+        Route::get('/comments',                     [CommentController::class, 'index'])->name('comments.index');
+        Route::patch('/comments/{comment}/approve', [CommentController::class, 'approve'])->name('comments.approve');
+        Route::patch('/comments/{comment}/reject',  [CommentController::class, 'reject'])->name('comments.reject');
+        Route::delete('/comments/{comment}',        [CommentController::class, 'destroy'])->name('comments.destroy');
+        Route::post('/comments/bulk',               [CommentController::class, 'bulk'])->name('comments.bulk');
 
         Route::get('/settings',             [SettingsController::class, 'index'])->name('settings.index');
         Route::put('/settings/{group}',     [SettingsController::class, 'update'])->name('settings.update');

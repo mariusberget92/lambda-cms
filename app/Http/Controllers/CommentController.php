@@ -1,0 +1,124 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Comment;
+use App\Models\Post;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
+
+class CommentController extends Controller
+{
+    /**
+     * Admin moderation index — paginated, filterable by status.
+     */
+    public function index(Request $request): Response
+    {
+        $filter = $request->input('filter', 'pending');
+
+        $comments = Comment::with(['post:id,title,slug', 'user:id,name'])
+            ->when($filter !== 'all', fn ($q) => $q->where('status', $filter))
+            ->latest()
+            ->paginate(25)
+            ->withQueryString()
+            ->through(fn (Comment $c) => [
+                'id'           => $c->id,
+                'author_name'  => $c->author_name,
+                'author_email' => $c->author_email,
+                'body'         => $c->body,
+                'body_excerpt' => \Illuminate\Support\Str::limit($c->body, 80),
+                'status'       => $c->status,
+                'created_at'   => $c->created_at->diffForHumans(),
+                'post'         => [
+                    'title' => $c->post->title,
+                    'slug'  => $c->post->slug,
+                ],
+            ]);
+
+        return Inertia::render('Comments/Index', [
+            'comments'     => $comments,
+            'filter'       => $filter,
+            'pendingCount' => Comment::pending()->count(),
+        ]);
+    }
+
+    /**
+     * Public — store a new comment (pending).
+     */
+    public function store(Request $request, Post $post): RedirectResponse
+    {
+        // Honeypot — silently discard if filled
+        if ($request->filled('website')) {
+            return back()->with('status', 'Your comment has been submitted and is awaiting moderation.');
+        }
+
+        $validated = $request->validate([
+            'author_name'  => ['required', 'string', 'max:100'],
+            'author_email' => ['nullable', 'email', 'max:255'],
+            'body'         => ['required', 'string', 'max:5000'],
+        ]);
+
+        $comment = $post->comments()->create([
+            'user_id'      => $request->user()?->id,
+            'author_name'  => $validated['author_name'],
+            'author_email' => $validated['author_email'] ?? null,
+            'body'         => $validated['body'],
+            'status'       => 'pending',
+        ]);
+
+        dispatch(new \App\Jobs\SendNewCommentNotification($comment));
+
+        return back()->with('status', 'Your comment has been submitted and is awaiting moderation.');
+    }
+
+    /**
+     * Admin — approve a comment.
+     */
+    public function approve(Comment $comment): RedirectResponse
+    {
+        $comment->update(['status' => 'approved']);
+        return back()->with('status', 'Comment approved.');
+    }
+
+    /**
+     * Admin — reject a comment.
+     */
+    public function reject(Comment $comment): RedirectResponse
+    {
+        $comment->update(['status' => 'rejected']);
+        return back()->with('status', 'Comment rejected.');
+    }
+
+    /**
+     * Admin — hard delete a comment.
+     */
+    public function destroy(Comment $comment): RedirectResponse
+    {
+        $comment->delete();
+        return back()->with('status', 'Comment deleted.');
+    }
+
+    /**
+     * Admin — bulk approve / reject / delete.
+     */
+    public function bulk(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'action' => ['required', 'in:approve,reject,delete'],
+            'ids'    => ['required', 'array', 'min:1'],
+            'ids.*'  => ['integer', 'exists:comments,id'],
+        ]);
+
+        $comments = Comment::whereIn('id', $validated['ids']);
+
+        match ($validated['action']) {
+            'approve' => $comments->update(['status' => 'approved']),
+            'reject'  => $comments->update(['status' => 'rejected']),
+            'delete'  => $comments->delete(),
+        };
+
+        return back()->with('status', ucfirst($validated['action']) . 'd ' . count($validated['ids']) . ' comment(s).');
+    }
+}
