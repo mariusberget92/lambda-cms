@@ -268,4 +268,44 @@ class CommentTest extends TestCase
 
         $response->assertOk()->assertJsonCount(3, 'data');
     }
+
+    public function test_comments_json_endpoint_returns_404_for_unknown_slug(): void
+    {
+        $this->seedCommentSettings();
+
+        $this->getJson('/blog/does-not-exist/comments')->assertNotFound();
+    }
+
+    public function test_comments_json_endpoint_returns_404_for_draft_post(): void
+    {
+        $this->seedCommentSettings();
+        $post = Post::factory()->create(['status' => 'draft']);
+
+        $this->getJson("/blog/{$post->slug}/comments")->assertNotFound();
+    }
+
+    public function test_comments_json_endpoint_returns_empty_when_no_comments(): void
+    {
+        $this->seedCommentSettings(perPage: 10);
+        $post = Post::factory()->published()->create();
+
+        $response = $this->getJson("/blog/{$post->slug}/comments");
+
+        $response->assertOk()
+                 ->assertJsonCount(0, 'data')
+                 ->assertJsonPath('has_more', false)
+                 ->assertJsonPath('total', 0);
+    }
+
+    public function test_comments_json_endpoint_excludes_rejected_comments(): void
+    {
+        $this->seedCommentSettings(perPage: 10);
+        $post = Post::factory()->published()->create();
+        Comment::factory(2)->approved()->create(['post_id' => $post->id]);
+        Comment::factory(3)->create(['post_id' => $post->id, 'status' => 'rejected']);
+
+        $response = $this->getJson("/blog/{$post->slug}/comments");
+
+        $response->assertOk()->assertJsonCount(2, 'data');
+    }
 }
