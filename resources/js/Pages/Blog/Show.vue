@@ -7,10 +7,14 @@ import BlogSidebar from '@/Components/BlogSidebar.vue'
 defineOptions({ layout: BlogLayout })
 
 const props = defineProps({
-  post:     Object,
-  sidebar:  Object,
-  comments: Array,
-  authUser: Object,
+  post:            Object,
+  sidebar:         Object,
+  comments:        { type: Array,   default: () => [] },
+  commentsTotal:   { type: Number,  default: 0 },
+  commentsHasMore: { type: Boolean, default: false },
+  commentsPerPage: { type: Number,  default: 10 },
+  commentsEnabled: { type: Boolean, default: true },
+  authUser:        { type: Object,  default: null },
 })
 
 function formatDate(date) {
@@ -20,21 +24,44 @@ function formatDate(date) {
 
 const page = usePage()
 
+// ── Comment list state ────────────────────────────────────────────────────────
+const commentList = ref([...props.comments])
+const hasMore     = ref(props.commentsHasMore)
+const currentPage = ref(1)
+const loadingMore = ref(false)
+const loadError   = ref(false)
+
+async function loadMore() {
+  loadingMore.value = true
+  loadError.value   = false
+  try {
+    const nextPage = currentPage.value + 1
+    const res      = await fetch(`/blog/${props.post.slug}/comments?page=${nextPage}`)
+    if (!res.ok) throw new Error('Server error')
+    const json = await res.json()
+    commentList.value.push(...json.data)
+    hasMore.value     = json.has_more
+    currentPage.value = nextPage
+  } catch {
+    loadError.value = true
+  } finally {
+    loadingMore.value = false
+  }
+}
+
+// ── Submission form ───────────────────────────────────────────────────────────
 const form = useForm({
-  author_name:  props.authUser?.name ?? '',
+  author_name:  props.authUser?.name  ?? '',
   author_email: props.authUser?.email ?? '',
   body:         '',
   website:      '', // honeypot
 })
-
-const submitted = ref(false)
 
 function submitComment() {
   form.post(route('comments.store', props.post.slug), {
     preserveScroll: true,
     onSuccess: () => {
       form.reset('body')
-      submitted.value = true
     },
   })
 }
@@ -112,7 +139,7 @@ function submitComment() {
       <!-- Comments section -->
       <div class="mt-12 pt-8 border-t">
         <h2 class="text-xl font-bold mb-6">
-          {{ comments?.length ? comments.length + ' Comment' + (comments.length !== 1 ? 's' : '') : 'Comments' }}
+          {{ commentsTotal ? commentsTotal + ' Comment' + (commentsTotal !== 1 ? 's' : '') : 'Comments' }}
         </h2>
 
         <!-- Flash: submitted confirmation -->
@@ -129,9 +156,9 @@ function submitComment() {
         </Transition>
 
         <!-- Comment list -->
-        <div v-if="comments?.length" class="space-y-6 mb-10">
+        <div v-if="commentList.length" class="space-y-6 mb-6">
           <div
-            v-for="comment in comments"
+            v-for="comment in commentList"
             :key="comment.id"
             class="flex gap-3"
           >
@@ -148,10 +175,28 @@ function submitComment() {
             </div>
           </div>
         </div>
-        <p v-else class="text-sm text-muted-foreground mb-10">No comments yet. Be the first!</p>
+        <p v-else class="text-sm text-muted-foreground mb-6">No comments yet. Be the first!</p>
 
-        <!-- Submission form -->
-        <div class="rounded-lg border bg-card p-6">
+        <!-- Load more -->
+        <div v-if="hasMore || loadError" class="mb-10 text-center">
+          <p v-if="loadError" class="text-sm text-destructive mb-2">Failed to load more comments.</p>
+          <button
+            type="button"
+            :disabled="loadingMore"
+            @click="loadMore"
+            class="inline-flex items-center gap-2 rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent transition-colors disabled:opacity-50"
+          >
+            <svg v-if="loadingMore" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+            </svg>
+            {{ loadingMore ? 'Loading...' : (loadError ? 'Retry' : 'Load more comments') }}
+          </button>
+        </div>
+        <div v-else class="mb-10"></div>
+
+        <!-- Submission form OR disabled notice -->
+        <div v-if="commentsEnabled" class="rounded-lg border bg-card p-6">
           <h3 class="text-base font-semibold mb-4">Leave a comment</h3>
           <form @submit.prevent="submitComment" class="space-y-4">
             <!-- Honeypot (hidden) -->
@@ -211,6 +256,14 @@ function submitComment() {
               </button>
             </div>
           </form>
+        </div>
+
+        <!-- Comments disabled notice -->
+        <div v-else class="rounded-lg border bg-muted/30 px-6 py-5 text-sm text-muted-foreground flex items-center gap-2">
+          <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+          </svg>
+          Comments are closed.
         </div>
       </div>
     </div>
