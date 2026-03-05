@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Post;
 use Inertia\Inertia;
 
@@ -11,9 +12,10 @@ class DashboardController extends Controller
     {
         return Inertia::render("Dashboard/Index", [
             "stats" => [
-                "total"     => Post::count(),
-                "published" => Post::published()->count(),
-                "drafts"    => Post::draft()->count(),
+                "total"                => Post::count(),
+                "published"            => Post::published()->count(),
+                "drafts"               => Post::draft()->count(),
+                "pendingCommentsCount" => Comment::pending()->count(),
             ],
         ]);
     }

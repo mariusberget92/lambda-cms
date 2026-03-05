@@ -22,7 +22,7 @@
     </div>
 
     <!-- Stats -->
-    <div class="grid gap-4 sm:grid-cols-3 mb-6">
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
       <div class="rounded-lg border bg-card p-5">
         <div class="flex items-center justify-between mb-3">
           <p class="text-sm font-medium text-muted-foreground">Total Posts</p>
@@ -58,6 +58,18 @@
         </div>
         <p class="text-3xl font-bold">{{ stats.drafts }}</p>
       </div>
+
+      <a :href="route('comments.index') + '?filter=pending'" class="rounded-lg border bg-card p-5 hover:bg-accent transition-colors">
+        <div class="flex items-center justify-between mb-3">
+          <p class="text-sm font-medium text-muted-foreground">Pending Comments</p>
+          <div class="w-8 h-8 rounded-md bg-muted flex items-center justify-center">
+            <svg class="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+            </svg>
+          </div>
+        </div>
+        <p class="text-3xl font-bold">{{ stats.pendingCommentsCount }}</p>
+      </a>
     </div>
 
     <!-- Quick actions -->
@@ -95,7 +107,7 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 defineProps({
   stats: {
     type: Object,
-    default: () => ({ total: 0, published: 0, drafts: 0 }),
+    default: () => ({ total: 0, published: 0, drafts: 0, pendingCommentsCount: 0 }),
   },
 });
 
