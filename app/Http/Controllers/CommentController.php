@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\Setting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -49,6 +50,10 @@ class CommentController extends Controller
      */
     public function store(Request $request, Post $post): RedirectResponse
     {
+        if (! Setting::get('comments.enabled', true)) {
+            abort(403, 'Comments are disabled.');
+        }
+
         // Honeypot — silently discard if filled
         if ($request->filled('website')) {
             return back()->with('status', 'Your comment has been submitted and is awaiting moderation.');

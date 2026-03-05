@@ -58,6 +58,10 @@ class SettingsController extends Controller
                 'mail\\.from_name'    => ['required', 'string', 'max:100'],
                 'mail\\.encryption'   => ['nullable', Rule::in(['tls', 'ssl', ''])],
             ]),
+            'comments' => $request->validate([
+                'comments\\.enabled'  => ['required', 'in:0,1'],
+                'comments\\.per_page' => ['required', 'integer', 'min:5', 'max:100'],
+            ]),
             default  => abort(404),
         };
 

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -174,5 +175,55 @@ class CommentTest extends TestCase
         ]);
 
         \Illuminate\Support\Facades\Queue::assertPushed(\App\Jobs\SendNewCommentNotification::class);
+    }
+
+    // -- Comments settings --------------------------------------------------------
+
+    private function seedCommentSettings(bool $enabled = true, int $perPage = 10): void
+    {
+        Setting::create(['group' => 'comments', 'key' => 'comments.enabled',  'value' => $enabled ? '1' : '0', 'type' => 'boolean']);
+        Setting::create(['group' => 'comments', 'key' => 'comments.per_page', 'value' => (string) $perPage,     'type' => 'integer']);
+        app(\App\Services\SettingService::class)->bust();
+    }
+
+    public function test_comments_store_rejected_when_comments_disabled(): void
+    {
+        $this->seedCommentSettings(enabled: false);
+        $post = Post::factory()->published()->create();
+
+        $this->post(route('comments.store', $post->slug), [
+            'author_name' => 'Alice',
+            'body'        => 'Hello!',
+        ])->assertForbidden();
+    }
+
+    public function test_settings_comments_group_saves_correctly(): void
+    {
+        $this->seedCommentSettings();
+        $admin = $this->makeAdmin();
+
+        $this->actingAs($admin)->put(route('settings.update', 'comments'), [
+            'comments.enabled'  => '1',
+            'comments.per_page' => 20,
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('settings', ['key' => 'comments.enabled',  'value' => '1']);
+        $this->assertDatabaseHas('settings', ['key' => 'comments.per_page', 'value' => '20']);
+    }
+
+    public function test_settings_comments_validates_per_page_range(): void
+    {
+        $this->seedCommentSettings();
+        $admin = $this->makeAdmin();
+
+        $this->actingAs($admin)->put(route('settings.update', 'comments'), [
+            'comments.enabled'  => '1',
+            'comments.per_page' => 999,
+        ])->assertSessionHasErrors('comments.per_page');
+
+        $this->actingAs($admin)->put(route('settings.update', 'comments'), [
+            'comments.enabled'  => '1',
+            'comments.per_page' => 2,
+        ])->assertSessionHasErrors('comments.per_page');
     }
 }

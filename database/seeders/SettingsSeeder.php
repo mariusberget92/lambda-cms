@@ -31,6 +31,10 @@ class SettingsSeeder extends Seeder
             ['group' => 'mail', 'key' => 'mail.from_address', 'value' => '',     'type' => 'string'],
             ['group' => 'mail', 'key' => 'mail.from_name',    'value' => config('app.name', 'Lambda CMS'), 'type' => 'string'],
             ['group' => 'mail', 'key' => 'mail.encryption',   'value' => 'tls',  'type' => 'string'],
+
+            // Comments
+            ['group' => 'comments', 'key' => 'comments.enabled',  'value' => '1',  'type' => 'boolean'],
+            ['group' => 'comments', 'key' => 'comments.per_page', 'value' => '10', 'type' => 'integer'],
         ];
 
         foreach ($defaults as $setting) {
