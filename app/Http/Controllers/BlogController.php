@@ -49,7 +49,14 @@ class BlogController extends Controller
     public function show(string $slug): Response
     {
         $post = Post::published()
-            ->with(['author:id,name,avatar', 'categories:id,name,slug', 'tags:id,name,slug', 'featuredImage:id,path,disk,alt'])
+            ->with([
+                'author:id,name,avatar',
+                'categories:id,name,slug',
+                'tags:id,name,slug',
+                'featuredImage:id,path,disk,alt',
+                'comments' => fn ($q) => $q->approved()->oldest(),
+                'comments.user:id,name,avatar',
+            ])
             ->where('slug', $slug)
             ->firstOrFail();
 
@@ -73,7 +80,18 @@ class BlogController extends Controller
                     'slug' => $t->slug,
                 ]),
             ],
-            'sidebar' => $this->sidebarData(),
+            'sidebar'  => $this->sidebarData(),
+            'comments' => $post->comments->map(fn ($c) => [
+                'id'          => $c->id,
+                'author_name' => $c->author_name,
+                'avatar_url'  => $c->user?->avatar_url ?? null,
+                'body'        => $c->body,
+                'created_at'  => $c->created_at->diffForHumans(),
+            ]),
+            'authUser' => auth()->check() ? [
+                'name'  => auth()->user()->name,
+                'email' => auth()->user()->email,
+            ] : null,
         ]);
     }
 

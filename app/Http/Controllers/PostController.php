@@ -14,6 +14,7 @@ class PostController extends Controller
     public function index(Request $request)
     {
         $posts = Post::with('author:id,name', 'categories:id,name', 'tags:id,name')
+            ->withCount('comments')
             ->search($request->input('search'))
             ->when(
                 $request->input('status'),
@@ -35,8 +36,9 @@ class PostController extends Controller
                 'published_at' => $post->published_at?->toDateString(),
                 'created_at'   => $post->created_at->toDateString(),
                 'author'       => $post->author->name,
-                'categories'   => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name])->values(),
-                'tags'         => $post->tags->pluck('name'),
+                'categories'     => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name])->values(),
+                'tags'           => $post->tags->pluck('name'),
+                'comments_count' => $post->comments_count,
             ]);
 
         return Inertia::render('Posts/Index', [
