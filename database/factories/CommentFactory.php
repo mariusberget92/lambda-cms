@@ -23,9 +23,19 @@ class CommentFactory extends Factory
         ];
     }
 
+    public function pending(): static
+    {
+        return $this->state(['status' => 'pending']);
+    }
+
     public function approved(): static
     {
         return $this->state(['status' => 'approved']);
+    }
+
+    public function rejected(): static
+    {
+        return $this->state(['status' => 'rejected']);
     }
 
     public function forUser(User $user): static
