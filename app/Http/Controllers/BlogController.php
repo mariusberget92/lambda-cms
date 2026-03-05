@@ -56,11 +56,18 @@ class BlogController extends Controller
                 'categories:id,name,slug',
                 'tags:id,name,slug',
                 'featuredImage:id,path,disk,alt',
-                'comments' => fn ($q) => $q->approved()->oldest(),
-                'comments.user:id,name,avatar',
             ])
             ->where('slug', $slug)
             ->firstOrFail();
+
+        $perPage   = (int) Setting::get('comments.per_page', 10);
+        $total     = $post->comments()->approved()->count();
+        $firstPage = $post->comments()
+            ->approved()
+            ->oldest()
+            ->with('user:id,name,avatar')
+            ->limit($perPage)
+            ->get();
 
         return Inertia::render('Blog/Show', [
             'post' => [
@@ -82,15 +89,19 @@ class BlogController extends Controller
                     'slug' => $t->slug,
                 ]),
             ],
-            'sidebar'  => $this->sidebarData(),
-            'comments' => $post->comments->map(fn ($c) => [
+            'sidebar'         => $this->sidebarData(),
+            'comments'        => $firstPage->map(fn (Comment $c) => [
                 'id'          => $c->id,
                 'author_name' => $c->author_name,
                 'avatar_url'  => $c->user?->avatar_url ?? null,
                 'body'        => $c->body,
                 'created_at'  => $c->created_at->diffForHumans(),
             ]),
-            'authUser' => auth()->check() ? [
+            'commentsTotal'   => $total,
+            'commentsHasMore' => $firstPage->count() < $total,
+            'commentsPerPage' => $perPage,
+            'commentsEnabled' => (bool) Setting::get('comments.enabled', true),
+            'authUser'        => auth()->check() ? [
                 'name'  => auth()->user()->name,
                 'email' => auth()->user()->email,
             ] : null,
