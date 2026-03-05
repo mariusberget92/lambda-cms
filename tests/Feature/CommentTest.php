@@ -226,4 +226,46 @@ class CommentTest extends TestCase
             'comments.per_page' => 2,
         ])->assertSessionHasErrors('comments.per_page');
     }
+
+    // ── JSON comments endpoint ────────────────────────────────────────────────
+
+    public function test_comments_json_endpoint_returns_paginated_comments(): void
+    {
+        $this->seedCommentSettings(perPage: 3);
+        $post = Post::factory()->published()->create();
+        Comment::factory(5)->approved()->create(['post_id' => $post->id]);
+
+        $response = $this->getJson("/blog/{$post->slug}/comments?page=1");
+
+        $response->assertOk()
+                 ->assertJsonStructure(['data', 'has_more', 'total'])
+                 ->assertJsonCount(3, 'data')
+                 ->assertJsonPath('total', 5)
+                 ->assertJsonPath('has_more', true);
+    }
+
+    public function test_comments_json_endpoint_respects_page_param(): void
+    {
+        $this->seedCommentSettings(perPage: 3);
+        $post = Post::factory()->published()->create();
+        Comment::factory(5)->approved()->create(['post_id' => $post->id]);
+
+        $response = $this->getJson("/blog/{$post->slug}/comments?page=2");
+
+        $response->assertOk()
+                 ->assertJsonCount(2, 'data')
+                 ->assertJsonPath('has_more', false);
+    }
+
+    public function test_comments_json_endpoint_only_returns_approved(): void
+    {
+        $this->seedCommentSettings(perPage: 10);
+        $post = Post::factory()->published()->create();
+        Comment::factory(3)->approved()->create(['post_id' => $post->id]);
+        Comment::factory(2)->pending()->create(['post_id' => $post->id]);
+
+        $response = $this->getJson("/blog/{$post->slug}/comments?page=1");
+
+        $response->assertOk()->assertJsonCount(3, 'data');
+    }
 }

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Comment;
 use App\Models\Post;
+use App\Models\Setting;
 use App\Models\Tag;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -92,6 +94,33 @@ class BlogController extends Controller
                 'name'  => auth()->user()->name,
                 'email' => auth()->user()->email,
             ] : null,
+        ]);
+    }
+
+    /**
+     * Public JSON endpoint — paginated approved comments for a post.
+     */
+    public function comments(Post $post): \Illuminate\Http\JsonResponse
+    {
+        $perPage = (int) Setting::get('comments.per_page', 10);
+        $page    = max(1, (int) request('page', 1));
+
+        $paginator = $post->comments()
+            ->approved()
+            ->oldest()
+            ->with('user:id,name,avatar')
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        return response()->json([
+            'data'     => $paginator->map(fn (Comment $c) => [
+                'id'          => $c->id,
+                'author_name' => $c->author_name,
+                'avatar_url'  => $c->user?->avatar_url ?? null,
+                'body'        => $c->body,
+                'created_at'  => $c->created_at->diffForHumans(),
+            ]),
+            'has_more' => $paginator->hasMorePages(),
+            'total'    => $paginator->total(),
         ]);
     }
 

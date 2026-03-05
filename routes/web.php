@@ -38,6 +38,7 @@ Route::middleware('installed')->group(function () {
     // ── Public blog ──────────────────────────────────────────────────────────
     Route::get('/',             [BlogController::class, 'index'])->name('home');
     Route::get('/blog/{slug}',  [BlogController::class, 'show'])->name('blog.show');
+    Route::get('/blog/{post:slug}/comments', [BlogController::class, 'comments'])->name('blog.comments');
 
     // Comment submission (public, rate-limited)
     Route::post('/blog/{post:slug}/comments', [CommentController::class, 'store'])
