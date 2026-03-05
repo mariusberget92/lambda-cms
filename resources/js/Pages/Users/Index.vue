@@ -22,7 +22,7 @@
     <Transition name="fade">
       <div
         v-if="$page.props.flash?.status"
-        class="flex items-center gap-2 rounded-md bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700 mb-4"
+        class="flex items-center gap-2 rounded-md bg-status-success-bg border border-status-success-border px-4 py-3 text-sm text-status-success-fg mb-4"
       >
         <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -57,7 +57,7 @@
                   <!-- Online indicator -->
                   <span
                     v-if="user.is_online"
-                    class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-green-500 ring-2 ring-card"
+                    class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-online-dot ring-2 ring-card"
                   ></span>
                 </div>
                 <div>
@@ -71,15 +71,15 @@
               <span
                 class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
                 :class="user.role === 'administrator'
-                  ? 'bg-indigo-100 text-indigo-700'
-                  : 'bg-slate-100 text-slate-600'"
+                  ? 'bg-role-admin-bg text-role-admin-fg'
+                  : 'bg-role-user-bg text-role-user-fg'"
               >
                 {{ user.role === 'administrator' ? 'Administrator' : 'User' }}
               </span>
             </td>
             <!-- Verified -->
             <td class="px-4 py-3">
-              <span v-if="user.email_verified" class="text-green-600">
+              <span v-if="user.email_verified" class="text-status-success-fg">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                 </svg>
