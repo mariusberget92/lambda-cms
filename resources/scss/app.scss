@@ -36,6 +36,15 @@
   --sidebar-border: #d8dee9;
   --sidebar-ring: #81a1c1;
 
+  /* Role badge tokens — light mode */
+  --color-role-admin-bg: color-mix(in srgb, #5e81ac 15%, transparent);
+  --color-role-admin-fg: #3b5e8a;
+  --color-role-user-bg: color-mix(in srgb, #4c566a 12%, transparent);
+  --color-role-user-fg: #4c566a;
+
+  /* Presence dot token */
+  --color-online-dot: #a3be8c;
+
   /* Status tokens — light mode */
   --color-success-bg: color-mix(in srgb, #a3be8c 20%, transparent);
   --color-success-fg: #638a47;
@@ -81,6 +90,15 @@
   --sidebar-accent-foreground: #d8dee9;
   --sidebar-border: #434c5e;
   --sidebar-ring: #88c0d0;
+
+  /* Role badge tokens — dark mode */
+  --color-role-admin-bg: color-mix(in srgb, #88c0d0 15%, transparent);
+  --color-role-admin-fg: #88c0d0;
+  --color-role-user-bg: color-mix(in srgb, #4c566a 25%, transparent);
+  --color-role-user-fg: #9ca3af;
+
+  /* Presence dot token */
+  --color-online-dot: #a3be8c;
 
   /* Status tokens — dark mode */
   --color-success-bg: color-mix(in srgb, #a3be8c 15%, transparent);
@@ -131,6 +149,11 @@
   --color-status-error-bg: var(--color-error-bg);
   --color-status-error-fg: var(--color-error-fg);
   --color-status-error-border: var(--color-error-border);
+  --color-role-admin-bg: var(--color-role-admin-bg);
+  --color-role-admin-fg: var(--color-role-admin-fg);
+  --color-role-user-bg: var(--color-role-user-bg);
+  --color-role-user-fg: var(--color-role-user-fg);
+  --color-online-dot: var(--color-online-dot);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
