@@ -313,6 +313,54 @@
         </div>
       </form>
 
+      <!-- ── Comments panel ────────────────────────────────────────────── -->
+      <form @submit.prevent="submitComments">
+        <div class="rounded-lg border bg-card p-6 space-y-4">
+          <div>
+            <h3 class="text-sm font-semibold">Comments</h3>
+            <p class="text-xs text-muted-foreground mt-0.5">Control comment visibility and loading behaviour.</p>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <div>
+              <label for="comments_enabled" class="text-sm font-medium">Enable comments</label>
+              <p class="text-xs text-muted-foreground mt-0.5">When disabled, existing comments remain visible but new submissions are blocked.</p>
+            </div>
+            <input
+              id="comments_enabled"
+              v-model="commentsForm['comments.enabled']"
+              type="checkbox"
+              class="w-4 h-4 rounded border-border accent-primary"
+            />
+          </div>
+
+          <div class="space-y-1">
+            <label for="comments_per_page" class="text-sm font-medium">Comments per page</label>
+            <input
+              id="comments_per_page"
+              v-model.number="commentsForm['comments.per_page']"
+              type="number"
+              min="5"
+              max="100"
+              class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              :class="{ 'border-destructive': commentsForm.errors['comments.per_page'] }"
+            />
+            <p class="text-xs text-muted-foreground">How many comments load initially and per "Load more" click (5–100).</p>
+            <p v-if="commentsForm.errors['comments.per_page']" class="text-xs text-destructive">{{ commentsForm.errors['comments.per_page'] }}</p>
+          </div>
+
+          <div class="flex justify-end pt-1">
+            <button
+              type="submit"
+              :disabled="commentsForm.processing"
+              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+            >
+              {{ commentsForm.processing ? 'Saving...' : 'Save changes' }}
+            </button>
+          </div>
+        </div>
+      </form>
+
       <!-- ── Test email panel ────────────────────────────────────────────── -->
       <form @submit.prevent="sendTestEmail">
         <div class="rounded-lg border bg-card p-6 space-y-4">
@@ -426,6 +474,21 @@ const mailForm = useForm({
 
 function submitMail() {
   mailForm.put(route('settings.update', 'mail'), { preserveScroll: true });
+}
+
+// ── Comments form ─────────────────────────────────────────────────────────────
+const commentsForm = useForm({
+  'comments.enabled':  props.settings['comments.enabled'] === '1' || props.settings['comments.enabled'] === true,
+  'comments.per_page': Number(props.settings['comments.per_page'] ?? 10),
+})
+
+function submitComments() {
+  commentsForm
+    .transform((data) => ({
+      'comments.enabled':  data['comments.enabled'] ? '1' : '0',
+      'comments.per_page': data['comments.per_page'],
+    }))
+    .put(route('settings.update', 'comments'), { preserveScroll: true })
 }
 
 // ── Test email form ──────────────────────────────────────────────────────────
