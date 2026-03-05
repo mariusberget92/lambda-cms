@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Comment;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -31,7 +32,10 @@ class HandleInertiaRequests extends Middleware
                 "status" => fn () => $request->session()->get("status"),
                 "error"  => fn () => $request->session()->get("error"),
             ],
-            "currentRoute" => $request->route()?->getName(),
+            "currentRoute"         => $request->route()?->getName(),
+            "pendingCommentsCount" => fn () => $request->user()?->hasRole('administrator')
+                ? Comment::pending()->count()
+                : null,
         ]);
     }
 }
