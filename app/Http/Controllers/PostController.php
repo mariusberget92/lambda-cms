@@ -68,11 +68,14 @@ class PostController extends Controller
             'tag_ids'          => ['nullable', 'array'],
             'tag_ids.*'        => ['exists:tags,id'],
             'featured_image_id' => ['nullable', 'exists:media,id'],
+            'comments_enabled' => ['nullable', 'boolean'],
         ]);
 
         $tagIds      = $validated['tag_ids'] ?? [];
         $categoryIds = $validated['category_ids'] ?? [];
         unset($validated['tag_ids'], $validated['category_ids']);
+
+        $validated['comments_enabled'] = $validated['comments_enabled'] ?? true;
 
         $validated['slug']    = Post::generateSlug($validated['title']);
         $validated['user_id'] = $request->user()->id;
@@ -137,11 +140,14 @@ class PostController extends Controller
             'tag_ids'           => ['nullable', 'array'],
             'tag_ids.*'         => ['exists:tags,id'],
             'featured_image_id' => ['nullable', 'exists:media,id'],
+            'comments_enabled'  => ['nullable', 'boolean'],
         ]);
 
         $tagIds      = $validated['tag_ids'] ?? [];
         $categoryIds = $validated['category_ids'] ?? [];
         unset($validated['tag_ids'], $validated['category_ids']);
+
+        $validated['comments_enabled'] = $validated['comments_enabled'] ?? true;
 
         $validated['slug'] = Post::generateSlug($validated['title'], $post->id);
 

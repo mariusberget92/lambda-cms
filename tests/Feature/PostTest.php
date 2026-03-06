@@ -325,4 +325,58 @@ class PostTest extends TestCase
 
         $this->assertFalse($post->commentsOpen());
     }
+
+    // ── PostController comments_enabled ───────────────────────────────────────
+
+    public function test_post_store_with_comments_disabled_persists(): void
+    {
+        $user = $this->makeUser();
+
+        $this->actingAs($user)->post('/posts', [
+            'title'            => 'No Comments Post',
+            'status'           => 'draft',
+            'body'             => '<p>Hello</p>',
+            'comments_enabled' => false,
+        ])->assertRedirect('/posts');
+
+        $this->assertDatabaseHas('posts', [
+            'title'            => 'No Comments Post',
+            'comments_enabled' => false,
+        ]);
+    }
+
+    public function test_post_store_defaults_comments_enabled_to_true(): void
+    {
+        $user = $this->makeUser();
+
+        $this->actingAs($user)->post('/posts', [
+            'title'  => 'Default Comments Post',
+            'status' => 'draft',
+            'body'   => '<p>Hello</p>',
+            // no comments_enabled field
+        ])->assertRedirect('/posts');
+
+        $this->assertDatabaseHas('posts', [
+            'title'            => 'Default Comments Post',
+            'comments_enabled' => true,
+        ]);
+    }
+
+    public function test_post_update_can_disable_comments(): void
+    {
+        $user = $this->makeUser();
+        $post = Post::factory()->create(['user_id' => $user->id, 'comments_enabled' => true]);
+
+        $this->actingAs($user)->put("/posts/{$post->id}", [
+            'title'            => $post->title,
+            'status'           => $post->status,
+            'body'             => $post->body ?? '',
+            'comments_enabled' => false,
+        ])->assertRedirect('/posts');
+
+        $this->assertDatabaseHas('posts', [
+            'id'               => $post->id,
+            'comments_enabled' => false,
+        ]);
+    }
 }
