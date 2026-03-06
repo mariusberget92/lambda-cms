@@ -147,7 +147,7 @@ class PostController extends Controller
         $categoryIds = $validated['category_ids'] ?? [];
         unset($validated['tag_ids'], $validated['category_ids']);
 
-        $validated['comments_enabled'] = $validated['comments_enabled'] ?? true;
+        $validated['comments_enabled'] = $validated['comments_enabled'] ?? $post->comments_enabled;
 
         $validated['slug'] = Post::generateSlug($validated['title'], $post->id);
 

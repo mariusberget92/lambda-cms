@@ -379,4 +379,22 @@ class PostTest extends TestCase
             'comments_enabled' => false,
         ]);
     }
+
+    public function test_post_update_preserves_comments_disabled_when_field_absent(): void
+    {
+        $user = $this->makeUser();
+        $post = Post::factory()->create(['user_id' => $user->id, 'comments_enabled' => false]);
+
+        $this->actingAs($user)->put("/posts/{$post->id}", [
+            'title'  => $post->title,
+            'status' => $post->status,
+            'body'   => $post->body ?? '',
+            // comments_enabled deliberately omitted
+        ])->assertRedirect('/posts');
+
+        $this->assertDatabaseHas('posts', [
+            'id'               => $post->id,
+            'comments_enabled' => false,
+        ]);
+    }
 }
