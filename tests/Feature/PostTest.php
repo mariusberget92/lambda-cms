@@ -421,4 +421,102 @@ class PostTest extends TestCase
         $post = Post::factory()->create(['meta_description' => 'Custom meta desc']);
         $this->assertSame('Custom meta desc', $post->fresh()->meta_description);
     }
+
+    // ── SEO meta fields (PostController store/update/edit) ────────────────────
+
+    public function test_post_store_persists_meta_title_and_meta_description(): void
+    {
+        $admin = $this->makeAdmin();
+        $category = Category::factory()->create();
+
+        $this->actingAs($admin)->post(route('posts.store'), [
+            'title'            => 'SEO Test Post',
+            'body'             => '<p>body</p>',
+            'status'           => 'draft',
+            'category_ids'     => [$category->id],
+            'tag_ids'          => [],
+            'meta_title'       => 'Custom SEO Title',
+            'meta_description' => 'Custom meta description',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('posts', [
+            'title'            => 'SEO Test Post',
+            'meta_title'       => 'Custom SEO Title',
+            'meta_description' => 'Custom meta description',
+        ]);
+    }
+
+    public function test_post_store_defaults_meta_fields_to_null_when_absent(): void
+    {
+        $admin = $this->makeAdmin();
+        $category = Category::factory()->create();
+
+        $this->actingAs($admin)->post(route('posts.store'), [
+            'title'        => 'No SEO Post',
+            'body'         => '<p>body</p>',
+            'status'       => 'draft',
+            'category_ids' => [$category->id],
+            'tag_ids'      => [],
+        ])->assertRedirect();
+
+        $post = Post::where('title', 'No SEO Post')->first();
+        $this->assertNull($post->meta_title);
+        $this->assertNull($post->meta_description);
+    }
+
+    public function test_post_update_persists_meta_fields(): void
+    {
+        $admin = $this->makeAdmin();
+        $post = Post::factory()->create(['user_id' => $admin->id, 'meta_title' => null]);
+
+        $this->actingAs($admin)->put(route('posts.update', $post), [
+            'title'            => $post->title,
+            'body'             => $post->body,
+            'status'           => $post->status,
+            'category_ids'     => [],
+            'tag_ids'          => [],
+            'meta_title'       => 'Updated SEO Title',
+            'meta_description' => 'Updated meta desc',
+        ])->assertRedirect();
+
+        $this->assertSame('Updated SEO Title', $post->fresh()->meta_title);
+        $this->assertSame('Updated meta desc', $post->fresh()->meta_description);
+    }
+
+    public function test_post_update_preserves_meta_fields_when_absent_from_request(): void
+    {
+        $admin = $this->makeAdmin();
+        $post = Post::factory()->create([
+            'user_id'          => $admin->id,
+            'meta_title'       => 'Existing SEO Title',
+            'meta_description' => 'Existing meta desc',
+        ]);
+
+        $this->actingAs($admin)->put(route('posts.update', $post), [
+            'title'        => $post->title,
+            'body'         => $post->body,
+            'status'       => $post->status,
+            'category_ids' => [],
+            'tag_ids'      => [],
+        ])->assertRedirect();
+
+        $this->assertSame('Existing SEO Title', $post->fresh()->meta_title);
+        $this->assertSame('Existing meta desc', $post->fresh()->meta_description);
+    }
+
+    public function test_post_edit_includes_meta_fields_in_props(): void
+    {
+        $admin = $this->makeAdmin();
+        $post = Post::factory()->create([
+            'user_id'          => $admin->id,
+            'meta_title'       => 'My SEO Title',
+            'meta_description' => 'My meta desc',
+        ]);
+
+        $this->actingAs($admin)->get(route('posts.edit', $post))
+            ->assertInertia(fn ($page) => $page
+                ->where('post.meta_title', 'My SEO Title')
+                ->where('post.meta_description', 'My meta desc')
+            );
+    }
 }
