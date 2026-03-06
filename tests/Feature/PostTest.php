@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\Setting;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -298,7 +299,7 @@ class PostTest extends TestCase
     {
         $post = Post::factory()->published()->create();
 
-        $this->assertTrue((bool) $post->comments_enabled);
+        $this->assertTrue($post->comments_enabled);
     }
 
     public function test_post_comments_open_returns_false_when_flag_is_false(): void
@@ -313,5 +314,15 @@ class PostTest extends TestCase
         $post = Post::factory()->published()->create(['comments_enabled' => true]);
 
         $this->assertTrue($post->commentsOpen());
+    }
+
+    public function test_post_comments_open_returns_false_when_global_setting_disabled(): void
+    {
+        Setting::create(['group' => 'comments', 'key' => 'comments.enabled', 'value' => '0', 'type' => 'boolean']);
+        app(\App\Services\SettingService::class)->bust();
+
+        $post = Post::factory()->published()->create(['comments_enabled' => true]);
+
+        $this->assertFalse($post->commentsOpen());
     }
 }
