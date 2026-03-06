@@ -167,5 +167,26 @@ class SettingsTest extends TestCase
             'key'   => 'seo.title_separator',
             'value' => '|',
         ]);
+        $this->assertDatabaseHas('settings', [
+            'key'   => 'seo.default_description',
+            'value' => 'My site about things',
+        ]);
+        $this->assertDatabaseHas('settings', [
+            'key'   => 'seo.default_og_image_url',
+            'value' => 'https://example.com/og.jpg',
+        ]);
+    }
+
+    public function test_regular_user_cannot_update_seo_settings(): void
+    {
+        $user = $this->makeUser();
+
+        $this->actingAs($user)->put('/settings/seo', [
+            'seo.title_separator'      => '–',
+            'seo.default_description'  => 'Hacked',
+            'seo.default_og_image_url' => 'https://evil.com/img.jpg',
+        ])->assertRedirect(route('dashboard'));
+
+        $this->assertDatabaseMissing('settings', ['key' => 'seo.default_description', 'value' => 'Hacked']);
     }
 }
