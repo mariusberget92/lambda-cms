@@ -100,7 +100,7 @@ class BlogController extends Controller
             'commentsTotal'   => $total,
             'commentsHasMore' => $firstPage->count() < $total,
             'commentsPerPage' => $perPage,
-            'commentsEnabled' => (bool) Setting::get('comments.enabled', true),
+            'commentsEnabled' => $post->commentsOpen(),
             'authUser'        => auth()->check() ? [
                 'name'  => auth()->user()->name,
                 'email' => auth()->user()->email,
