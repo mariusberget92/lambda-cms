@@ -114,6 +114,7 @@ class BlogController extends Controller
     public function comments(Post $post): \Illuminate\Http\JsonResponse
     {
         abort_unless($post->isPublished(), 404);
+        abort_unless($post->commentsOpen(), 403);
 
         $perPage = (int) Setting::get('comments.per_page', 10);
         $page    = max(1, (int) request('page', 1));

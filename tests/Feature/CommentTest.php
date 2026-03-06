@@ -308,4 +308,24 @@ class CommentTest extends TestCase
 
         $response->assertOk()->assertJsonCount(2, 'data');
     }
+
+    public function test_comments_store_rejected_when_post_comments_disabled(): void
+    {
+        // Global setting ON — post flag OFF → should still 403
+        $this->seedCommentSettings(enabled: true);
+        $post = Post::factory()->published()->create(['comments_enabled' => false]);
+
+        $this->post(route('comments.store', $post->slug), [
+            'author_name' => 'Alice',
+            'body'        => 'Hello!',
+        ])->assertForbidden();
+    }
+
+    public function test_comments_json_endpoint_returns_403_when_post_comments_disabled(): void
+    {
+        $this->seedCommentSettings(enabled: true);
+        $post = Post::factory()->published()->create(['comments_enabled' => false]);
+
+        $this->getJson("/blog/{$post->slug}/comments")->assertForbidden();
+    }
 }
