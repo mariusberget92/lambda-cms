@@ -22,6 +22,8 @@ class PostFactory extends Factory
             'status'           => 'draft',
             'published_at'     => null,
             'comments_enabled' => true,
+            'meta_title'       => null,
+            'meta_description' => null,
         ];
     }
 

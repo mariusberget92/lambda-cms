@@ -397,4 +397,28 @@ class PostTest extends TestCase
             'comments_enabled' => false,
         ]);
     }
+
+    public function test_post_has_nullable_meta_title(): void
+    {
+        $post = Post::factory()->create(['meta_title' => null]);
+        $this->assertNull($post->fresh()->meta_title);
+    }
+
+    public function test_post_has_nullable_meta_description(): void
+    {
+        $post = Post::factory()->create(['meta_description' => null]);
+        $this->assertNull($post->fresh()->meta_description);
+    }
+
+    public function test_post_meta_title_is_fillable(): void
+    {
+        $post = Post::factory()->create(['meta_title' => 'Custom SEO Title']);
+        $this->assertSame('Custom SEO Title', $post->fresh()->meta_title);
+    }
+
+    public function test_post_meta_description_is_fillable(): void
+    {
+        $post = Post::factory()->create(['meta_description' => 'Custom meta desc']);
+        $this->assertSame('Custom meta desc', $post->fresh()->meta_description);
+    }
 }

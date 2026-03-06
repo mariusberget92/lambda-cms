@@ -25,6 +25,8 @@ class Post extends Model
         "status",
         "published_at",
         "comments_enabled",
+        "meta_title",
+        "meta_description",
     ];
 
     protected $casts = [
