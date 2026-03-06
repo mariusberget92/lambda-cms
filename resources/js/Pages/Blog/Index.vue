@@ -2,12 +2,14 @@
 import { Link } from '@inertiajs/vue3'
 import BlogLayout from '@/Layouts/BlogLayout.vue'
 import BlogSidebar from '@/Components/BlogSidebar.vue'
+import SeoHead from '@/Components/SeoHead.vue'
 
 defineOptions({ layout: BlogLayout })
 
 defineProps({
   posts: Object,
   sidebar: Object,
+  seo:   { type: Object, required: true },
 })
 
 function formatDate(date) {
@@ -17,6 +19,7 @@ function formatDate(date) {
 </script>
 
 <template>
+  <SeoHead :seo="seo" />
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
     <!-- Main: Post list -->
     <div class="lg:col-span-2">

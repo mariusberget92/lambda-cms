@@ -361,6 +361,60 @@
         </div>
       </form>
 
+      <!-- ── SEO panel ──────────────────────────────────────────────────────────────────── -->
+      <form @submit.prevent="submitSeo">
+        <div class="rounded-lg border bg-card p-6 space-y-4">
+          <div>
+            <h3 class="text-sm font-semibold">SEO</h3>
+            <p class="text-xs text-muted-foreground mt-0.5">Default meta tags for public blog pages.</p>
+          </div>
+
+          <div class="space-y-1">
+            <label for="seo_title_separator" class="text-sm font-medium">Title separator</label>
+            <input
+              id="seo_title_separator"
+              v-model="seoForm['seo.title_separator']"
+              type="text"
+              class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            <p class="text-xs text-muted-foreground">Characters between post title and site name, e.g. " | ".</p>
+          </div>
+
+          <div class="space-y-1">
+            <label for="seo_default_description" class="text-sm font-medium">Default meta description</label>
+            <textarea
+              id="seo_default_description"
+              v-model="seoForm['seo.default_description']"
+              rows="3"
+              class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+              placeholder="Used when a post has no excerpt or custom meta description"
+            />
+          </div>
+
+          <div class="space-y-1">
+            <label for="seo_og_image_url" class="text-sm font-medium">Default OG image URL</label>
+            <input
+              id="seo_og_image_url"
+              v-model="seoForm['seo.default_og_image_url']"
+              type="url"
+              class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              placeholder="https://example.com/og-default.jpg"
+            />
+            <p class="text-xs text-muted-foreground">Used on pages with no featured image.</p>
+          </div>
+
+          <div class="flex justify-end pt-1">
+            <button
+              type="submit"
+              :disabled="seoForm.processing"
+              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+            >
+              {{ seoForm.processing ? 'Saving...' : 'Save changes' }}
+            </button>
+          </div>
+        </div>
+      </form>
+
       <!-- ── Test email panel ────────────────────────────────────────────── -->
       <form @submit.prevent="sendTestEmail">
         <div class="rounded-lg border bg-card p-6 space-y-4">
@@ -489,6 +543,17 @@ function submitComments() {
       'comments.per_page': data['comments.per_page'],
     }))
     .put(route('settings.update', 'comments'), { preserveScroll: true })
+}
+
+// ── SEO form ──────────────────────────────────────────────────────────────────
+const seoForm = useForm({
+  'seo.title_separator':      props.settings['seo.title_separator']      ?? ' | ',
+  'seo.default_description':  props.settings['seo.default_description']  ?? '',
+  'seo.default_og_image_url': props.settings['seo.default_og_image_url'] ?? '',
+})
+
+function submitSeo() {
+  seoForm.put(route('settings.update', 'seo'), { preserveScroll: true })
 }
 
 // ── Test email form ──────────────────────────────────────────────────────────

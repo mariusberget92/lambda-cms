@@ -209,6 +209,35 @@
               </div>
             </label>
           </div>
+
+          <!-- SEO -->
+          <div class="rounded-lg border bg-card p-4">
+            <h3 class="text-sm font-medium mb-3">SEO</h3>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-xs font-medium mb-1">Meta title</label>
+                <input
+                  v-model="form.meta_title"
+                  type="text"
+                  maxlength="100"
+                  class="w-full rounded-md border bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder="Leave blank to use post title"
+                />
+                <p class="text-xs text-muted-foreground mt-1">{{ (form.meta_title ?? '').length }}/100</p>
+              </div>
+              <div>
+                <label class="block text-xs font-medium mb-1">Meta description</label>
+                <textarea
+                  v-model="form.meta_description"
+                  rows="3"
+                  maxlength="300"
+                  class="w-full rounded-md border bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                  placeholder="Leave blank to use excerpt"
+                />
+                <p class="text-xs text-muted-foreground mt-1">{{ (form.meta_description ?? '').length }}/300</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </form>
@@ -236,6 +265,8 @@ const form = useForm({
   tag_ids:           [],
   featured_image_id: null,
   comments_enabled:  true,
+  meta_title:        null,
+  meta_description:  null,
 });
 
 const showMediaPicker = ref(false)

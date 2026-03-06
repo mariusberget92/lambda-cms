@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { Link, useForm, usePage } from '@inertiajs/vue3'
 import BlogLayout from '@/Layouts/BlogLayout.vue'
 import BlogSidebar from '@/Components/BlogSidebar.vue'
+import SeoHead from '@/Components/SeoHead.vue'
 
 defineOptions({ layout: BlogLayout })
 
@@ -15,6 +16,7 @@ const props = defineProps({
   commentsPerPage: { type: Number,  default: 10 },
   commentsEnabled: { type: Boolean, default: true },
   authUser:        { type: Object,  default: null },
+  seo:             { type: Object,  required: true },
 })
 
 function formatDate(date) {
@@ -68,6 +70,7 @@ function submitComment() {
 </script>
 
 <template>
+  <SeoHead :seo="seo" />
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
     <!-- Main: Post content -->
     <div class="lg:col-span-2">
