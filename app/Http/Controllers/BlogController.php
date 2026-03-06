@@ -39,9 +39,20 @@ class BlogController extends Controller
                 ]),
             ]);
 
+        $siteName = Setting::get('site.name', config('app.name'));
+
+        $seo = [
+            'title'       => $siteName,
+            'description' => Setting::get('seo.default_description', ''),
+            'image'       => Setting::get('seo.default_og_image_url', ''),
+            'canonical'   => url('/blog'),
+            'type'        => 'website',
+        ];
+
         return Inertia::render('Blog/Index', [
             'posts'   => $posts,
             'sidebar' => $this->sidebarData(),
+            'seo'     => $seo,
         ]);
     }
 
@@ -68,6 +79,17 @@ class BlogController extends Controller
             ->with('user:id,name,avatar')
             ->limit($perPage)
             ->get();
+
+        $separator = Setting::get('seo.title_separator', ' | ');
+        $siteName  = Setting::get('site.name', config('app.name'));
+
+        $seo = [
+            'title'       => ($post->meta_title ?: $post->title) . $separator . $siteName,
+            'description' => $post->meta_description ?: $post->excerpt ?: Setting::get('seo.default_description', ''),
+            'image'       => $post->featuredImage?->url ?: Setting::get('seo.default_og_image_url', ''),
+            'canonical'   => url("/blog/{$post->slug}"),
+            'type'        => 'article',
+        ];
 
         return Inertia::render('Blog/Show', [
             'post' => [
@@ -101,6 +123,7 @@ class BlogController extends Controller
             'commentsHasMore' => $firstPage->count() < $total,
             'commentsPerPage' => $perPage,
             'commentsEnabled' => $post->commentsOpen(),
+            'seo'             => $seo,
             'authUser'        => auth()->check() ? [
                 'name'  => auth()->user()->name,
                 'email' => auth()->user()->email,

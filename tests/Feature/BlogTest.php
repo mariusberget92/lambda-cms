@@ -127,4 +127,158 @@ class BlogTest extends TestCase
             fn ($page) => $page->has('sidebar')
         );
     }
+
+    // ── SEO helper ───────────────────────────────────────────────────────────
+
+    private function seedSeoSettings(
+        string $separator      = ' | ',
+        string $defaultDesc    = '',
+        string $defaultOgImage = '',
+        string $siteName       = 'Test Site'
+    ): void {
+        \App\Models\Setting::insert([
+            ['group' => 'site', 'key' => 'site.name',                'value' => $siteName,       'type' => 'string',  'created_at' => now(), 'updated_at' => now()],
+            ['group' => 'seo',  'key' => 'seo.title_separator',      'value' => $separator,      'type' => 'string',  'created_at' => now(), 'updated_at' => now()],
+            ['group' => 'seo',  'key' => 'seo.default_description',  'value' => $defaultDesc,    'type' => 'string',  'created_at' => now(), 'updated_at' => now()],
+            ['group' => 'seo',  'key' => 'seo.default_og_image_url', 'value' => $defaultOgImage, 'type' => 'string',  'created_at' => now(), 'updated_at' => now()],
+        ]);
+        app(\App\Services\SettingService::class)->bust();
+    }
+
+    // ── SEO prop: show ────────────────────────────────────────────────────────
+
+    public function test_blog_show_seo_title_uses_meta_title_when_set(): void
+    {
+        $this->seedSeoSettings();
+        $post = Post::factory()->published()->create([
+            'title'      => 'Post Title',
+            'meta_title' => 'Custom SEO Title',
+        ]);
+
+        $this->get("/blog/{$post->slug}")
+            ->assertInertia(fn ($page) => $page
+                ->where('seo.title', 'Custom SEO Title | Test Site')
+            );
+    }
+
+    public function test_blog_show_seo_title_falls_back_to_post_title_when_meta_title_absent(): void
+    {
+        $this->seedSeoSettings();
+        $post = Post::factory()->published()->create([
+            'title'      => 'Post Title',
+            'meta_title' => null,
+        ]);
+
+        $this->get("/blog/{$post->slug}")
+            ->assertInertia(fn ($page) => $page
+                ->where('seo.title', 'Post Title | Test Site')
+            );
+    }
+
+    public function test_blog_show_seo_description_uses_meta_description_when_set(): void
+    {
+        $this->seedSeoSettings();
+        $post = Post::factory()->published()->create([
+            'excerpt'          => 'Post excerpt',
+            'meta_description' => 'Custom meta desc',
+        ]);
+
+        $this->get("/blog/{$post->slug}")
+            ->assertInertia(fn ($page) => $page
+                ->where('seo.description', 'Custom meta desc')
+            );
+    }
+
+    public function test_blog_show_seo_description_falls_back_to_excerpt(): void
+    {
+        $this->seedSeoSettings();
+        $post = Post::factory()->published()->create([
+            'excerpt'          => 'Post excerpt',
+            'meta_description' => null,
+        ]);
+
+        $this->get("/blog/{$post->slug}")
+            ->assertInertia(fn ($page) => $page
+                ->where('seo.description', 'Post excerpt')
+            );
+    }
+
+    public function test_blog_show_seo_description_falls_back_to_global_default(): void
+    {
+        $this->seedSeoSettings(defaultDesc: 'Site-wide default desc');
+        $post = Post::factory()->published()->create([
+            'excerpt'          => null,
+            'meta_description' => null,
+        ]);
+
+        $this->get("/blog/{$post->slug}")
+            ->assertInertia(fn ($page) => $page
+                ->where('seo.description', 'Site-wide default desc')
+            );
+    }
+
+    public function test_blog_show_seo_image_falls_back_to_global_default_when_no_featured_image(): void
+    {
+        $this->seedSeoSettings(defaultOgImage: 'https://example.com/default.jpg');
+        $post = Post::factory()->published()->create(['featured_image_id' => null]);
+
+        $this->get("/blog/{$post->slug}")
+            ->assertInertia(fn ($page) => $page
+                ->where('seo.image', 'https://example.com/default.jpg')
+            );
+    }
+
+    public function test_blog_show_seo_type_is_article(): void
+    {
+        $this->seedSeoSettings();
+        $post = Post::factory()->published()->create();
+
+        $this->get("/blog/{$post->slug}")
+            ->assertInertia(fn ($page) => $page
+                ->where('seo.type', 'article')
+            );
+    }
+
+    public function test_blog_show_seo_canonical_is_post_url(): void
+    {
+        $this->seedSeoSettings();
+        $post = Post::factory()->published()->create(['slug' => 'my-post']);
+
+        $this->get('/blog/my-post')
+            ->assertInertia(fn ($page) => $page
+                ->where('seo.canonical', url('/blog/my-post'))
+            );
+    }
+
+    // ── SEO prop: index ───────────────────────────────────────────────────────
+
+    public function test_blog_index_seo_title_uses_site_name(): void
+    {
+        $this->seedSeoSettings(siteName: 'My Blog');
+
+        $this->get('/')
+            ->assertInertia(fn ($page) => $page
+                ->where('seo.title', 'My Blog')
+            );
+    }
+
+    public function test_blog_index_seo_type_is_website(): void
+    {
+        $this->seedSeoSettings();
+
+        $this->get('/')
+            ->assertInertia(fn ($page) => $page
+                ->where('seo.type', 'website')
+            );
+    }
+
+    public function test_blog_index_seo_uses_global_default_description(): void
+    {
+        $this->seedSeoSettings(defaultDesc: 'Welcome to the blog');
+
+        $this->get('/')
+            ->assertInertia(fn ($page) => $page
+                ->where('seo.description', 'Welcome to the blog')
+            );
+    }
 }
