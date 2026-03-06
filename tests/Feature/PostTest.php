@@ -291,4 +291,27 @@ class PostTest extends TestCase
         $this->assertTrue($post->categories->contains($cat2));
         $this->assertFalse($post->categories->contains($cat1));
     }
+
+    // ── Comments enabled ──────────────────────────────────────────────────────────
+
+    public function test_post_comments_enabled_defaults_to_true(): void
+    {
+        $post = Post::factory()->published()->create();
+
+        $this->assertTrue((bool) $post->comments_enabled);
+    }
+
+    public function test_post_comments_open_returns_false_when_flag_is_false(): void
+    {
+        $post = Post::factory()->published()->create(['comments_enabled' => false]);
+
+        $this->assertFalse($post->commentsOpen());
+    }
+
+    public function test_post_comments_open_returns_true_when_flag_is_true(): void
+    {
+        $post = Post::factory()->published()->create(['comments_enabled' => true]);
+
+        $this->assertTrue($post->commentsOpen());
+    }
 }

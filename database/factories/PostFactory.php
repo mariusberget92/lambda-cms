@@ -14,13 +14,14 @@ class PostFactory extends Factory
         $title = rtrim($title, '.');
 
         return [
-            'user_id'      => User::factory(),
-            'title'        => $title,
-            'slug'         => Str::slug($title),
-            'excerpt'      => fake()->paragraph(2),
-            'body'         => $this->generateBody(),
-            'status'       => 'draft',
-            'published_at' => null,
+            'user_id'          => User::factory(),
+            'title'            => $title,
+            'slug'             => Str::slug($title),
+            'excerpt'          => fake()->paragraph(2),
+            'body'             => $this->generateBody(),
+            'status'           => 'draft',
+            'published_at'     => null,
+            'comments_enabled' => true,
         ];
     }
 

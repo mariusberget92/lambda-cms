@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Media;
+use App\Models\Setting;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,10 +24,12 @@ class Post extends Model
         "body",
         "status",
         "published_at",
+        "comments_enabled",
     ];
 
     protected $casts = [
-        "published_at" => "datetime",
+        "published_at"     => "datetime",
+        "comments_enabled" => "boolean",
     ];
 
     // ─── Relationships ────────────────────────────────────────────────────────
@@ -102,5 +105,13 @@ class Post extends Model
     public function isPublished(): bool
     {
         return $this->status === "published";
+    }
+
+    public function commentsOpen(): bool
+    {
+        if (! Setting::get('comments.enabled', true)) {
+            return false;
+        }
+        return (bool) $this->comments_enabled;
     }
 }
