@@ -193,6 +193,22 @@
             confirm-label="Use as featured image"
             @select="onFeaturedImageSelect"
           />
+
+          <!-- Comments -->
+          <div class="rounded-lg border bg-card p-4">
+            <h3 class="text-sm font-medium mb-3">Comments</h3>
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                v-model="form.comments_enabled"
+                class="w-4 h-4 rounded border-border accent-primary"
+              />
+              <div>
+                <span class="text-sm font-medium">Allow comments</span>
+                <p class="text-xs text-muted-foreground">Let readers comment on this post</p>
+              </div>
+            </label>
+          </div>
         </div>
       </div>
     </form>
@@ -212,13 +228,14 @@ defineProps({
 });
 
 const form = useForm({
-  title:            "",
-  excerpt:          "",
-  body:             "",
-  status:           "draft",
-  category_ids:     [],
-  tag_ids:          [],
+  title:             "",
+  excerpt:           "",
+  body:              "",
+  status:            "draft",
+  category_ids:      [],
+  tag_ids:           [],
   featured_image_id: null,
+  comments_enabled:  true,
 });
 
 const showMediaPicker = ref(false)

@@ -118,6 +118,7 @@ class PostController extends Controller
                     'url' => $post->featuredImage->url,
                     'alt' => $post->featuredImage->alt,
                 ] : null,
+                'comments_enabled'  => $post->comments_enabled,
             ],
             'categories' => Category::orderBy('name')->get(['id', 'name']),
             'tags'       => Tag::orderBy('name')->get(['id', 'name']),
