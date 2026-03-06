@@ -37,6 +37,9 @@ class SettingsTest extends TestCase
             ['group' => 'mail',   'key' => 'mail.from_address',      'value' => 'noreply@example.com', 'type' => 'string'],
             ['group' => 'mail',   'key' => 'mail.from_name',         'value' => 'Lambda CMS',        'type' => 'string'],
             ['group' => 'mail',   'key' => 'mail.encryption',        'value' => 'tls',               'type' => 'string'],
+            ['group' => 'seo',    'key' => 'seo.title_separator',      'value' => ' | ',               'type' => 'string'],
+            ['group' => 'seo',    'key' => 'seo.default_description',   'value' => '',                  'type' => 'string'],
+            ['group' => 'seo',    'key' => 'seo.default_og_image_url',  'value' => '',                  'type' => 'string'],
         ];
 
         foreach ($defaults as $row) {
@@ -149,5 +152,20 @@ class SettingsTest extends TestCase
         $this->actingAs($user)->post('/settings/test-email')->assertRedirect(route('dashboard'));
 
         Mail::assertNothingSent();
+    }
+    public function test_administrator_can_update_seo_settings(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $this->actingAs($admin)->put('/settings/seo', [
+            'seo.title_separator'      => '|',
+            'seo.default_description'  => 'My site about things',
+            'seo.default_og_image_url' => 'https://example.com/og.jpg',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('settings', [
+            'key'   => 'seo.title_separator',
+            'value' => '|',
+        ]);
     }
 }

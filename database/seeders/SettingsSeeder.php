@@ -35,6 +35,11 @@ class SettingsSeeder extends Seeder
             // Comments
             ['group' => 'comments', 'key' => 'comments.enabled',  'value' => '1',  'type' => 'boolean'],
             ['group' => 'comments', 'key' => 'comments.per_page', 'value' => '10', 'type' => 'integer'],
+
+            // SEO
+            ['group' => 'seo', 'key' => 'seo.title_separator',      'value' => ' | ',  'type' => 'string'],
+            ['group' => 'seo', 'key' => 'seo.default_description',   'value' => '',     'type' => 'string'],
+            ['group' => 'seo', 'key' => 'seo.default_og_image_url',  'value' => '',     'type' => 'string'],
         ];
 
         foreach ($defaults as $setting) {

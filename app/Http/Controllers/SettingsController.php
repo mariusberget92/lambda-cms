@@ -62,6 +62,11 @@ class SettingsController extends Controller
                 'comments\\.enabled'  => ['required', 'in:0,1'],
                 'comments\\.per_page' => ['required', 'integer', 'min:5', 'max:100'],
             ]),
+            'seo' => $request->validate([
+                'seo\\.title_separator'      => ['required', 'string', 'max:10'],
+                'seo\\.default_description'  => ['nullable', 'string', 'max:300'],
+                'seo\\.default_og_image_url' => ['nullable', 'url', 'max:500'],
+            ]),
             default  => abort(404),
         };
 
