@@ -281,4 +281,24 @@ class BlogTest extends TestCase
                 ->where('seo.description', 'Welcome to the blog')
             );
     }
+
+    public function test_blog_index_seo_canonical_is_blog_url(): void
+    {
+        $this->seedSeoSettings();
+
+        $this->get('/')
+            ->assertInertia(fn ($page) => $page
+                ->where('seo.canonical', url('/blog'))
+            );
+    }
+
+    public function test_blog_index_seo_image_uses_global_og_image(): void
+    {
+        $this->seedSeoSettings(defaultOgImage: 'https://example.com/og-default.jpg');
+
+        $this->get('/')
+            ->assertInertia(fn ($page) => $page
+                ->where('seo.image', 'https://example.com/og-default.jpg')
+            );
+    }
 }
