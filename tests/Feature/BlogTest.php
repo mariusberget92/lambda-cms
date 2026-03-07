@@ -301,4 +301,36 @@ class BlogTest extends TestCase
                 ->where('seo.image', 'https://example.com/og-default.jpg')
             );
     }
+
+    public function test_blog_show_uses_post_meta_keywords_when_set(): void
+    {
+        \App\Models\Setting::insert([
+            ['group' => 'seo',  'key' => 'seo.title_separator',      'value' => ' | ',          'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
+            ['group' => 'seo',  'key' => 'seo.default_keywords',     'value' => 'global, kw',   'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
+            ['group' => 'site', 'key' => 'site.name',                'value' => 'Lambda CMS',   'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
+            ['group' => 'seo',  'key' => 'seo.default_description',  'value' => '',             'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
+            ['group' => 'seo',  'key' => 'seo.default_og_image_url', 'value' => '',             'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        $post = Post::factory()->published()->create(['meta_keywords' => 'post, kw']);
+
+        $this->get("/blog/{$post->slug}")
+            ->assertInertia(fn ($page) => $page->where('seo.keywords', 'post, kw'));
+    }
+
+    public function test_blog_show_falls_back_to_default_keywords(): void
+    {
+        \App\Models\Setting::insert([
+            ['group' => 'seo',  'key' => 'seo.title_separator',      'value' => ' | ',          'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
+            ['group' => 'seo',  'key' => 'seo.default_keywords',     'value' => 'global, kw',   'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
+            ['group' => 'site', 'key' => 'site.name',                'value' => 'Lambda CMS',   'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
+            ['group' => 'seo',  'key' => 'seo.default_description',  'value' => '',             'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
+            ['group' => 'seo',  'key' => 'seo.default_og_image_url', 'value' => '',             'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        $post = Post::factory()->published()->create(['meta_keywords' => null]);
+
+        $this->get("/blog/{$post->slug}")
+            ->assertInertia(fn ($page) => $page->where('seo.keywords', 'global, kw'));
+    }
 }

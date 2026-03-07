@@ -47,6 +47,7 @@ class BlogController extends Controller
             'image'       => Setting::get('seo.default_og_image_url', ''),
             'canonical'   => url('/blog'),
             'type'        => 'website',
+            'keywords'    => Setting::get('seo.default_keywords', ''),
         ];
 
         return Inertia::render('Blog/Index', [
@@ -89,6 +90,7 @@ class BlogController extends Controller
             'image'       => $post->featuredImage?->url ?: Setting::get('seo.default_og_image_url', ''),
             'canonical'   => url("/blog/{$post->slug}"),
             'type'        => 'article',
+            'keywords'    => $post->meta_keywords ?: Setting::get('seo.default_keywords', ''),
         ];
 
         return Inertia::render('Blog/Show', [
