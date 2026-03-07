@@ -403,6 +403,18 @@
             <p class="text-xs text-muted-foreground">Used on pages with no featured image.</p>
           </div>
 
+          <div class="space-y-1">
+            <label for="seo_default_keywords" class="text-sm font-medium">Default keywords</label>
+            <input
+              id="seo_default_keywords"
+              v-model="seoForm['seo.default_keywords']"
+              type="text"
+              class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              placeholder="e.g. laravel, cms, blog"
+            />
+            <p class="text-xs text-muted-foreground">Comma-separated. Used on pages with no post-specific keywords.</p>
+          </div>
+
           <div class="flex justify-end pt-1">
             <button
               type="submit"
@@ -550,6 +562,7 @@ const seoForm = useForm({
   'seo.title_separator':      props.settings['seo.title_separator']      ?? ' | ',
   'seo.default_description':  props.settings['seo.default_description']  ?? '',
   'seo.default_og_image_url': props.settings['seo.default_og_image_url'] ?? '',
+  'seo.default_keywords':     props.settings['seo.default_keywords']     ?? '',
 })
 
 function submitSeo() {
