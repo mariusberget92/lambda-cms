@@ -66,6 +66,7 @@ class SettingsController extends Controller
                 'seo\\.title_separator'      => ['required', 'string', 'max:10'],
                 'seo\\.default_description'  => ['nullable', 'string', 'max:300'],
                 'seo\\.default_og_image_url' => ['nullable', 'url', 'max:500'],
+                'seo\\.default_keywords'     => ['nullable', 'string', 'max:255'],
             ]),
             default  => abort(404),
         };
