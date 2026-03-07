@@ -155,6 +155,43 @@ class BlogController extends Controller
     }
 
     /**
+     * Public tag archive — paginated published posts for a given tag.
+     */
+    public function tag(Tag $tag): Response
+    {
+        $posts = Post::published()
+            ->whereHas('tags', fn ($q) => $q->where('tags.id', $tag->id))
+            ->with(['author:id,name,avatar', 'categories:id,name,slug', 'tags:id,name,slug', 'featuredImage:id,path,disk'])
+            ->orderByDesc('published_at')
+            ->paginate(15)
+            ->through(fn (Post $post) => $this->postData($post));
+
+        $siteName  = Setting::get('site.name', config('app.name'));
+        $separator = Setting::get('seo.title_separator', ' | ');
+
+        $seo = [
+            'title'       => "Posts tagged '{$tag->name}'{$separator}{$siteName}",
+            'description' => "All posts tagged '{$tag->name}'.",
+            'image'       => Setting::get('seo.default_og_image_url', ''),
+            'canonical'   => url("/blog/tag/{$tag->slug}"),
+            'type'        => 'website',
+            'keywords'    => Setting::get('seo.default_keywords', ''),
+        ];
+
+        return Inertia::render('Blog/Archive', [
+            'posts'   => $posts,
+            'sidebar' => $this->sidebarData(),
+            'seo'     => $seo,
+            'heading' => [
+                'type'       => 'tag',
+                'name'       => $tag->name,
+                'slug'       => $tag->slug,
+                'postsCount' => $posts->total(),
+            ],
+        ]);
+    }
+
+    /**
      * Public JSON endpoint — paginated approved comments for a post.
      */
     public function comments(Post $post): \Illuminate\Http\JsonResponse
