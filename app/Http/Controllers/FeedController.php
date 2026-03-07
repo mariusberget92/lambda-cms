@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Response;
+
+class FeedController extends Controller
+{
+    public function __invoke(): Response
+    {
+        abort(501);
+    }
+}
