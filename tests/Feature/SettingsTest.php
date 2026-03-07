@@ -40,7 +40,7 @@ class SettingsTest extends TestCase
             ['group' => 'seo',    'key' => 'seo.title_separator',      'value' => ' | ',               'type' => 'string'],
             ['group' => 'seo',    'key' => 'seo.default_description',   'value' => '',                  'type' => 'string'],
             ['group' => 'seo',    'key' => 'seo.default_og_image_url',  'value' => '',                  'type' => 'string'],
-            ['group' => 'seo', 'key' => 'seo.default_keywords', 'value' => '', 'type' => 'string'],
+            ['group' => 'seo',    'key' => 'seo.default_keywords',      'value' => '',                  'type' => 'string'],
         ];
 
         foreach ($defaults as $row) {
