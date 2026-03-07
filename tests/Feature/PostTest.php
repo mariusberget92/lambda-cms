@@ -519,4 +519,20 @@ class PostTest extends TestCase
                 ->where('post.meta_description', 'My meta desc')
             );
     }
+
+    public function test_post_can_store_meta_keywords(): void
+    {
+        $user = $this->makeUser();
+
+        $this->actingAs($user)->post('/posts', [
+            'title'         => 'Keywords Post',
+            'status'        => 'draft',
+            'meta_keywords' => 'laravel, cms, blog',
+        ])->assertRedirect('/posts');
+
+        $this->assertDatabaseHas('posts', [
+            'title'         => 'Keywords Post',
+            'meta_keywords' => 'laravel, cms, blog',
+        ]);
+    }
 }
