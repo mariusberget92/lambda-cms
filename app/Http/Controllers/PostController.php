@@ -71,6 +71,7 @@ class PostController extends Controller
             'comments_enabled' => ['nullable', 'boolean'],
             'meta_title'       => ['nullable', 'string', 'max:100'],
             'meta_description' => ['nullable', 'string', 'max:300'],
+            'meta_keywords' => ['nullable', 'string', 'max:255'],
         ]);
 
         $tagIds      = $validated['tag_ids'] ?? [];
@@ -80,6 +81,7 @@ class PostController extends Controller
         $validated['comments_enabled'] = $validated['comments_enabled'] ?? true;
         $validated['meta_title']       = $validated['meta_title']       ?? null;
         $validated['meta_description'] = $validated['meta_description'] ?? null;
+        $validated['meta_keywords'] = $validated['meta_keywords'] ?? null;
 
         $validated['slug']    = Post::generateSlug($validated['title']);
         $validated['user_id'] = $request->user()->id;
@@ -125,6 +127,7 @@ class PostController extends Controller
                 'comments_enabled'  => $post->comments_enabled,
                 'meta_title'        => $post->meta_title,
                 'meta_description'  => $post->meta_description,
+                'meta_keywords'     => $post->meta_keywords,
             ],
             'categories' => Category::orderBy('name')->get(['id', 'name']),
             'tags'       => Tag::orderBy('name')->get(['id', 'name']),
@@ -150,6 +153,7 @@ class PostController extends Controller
             'comments_enabled'  => ['nullable', 'boolean'],
             'meta_title'       => ['nullable', 'string', 'max:100'],
             'meta_description' => ['nullable', 'string', 'max:300'],
+            'meta_keywords' => ['nullable', 'string', 'max:255'],
         ]);
 
         $tagIds      = $validated['tag_ids'] ?? [];
@@ -159,6 +163,7 @@ class PostController extends Controller
         $validated['comments_enabled'] = $validated['comments_enabled'] ?? $post->comments_enabled;
         $validated['meta_title']       = $validated['meta_title']       ?? $post->meta_title;
         $validated['meta_description'] = $validated['meta_description'] ?? $post->meta_description;
+        $validated['meta_keywords'] = $validated['meta_keywords'] ?? $post->meta_keywords;
 
         $validated['slug'] = Post::generateSlug($validated['title'], $post->id);
 
