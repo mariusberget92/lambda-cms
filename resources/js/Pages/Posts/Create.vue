@@ -236,6 +236,17 @@
                 />
                 <p class="text-xs text-muted-foreground mt-1">{{ (form.meta_description ?? '').length }}/300</p>
               </div>
+              <div>
+                <label class="block text-xs font-medium mb-1">Keywords</label>
+                <input
+                  v-model="form.meta_keywords"
+                  type="text"
+                  maxlength="255"
+                  class="w-full rounded-md border bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder="Leave blank to use site defaults"
+                />
+                <p class="text-xs text-muted-foreground mt-1">{{ (form.meta_keywords ?? '').length }}/255</p>
+              </div>
             </div>
           </div>
         </div>
@@ -267,6 +278,7 @@ const form = useForm({
   comments_enabled:  true,
   meta_title:        null,
   meta_description:  null,
+  meta_keywords:    null,
 });
 
 const showMediaPicker = ref(false)
