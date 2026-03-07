@@ -278,7 +278,7 @@ const form = useForm({
   comments_enabled:  true,
   meta_title:        null,
   meta_description:  null,
-  meta_keywords:    null,
+  meta_keywords:     null,
 });
 
 const showMediaPicker = ref(false)
