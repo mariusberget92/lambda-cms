@@ -333,4 +333,93 @@ class BlogTest extends TestCase
         $this->get("/blog/{$post->slug}")
             ->assertInertia(fn ($page) => $page->where('seo.keywords', 'global, kw'));
     }
+
+    // ── Category archive ──────────────────────────────────────────────────────────
+
+    public function test_category_archive_is_publicly_accessible(): void
+    {
+        $category = Category::factory()->create();
+
+        $this->get("/blog/category/{$category->slug}")->assertOk();
+    }
+
+    public function test_category_archive_renders_archive_component(): void
+    {
+        $category = Category::factory()->create();
+
+        $this->get("/blog/category/{$category->slug}")->assertInertia(
+            fn ($page) => $page->component('Blog/Archive')
+        );
+    }
+
+    public function test_category_archive_shows_only_posts_in_that_category(): void
+    {
+        $category = Category::factory()->create();
+        $other    = Category::factory()->create();
+
+        $included = Post::factory()->published()->create(['title' => 'Included Post']);
+        $excluded = Post::factory()->published()->create(['title' => 'Excluded Post']);
+
+        $included->categories()->attach($category);
+        $excluded->categories()->attach($other);
+
+        $this->get("/blog/category/{$category->slug}")->assertInertia(
+            fn ($page) => $page
+                ->has('posts.data', 1)
+                ->where('posts.data.0.title', 'Included Post')
+        );
+    }
+
+    public function test_category_archive_excludes_draft_posts(): void
+    {
+        $category = Category::factory()->create();
+        $post     = Post::factory()->draft()->create();
+        $post->categories()->attach($category);
+
+        $this->get("/blog/category/{$category->slug}")->assertInertia(
+            fn ($page) => $page->has('posts.data', 0)
+        );
+    }
+
+    public function test_category_archive_returns_404_for_nonexistent_slug(): void
+    {
+        $this->get('/blog/category/does-not-exist')->assertNotFound();
+    }
+
+    public function test_category_archive_heading_contains_correct_data(): void
+    {
+        $category = Category::factory()->create(['name' => 'Laravel', 'slug' => 'laravel']);
+        $post     = Post::factory()->published()->create();
+        $post->categories()->attach($category);
+
+        $this->get("/blog/category/{$category->slug}")->assertInertia(
+            fn ($page) => $page
+                ->where('heading.type', 'category')
+                ->where('heading.name', 'Laravel')
+                ->where('heading.slug', 'laravel')
+                ->where('heading.postsCount', 1)
+        );
+    }
+
+    public function test_category_archive_has_correct_seo_canonical(): void
+    {
+        $category = Category::factory()->create(['slug' => 'laravel']);
+
+        $this->get("/blog/category/{$category->slug}")->assertInertia(
+            fn ($page) => $page->where('seo.canonical', url('/blog/category/laravel'))
+        );
+    }
+
+    public function test_category_archive_includes_sidebar_data(): void
+    {
+        $category = Category::factory()->create();
+
+        $this->get("/blog/category/{$category->slug}")->assertInertia(
+            fn ($page) => $page
+                ->has('sidebar')
+                ->has('sidebar.categories')
+                ->has('sidebar.tags')
+                ->has('sidebar.recentPosts')
+        );
+    }
 }
