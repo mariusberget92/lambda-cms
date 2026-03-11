@@ -43,6 +43,58 @@ class PostTest extends TestCase
         $this->actingAs($this->makeUser())->get('/posts')->assertOk();
     }
 
+    // ── Scheduled Scope ───────────────────────────────────────────────────────
+
+    public function test_scope_scheduled_returns_only_scheduled_posts(): void
+    {
+        $user = $this->makeUser();
+        Post::factory()->create(['user_id' => $user->id, 'status' => 'published']);
+        Post::factory()->create(['user_id' => $user->id, 'status' => 'draft']);
+        $scheduled = Post::factory()->create([
+            'user_id'      => $user->id,
+            'status'       => 'scheduled',
+            'published_at' => now()->addDay(),
+        ]);
+
+        $results = Post::scheduled()->get();
+
+        $this->assertCount(1, $results);
+        $this->assertEquals($scheduled->id, $results->first()->id);
+    }
+
+    public function test_is_scheduled_returns_true_for_scheduled_post(): void
+    {
+        $user = $this->makeUser();
+        $post = Post::factory()->create([
+            'user_id'      => $user->id,
+            'status'       => 'scheduled',
+            'published_at' => now()->addDay(),
+        ]);
+
+        $this->assertTrue($post->isScheduled());
+    }
+
+    public function test_is_scheduled_returns_false_for_draft_post(): void
+    {
+        $user = $this->makeUser();
+        $post = Post::factory()->create(['user_id' => $user->id, 'status' => 'draft']);
+
+        $this->assertFalse($post->isScheduled());
+    }
+
+    public function test_scope_published_excludes_scheduled_posts(): void
+    {
+        $user = $this->makeUser();
+        Post::factory()->create(['user_id' => $user->id, 'status' => 'published']);
+        Post::factory()->create([
+            'user_id'      => $user->id,
+            'status'       => 'scheduled',
+            'published_at' => now()->addDay(),
+        ]);
+
+        $this->assertCount(1, Post::published()->get());
+    }
+
     // ── Create / Store ────────────────────────────────────────────────────────
 
     public function test_user_can_create_a_draft_post(): void
