@@ -631,7 +631,10 @@ class PostTest extends TestCase
 
         $post = Post::where('title', 'Scheduled Post')->first();
         $this->assertEquals('scheduled', $post->status);
-        $this->assertNotNull($post->published_at);
+        $this->assertEquals(
+            \Illuminate\Support\Carbon::parse($future)->toDateTimeString(),
+            $post->published_at->toDateTimeString()
+        );
     }
 
     public function test_cannot_schedule_post_without_published_at(): void
@@ -691,7 +694,10 @@ class PostTest extends TestCase
         ])->assertRedirect('/posts');
 
         $this->assertEquals('scheduled', $post->fresh()->status);
-        $this->assertNotNull($post->fresh()->published_at);
+        $this->assertEquals(
+            \Illuminate\Support\Carbon::parse($future)->toDateTimeString(),
+            $post->fresh()->published_at->toDateTimeString()
+        );
     }
 
     public function test_republishing_preserves_original_published_at(): void
