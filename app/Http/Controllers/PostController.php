@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class PostController extends Controller
@@ -33,7 +34,9 @@ class PostController extends Controller
                 'slug'         => $post->slug,
                 'excerpt'      => $post->excerpt,
                 'status'       => $post->status,
-                'published_at' => $post->published_at?->toDateString(),
+                'published_at' => $post->status === 'scheduled'
+                    ? $post->published_at?->format('Y-m-d H:i')
+                    : $post->published_at?->toDateString(),
                 'created_at'   => $post->created_at->toDateString(),
                 'author'       => $post->author->name,
                 'categories'     => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name])->values(),
@@ -62,7 +65,11 @@ class PostController extends Controller
             'title'       => ['required', 'string', 'max:255'],
             'excerpt'     => ['nullable', 'string', 'max:500'],
             'body'        => ['nullable', 'string'],
-            'status'      => ['required', 'in:draft,published'],
+            'status'      => ['required', 'in:draft,scheduled,published'],
+            'published_at' => [
+                Rule::when($request->input('status') === 'scheduled', ['required', 'date', 'after:now']),
+                Rule::when($request->input('status') !== 'scheduled', ['nullable']),
+            ],
             'category_ids'   => ['nullable', 'array'],
             'category_ids.*' => ['exists:categories,id'],
             'tag_ids'          => ['nullable', 'array'],
@@ -88,7 +95,10 @@ class PostController extends Controller
 
         if ($validated['status'] === 'published') {
             $validated['published_at'] = Carbon::now();
+        } elseif ($validated['status'] === 'draft') {
+            $validated['published_at'] = null;
         }
+        // status === 'scheduled': published_at comes from the validated request as-is
 
         $post = Post::create($validated);
         $post->tags()->sync($tagIds);
@@ -115,7 +125,7 @@ class PostController extends Controller
                 'excerpt'           => $post->excerpt,
                 'body'              => $post->body,
                 'status'            => $post->status,
-                'published_at'      => $post->published_at?->toDateString(),
+                'published_at'      => $post->published_at?->format('Y-m-d\TH:i'),
                 'category_ids'      => $post->categories->pluck('id'),
                 'tag_ids'           => $post->tags->pluck('id'),
                 'featured_image_id' => $post->featured_image_id,
@@ -144,7 +154,11 @@ class PostController extends Controller
             'title'       => ['required', 'string', 'max:255'],
             'excerpt'     => ['nullable', 'string', 'max:500'],
             'body'        => ['nullable', 'string'],
-            'status'      => ['required', 'in:draft,published'],
+            'status'      => ['required', 'in:draft,scheduled,published'],
+            'published_at' => [
+                Rule::when($request->input('status') === 'scheduled', ['required', 'date', 'after:now']),
+                Rule::when($request->input('status') !== 'scheduled', ['nullable']),
+            ],
             'category_ids'   => ['nullable', 'array'],
             'category_ids.*' => ['exists:categories,id'],
             'tag_ids'           => ['nullable', 'array'],
@@ -167,8 +181,12 @@ class PostController extends Controller
 
         $validated['slug'] = Post::generateSlug($validated['title'], $post->id);
 
-        if ($validated['status'] === 'published' && $post->status !== 'published') {
+        if ($validated['status'] === 'scheduled') {
+            // published_at comes from the validated request as-is (future timestamp)
+        } elseif ($validated['status'] === 'published' && $post->status !== 'published') {
             $validated['published_at'] = Carbon::now();
+        } elseif ($validated['status'] === 'published' && $post->status === 'published') {
+            unset($validated['published_at']); // preserve existing; do not overwrite
         } elseif ($validated['status'] === 'draft') {
             $validated['published_at'] = null;
         }
