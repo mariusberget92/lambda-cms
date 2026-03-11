@@ -721,4 +721,68 @@ class PostTest extends TestCase
             $post->fresh()->published_at->toDateTimeString()
         );
     }
+
+    // ── Publish Scheduled Command ─────────────────────────────────────────────
+
+    public function test_command_publishes_overdue_scheduled_posts(): void
+    {
+        $user = $this->makeUser();
+        $post = Post::factory()->create([
+            'user_id'      => $user->id,
+            'status'       => 'scheduled',
+            'published_at' => now()->subMinute(),
+        ]);
+
+        $this->artisan('posts:publish-scheduled')->assertSuccessful();
+
+        $this->assertEquals('published', $post->fresh()->status);
+    }
+
+    public function test_command_does_not_publish_future_scheduled_posts(): void
+    {
+        $user = $this->makeUser();
+        $post = Post::factory()->create([
+            'user_id'      => $user->id,
+            'status'       => 'scheduled',
+            'published_at' => now()->addHour(),
+        ]);
+
+        $this->artisan('posts:publish-scheduled')->assertSuccessful();
+
+        $this->assertEquals('scheduled', $post->fresh()->status);
+    }
+
+    public function test_command_does_not_affect_draft_or_published_posts(): void
+    {
+        $user    = $this->makeUser();
+        $draft   = Post::factory()->create(['user_id' => $user->id, 'status' => 'draft']);
+        $published = Post::factory()->create([
+            'user_id'      => $user->id,
+            'status'       => 'published',
+            'published_at' => now()->subDay(),
+        ]);
+
+        $this->artisan('posts:publish-scheduled')->assertSuccessful();
+
+        $this->assertEquals('draft',     $draft->fresh()->status);
+        $this->assertEquals('published', $published->fresh()->status);
+    }
+
+    public function test_command_preserves_original_published_at_after_publishing(): void
+    {
+        $user   = $this->makeUser();
+        $target = now()->subMinutes(5);
+        $post   = Post::factory()->create([
+            'user_id'      => $user->id,
+            'status'       => 'scheduled',
+            'published_at' => $target,
+        ]);
+
+        $this->artisan('posts:publish-scheduled')->assertSuccessful();
+
+        $this->assertEquals(
+            $target->toDateTimeString(),
+            $post->fresh()->published_at->toDateTimeString()
+        );
+    }
 }

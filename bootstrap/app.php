@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Console\Scheduling\Schedule;
 use Spatie\Permission\Exceptions\UnauthorizedException;
 
 // Auto-bootstrap: ensure the app can boot cleanly before installation is complete.
@@ -59,4 +60,8 @@ return Application::configure(basePath: dirname(__DIR__))
             return redirect()->route('dashboard')
                 ->with('error', 'You do not have permission to access that page.');
         });
-    })->create();
+    })
+    ->withSchedule(function (Schedule $schedule): void {
+        $schedule->command('posts:publish-scheduled')->everyMinute()->withoutOverlapping();
+    })
+    ->create();
