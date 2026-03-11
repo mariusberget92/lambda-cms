@@ -2,6 +2,10 @@ import '../css/app.css';
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
+import { useTheme } from '@/composables/useTheme.js';
+
+const { initTheme } = useTheme();
+initTheme();
 
 createInertiaApp({
     title: (title) => title ? `${title} — Lambda CMS` : 'Lambda CMS',

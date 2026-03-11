@@ -21,23 +21,7 @@ class BlogController extends Controller
             ->with(['author:id,name,avatar', 'categories:id,name,slug', 'tags:id,name,slug', 'featuredImage:id,path,disk'])
             ->orderByDesc('published_at')
             ->paginate(15)
-            ->through(fn (Post $post) => [
-                'id'                  => $post->id,
-                'title'               => $post->title,
-                'slug'                => $post->slug,
-                'excerpt'             => $post->excerpt,
-                'published_at'        => $post->published_at?->toDateString(),
-                'featured_image_url'  => $post->featuredImage?->url,
-                'author'              => [
-                    'name'       => $post->author->name,
-                    'avatar_url' => $post->author->avatar_url,
-                ],
-                'categories'          => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug])->values(),
-                'tags'                => $post->tags->map(fn ($t) => [
-                    'name' => $t->name,
-                    'slug' => $t->slug,
-                ]),
-            ]);
+            ->through(fn (Post $post) => $this->postData($post));
 
         $siteName = Setting::get('site.name', config('app.name'));
 
@@ -47,6 +31,7 @@ class BlogController extends Controller
             'image'       => Setting::get('seo.default_og_image_url', ''),
             'canonical'   => url('/blog'),
             'type'        => 'website',
+            'keywords'    => Setting::get('seo.default_keywords', ''),
         ];
 
         return Inertia::render('Blog/Index', [
@@ -89,6 +74,7 @@ class BlogController extends Controller
             'image'       => $post->featuredImage?->url ?: Setting::get('seo.default_og_image_url', ''),
             'canonical'   => url("/blog/{$post->slug}"),
             'type'        => 'article',
+            'keywords'    => $post->meta_keywords ?: Setting::get('seo.default_keywords', ''),
         ];
 
         return Inertia::render('Blog/Show', [
@@ -161,7 +147,105 @@ class BlogController extends Controller
         ]);
     }
 
+    /**
+     * Public category archive — paginated published posts for a given category.
+     */
+    public function category(Category $category): Response
+    {
+        $posts = Post::published()
+            ->whereHas('categories', fn ($q) => $q->where('categories.id', $category->id))
+            ->with(['author:id,name,avatar', 'categories:id,name,slug', 'tags:id,name,slug', 'featuredImage:id,path,disk'])
+            ->orderByDesc('published_at')
+            ->paginate(15)
+            ->through(fn (Post $post) => $this->postData($post));
+
+        $siteName  = Setting::get('site.name', config('app.name'));
+        $separator = Setting::get('seo.title_separator', ' | ');
+
+        $seo = [
+            'title'       => "Posts in {$category->name}{$separator}{$siteName}",
+            'description' => "All posts in the {$category->name} category.",
+            'image'       => Setting::get('seo.default_og_image_url', ''),
+            'canonical'   => url("/blog/category/{$category->slug}"),
+            'type'        => 'website',
+            'keywords'    => Setting::get('seo.default_keywords', ''),
+        ];
+
+        return Inertia::render('Blog/Archive', [
+            'posts'   => $posts,
+            'sidebar' => $this->sidebarData(),
+            'seo'     => $seo,
+            'heading' => [
+                'type'       => 'category',
+                'name'       => $category->name,
+                'slug'       => $category->slug,
+                'postsCount' => $posts->total(),
+            ],
+        ]);
+    }
+
+    /**
+     * Public tag archive — paginated published posts for a given tag.
+     */
+    public function tag(Tag $tag): Response
+    {
+        $posts = Post::published()
+            ->whereHas('tags', fn ($q) => $q->where('tags.id', $tag->id))
+            ->with(['author:id,name,avatar', 'categories:id,name,slug', 'tags:id,name,slug', 'featuredImage:id,path,disk'])
+            ->orderByDesc('published_at')
+            ->paginate(15)
+            ->through(fn (Post $post) => $this->postData($post));
+
+        $siteName  = Setting::get('site.name', config('app.name'));
+        $separator = Setting::get('seo.title_separator', ' | ');
+
+        $seo = [
+            'title'       => "Posts tagged '{$tag->name}'{$separator}{$siteName}",
+            'description' => "All posts tagged '{$tag->name}'.",
+            'image'       => Setting::get('seo.default_og_image_url', ''),
+            'canonical'   => url("/blog/tag/{$tag->slug}"),
+            'type'        => 'website',
+            'keywords'    => Setting::get('seo.default_keywords', ''),
+        ];
+
+        return Inertia::render('Blog/Archive', [
+            'posts'   => $posts,
+            'sidebar' => $this->sidebarData(),
+            'seo'     => $seo,
+            'heading' => [
+                'type'       => 'tag',
+                'name'       => $tag->name,
+                'slug'       => $tag->slug,
+                'postsCount' => $posts->total(),
+            ],
+        ]);
+    }
+
     // ── Private helpers ───────────────────────────────────────────────────────
+
+    /**
+     * Transform a Post model into the array shape used by Blog pages.
+     */
+    private function postData(Post $post): array
+    {
+        return [
+            'id'                  => $post->id,
+            'title'               => $post->title,
+            'slug'                => $post->slug,
+            'excerpt'             => $post->excerpt,
+            'published_at'        => $post->published_at?->toDateString(),
+            'featured_image_url'  => $post->featuredImage?->url,
+            'author'              => [
+                'name'       => $post->author->name,
+                'avatar_url' => $post->author->avatar_url,
+            ],
+            'categories' => $post->categories
+                ->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug])
+                ->values(),
+            'tags'       => $post->tags
+                ->map(fn ($t) => ['name' => $t->name, 'slug' => $t->slug]),
+        ];
+    }
 
     /**
      * Data shared between index and show: categories, tags, recent posts.

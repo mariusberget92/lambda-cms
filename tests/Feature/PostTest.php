@@ -519,4 +519,48 @@ class PostTest extends TestCase
                 ->where('post.meta_description', 'My meta desc')
             );
     }
+
+    public function test_post_can_store_meta_keywords(): void
+    {
+        $user = $this->makeUser();
+
+        $this->actingAs($user)->post('/posts', [
+            'title'         => 'Keywords Post',
+            'status'        => 'draft',
+            'meta_keywords' => 'laravel, cms, blog',
+        ])->assertRedirect('/posts');
+
+        $this->assertDatabaseHas('posts', [
+            'title'         => 'Keywords Post',
+            'meta_keywords' => 'laravel, cms, blog',
+        ]);
+    }
+
+    public function test_post_can_update_meta_keywords(): void
+    {
+        $user = $this->makeUser();
+        $post = Post::factory()->create(['user_id' => $user->id, 'meta_keywords' => 'old, keywords']);
+
+        $this->actingAs($user)->put("/posts/{$post->id}", [
+            'title'         => $post->title,
+            'status'        => $post->status,
+            'meta_keywords' => 'new, keywords',
+        ])->assertRedirect('/posts');
+
+        $this->assertDatabaseHas('posts', ['id' => $post->id, 'meta_keywords' => 'new, keywords']);
+    }
+
+    public function test_edit_page_includes_meta_keywords(): void
+    {
+        $user = $this->makeUser();
+        $post = Post::factory()->create(['user_id' => $user->id, 'meta_keywords' => 'test, keywords']);
+
+        $this->withoutVite();
+        $this->actingAs($user)->get("/posts/{$post->id}/edit")
+            ->assertInertia(
+                fn ($page) => $page
+                    ->component('Posts/Edit')
+                    ->where('post.meta_keywords', 'test, keywords')
+            );
+    }
 }

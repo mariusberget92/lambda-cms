@@ -1,5 +1,5 @@
 <script setup>
-import { usePage, Link } from '@inertiajs/vue3'
+import { Head, usePage, Link } from '@inertiajs/vue3'
 import { computed } from 'vue'
 
 defineOptions({ layout: null })
@@ -10,6 +10,10 @@ const year = new Date().getFullYear()
 </script>
 
 <template>
+  <Head>
+    <link rel="alternate" type="application/rss+xml" :title="appName" href="/feed" />
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
+  </Head>
   <div class="min-h-screen flex flex-col bg-background text-foreground">
     <!-- Top nav -->
     <header class="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-10">

@@ -27,6 +27,7 @@ class Post extends Model
         "comments_enabled",
         "meta_title",
         "meta_description",
+        "meta_keywords",
     ];
 
     protected $casts = [

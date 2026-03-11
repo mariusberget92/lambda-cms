@@ -1,30 +1,40 @@
 <script setup>
+import { Link } from '@inertiajs/vue3'
 import BlogLayout from '@/Layouts/BlogLayout.vue'
 import BlogSidebar from '@/Components/BlogSidebar.vue'
 import PostCard from '@/Components/PostCard.vue'
 import SeoHead from '@/Components/SeoHead.vue'
-import { Link } from '@inertiajs/vue3'
 
 defineOptions({ layout: BlogLayout })
 
 defineProps({
-  posts:  Object,
+  posts:   Object,
   sidebar: Object,
-  seo:    { type: Object, required: true },
+  seo:     { type: Object, required: true },
+  heading: { type: Object, required: true },
 })
 </script>
 
 <template>
   <SeoHead :seo="seo" />
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-    <!-- Main: Post list -->
+    <!-- Main -->
     <div class="lg:col-span-2">
+
+      <!-- Archive heading -->
+      <div class="mb-8 pb-6 border-b">
+        <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+          {{ heading.type === 'category' ? 'Category' : 'Tag' }}
+        </p>
+        <h1 class="text-3xl font-bold tracking-tight">{{ heading.name }}</h1>
+        <p class="text-sm text-muted-foreground mt-1">
+          {{ heading.postsCount }} {{ heading.postsCount === 1 ? 'post' : 'posts' }}
+        </p>
+      </div>
+
       <!-- Empty state -->
       <div v-if="!posts.data.length" class="text-center py-20 text-muted-foreground">
-        <svg class="mx-auto mb-4 w-10 h-10 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-        </svg>
-        <p class="text-sm">No posts published yet.</p>
+        <p class="text-sm">No posts found.</p>
       </div>
 
       <!-- Post cards -->

@@ -8,6 +8,7 @@ defineProps({ seo: { type: Object, required: true } })
   <Head>
     <title>{{ seo.title }}</title>
     <meta name="description"        :content="seo.description"       v-if="seo.description" />
+    <meta name="keywords"           :content="seo.keywords"           v-if="seo.keywords" />
     <link rel="canonical"           :href="seo.canonical" />
     <meta property="og:type"        :content="seo.type ?? 'website'" />
     <meta property="og:url"         :content="seo.canonical" />

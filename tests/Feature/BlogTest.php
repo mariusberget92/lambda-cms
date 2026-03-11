@@ -301,4 +301,201 @@ class BlogTest extends TestCase
                 ->where('seo.image', 'https://example.com/og-default.jpg')
             );
     }
+
+    public function test_blog_show_uses_post_meta_keywords_when_set(): void
+    {
+        \App\Models\Setting::insert([
+            ['group' => 'seo',  'key' => 'seo.title_separator',      'value' => ' | ',          'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
+            ['group' => 'seo',  'key' => 'seo.default_keywords',     'value' => 'global, kw',   'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
+            ['group' => 'site', 'key' => 'site.name',                'value' => 'Lambda CMS',   'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
+            ['group' => 'seo',  'key' => 'seo.default_description',  'value' => '',             'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
+            ['group' => 'seo',  'key' => 'seo.default_og_image_url', 'value' => '',             'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        $post = Post::factory()->published()->create(['meta_keywords' => 'post, kw']);
+
+        $this->get("/blog/{$post->slug}")
+            ->assertInertia(fn ($page) => $page->where('seo.keywords', 'post, kw'));
+    }
+
+    public function test_blog_show_falls_back_to_default_keywords(): void
+    {
+        \App\Models\Setting::insert([
+            ['group' => 'seo',  'key' => 'seo.title_separator',      'value' => ' | ',          'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
+            ['group' => 'seo',  'key' => 'seo.default_keywords',     'value' => 'global, kw',   'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
+            ['group' => 'site', 'key' => 'site.name',                'value' => 'Lambda CMS',   'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
+            ['group' => 'seo',  'key' => 'seo.default_description',  'value' => '',             'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
+            ['group' => 'seo',  'key' => 'seo.default_og_image_url', 'value' => '',             'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        $post = Post::factory()->published()->create(['meta_keywords' => null]);
+
+        $this->get("/blog/{$post->slug}")
+            ->assertInertia(fn ($page) => $page->where('seo.keywords', 'global, kw'));
+    }
+
+    // ── Category archive ──────────────────────────────────────────────────────────
+
+    public function test_category_archive_is_publicly_accessible(): void
+    {
+        $category = Category::factory()->create();
+
+        $this->get("/blog/category/{$category->slug}")->assertOk();
+    }
+
+    public function test_category_archive_renders_archive_component(): void
+    {
+        $category = Category::factory()->create();
+
+        $this->get("/blog/category/{$category->slug}")->assertInertia(
+            fn ($page) => $page->component('Blog/Archive')
+        );
+    }
+
+    public function test_category_archive_shows_only_posts_in_that_category(): void
+    {
+        $category = Category::factory()->create();
+        $other    = Category::factory()->create();
+
+        $included = Post::factory()->published()->create(['title' => 'Included Post']);
+        $excluded = Post::factory()->published()->create(['title' => 'Excluded Post']);
+
+        $included->categories()->attach($category);
+        $excluded->categories()->attach($other);
+
+        $this->get("/blog/category/{$category->slug}")->assertInertia(
+            fn ($page) => $page
+                ->has('posts.data', 1)
+                ->where('posts.data.0.title', 'Included Post')
+        );
+    }
+
+    public function test_category_archive_excludes_draft_posts(): void
+    {
+        $category = Category::factory()->create();
+        $post     = Post::factory()->draft()->create();
+        $post->categories()->attach($category);
+
+        $this->get("/blog/category/{$category->slug}")->assertInertia(
+            fn ($page) => $page->has('posts.data', 0)
+        );
+    }
+
+    public function test_category_archive_returns_404_for_nonexistent_slug(): void
+    {
+        $this->get('/blog/category/does-not-exist')->assertNotFound();
+    }
+
+    public function test_category_archive_heading_contains_correct_data(): void
+    {
+        $category = Category::factory()->create(['name' => 'Laravel', 'slug' => 'laravel']);
+        $post     = Post::factory()->published()->create();
+        $post->categories()->attach($category);
+
+        $this->get("/blog/category/{$category->slug}")->assertInertia(
+            fn ($page) => $page
+                ->where('heading.type', 'category')
+                ->where('heading.name', 'Laravel')
+                ->where('heading.slug', 'laravel')
+                ->where('heading.postsCount', 1)
+        );
+    }
+
+    public function test_category_archive_has_correct_seo_canonical(): void
+    {
+        $category = Category::factory()->create(['slug' => 'laravel']);
+
+        $this->get("/blog/category/{$category->slug}")->assertInertia(
+            fn ($page) => $page->where('seo.canonical', url('/blog/category/laravel'))
+        );
+    }
+
+    public function test_category_archive_includes_sidebar_data(): void
+    {
+        $category = Category::factory()->create();
+
+        $this->get("/blog/category/{$category->slug}")->assertInertia(
+            fn ($page) => $page
+                ->has('sidebar')
+                ->has('sidebar.categories')
+                ->has('sidebar.tags')
+                ->has('sidebar.recentPosts')
+        );
+    }
+
+    // ── Tag archive ───────────────────────────────────────────────────────────────
+
+    public function test_tag_archive_is_publicly_accessible(): void
+    {
+        $tag = Tag::factory()->create();
+
+        $this->get("/blog/tag/{$tag->slug}")->assertOk();
+    }
+
+    public function test_tag_archive_renders_archive_component(): void
+    {
+        $tag = Tag::factory()->create();
+
+        $this->get("/blog/tag/{$tag->slug}")->assertInertia(
+            fn ($page) => $page->component('Blog/Archive')
+        );
+    }
+
+    public function test_tag_archive_shows_only_posts_with_that_tag(): void
+    {
+        $tag   = Tag::factory()->create();
+        $other = Tag::factory()->create();
+
+        $included = Post::factory()->published()->create(['title' => 'Tagged Post']);
+        $excluded = Post::factory()->published()->create(['title' => 'Other Post']);
+
+        $included->tags()->attach($tag);
+        $excluded->tags()->attach($other);
+
+        $this->get("/blog/tag/{$tag->slug}")->assertInertia(
+            fn ($page) => $page
+                ->has('posts.data', 1)
+                ->where('posts.data.0.title', 'Tagged Post')
+        );
+    }
+
+    public function test_tag_archive_excludes_draft_posts(): void
+    {
+        $tag  = Tag::factory()->create();
+        $post = Post::factory()->draft()->create();
+        $post->tags()->attach($tag);
+
+        $this->get("/blog/tag/{$tag->slug}")->assertInertia(
+            fn ($page) => $page->has('posts.data', 0)
+        );
+    }
+
+    public function test_tag_archive_returns_404_for_nonexistent_slug(): void
+    {
+        $this->get('/blog/tag/does-not-exist')->assertNotFound();
+    }
+
+    public function test_tag_archive_heading_contains_correct_data(): void
+    {
+        $tag  = Tag::factory()->create(['name' => 'PHP', 'slug' => 'php']);
+        $post = Post::factory()->published()->create();
+        $post->tags()->attach($tag);
+
+        $this->get("/blog/tag/{$tag->slug}")->assertInertia(
+            fn ($page) => $page
+                ->where('heading.type', 'tag')
+                ->where('heading.name', 'PHP')
+                ->where('heading.slug', 'php')
+                ->where('heading.postsCount', 1)
+        );
+    }
+
+    public function test_tag_archive_has_correct_seo_canonical(): void
+    {
+        $tag = Tag::factory()->create(['slug' => 'php']);
+
+        $this->get("/blog/tag/{$tag->slug}")->assertInertia(
+            fn ($page) => $page->where('seo.canonical', url('/blog/tag/php'))
+        );
+    }
 }

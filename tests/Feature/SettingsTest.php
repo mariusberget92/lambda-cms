@@ -40,6 +40,7 @@ class SettingsTest extends TestCase
             ['group' => 'seo',    'key' => 'seo.title_separator',      'value' => ' | ',               'type' => 'string'],
             ['group' => 'seo',    'key' => 'seo.default_description',   'value' => '',                  'type' => 'string'],
             ['group' => 'seo',    'key' => 'seo.default_og_image_url',  'value' => '',                  'type' => 'string'],
+            ['group' => 'seo',    'key' => 'seo.default_keywords',      'value' => '',                  'type' => 'string'],
         ];
 
         foreach ($defaults as $row) {
@@ -188,5 +189,22 @@ class SettingsTest extends TestCase
         ])->assertRedirect(route('dashboard'));
 
         $this->assertDatabaseMissing('settings', ['key' => 'seo.default_description', 'value' => 'Hacked']);
+    }
+
+    public function test_admin_can_save_seo_default_keywords(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $this->actingAs($admin)->put('/settings/seo', [
+            'seo.title_separator'      => ' | ',
+            'seo.default_description'  => '',
+            'seo.default_og_image_url' => '',
+            'seo.default_keywords'     => 'laravel, cms',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('settings', [
+            'key'   => 'seo.default_keywords',
+            'value' => 'laravel, cms',
+        ]);
     }
 }

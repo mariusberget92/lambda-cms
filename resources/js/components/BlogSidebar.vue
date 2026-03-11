@@ -23,7 +23,7 @@ const maxCount = (items) => Math.max(...items.map((i) => i.posts_count), 1)
           class="flex items-center justify-between"
         >
           <Link
-            :href="`/?category=${cat.slug}`"
+            :href="`/blog/category/${cat.slug}`"
             class="text-sm hover:text-primary transition-colors"
           >
             {{ cat.name }}
@@ -42,7 +42,7 @@ const maxCount = (items) => Math.max(...items.map((i) => i.posts_count), 1)
         <Link
           v-for="tag in sidebar.tags"
           :key="tag.slug"
-          :href="`/?tag=${tag.slug}`"
+          :href="`/blog/tag/${tag.slug}`"
           class="inline-block rounded-full border px-2.5 py-0.5 text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
           :style="{ fontSize: `${0.65 + (tag.posts_count / maxCount(sidebar.tags)) * 0.35}rem` }"
         >
