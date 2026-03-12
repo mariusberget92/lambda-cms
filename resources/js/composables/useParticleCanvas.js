@@ -98,8 +98,10 @@ export function useParticleCanvas(canvasRef) {
     observer = new ResizeObserver(() => {
       canvas.width  = parent.clientWidth
       canvas.height = parent.clientHeight
-      // Particles keep their positions; toroidal wrap corrects any
-      // out-of-bounds state on the next animation frame automatically.
+      // Resizing the canvas bitmap resets its drawing state but does NOT
+      // invalidate the 2D context — ctx remains usable without re-calling
+      // getContext('2d'). Particles keep their positions; toroidal wrap
+      // corrects any out-of-bounds state on the next animation frame.
     })
     observer.observe(parent)
   }
