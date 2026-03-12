@@ -74,6 +74,11 @@ class Post extends Model
         return $query->where("status", "draft");
     }
 
+    public function scopeScheduled($query)
+    {
+        return $query->where("status", "scheduled");
+    }
+
     public function scopeSearch($query, ?string $term)
     {
         if (blank($term)) {
@@ -108,6 +113,11 @@ class Post extends Model
     public function isPublished(): bool
     {
         return $this->status === "published";
+    }
+
+    public function isScheduled(): bool
+    {
+        return $this->status === "scheduled";
     }
 
     public function commentsOpen(): bool

@@ -53,6 +53,7 @@
       >
         <option value="">All statuses</option>
         <option value="published">Published</option>
+        <option value="scheduled">Scheduled</option>
         <option value="draft">Draft</option>
       </select>
     </div>
@@ -97,12 +98,23 @@
             <td class="px-4 py-3 hidden md:table-cell">
               <span
                 class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium"
-                :class="post.status === 'published'
-                  ? 'bg-status-success-bg text-status-success-fg'
-                  : 'bg-status-warning-bg text-status-warning-fg'"
+                :class="{
+                  'bg-status-success-bg text-status-success-fg': post.status === 'published',
+                  'bg-indigo-50 text-indigo-700':                 post.status === 'scheduled',
+                  'bg-status-warning-bg text-status-warning-fg': post.status === 'draft',
+                }"
               >
-                <span class="w-1.5 h-1.5 rounded-full" :class="post.status === 'published' ? 'bg-status-success-fg' : 'bg-status-warning-fg'"></span>
-                {{ post.status === 'published' ? 'Published' : 'Draft' }}
+                <span
+                  class="w-1.5 h-1.5 rounded-full"
+                  :class="{
+                    'bg-status-success-fg': post.status === 'published',
+                    'bg-indigo-500':         post.status === 'scheduled',
+                    'bg-status-warning-fg': post.status === 'draft',
+                  }"
+                ></span>
+                <template v-if="post.status === 'published'">Published</template>
+                <template v-else-if="post.status === 'scheduled'">Scheduled · {{ post.published_at }}</template>
+                <template v-else>Draft</template>
               </span>
             </td>
             <td class="px-4 py-3 hidden lg:table-cell text-muted-foreground text-xs">

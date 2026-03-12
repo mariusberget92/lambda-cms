@@ -36,6 +36,13 @@
           Posts
         </SidebarLink>
 
+        <SidebarLink :href="route('calendar')" :active="currentRoute === 'calendar'">
+          <template #icon>
+            <Calendar class="w-4 h-4" />
+          </template>
+          Calendar
+        </SidebarLink>
+
         <SidebarLink :href="route('categories.index')" :active="currentRoute?.startsWith('categories.')">
           <template #icon>
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -171,7 +178,7 @@
 <script setup>
 import { computed, onMounted } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
-import { Sun, Moon } from "lucide-vue-next";
+import { Sun, Moon, Calendar } from "lucide-vue-next";
 import SidebarLink from "@/Components/SidebarLink.vue";
 import { useTheme } from "@/composables/useTheme.js";
 

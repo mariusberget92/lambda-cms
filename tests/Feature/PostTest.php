@@ -43,6 +43,58 @@ class PostTest extends TestCase
         $this->actingAs($this->makeUser())->get('/posts')->assertOk();
     }
 
+    // ── Scheduled Scope ───────────────────────────────────────────────────────
+
+    public function test_scope_scheduled_returns_only_scheduled_posts(): void
+    {
+        $user = $this->makeUser();
+        Post::factory()->create(['user_id' => $user->id, 'status' => 'published']);
+        Post::factory()->create(['user_id' => $user->id, 'status' => 'draft']);
+        $scheduled = Post::factory()->create([
+            'user_id'      => $user->id,
+            'status'       => 'scheduled',
+            'published_at' => now()->addDay(),
+        ]);
+
+        $results = Post::scheduled()->get();
+
+        $this->assertCount(1, $results);
+        $this->assertEquals($scheduled->id, $results->first()->id);
+    }
+
+    public function test_is_scheduled_returns_true_for_scheduled_post(): void
+    {
+        $user = $this->makeUser();
+        $post = Post::factory()->create([
+            'user_id'      => $user->id,
+            'status'       => 'scheduled',
+            'published_at' => now()->addDay(),
+        ]);
+
+        $this->assertTrue($post->isScheduled());
+    }
+
+    public function test_is_scheduled_returns_false_for_draft_post(): void
+    {
+        $user = $this->makeUser();
+        $post = Post::factory()->create(['user_id' => $user->id, 'status' => 'draft']);
+
+        $this->assertFalse($post->isScheduled());
+    }
+
+    public function test_scope_published_excludes_scheduled_posts(): void
+    {
+        $user = $this->makeUser();
+        Post::factory()->create(['user_id' => $user->id, 'status' => 'published']);
+        Post::factory()->create([
+            'user_id'      => $user->id,
+            'status'       => 'scheduled',
+            'published_at' => now()->addDay(),
+        ]);
+
+        $this->assertCount(1, Post::published()->get());
+    }
+
     // ── Create / Store ────────────────────────────────────────────────────────
 
     public function test_user_can_create_a_draft_post(): void
@@ -562,5 +614,199 @@ class PostTest extends TestCase
                     ->component('Posts/Edit')
                     ->where('post.meta_keywords', 'test, keywords')
             );
+    }
+
+    // ── Scheduling ────────────────────────────────────────────────────────────
+
+    public function test_can_create_scheduled_post_with_future_date(): void
+    {
+        $user     = $this->makeUser();
+        $future   = now()->addDay()->format('Y-m-d\TH:i');
+
+        $this->actingAs($user)->post('/posts', [
+            'title'        => 'Scheduled Post',
+            'status'       => 'scheduled',
+            'published_at' => $future,
+        ])->assertRedirect('/posts');
+
+        $post = Post::where('title', 'Scheduled Post')->first();
+        $this->assertEquals('scheduled', $post->status);
+        $this->assertEquals(
+            \Illuminate\Support\Carbon::parse($future)->toDateTimeString(),
+            $post->published_at->toDateTimeString()
+        );
+    }
+
+    public function test_cannot_schedule_post_without_published_at(): void
+    {
+        $user = $this->makeUser();
+
+        $this->actingAs($user)->post('/posts', [
+            'title'  => 'Bad Schedule',
+            'status' => 'scheduled',
+        ])->assertSessionHasErrors('published_at');
+    }
+
+    public function test_cannot_schedule_post_with_past_published_at(): void
+    {
+        $user = $this->makeUser();
+
+        $this->actingAs($user)->post('/posts', [
+            'title'        => 'Past Schedule',
+            'status'       => 'scheduled',
+            'published_at' => now()->subHour()->format('Y-m-d\TH:i'),
+        ])->assertSessionHasErrors('published_at');
+    }
+
+    public function test_saving_as_draft_clears_published_at(): void
+    {
+        $user = $this->makeUser();
+        $post = Post::factory()->create([
+            'user_id'      => $user->id,
+            'status'       => 'scheduled',
+            'published_at' => now()->addDay(),
+        ]);
+
+        $this->actingAs($user)->put("/posts/{$post->id}", [
+            'title'  => $post->title,
+            'status' => 'draft',
+        ])->assertRedirect('/posts');
+
+        $this->assertNull($post->fresh()->published_at);
+        $this->assertEquals('draft', $post->fresh()->status);
+    }
+
+    public function test_can_reschedule_a_published_post(): void
+    {
+        $user = $this->makeUser();
+        $post = Post::factory()->create([
+            'user_id'      => $user->id,
+            'status'       => 'published',
+            'published_at' => now()->subDay(),
+        ]);
+
+        $future = now()->addDay()->format('Y-m-d\TH:i');
+
+        $this->actingAs($user)->put("/posts/{$post->id}", [
+            'title'        => $post->title,
+            'status'       => 'scheduled',
+            'published_at' => $future,
+        ])->assertRedirect('/posts');
+
+        $this->assertEquals('scheduled', $post->fresh()->status);
+        $this->assertEquals(
+            \Illuminate\Support\Carbon::parse($future)->toDateTimeString(),
+            $post->fresh()->published_at->toDateTimeString()
+        );
+    }
+
+    public function test_republishing_preserves_original_published_at(): void
+    {
+        $user      = $this->makeUser();
+        $original  = now()->subDays(5);
+        $post      = Post::factory()->create([
+            'user_id'      => $user->id,
+            'status'       => 'published',
+            'published_at' => $original,
+        ]);
+
+        $this->actingAs($user)->put("/posts/{$post->id}", [
+            'title'        => $post->title,
+            'status'       => 'published',
+            'published_at' => now()->format('Y-m-d\TH:i'), // incoming value must be ignored
+        ])->assertRedirect('/posts');
+
+        $this->assertEquals(
+            $original->toDateTimeString(),
+            $post->fresh()->published_at->toDateTimeString()
+        );
+    }
+
+    // ── Publish Scheduled Command ─────────────────────────────────────────────
+
+    public function test_command_publishes_overdue_scheduled_posts(): void
+    {
+        $user = $this->makeUser();
+        $post = Post::factory()->create([
+            'user_id'      => $user->id,
+            'status'       => 'scheduled',
+            'published_at' => now()->subMinute(),
+        ]);
+
+        $this->artisan('posts:publish-scheduled')->assertSuccessful();
+
+        $this->assertEquals('published', $post->fresh()->status);
+    }
+
+    public function test_command_does_not_publish_future_scheduled_posts(): void
+    {
+        $user = $this->makeUser();
+        $post = Post::factory()->create([
+            'user_id'      => $user->id,
+            'status'       => 'scheduled',
+            'published_at' => now()->addHour(),
+        ]);
+
+        $this->artisan('posts:publish-scheduled')->assertSuccessful();
+
+        $this->assertEquals('scheduled', $post->fresh()->status);
+    }
+
+    public function test_command_does_not_affect_draft_or_published_posts(): void
+    {
+        $user    = $this->makeUser();
+        $draft   = Post::factory()->create(['user_id' => $user->id, 'status' => 'draft']);
+        $published = Post::factory()->create([
+            'user_id'      => $user->id,
+            'status'       => 'published',
+            'published_at' => now()->subDay(),
+        ]);
+
+        $this->artisan('posts:publish-scheduled')->assertSuccessful();
+
+        $this->assertEquals('draft',     $draft->fresh()->status);
+        $this->assertEquals('published', $published->fresh()->status);
+    }
+
+    public function test_command_preserves_original_published_at_after_publishing(): void
+    {
+        $user   = $this->makeUser();
+        $target = now()->subMinutes(5);
+        $post   = Post::factory()->create([
+            'user_id'      => $user->id,
+            'status'       => 'scheduled',
+            'published_at' => $target,
+        ]);
+
+        $this->artisan('posts:publish-scheduled')->assertSuccessful();
+
+        $this->assertEquals(
+            $target->toDateTimeString(),
+            $post->fresh()->published_at->toDateTimeString()
+        );
+    }
+
+    // ── Index scheduled badge ─────────────────────────────────────────────────
+
+    public function test_index_includes_scheduled_post_with_datetime(): void
+    {
+        $user   = $this->makeUser();
+        $future = now()->addDay();
+        Post::factory()->create([
+            'user_id'      => $user->id,
+            'status'       => 'scheduled',
+            'published_at' => $future,
+        ]);
+
+        $response = $this->actingAs($user)->get('/posts')->assertOk();
+
+        $posts = $response->original->getData()['page']['props']['posts']['data'];
+        $scheduledPost = collect($posts)->firstWhere('status', 'scheduled');
+
+        $this->assertNotNull($scheduledPost);
+        $this->assertStringContainsString(
+            $future->format('Y-m-d'),
+            $scheduledPost['published_at']
+        );
     }
 }

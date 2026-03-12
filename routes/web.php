@@ -14,6 +14,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserController;
@@ -89,6 +90,9 @@ Route::middleware('installed')->group(function () {
         Route::resource('posts',      PostController::class)->except(['show']);
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::resource('tags',       TagController::class)->except(['show']);
+
+        Route::get('/calendar',      [CalendarController::class, 'index'])->name('calendar');
+        Route::get('/calendar/data', [CalendarController::class, 'data'])->name('calendar.data');
 
         Route::get('/profile',           [ProfileController::class, 'show'])->name('profile');
         Route::post('/profile/info',     [ProfileController::class, 'updateInfo'])->name('profile.info');
