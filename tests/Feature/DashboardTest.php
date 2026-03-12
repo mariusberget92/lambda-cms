@@ -106,9 +106,16 @@ class DashboardTest extends TestCase
     public function test_dashboard_recent_posts_ordered_by_updated_at(): void
     {
         $user  = $this->makeUser();
-        $older = Post::factory()->create(['user_id' => $user->id]);
-        $newer = Post::factory()->create(['user_id' => $user->id]);
-        $older->update(['title' => 'Recently touched post']);
+        $older = Post::factory()->create([
+            'user_id'    => $user->id,
+            'updated_at' => now()->subMinutes(10),
+        ]);
+        $newer = Post::factory()->create([
+            'user_id'    => $user->id,
+            'updated_at' => now()->subMinutes(5),
+        ]);
+        // Touch $older so its updated_at is now the most recent
+        $older->update(['title' => 'Recently touched post', 'updated_at' => now()]);
 
         $this->actingAs($user)
             ->get('/dashboard')
