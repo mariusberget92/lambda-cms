@@ -82,10 +82,17 @@
             <h3 class="text-sm font-medium mb-3">Status</h3>
             <div class="space-y-2">
               <label class="flex items-center gap-3 cursor-pointer">
-                <input type="radio" v-model="form.status" value="draft" class="accent-primary" />
+                <input type="radio" v-model="form.status" value="draft" class="accent-primary" @change="onStatusChange('draft')" />
                 <div>
                   <span class="text-sm font-medium">Draft</span>
                   <p class="text-xs text-muted-foreground">Only visible to you</p>
+                </div>
+              </label>
+              <label class="flex items-center gap-3 cursor-pointer">
+                <input type="radio" v-model="form.status" value="scheduled" class="accent-primary" />
+                <div>
+                  <span class="text-sm font-medium">Scheduled</span>
+                  <p class="text-xs text-muted-foreground">Auto-publishes at a set time</p>
                 </div>
               </label>
               <label class="flex items-center gap-3 cursor-pointer">
@@ -95,6 +102,22 @@
                   <p class="text-xs text-muted-foreground">Visible to everyone</p>
                 </div>
               </label>
+            </div>
+
+            <!-- Datetime picker — only when Scheduled -->
+            <div v-show="form.status === 'scheduled'" class="mt-3 pt-3 border-t border-border">
+              <label class="text-xs font-medium text-muted-foreground mb-1 block">Publish on</label>
+              <input
+                type="datetime-local"
+                v-model="form.published_at"
+                class="w-full rounded-md border bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+              <p v-if="daysUntilPublish" class="text-xs text-indigo-600 mt-1">
+                ⏱ publishes in {{ daysUntilPublish }} day{{ daysUntilPublish === 1 ? '' : 's' }}
+              </p>
+              <p v-if="form.errors.published_at" class="text-xs text-destructive mt-1">
+                {{ form.errors.published_at }}
+              </p>
             </div>
           </div>
 
@@ -258,8 +281,8 @@
               <span class="font-mono text-xs truncate max-w-[10rem]">{{ post.slug }}</span>
             </div>
             <div v-if="post.published_at" class="flex justify-between text-muted-foreground">
-              <span>Published</span>
-              <span>{{ post.published_at }}</span>
+              <span>{{ post.status === 'scheduled' ? 'Scheduled' : 'Published' }}</span>
+              <span>{{ post.published_at?.replace('T', ' ') }}</span>
             </div>
           </div>
         </div>
@@ -269,7 +292,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { Head, useForm } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import TiptapEditor from "@/Components/TiptapEditor.vue";
@@ -286,6 +309,7 @@ const form = useForm({
   excerpt:           props.post.excerpt ?? "",
   body:              props.post.body ?? "",
   status:            props.post.status,
+  published_at:      props.post.published_at ?? '',
   category_ids:      props.post.category_ids ?? [],
   tag_ids:           props.post.tag_ids ?? [],
   featured_image_id: props.post.featured_image_id ?? null,
@@ -294,6 +318,18 @@ const form = useForm({
   meta_description:  props.post.meta_description ?? null,
   meta_keywords:     props.post.meta_keywords ?? null,
 });
+
+const daysUntilPublish = computed(() => {
+  if (!form.published_at) return null
+  const diff = Math.ceil((new Date(form.published_at) - Date.now()) / 86400000)
+  return diff > 0 ? diff : null
+})
+
+function onStatusChange(newStatus) {
+  if (newStatus === 'draft') {
+    form.published_at = ''
+  }
+}
 
 const showMediaPicker = ref(false)
 const featuredImage   = ref(props.post.featured_image ?? null)
