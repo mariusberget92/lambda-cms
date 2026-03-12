@@ -785,4 +785,28 @@ class PostTest extends TestCase
             $post->fresh()->published_at->toDateTimeString()
         );
     }
+
+    // ── Index scheduled badge ─────────────────────────────────────────────────
+
+    public function test_index_includes_scheduled_post_with_datetime(): void
+    {
+        $user   = $this->makeUser();
+        $future = now()->addDay();
+        Post::factory()->create([
+            'user_id'      => $user->id,
+            'status'       => 'scheduled',
+            'published_at' => $future,
+        ]);
+
+        $response = $this->actingAs($user)->get('/posts')->assertOk();
+
+        $posts = $response->original->getData()['page']['props']['posts']['data'];
+        $scheduledPost = collect($posts)->firstWhere('status', 'scheduled');
+
+        $this->assertNotNull($scheduledPost);
+        $this->assertStringContainsString(
+            $future->format('Y-m-d'),
+            $scheduledPost['published_at']
+        );
+    }
 }
