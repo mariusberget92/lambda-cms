@@ -63,6 +63,17 @@
       <table class="w-full text-sm">
         <thead class="bg-muted/50 text-muted-foreground">
           <tr>
+            <!-- Select-all checkbox -->
+            <th class="px-4 py-3 w-10">
+              <input
+                type="checkbox"
+                :checked="isAllSelected"
+                :indeterminate.prop="selectedIds.length > 0 && !isAllSelected"
+                @change="toggleAll"
+                class="rounded border-border"
+                aria-label="Select all posts"
+              />
+            </th>
             <th class="text-left font-medium px-4 py-3">Title</th>
             <th class="text-left font-medium px-4 py-3 hidden sm:table-cell">Author</th>
             <th class="text-left font-medium px-4 py-3 hidden md:table-cell">Categories</th>
@@ -74,7 +85,7 @@
         </thead>
         <tbody class="divide-y divide-border">
           <tr v-if="posts.data.length === 0">
-            <td colspan="7" class="px-4 py-12 text-center text-muted-foreground">
+            <td colspan="8" class="px-4 py-12 text-center text-muted-foreground">
               <svg class="w-8 h-8 mx-auto mb-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
@@ -85,7 +96,18 @@
             v-for="post in posts.data"
             :key="post.id"
             class="hover:bg-muted/30 transition-colors group"
+            :class="{ 'bg-muted/20': selectedIds.includes(post.id) }"
           >
+            <!-- Per-row checkbox -->
+            <td class="px-4 py-3">
+              <input
+                type="checkbox"
+                :checked="selectedIds.includes(post.id)"
+                @change="toggleRow(post.id)"
+                class="rounded border-border"
+                :aria-label="`Select ${post.title}`"
+              />
+            </td>
             <td class="px-4 py-3">
               <div class="font-medium line-clamp-1">{{ post.title }}</div>
               <div v-if="post.excerpt" class="text-xs text-muted-foreground line-clamp-1 mt-0.5 hidden sm:block">{{ post.excerpt }}</div>
@@ -199,12 +221,86 @@
         </div>
       </div>
     </Transition>
+
+    <!-- Bulk delete confirmation modal -->
+    <Transition name="fade">
+      <div v-if="showBulkDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="showBulkDeleteModal = false" />
+        <div class="relative bg-card border rounded-xl shadow-xl w-full max-w-sm p-6">
+          <h3 class="font-semibold text-base mb-2">
+            Delete {{ selectedIds.length }} post{{ selectedIds.length === 1 ? '' : 's' }}?
+          </h3>
+          <p class="text-sm text-muted-foreground mb-5">This cannot be undone.</p>
+          <div class="flex gap-3 justify-end">
+            <button
+              type="button"
+              @click="showBulkDeleteModal = false"
+              class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              @click="executeBulkDelete"
+              class="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- Sticky bulk action toolbar (z-40, below modals at z-50) -->
+    <Transition name="slide-up">
+      <div
+        v-if="selectedIds.length > 0"
+        class="fixed bottom-0 left-0 right-0 z-40 bg-card border-t shadow-lg"
+      >
+        <div class="max-w-screen-xl mx-auto px-4 py-3 flex items-center gap-3">
+          <span class="text-sm font-medium text-muted-foreground">
+            {{ selectedIds.length }} selected
+          </span>
+          <div class="flex items-center gap-2 ml-2">
+            <button
+              type="button"
+              @click="bulkAction('publish')"
+              class="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              Publish
+            </button>
+            <button
+              type="button"
+              @click="bulkAction('draft')"
+              class="rounded-md border px-3 py-1.5 text-sm font-medium hover:bg-accent transition-colors"
+            >
+              Draft
+            </button>
+            <button
+              type="button"
+              @click="confirmBulkDelete"
+              class="rounded-md border border-destructive/30 px-3 py-1.5 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
+            >
+              Delete
+            </button>
+          </div>
+          <button
+            type="button"
+            @click="selectedIds = []"
+            class="ml-auto text-sm text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Clear selection"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+    </Transition>
   </AppLayout>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { Head, router, usePage } from "@inertiajs/vue3";
+import { ref, computed, watch } from "vue";
+import { Head, router } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 
 const props = defineProps({
@@ -233,6 +329,60 @@ function applyFilters() {
   }, 300);
 }
 
+// -- Selection state --
+
+const selectedIds = ref([]);
+const showBulkDeleteModal = ref(false);
+
+// Reset selection whenever Inertia refreshes the posts prop
+watch(
+  () => props.posts,
+  () => { selectedIds.value = []; }
+);
+
+const isAllSelected = computed(() =>
+  props.posts.data.length > 0 &&
+  props.posts.data.every((p) => selectedIds.value.includes(p.id))
+);
+
+function toggleAll() {
+  if (isAllSelected.value) {
+    selectedIds.value = [];
+  } else {
+    selectedIds.value = props.posts.data.map((p) => p.id);
+  }
+}
+
+function toggleRow(id) {
+  const idx = selectedIds.value.indexOf(id);
+  if (idx === -1) {
+    selectedIds.value.push(id);
+  } else {
+    selectedIds.value.splice(idx, 1);
+  }
+}
+
+// -- Bulk actions --
+
+function bulkAction(action) {
+  router.post(
+    route("posts.bulk"),
+    { action, ids: selectedIds.value },
+    { onSuccess: () => { selectedIds.value = []; } }
+  );
+}
+
+function confirmBulkDelete() {
+  showBulkDeleteModal.value = true;
+}
+
+function executeBulkDelete() {
+  showBulkDeleteModal.value = false;
+  bulkAction("delete");
+}
+
+// -- Single-post delete --
+
 const deleteTarget = ref(null);
 function confirmDelete(post) {
   deleteTarget.value = post;
@@ -248,4 +398,7 @@ function deletePost() {
 <style scoped>
 .fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
+
+.slide-up-enter-active, .slide-up-leave-active { transition: transform 0.2s ease; }
+.slide-up-enter-from, .slide-up-leave-to { transform: translateY(100%); }
 </style>
