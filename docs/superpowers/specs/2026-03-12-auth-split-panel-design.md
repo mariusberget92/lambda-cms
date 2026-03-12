@@ -27,13 +27,14 @@ Replace the current centered-card `AuthLayout.vue` with a full-viewport split-pa
 ### Right Panel
 
 - Width: `w-full md:w-1/2`
-- Background: `var(--background)` — respects the existing light/dark theme toggle
-- Layout: `flex flex-col items-center justify-center` with adequate padding
-- Contains `<slot />` — the auth form rendered by each page
+- Background: `bg-background` (Tailwind semantic class) — respects the existing light/dark theme toggle
+- Outer layout: `flex flex-col items-center justify-center p-8`
+- The existing `max-w-sm` wrapper from the current `AuthLayout.vue` is **replaced** with an inner content wrapper: `<div class="w-full max-w-sm">` containing `<slot />`. This preserves the narrow, card-like form appearance at all viewport sizes while removing the old layout's outer centering structure.
+- Auth page inputs use `w-full` and will fill the `max-w-sm` container cleanly.
 
 ### Dark Mode Toggle
 
-Remains at `fixed top-4 right-4` (current position), sitting above both panels on all screen sizes.
+Remains at `fixed top-4 right-4 z-10` — the explicit `z-10` ensures it sits above both panels regardless of any stacking contexts introduced by the canvas or its parent element.
 
 ---
 
@@ -45,8 +46,10 @@ Remains at `fixed top-4 right-4` (current position), sitting above both panels o
 
 ```js
 const { init, cleanup } = useParticleCanvas(canvasRef)
-// init()    — call in onMounted
-// cleanup() — call in onUnmounted (cancels requestAnimationFrame)
+// canvasRef — a Vue ref<HTMLCanvasElement> bound to the <canvas> element via ref="canvasRef" in the template
+// init()    — call in onMounted; synchronously sizes the canvas, scatters particles, starts the RAF loop.
+//             If canvasRef.value is null, returns immediately (no-op).
+// cleanup() — call in onUnmounted; cancels requestAnimationFrame and disconnects ResizeObserver
 ```
 
 ### Particle Configuration
@@ -73,10 +76,14 @@ Cleared each frame to `#2e3440`. Fixed — does not respond to the application t
 
 ### Sizing
 
-A `ResizeObserver` watches the canvas element's parent. On resize:
+`init()` sets `canvas.width` and `canvas.height` synchronously from `canvas.parentElement.clientWidth` / `clientHeight` before scattering particles or starting the animation loop.
+
+A `ResizeObserver` is then attached to `canvas.parentElement` to handle subsequent resizes. On each resize callback:
 1. `canvas.width` and `canvas.height` are updated to the parent's `clientWidth` / `clientHeight`
 2. Existing particle positions are **preserved** (not re-randomised)
 3. The next animation frame renders at the new dimensions
+
+The `ResizeObserver` is disconnected in `cleanup()`.
 
 ### Animation Loop
 
