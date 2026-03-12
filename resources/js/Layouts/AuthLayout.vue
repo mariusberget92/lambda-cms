@@ -14,18 +14,24 @@ onUnmounted(cleanup)
 </script>
 
 <template>
-  <div class="flex h-screen overflow-hidden">
+  <!-- Full-viewport backdrop -->
+  <div class="min-h-screen bg-background flex items-center justify-center p-8">
 
-    <!-- Left panel: particle canvas (desktop only) -->
-    <div class="hidden md:flex w-1/2 bg-[#2e3440]" aria-hidden="true">
-      <canvas ref="canvasRef" class="w-full h-full" />
-    </div>
+    <!-- 80% centered box with rounded corners -->
+    <div class="w-4/5 flex rounded-2xl overflow-hidden shadow-2xl min-h-[480px]">
 
-    <!-- Right panel: auth form -->
-    <div class="w-full md:w-1/2 bg-background flex flex-col items-center justify-center p-8">
-      <div class="w-full max-w-sm">
-        <slot />
+      <!-- Left panel: particle canvas (desktop only) -->
+      <div class="hidden md:flex w-1/2 bg-[#2e3440]" aria-hidden="true">
+        <canvas ref="canvasRef" class="w-full h-full" />
       </div>
+
+      <!-- Right panel: auth form -->
+      <div class="w-full md:w-1/2 bg-background flex flex-col items-center justify-center p-8">
+        <div class="w-full max-w-sm">
+          <slot />
+        </div>
+      </div>
+
     </div>
 
     <!-- Dark mode toggle (sits above both panels) -->
