@@ -30,6 +30,7 @@ onUnmounted(cleanup)
 
     <!-- Dark mode toggle (sits above both panels) -->
     <button
+      type="button"
       @click="toggleTheme"
       class="fixed top-4 right-4 z-10 inline-flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
       :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
