@@ -212,4 +212,45 @@ class PostController extends Controller
             ->route('posts.index')
             ->with('status', 'Post deleted.');
     }
+
+    public function bulk(Request $request)
+    {
+        $validated = $request->validate([
+            'action' => ['required', 'in:publish,draft,delete'],
+            'ids'    => ['required', 'array', 'min:1'],
+            'ids.*'  => ['integer', 'exists:posts,id'],
+        ]);
+        $posts = Post::whereIn('id', $validated['ids'])->get();
+
+        // Authorize each post individually — abort immediately if any fail.
+        // Admins can operate on any post; regular users only their own.
+        foreach ($posts as $post) {
+            if (! ($post->user_id === $request->user()->id || $request->user()->hasRole('administrator'))) {
+                abort(403, 'You are not authorised to perform this action on one or more selected posts.');
+            }
+        }
+
+        // Use ->each() to fire Eloquent model events on every record
+        // (unlike bulk ->update() which bypasses events).
+        match ($validated['action']) {
+            'publish' => $posts->each(function (Post $post) {
+                $post->update([
+                    'status'       => 'published',
+                    'published_at' => $post->published_at ?? Carbon::now(),
+                ]);
+            }),
+            'draft' => $posts->each(fn (Post $post) => $post->update([
+                'status'       => 'draft',
+                'published_at' => null,
+            ])),
+            'delete' => $posts->each->delete(),
+        };
+
+        $count  = $posts->count();
+        $labels = ['publish' => 'published', 'draft' => 'drafted', 'delete' => 'deleted'];
+        $label  = $labels[$validated['action']];
+
+        return redirect()->back()->with('status', "{$count} post" . ($count === 1 ? '' : 's') . " {$label}.");
+    }
+
 }

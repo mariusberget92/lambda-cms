@@ -87,7 +87,8 @@ Route::middleware('installed')->group(function () {
     Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        Route::resource('posts',      PostController::class)->except(['show']);
+        Route::post('/posts/bulk', [PostController::class, 'bulk'])->name('posts.bulk');
+        Route::resource('posts',   PostController::class)->except(['show']);
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::resource('tags',       TagController::class)->except(['show']);
 

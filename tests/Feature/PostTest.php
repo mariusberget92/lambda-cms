@@ -809,4 +809,151 @@ class PostTest extends TestCase
             $scheduledPost['published_at']
         );
     }
+
+    // ── Bulk Actions ──────────────────────────────────────────────────────────
+
+    public function test_user_can_bulk_publish_own_posts(): void
+    {
+        $user  = $this->makeUser();
+        $post1 = Post::factory()->create(["user_id" => $user->id, "status" => "draft", "published_at" => null]);
+        $post2 = Post::factory()->create(["user_id" => $user->id, "status" => "draft", "published_at" => null]);
+
+        $this->actingAs($user)
+            ->post("/posts/bulk", ["action" => "publish", "ids" => [$post1->id, $post2->id]])
+            ->assertRedirect();
+
+        $this->assertEquals("published", $post1->fresh()->status);
+        $this->assertEquals("published", $post2->fresh()->status);
+        $this->assertNotNull($post1->fresh()->published_at);
+    }
+
+    public function test_user_can_bulk_draft_own_posts(): void
+    {
+        $user  = $this->makeUser();
+        $post1 = Post::factory()->create(["user_id" => $user->id, "status" => "published", "published_at" => now()->subDay()]);
+        $post2 = Post::factory()->create(["user_id" => $user->id, "status" => "published", "published_at" => now()->subDay()]);
+
+        $this->actingAs($user)
+            ->post("/posts/bulk", ["action" => "draft", "ids" => [$post1->id, $post2->id]])
+            ->assertRedirect();
+
+        $this->assertEquals("draft", $post1->fresh()->status);
+        $this->assertEquals("draft", $post2->fresh()->status);
+    }
+
+    public function test_user_can_bulk_delete_own_posts(): void
+    {
+        $user  = $this->makeUser();
+        $post1 = Post::factory()->create(["user_id" => $user->id]);
+        $post2 = Post::factory()->create(["user_id" => $user->id]);
+
+        $this->actingAs($user)
+            ->post("/posts/bulk", ["action" => "delete", "ids" => [$post1->id, $post2->id]])
+            ->assertRedirect();
+
+        $this->assertDatabaseMissing("posts", ["id" => $post1->id]);
+        $this->assertDatabaseMissing("posts", ["id" => $post2->id]);
+    }
+
+    public function test_admin_can_bulk_action_any_posts(): void
+    {
+        $admin  = $this->makeAdmin();
+        $author = $this->makeUser();
+        $post   = Post::factory()->create(["user_id" => $author->id, "status" => "draft", "published_at" => null]);
+
+        $this->actingAs($admin)
+            ->post("/posts/bulk", ["action" => "publish", "ids" => [$post->id]])
+            ->assertRedirect();
+
+        $this->assertEquals("published", $post->fresh()->status);
+    }
+
+    public function test_user_cannot_bulk_action_other_users_posts(): void
+    {
+        $user  = $this->makeUser();
+        $other = $this->makeUser();
+        $post  = Post::factory()->create(["user_id" => $other->id, "status" => "draft"]);
+
+        $this->actingAs($user)
+            ->post("/posts/bulk", ["action" => "publish", "ids" => [$post->id]])
+            ->assertForbidden();
+    }
+
+    public function test_bulk_action_requires_valid_action(): void
+    {
+        $user = $this->makeUser();
+        $post = Post::factory()->create(["user_id" => $user->id]);
+
+        $this->actingAs($user)
+            ->withHeaders(['Accept' => 'application/json'])
+            ->post("/posts/bulk", ["action" => "nuke", "ids" => [$post->id]])
+            ->assertUnprocessable();
+    }
+
+    public function test_bulk_action_requires_at_least_one_id(): void
+    {
+        $user = $this->makeUser();
+
+        $this->actingAs($user)
+            ->withHeaders(['Accept' => 'application/json'])
+            ->post("/posts/bulk", ["action" => "publish", "ids" => []])
+            ->assertUnprocessable();
+    }
+
+    public function test_bulk_publish_sets_published_at_when_null(): void
+    {
+        $user = $this->makeUser();
+        $post = Post::factory()->create(["user_id" => $user->id, "status" => "draft", "published_at" => null]);
+
+        $this->actingAs($user)
+            ->post("/posts/bulk", ["action" => "publish", "ids" => [$post->id]])
+            ->assertRedirect();
+
+        $this->assertNotNull($post->fresh()->published_at);
+    }
+
+    public function test_bulk_publish_preserves_existing_published_at(): void
+    {
+        $user     = $this->makeUser();
+        $original = now()->subWeek()->startOfMinute();
+        $post     = Post::factory()->create([
+            "user_id"      => $user->id,
+            "status"       => "draft",
+            "published_at" => $original,
+        ]);
+
+        $this->actingAs($user)
+            ->post("/posts/bulk", ["action" => "publish", "ids" => [$post->id]])
+            ->assertRedirect();
+
+        $this->assertTrue($post->fresh()->published_at->equalTo($original));
+    }
+
+    public function test_bulk_draft_clears_published_at(): void
+    {
+        $user = $this->makeUser();
+        $post = Post::factory()->create([
+            "user_id"      => $user->id,
+            "status"       => "published",
+            "published_at" => now()->subDay(),
+        ]);
+
+        $this->actingAs($user)
+            ->post("/posts/bulk", ["action" => "draft", "ids" => [$post->id]])
+            ->assertRedirect();
+
+        $this->assertNull($post->fresh()->published_at);
+    }
+
+    public function test_bulk_action_returns_flash_message(): void
+    {
+        $user = $this->makeUser();
+        $post = Post::factory()->create(["user_id" => $user->id, "status" => "draft", "published_at" => null]);
+
+        $this->actingAs($user)
+            ->post("/posts/bulk", ["action" => "publish", "ids" => [$post->id]])
+            ->assertRedirect()
+            ->assertSessionHas("status", "1 post published.");
+    }
+
 }
