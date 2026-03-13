@@ -57,7 +57,9 @@ class PostTest extends TestCase
 
         $response->assertOk();
         $response->assertInertia(fn ($page) =>
-            $page->has('posts.data.0.featured_image_url')
+            $page->where('posts.data.0.featured_image_url', fn ($value) =>
+                is_string($value) && strlen($value) > 0
+            )
         );
     }
 

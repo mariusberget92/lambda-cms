@@ -41,7 +41,7 @@ class PostController extends Controller
                 'author'       => $post->author->name,
                 'categories'     => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name])->values(),
                 'tags'           => $post->tags->pluck('name'),
-                'comments_count'     => $post->comments_count,
+                'comments_count' => $post->comments_count,
                 'featured_image_url' => $post->featuredImage?->url,
             ]);
 
