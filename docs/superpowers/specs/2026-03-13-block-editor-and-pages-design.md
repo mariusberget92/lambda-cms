@@ -254,14 +254,14 @@ A new `PublicPageController` (separate from the admin `PageController`) serves c
 
 ### Catch-all route
 
-Registered **last** in `web.php`, after all other routes:
+Registered **last inside** the `Route::middleware('installed')->group(...)` block in `web.php`, immediately before its closing brace. It must stay inside that group so the `EnsureInstalled` middleware still runs — placing it outside would serve page responses before the CMS is set up:
 
 ```php
 Route::get('/{slug}', [PublicPageController::class, 'show'])
-    ->where('slug', '^(?!login|logout|dashboard|blog|feed|sitemap\.xml|posts|categories|tags|users|profile|settings|media|comments|pages|calendar|password|register|verify|install).*$');
+    ->where('slug', '^(?!login|logout|dashboard|blog|feed|sitemap\.xml|posts|categories|tags|users|profile|settings|media|comments|pages|calendar|password|register|verify).*$');
 ```
 
-Returns 404 if no published `Page` matches the slug. **Important:** The exclusion list in the regex must be kept in sync with all named routes in `web.php`. The pattern already includes `install`; any future route additions must also be added here.
+Returns 404 if no published `Page` matches the slug. **Important:** The exclusion list in the regex must be kept in sync with all named routes in `web.php`. Any future top-level route additions must also be added to the exclusion pattern.
 
 ---
 
@@ -346,7 +346,7 @@ resources/js/Components/BlockRenderer.vue
 ### Modified files
 ```
 app/Http/Controllers/BlogController.php        (pass use_block_editor + blocks in show() response for Blog/Show.vue)
-app/Http/Controllers/PostController.php        (add use_block_editor + blocks to store/update validation and fillable handling)
+app/Http/Controllers/PostController.php        (add use_block_editor + blocks to store/update validation and fillable; also add both fields to edit() Inertia response so Posts/Edit.vue can pre-populate the block editor)
 routes/web.php                                 (add pages routes + catch-all)
 resources/js/Layouts/AppLayout.vue             (add Pages sidebar entry)
 resources/js/Pages/Posts/Create.vue            (add tab switcher + BlockEditor)
