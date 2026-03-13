@@ -21,7 +21,7 @@ onUnmounted(cleanup)
     <div class="w-4/5 flex rounded-2xl overflow-hidden shadow-2xl min-h-[480px]">
 
       <!-- Left panel: particle canvas (desktop only) -->
-      <div class="hidden md:flex w-1/2 bg-[#2e3440]" aria-hidden="true">
+      <div class="hidden md:flex w-1/2 bg-[oklch(14%_0.01_260)]" aria-hidden="true">
         <canvas ref="canvasRef" class="w-full h-full" />
       </div>
 
