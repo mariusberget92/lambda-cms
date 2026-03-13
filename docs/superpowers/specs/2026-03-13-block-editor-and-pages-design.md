@@ -127,7 +127,12 @@ Top-level component. Props: `modelValue` (blocks array). Emits: `update:modelVal
 
 Internal state:
 - `selectedBlockId` — UUID of currently selected block (null = none)
-- `localBlocks` — reactive copy of modelValue, synced via watcher
+- `localBlocks` — internal working copy of the blocks array
+
+**State sync contract:**
+- On mount and whenever `modelValue` changes externally (e.g. parent clears blocks on tab switch), a `watch(props.modelValue, ..., { deep: true })` updates `localBlocks` to match.
+- Every mutation (`addBlock`, `removeBlock`, `moveBlock`, or a settings change emitted from a child) updates `localBlocks` and immediately emits `update:modelValue` with the new array. The parent never mutates blocks directly — it only writes down via prop, reads up via emit.
+- `localBlocks` is never re-initialised mid-session except when the parent changes `modelValue` from outside (tab switch clear path).
 
 Methods:
 - `addBlock(type)` — pushes a new block with UUID + default data for the type
@@ -153,7 +158,7 @@ resources/js/Components/BlockEditor/
     ├── VideoSettings.vue      URL text input + embedded preview (oembed via iframe)
     ├── DividerSettings.vue    Three-option style picker (line / dots / space)
     ├── CtaSettings.vue        Headline + text + button label + button URL inputs
-    └── HtmlSettings.vue       Raw textarea (only rendered in admin; role-guarded)
+    └── HtmlSettings.vue       Raw textarea (admin-only; role-guarded at two points: the `html` option is hidden in the block-type picker for non-admins, AND `BlockSettings.vue` renders a disabled placeholder instead of `HtmlSettings.vue` if a `html` block is somehow present and the user is not an administrator)
 ```
 
 ### Post editor integration: Tab switcher
@@ -190,7 +195,7 @@ All routes protected by `auth`, `verified`, and a `role:administrator` middlewar
 
 ### Pages/Index.vue
 
-Uses the existing `DataTable` component. Columns: Title, Slug, Status badge, Created date, Actions (Edit / Delete). Same patterns as Posts/Index.
+Uses the existing `DataTable` component. Columns: Title, Slug, Status badge, Created date, Actions (Edit / Delete). Same patterns as Posts/Index, including the delete confirmation dialog before a page is removed.
 
 ### Pages/Create.vue and Pages/Edit.vue
 
@@ -227,7 +232,13 @@ resources/js/Components/Blocks/
 
 When `post.use_block_editor` is `true`, replace the `v-html` body div with `<BlockRenderer :blocks="post.blocks" />`. Both paths remain in the template with a `v-if`/`v-else`.
 
-The `PostController::show()` method passes `use_block_editor` and `blocks` in the Inertia response for the post.
+`BlogController::show()` (the public blog handler at `GET /blog/{slug}`) must be updated to pass `use_block_editor` and `blocks` in the Inertia response for the post. Note: this is `BlogController`, not `PostController` — the admin `PostController` only handles the edit/create forms, not the public blog view.
+
+The existing `BlogController::show()` builds an explicit associative array for the post. Add `use_block_editor` and `blocks` to that array at the same level as `body`:
+```php
+'use_block_editor' => (bool) $post->use_block_editor,
+'blocks'           => $post->blocks, // null or array from JSON cast
+```
 
 ### Public page rendering
 
@@ -250,16 +261,17 @@ Route::get('/{slug}', [PublicPageController::class, 'show'])
     ->where('slug', '^(?!login|logout|dashboard|blog|feed|sitemap\.xml|posts|categories|tags|users|profile|settings|media|comments|pages|calendar|password|register|verify|install).*$');
 ```
 
-Returns 404 if no published `Page` matches the slug.
+Returns 404 if no published `Page` matches the slug. **Important:** The exclusion list in the regex must be kept in sync with all named routes in `web.php`. The pattern already includes `install`; any future route additions must also be added here.
 
 ---
 
 ## Error Handling
 
-- **Block add with empty state:** New blocks are created with safe empty defaults (empty string for text, null for media). The editor does not submit empty blocks — they are filtered out on save.
+- **Block add with empty state:** New blocks are created with safe empty defaults (empty string for text, null for media). Empty blocks (where all data fields are empty/null) are filtered out **client-side** before form submission — the `blocks` array passed to the form's submit handler excludes them. No server-side deep-structure validation is applied (admin-only input, trusted).
 - **Media deleted after block saved:** `ImageBlock.vue` and `GalleryBlock.vue` render with a fallback placeholder if `url` is empty or 404.
 - **Video URL invalid:** `VideoSettings.vue` validates YouTube/Vimeo URL format client-side. Invalid URLs show an error state in the preview; the block is still saveable.
 - **Slug collision on Pages:** Server-side unique validation on `pages.slug`. Edit form shows validation error if slug is taken.
+- **Server-side block validation:** On `POST /pages` and `PUT /pages/{page}`, and on the block-editor path of `POST /posts` / `PUT /posts/{post}`: `use_block_editor` must be boolean; `blocks` must be a nullable JSON array. Individual block structure is not deep-validated server-side (admin-only input, trusted). Validation rules: `'use_block_editor' => 'boolean'`, `'blocks' => 'nullable|array'`.
 - **Tab switch with content:** Client-side confirmation modal before switching modes. If user confirms, the previous mode's content is cleared from the form (not from the DB until saved).
 
 ---
@@ -267,19 +279,23 @@ Returns 404 if no published `Page` matches the slug.
 ## Testing
 
 - **PHPUnit (Feature tests):**
-  - `PageTest.php` — full CRUD: index requires admin, create/update stores valid blocks JSON, delete removes page, non-admin gets 403
-  - `PublicPageTest.php` — published page is accessible at `/{slug}`, draft returns 404, unknown slug returns 404
-  - `PostBlockTest.php` — post with `use_block_editor=true` returns `blocks` in Inertia response; `use_block_editor=false` returns `body` HTML
+  - `PageTest.php` — full CRUD: index requires admin, create/update stores valid blocks JSON, delete removes page, non-admin gets 403. Uses `PageFactory` for seeding test data.
+  - `PublicPageTest.php` — published page is accessible at `/{slug}`, draft returns 404, unknown slug returns 404. Uses `PageFactory`.
+  - `PostBlockTest.php` — post with `use_block_editor=true` returns `blocks` in Inertia response; `use_block_editor=false` returns `body` HTML.
+- **`PageFactory`** is used by the above feature tests to create Page records. It is not intended for seeders in v1.
+- **No bulk-delete for Pages in v1** — Pages/Index has single-row delete only (no bulk-action endpoint). Expected page counts are small.
 - **No Dusk/E2E tests** for the block editor UI itself (drag-and-drop testing is out of scope for v1)
 
 ---
 
 ## Dependencies
 
-- **`vuedraggable`** (`@he-tree/vue` or `vue-draggable-plus`) — drag-to-reorder in BlockList. Use `vue-draggable-plus` (Vue 3 compatible, actively maintained).
+- **`vue-draggable-plus`** — drag-to-reorder in BlockList. Must be installed before block editor component work begins: `npm install vue-draggable-plus`. Vue 3 compatible, actively maintained.
 - **No new backend packages required** — JSON column is native SQLite/MySQL, no separate package needed.
 - **Tiptap** — already installed, reused as-is for ParagraphSettings.vue.
-- **MediaPicker** — already exists as `Components/MediaPicker.vue`, reused as-is.
+- **MediaPicker** — already exists as `resources/js/Components/MediaPicker.vue`, reused as-is.
+
+> **Component path casing:** The existing project uses `resources/js/Components/` (uppercase `C`). All new component directories (`BlockEditor/`, `Blocks/`) follow this same convention.
 
 ---
 
@@ -329,7 +345,8 @@ resources/js/Components/BlockRenderer.vue
 
 ### Modified files
 ```
-app/Http/Controllers/PostController.php        (pass use_block_editor + blocks in show/edit responses)
+app/Http/Controllers/BlogController.php        (pass use_block_editor + blocks in show() response for Blog/Show.vue)
+app/Http/Controllers/PostController.php        (add use_block_editor + blocks to store/update validation and fillable handling)
 routes/web.php                                 (add pages routes + catch-all)
 resources/js/Layouts/AppLayout.vue             (add Pages sidebar entry)
 resources/js/Pages/Posts/Create.vue            (add tab switcher + BlockEditor)
