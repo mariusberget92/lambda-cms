@@ -60,35 +60,35 @@
 .dark {
   --background: oklch(14% 0.01 260);
   --foreground: #d8dee9;
-  --card: #3b4252;
+  --card: oklch(27% 0.01 260);
   --card-foreground: #d8dee9;
-  --popover: #3b4252;
+  --popover: oklch(27% 0.01 260);
   --popover-foreground: #d8dee9;
   --primary: #88c0d0;
-  --primary-foreground: #2e3440;
-  --secondary: #434c5e;
+  --primary-foreground: oklch(14% 0.01 260);
+  --secondary: oklch(32% 0.01 260);
   --secondary-foreground: #d8dee9;
-  --muted: #3b4252;
+  --muted: oklch(27% 0.01 260);
   --muted-foreground: #4c566a;
-  --accent: #4c566a;
+  --accent: oklch(37% 0.01 260);
   --accent-foreground: #eceff4;
   --destructive: #bf616a;
   --destructive-foreground: #eceff4;
-  --border: #434c5e;
-  --input: #434c5e;
+  --border: oklch(32% 0.01 260);
+  --input: oklch(32% 0.01 260);
   --ring: #88c0d0;
   --chart-1: #88c0d0;
   --chart-2: #8fbcbb;
   --chart-3: #a3be8c;
   --chart-4: #ebcb8b;
   --chart-5: #b48ead;
-  --sidebar: #3b4252;
+  --sidebar: oklch(20% 0.01 260);
   --sidebar-foreground: #d8dee9;
   --sidebar-primary: #88c0d0;
-  --sidebar-primary-foreground: #2e3440;
-  --sidebar-accent: #434c5e;
+  --sidebar-primary-foreground: oklch(14% 0.01 260);
+  --sidebar-accent: oklch(32% 0.01 260);
   --sidebar-accent-foreground: #d8dee9;
-  --sidebar-border: #434c5e;
+  --sidebar-border: oklch(32% 0.01 260);
   --sidebar-ring: #88c0d0;
 
   /* Role badge tokens — dark mode */
