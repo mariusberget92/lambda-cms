@@ -104,8 +104,18 @@
             />
           </td>
           <td>
-            <div class="font-medium line-clamp-1">{{ post.title }}</div>
-            <div v-if="post.excerpt" class="text-xs text-muted-foreground line-clamp-1 mt-0.5 hidden sm:block">{{ post.excerpt }}</div>
+            <div class="flex items-center gap-3">
+              <img
+                v-if="post.featured_image_url"
+                :src="post.featured_image_url"
+                alt=""
+                class="hidden sm:block w-10 h-7 rounded object-cover shrink-0 bg-muted"
+              />
+              <div>
+                <div class="font-medium line-clamp-1">{{ post.title }}</div>
+                <div v-if="post.excerpt" class="text-xs text-muted-foreground line-clamp-1 mt-0.5 hidden sm:block">{{ post.excerpt }}</div>
+              </div>
+            </div>
           </td>
           <td class="hidden sm:table-cell text-muted-foreground">{{ post.author }}</td>
           <td class="hidden md:table-cell text-muted-foreground text-xs">
