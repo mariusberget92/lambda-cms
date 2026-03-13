@@ -3,7 +3,7 @@ export function useParticleCanvas(canvasRef) {
   const PARTICLE_RADIUS      = 2
   const PARTICLE_SPEED       = 0.5
   const CONNECTION_THRESHOLD = 120
-  const BG_COLOR             = '#2e3440'
+  const BG_COLOR             = 'oklch(14% 0.01 260)'
   const PARTICLE_RGB         = '216, 222, 233'
   const PARTICLE_COLOR       = `rgba(${PARTICLE_RGB}, 0.85)`
   const LINE_BASE_OPACITY    = 0.3
