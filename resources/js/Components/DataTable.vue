@@ -38,9 +38,13 @@ defineProps({
 
 <style scoped>
 :deep(thead th) {
-  @apply px-4 py-3 text-xs font-medium text-muted-foreground;
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
 }
 :deep(tbody td) {
-  @apply px-4 py-3;
+  padding: 0.75rem 1rem;
 }
 </style>
