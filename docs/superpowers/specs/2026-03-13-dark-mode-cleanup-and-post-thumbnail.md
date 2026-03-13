@@ -83,6 +83,8 @@ Two changes to `app/Http/Controllers/PostController.php`:
    $posts = Post::with('author:id,name', 'categories:id,name', 'tags:id,name', 'featuredImage:id,path,disk')
    ```
 
+   All three columns are required: `id` is needed by Eloquent's constrained eager-loading; `path` and `disk` are consumed by the `url` accessor (`Storage::disk($this->disk)->url($this->path)`). Do not reduce the select — omitting either `path` or `disk` silently breaks the URL.
+
 2. **Expose URL in transform** — add one line to the `->through()` closure (after `'comments_count'`):
 
    ```php
