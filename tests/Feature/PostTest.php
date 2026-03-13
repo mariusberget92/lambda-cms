@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\Media;
 use App\Models\Post;
 use App\Models\Setting;
 use App\Models\Tag;
@@ -41,6 +42,36 @@ class PostTest extends TestCase
     public function test_authenticated_user_can_access_posts_index(): void
     {
         $this->actingAs($this->makeUser())->get('/posts')->assertOk();
+    }
+
+    public function test_posts_index_includes_featured_image_url(): void
+    {
+        $user  = $this->makeUser();
+        $media = Media::factory()->create(['user_id' => $user->id]);
+        Post::factory()->create([
+            'user_id'           => $user->id,
+            'featured_image_id' => $media->id,
+        ]);
+
+        $response = $this->actingAs($user)->get('/posts');
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) =>
+            $page->has('posts.data.0.featured_image_url')
+        );
+    }
+
+    public function test_posts_index_featured_image_url_is_null_when_no_image(): void
+    {
+        $user = $this->makeUser();
+        Post::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($user)->get('/posts');
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) =>
+            $page->where('posts.data.0.featured_image_url', null)
+        );
     }
 
     // ── Scheduled Scope ───────────────────────────────────────────────────────

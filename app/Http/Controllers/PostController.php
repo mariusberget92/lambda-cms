@@ -14,7 +14,7 @@ class PostController extends Controller
 {
     public function index(Request $request)
     {
-        $posts = Post::with('author:id,name', 'categories:id,name', 'tags:id,name')
+        $posts = Post::with('author:id,name', 'categories:id,name', 'tags:id,name', 'featuredImage:id,path,disk')
             ->withCount('comments')
             ->search($request->input('search'))
             ->when(
@@ -41,7 +41,8 @@ class PostController extends Controller
                 'author'       => $post->author->name,
                 'categories'     => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name])->values(),
                 'tags'           => $post->tags->pluck('name'),
-                'comments_count' => $post->comments_count,
+                'comments_count'     => $post->comments_count,
+                'featured_image_url' => $post->featuredImage?->url,
             ]);
 
         return Inertia::render('Posts/Index', [
