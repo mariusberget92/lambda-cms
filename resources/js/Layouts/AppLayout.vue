@@ -43,6 +43,19 @@
           Calendar
         </SidebarLink>
 
+        <SidebarLink
+          v-if="user.role === 'administrator'"
+          :href="route('pages.index')"
+          :active="currentRoute?.startsWith('pages.')"
+        >
+          <template #icon>
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l6 6v8a2 2 0 01-2 2z"/>
+            </svg>
+          </template>
+          Pages
+        </SidebarLink>
+
         <SidebarLink :href="route('categories.index')" :active="currentRoute?.startsWith('categories.')">
           <template #icon>
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
