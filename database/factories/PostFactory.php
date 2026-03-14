@@ -24,6 +24,8 @@ class PostFactory extends Factory
             'comments_enabled' => true,
             'meta_title'       => null,
             'meta_description' => null,
+            'use_block_editor' => false,
+            'blocks'           => null,
         ];
     }
 
