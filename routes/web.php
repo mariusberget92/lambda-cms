@@ -17,6 +17,7 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -111,6 +112,7 @@ Route::middleware('installed')->group(function () {
 
     // ── Auth + verified + administrator role ─────────────────────────────────
     Route::middleware(['auth', 'verified', 'role:administrator'])->group(function () {
+        Route::resource('pages', PageController::class)->except(['show']);
         Route::resource('users', UserController::class)->except(['show']);
 
         Route::get('/comments',                     [CommentController::class, 'index'])->name('comments.index');
