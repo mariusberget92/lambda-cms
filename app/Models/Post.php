@@ -25,6 +25,8 @@ class Post extends Model
         "status",
         "published_at",
         "comments_enabled",
+        "use_block_editor",
+        "blocks",
         "meta_title",
         "meta_description",
         "meta_keywords",
@@ -33,6 +35,8 @@ class Post extends Model
     protected $casts = [
         "published_at"     => "datetime",
         "comments_enabled" => "boolean",
+        "use_block_editor" => "boolean",
+        "blocks"           => "array",
     ];
 
     // ─── Relationships ────────────────────────────────────────────────────────
