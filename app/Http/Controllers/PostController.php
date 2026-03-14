@@ -80,6 +80,8 @@ class PostController extends Controller
             'meta_title'       => ['nullable', 'string', 'max:100'],
             'meta_description' => ['nullable', 'string', 'max:300'],
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
+            'use_block_editor' => ['nullable', 'boolean'],
+            'blocks'           => ['nullable', 'array'],
         ]);
 
         $tagIds      = $validated['tag_ids'] ?? [];
@@ -139,6 +141,8 @@ class PostController extends Controller
                 'meta_title'        => $post->meta_title,
                 'meta_description'  => $post->meta_description,
                 'meta_keywords'     => $post->meta_keywords,
+                'use_block_editor'  => (bool) $post->use_block_editor,
+                'blocks'            => $post->blocks,
             ],
             'categories' => Category::orderBy('name')->get(['id', 'name']),
             'tags'       => Tag::orderBy('name')->get(['id', 'name']),
@@ -169,6 +173,8 @@ class PostController extends Controller
             'meta_title'       => ['nullable', 'string', 'max:100'],
             'meta_description' => ['nullable', 'string', 'max:300'],
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
+            'use_block_editor' => ['nullable', 'boolean'],
+            'blocks'           => ['nullable', 'array'],
         ]);
 
         $tagIds      = $validated['tag_ids'] ?? [];
