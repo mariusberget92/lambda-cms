@@ -84,6 +84,8 @@ class BlogController extends Controller
                 'slug'                => $post->slug,
                 'excerpt'             => $post->excerpt,
                 'body'                => $post->body,
+                'use_block_editor' => (bool) $post->use_block_editor,
+                'blocks'           => $post->blocks,
                 'published_at'        => $post->published_at?->toDateString(),
                 'featured_image_url'  => $post->featuredImage?->url,
                 'featured_image_alt'  => $post->featuredImage?->alt,
