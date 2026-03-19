@@ -1,6 +1,6 @@
 <!-- resources/js/Components/BlockEditor/blocks/HtmlSettings.vue -->
 <template>
-  <!-- Defensive self-guard: disabled for non-admins even if rendered directly -->
+  <!-- Defensive self-guard: shows admin-only message for non-admins even if rendered directly -->
   <div v-if="!isAdmin" class="rounded-md border border-dashed p-4 text-center">
     <p class="text-xs text-muted-foreground">HTML blocks are admin-only.</p>
   </div>

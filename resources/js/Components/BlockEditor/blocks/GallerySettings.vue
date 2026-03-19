@@ -5,7 +5,7 @@
     <div v-if="block.data.items?.length" class="grid grid-cols-3 gap-1">
       <div
         v-for="(item, i) in block.data.items"
-        :key="item.media_id"
+        :key="i"
         class="relative group rounded overflow-hidden border aspect-square"
       >
         <img :src="item.url" :alt="item.alt" class="w-full h-full object-cover" />

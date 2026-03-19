@@ -21,6 +21,7 @@
         class="w-full h-full"
         frameborder="0"
         allow="autoplay; encrypted-media"
+        sandbox="allow-scripts allow-same-origin allow-presentation"
         allowfullscreen
       />
     </div>
