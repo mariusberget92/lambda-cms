@@ -989,4 +989,17 @@ class PostTest extends TestCase
             ->assertSessionHas("status", "1 post published.");
     }
 
+    public function test_post_model_has_block_editor_fillable(): void
+    {
+        $user = $this->makeUser();
+        $post = Post::factory()->create([
+            'user_id'          => $user->id,
+            'use_block_editor' => true,
+            'blocks'           => [['id' => 'a1', 'type' => 'heading', 'data' => ['level' => 1, 'text' => 'Hi']]],
+        ]);
+
+        $this->assertTrue((bool) $post->fresh()->use_block_editor);
+        $this->assertIsArray($post->fresh()->blocks);
+    }
+
 }
