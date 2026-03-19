@@ -22,7 +22,10 @@
           : 'hover:bg-accent text-foreground'"
         @click="$emit('select', block.id)"
       >
-        <span class="drag-handle text-muted-foreground cursor-grab active:cursor-grabbing mr-1 shrink-0" @click.stop>
+        <span
+          class="drag-handle cursor-grab active:cursor-grabbing mr-1 shrink-0"
+          :class="block.id === selectedId ? 'text-primary-foreground' : 'text-muted-foreground'"
+          @click.stop>
           <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
             <path d="M7 2a1 1 0 011 1v1a1 1 0 01-2 0V3a1 1 0 011-1zm6 0a1 1 0 011 1v1a1 1 0 01-2 0V3a1 1 0 011-1zM7 8a1 1 0 011 1v1a1 1 0 01-2 0V9a1 1 0 011-1zm6 0a1 1 0 011 1v1a1 1 0 01-2 0V9a1 1 0 011-1zM7 14a1 1 0 011 1v1a1 1 0 01-2 0v-1a1 1 0 011-1zm6 0a1 1 0 011 1v1a1 1 0 01-2 0v-1a1 1 0 011-1z"/>
           </svg>
