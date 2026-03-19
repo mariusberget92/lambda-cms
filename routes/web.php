@@ -134,7 +134,7 @@ Route::middleware('installed')->group(function () {
     });
     // ── Public custom pages (catch-all — must be last inside this group) ─────
     Route::get('/{slug}', [PublicPageController::class, 'show'])
-        ->where('slug', '^(?!login|logout|dashboard|blog|feed|sitemap\.xml|posts|categories|tags|users|profile|settings|media|comments|pages|calendar|password|register|verify|install|email|forgot-password|reset-password).*$')
+        ->where('slug', '^(?!login|logout|dashboard|blog|feed|sitemap\.xml|posts|categories|tags|users|profile|settings|media|comments|pages|navigation|calendar|password|register|verify|install|email|forgot-password|reset-password).*$')
         ->name('pages.show');
 
 });
