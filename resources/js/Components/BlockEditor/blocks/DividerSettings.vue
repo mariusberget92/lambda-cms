@@ -1,0 +1,32 @@
+<!-- resources/js/Components/BlockEditor/blocks/DividerSettings.vue -->
+<template>
+  <div>
+    <label class="text-xs font-medium text-muted-foreground block mb-2">Style</label>
+    <div class="grid grid-cols-3 gap-2">
+      <button
+        v-for="opt in options"
+        :key="opt.value"
+        type="button"
+        class="rounded-md border px-2 py-3 text-center text-xs transition-colors"
+        :class="block.data.style === opt.value
+          ? 'border-primary bg-primary/10 text-primary font-medium'
+          : 'hover:border-foreground/30 text-muted-foreground'"
+        @click="emit('update', { id: block.id, data: { style: opt.value } })"
+      >
+        <div class="mb-1">{{ opt.preview }}</div>
+        <div>{{ opt.label }}</div>
+      </button>
+    </div>
+  </div>
+</template>
+
+<script setup>
+defineProps({ block: { type: Object, required: true } })
+const emit = defineEmits(['update'])
+
+const options = [
+  { value: 'line',  label: 'Line',  preview: '——' },
+  { value: 'dots',  label: 'Dots',  preview: '· · ·' },
+  { value: 'space', label: 'Space', preview: '∅' },
+]
+</script>
