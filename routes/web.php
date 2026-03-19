@@ -17,6 +17,7 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\NavigationController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\UserController;
@@ -125,6 +126,11 @@ Route::middleware('installed')->group(function () {
         Route::get('/settings',             [SettingsController::class, 'index'])->name('settings.index');
         Route::put('/settings/{group}',     [SettingsController::class, 'update'])->name('settings.update');
         Route::post('/settings/test-email', [SettingsController::class, 'testEmail'])->name('settings.test-email');
+
+        Route::get('/navigation',              [NavigationController::class, 'index'])->name('navigation.index');
+        Route::post('/navigation',             [NavigationController::class, 'store'])->name('navigation.store');
+        Route::post('/navigation/reorder',     [NavigationController::class, 'reorder'])->name('navigation.reorder');
+        Route::delete('/navigation/{navItem}', [NavigationController::class, 'destroy'])->name('navigation.destroy');
     });
     // ── Public custom pages (catch-all — must be last inside this group) ─────
     Route::get('/{slug}', [PublicPageController::class, 'show'])
