@@ -27,4 +27,11 @@
     <lastmod>{{ now()->toDateString() }}</lastmod>
   </url>
   @endforeach
+  @foreach ($pages as $page)
+  <url>
+    <loc>{{ url("/{$page->slug}") }}</loc>
+    <changefreq>monthly</changefreq>
+    <lastmod>{{ $page->updated_at->toDateString() }}</lastmod>
+  </url>
+  @endforeach
 </urlset>

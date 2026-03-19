@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Page;
 use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\Response;
@@ -23,7 +24,11 @@ class SitemapController extends Controller
             ->get(['id', 'slug', 'updated_at'])
             ->filter(fn ($t) => $t->posts_count > 0);
 
-        $xml = view('sitemap', compact('posts', 'categories', 'tags'))->render();
+        $pages = Page::published()
+            ->orderByDesc('updated_at')
+            ->get(['slug', 'updated_at']);
+
+        $xml = view('sitemap', compact('posts', 'categories', 'tags', 'pages'))->render();
 
         return response($xml, 200, [
             'Content-Type' => 'application/xml; charset=utf-8',

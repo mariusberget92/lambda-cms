@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\Page;
 use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -92,5 +93,23 @@ class SitemapTest extends TestCase
         $content = $this->get('/sitemap.xml')->getContent();
 
         $this->assertStringNotContainsString('/blog/tag/empty-tag', $content);
+    }
+
+    public function test_sitemap_includes_published_pages(): void
+    {
+        Page::factory()->published()->create(['slug' => 'about']);
+
+        $content = $this->get('/sitemap.xml')->getContent();
+
+        $this->assertStringContainsString('<loc>' . url('/about') . '</loc>', $content);
+    }
+
+    public function test_sitemap_excludes_draft_pages(): void
+    {
+        Page::factory()->create(['status' => 'draft', 'slug' => 'hidden-page']);
+
+        $content = $this->get('/sitemap.xml')->getContent();
+
+        $this->assertStringNotContainsString('/hidden-page', $content);
     }
 }
