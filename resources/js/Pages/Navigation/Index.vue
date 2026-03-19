@@ -112,7 +112,7 @@ function deleteItem(id) {
               :class="item.type === 'page'
                 ? 'bg-primary/10 text-primary'
                 : 'bg-muted text-muted-foreground'"
-            >{{ item.type }}</span>
+            >{{ item.type === 'page' ? 'Page' : 'Custom' }}</span>
 
             <span
               v-if="item.type === 'page' && item.page_status !== 'published'"
