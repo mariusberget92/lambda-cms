@@ -51,8 +51,8 @@ function onTypeChange(type) {
 
 function onPageSelect(e) {
   const pageId = parseInt(e.target.value)
-  const page   = props.pages.find(p => p.id === pageId)
-  form.page_id = pageId || null
+  form.page_id = Number.isInteger(pageId) ? pageId : null
+  const page   = props.pages.find(p => p.id === form.page_id)
   if (page && !form.label) form.label = page.title
 }
 
