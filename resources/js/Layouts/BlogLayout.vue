@@ -4,8 +4,9 @@ import { computed } from 'vue'
 
 defineOptions({ layout: null })
 
-const appName = computed(() => usePage().props.appName ?? 'Lambda CMS')
-const authUser = computed(() => usePage().props.auth?.user)
+const appName  = computed(() => usePage().props.appName ?? 'Lambda CMS')
+const authUser  = computed(() => usePage().props.auth?.user)
+const navItems  = computed(() => usePage().props.navItems ?? [])
 const year = new Date().getFullYear()
 </script>
 
@@ -21,21 +22,32 @@ const year = new Date().getFullYear()
         <Link href="/" class="font-semibold text-base hover:opacity-80 transition-opacity">
           {{ appName }}
         </Link>
-        <nav>
+        <nav class="flex items-center gap-4">
+          <template v-for="item in navItems" :key="item.url">
+            <a
+              v-if="item.url.startsWith('http')"
+              :href="item.url"
+              target="_blank"
+              rel="noopener"
+              class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >{{ item.label }}</a>
+            <Link
+              v-else
+              :href="item.url"
+              class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >{{ item.label }}</Link>
+          </template>
+
           <Link
             v-if="authUser"
             :href="route('dashboard')"
             class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Dashboard
-          </Link>
+          >Dashboard</Link>
           <Link
             v-else
             :href="route('login')"
             class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Sign in
-          </Link>
+          >Sign in</Link>
         </nav>
       </div>
     </header>
