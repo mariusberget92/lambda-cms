@@ -23,12 +23,12 @@ const year = new Date().getFullYear()
           {{ appName }}
         </Link>
         <nav class="flex items-center gap-4">
-          <template v-for="item in navItems" :key="item.url">
+          <template v-for="item in navItems" :key="item.url + '-' + item.label">
             <a
               v-if="item.url.startsWith('http')"
               :href="item.url"
               target="_blank"
-              rel="noopener"
+              rel="noopener noreferrer"
               class="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >{{ item.label }}</a>
             <Link
