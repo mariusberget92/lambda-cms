@@ -4,6 +4,7 @@ import { Link, useForm, usePage } from '@inertiajs/vue3'
 import BlogLayout from '@/Layouts/BlogLayout.vue'
 import BlogSidebar from '@/Components/BlogSidebar.vue'
 import SeoHead from '@/Components/SeoHead.vue'
+import BlockRenderer from '@/Components/BlockRenderer.vue'
 
 defineOptions({ layout: BlogLayout })
 
@@ -122,11 +123,10 @@ function submitComment() {
         </div>
       </div>
 
-      <!-- Post body — safe: admin-authored Tiptap HTML -->
-      <div
-        class="prose prose-sm max-w-none dark:prose-invert"
-        v-html="post.body"
-      />
+      <!-- Block editor content -->
+      <BlockRenderer v-if="post.use_block_editor && post.blocks" :blocks="post.blocks" />
+      <!-- Legacy Tiptap content — keep prose-sm to match the existing rendering -->
+      <div v-else class="prose prose-sm max-w-none dark:prose-invert" v-html="post.body" />
 
       <!-- Tags -->
       <div v-if="post.tags?.length" class="mt-8 pt-6 border-t flex flex-wrap gap-2">
