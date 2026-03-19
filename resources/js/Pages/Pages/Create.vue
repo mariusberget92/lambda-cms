@@ -2,9 +2,9 @@
 <script setup>
 import AppLayout   from '@/Layouts/AppLayout.vue'
 import BlockEditor from '@/Components/BlockEditor/BlockEditor.vue'
-import { useForm, usePage } from '@inertiajs/vue3'
+import { useForm, usePage, Head } from '@inertiajs/vue3'
 import { watch }   from 'vue'
-import { Head }    from '@inertiajs/vue3'
+import { filterEmptyBlocks } from '@/lib/utils.js'
 
 const authUser = usePage().props.auth.user
 
@@ -27,15 +27,6 @@ watch(() => form.title, (val) => {
 
 function slugify(str) {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-}
-
-function filterEmptyBlocks(blocks) {
-  return (blocks ?? []).filter(b => {
-    const d = b.data ?? {}
-    return Object.values(d).some(v =>
-      v !== null && v !== '' && !(Array.isArray(v) && v.length === 0)
-    )
-  })
 }
 
 function submit() {

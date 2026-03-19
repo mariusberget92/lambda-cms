@@ -1,7 +1,7 @@
 <!-- resources/js/Pages/Pages/Index.vue -->
 <script setup>
 import AppLayout  from '@/Layouts/AppLayout.vue'
-import { router } from '@inertiajs/vue3'
+import { Head, router } from '@inertiajs/vue3'
 import { ref }    from 'vue'
 
 const props = defineProps({
@@ -18,6 +18,12 @@ function confirmDelete(page) {
   })
 }
 
+function decodeHtmlEntities(str) {
+  const txt = document.createElement('textarea')
+  txt.innerHTML = str
+  return txt.value
+}
+
 const columns = [
   { key: 'title',      label: 'Title' },
   { key: 'slug',       label: 'Slug' },
@@ -28,6 +34,8 @@ const columns = [
 
 <template>
   <AppLayout title="Pages">
+    <Head title="Pages" />
+
     <div class="flex items-center justify-between mb-6">
       <div>
         <h2 class="text-lg font-semibold">Pages</h2>
@@ -40,6 +48,19 @@ const columns = [
         New page
       </a>
     </div>
+
+    <!-- Flash message -->
+    <Transition name="fade">
+      <div
+        v-if="$page.props.flash?.status"
+        class="mb-4 flex items-center gap-2 rounded-md bg-status-success-bg border border-status-success-border px-4 py-3 text-sm text-status-success-fg"
+      >
+        <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        {{ $page.props.flash.status }}
+      </div>
+    </Transition>
 
     <div class="rounded-lg border bg-card overflow-hidden">
       <table class="w-full text-sm">
@@ -95,5 +116,30 @@ const columns = [
         </tbody>
       </table>
     </div>
+
+    <!-- Pagination -->
+    <div v-if="pages.last_page > 1" class="flex items-center justify-between mt-4 text-sm">
+      <p class="text-muted-foreground">
+        Showing {{ pages.from }}–{{ pages.to }} of {{ pages.total }}
+      </p>
+      <div class="flex gap-1">
+        <a
+          v-for="link in pages.links"
+          :key="link.label"
+          :href="link.url ?? undefined"
+          class="inline-flex items-center justify-center px-3 py-1.5 rounded-md text-sm transition-colors"
+          :class="link.active
+            ? 'bg-primary text-primary-foreground font-medium'
+            : link.url
+              ? 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+              : 'text-muted-foreground/40 cursor-not-allowed pointer-events-none'"
+        >{{ decodeHtmlEntities(link.label) }}</a>
+      </div>
+    </div>
   </AppLayout>
 </template>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+</style>
