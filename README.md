@@ -1,61 +1,144 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Lambda CMS
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modern, self-hosted blog and content management system built with Laravel 12, Inertia.js, and Vue 3. Designed for developers who want a clean, fast CMS with a great editing experience — including a drag-and-drop block editor, media library, comment moderation, and a headless JSON API.
 
-## About Laravel
+## Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+| Layer | Technology |
+|-------|-----------|
+| Backend | Laravel 12, PHP 8.2+ |
+| Frontend | Vue 3, Inertia.js 2, Tailwind CSS 4, Vite 7 |
+| UI | shadcn-vue, reka-ui, lucide-vue-next |
+| Rich text | Tiptap |
+| Drag & drop | vue-draggable-plus |
+| Database | SQLite (default) or MySQL |
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Content
+- **Posts** — Rich text editor (Tiptap) or drag-and-drop block editor with 11 block types
+- **Block editor** — Paragraph, Heading, Image, Quote, Code, Gallery, Video, Divider, CTA, Component (dynamic post list with filters), and HTML (admin only)
+- **Pages** — Custom static pages built with the same block editor
+- **Categories & Tags** — Full CRUD, attached to posts
+- **Post scheduling** — Set a future publish date; posts go live automatically
+- **Bulk actions** — Bulk publish, draft, or delete posts
 
-## Learning Laravel
+### Media
+- **Media library** — Upload images, videos, documents, and audio (up to 10 MB)
+- **Image processing** — Auto-resizes large images (max 1920 px) via Intervention Image
+- **Metadata** — Edit alt text and description per file; bulk delete
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Public Blog
+- Paginated post listing with featured images, excerpts, and author info
+- Single post view with full content, categories/tags, and comment section
+- Category and tag archive pages
+- Custom page rendering (block-based)
+- RSS feed at `/feed` and XML sitemap at `/sitemap.xml`
+- Headless-ready JSON API (v1)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Comments
+- Public submission with honeypot spam protection and rate limiting
+- Admin moderation — approve, reject, or delete individually or in bulk
+- Per-post toggle to enable/disable comments
+- Email notification to admin on new comment submission
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Users & Roles
+- Two roles: **administrator** and **user**
+- Administrators manage all content, users, settings, and pages
+- Users manage their own posts, categories, and tags
+- Avatar upload per user
+- Email verification required before accessing the dashboard
 
-## Laravel Sponsors
+### Navigation Builder
+- Drag-to-reorder menu editor
+- Add custom links or links to published pages
+- Managed at `/navigation`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Post Calendar
+- Month-view calendar for post planning
+- Color-coded dots for published, scheduled, and draft posts
+- Unscheduled drafts panel alongside the calendar
 
-### Premium Partners
+### Dashboard
+- Stats: total posts, published, scheduled, drafts, pending comments
+- Upcoming scheduled posts list
+- Recent posts with status badges
+- Quick action buttons
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Settings
+- Site name, SEO meta defaults, OG image URL, title separator
+- SMTP email configuration with test-send
+- Comment pagination and moderation settings
 
-## Contributing
+### API (Headless)
+```
+GET /api/v1/posts
+GET /api/v1/posts/{slug}
+GET /api/v1/categories
+GET /api/v1/categories/{slug}
+GET /api/v1/tags
+GET /api/v1/tags/{slug}
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Auth & Security
+- Email + password login, rate-limited (5 attempts / 60 s)
+- Forgot/reset password via email
+- Email verification flow
+- Author-scoped post edit/delete (admins can override)
 
-## Code of Conduct
+### Installer
+- 4-step browser-based setup wizard: database → site name → admin user → mail
+- Supports SQLite and MySQL
+- Runs migrations, seeds defaults, and creates the first admin automatically
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Getting Started
 
-## Security Vulnerabilities
+### Requirements
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- PHP 8.2+
+- Composer
+- Node.js 18+ & npm
+- SQLite (built into PHP) or MySQL
+
+### Install
+
+```bash
+git clone https://github.com/your-username/lambda-cms.git
+cd lambda-cms
+
+composer install
+npm install
+
+cp .env.example .env
+php artisan key:generate
+
+npm run build
+```
+
+Visit `/install` in your browser and complete the 4-step setup wizard.
+
+### Local development
+
+```bash
+php artisan serve   # or use Laravel Herd / Valet
+npm run dev
+```
+
+## Todo
+
+- [ ] Post revisions — track edit history and allow rollback
+- [ ] Tag/category typeahead — autocomplete when assigning to posts
+- [ ] More component block types — related posts, category grid, newsletter signup embed
+- [ ] Featured image crop — in-browser crop before saving to media library
+- [ ] Public search — full-text search across published posts and pages
+- [ ] Draft preview — shareable preview URL for drafts without publishing
+- [ ] Post import/export — JSON or Markdown
+- [ ] Two-factor authentication — TOTP-based 2FA for admin accounts
+- [ ] API write access — token-based auth for creating/updating content via API
+- [ ] Webhook support — fire events on publish/update for external integrations
+- [ ] Multi-language support — content in multiple languages
+- [ ] Dark mode preference — persist theme choice in user profile
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT
