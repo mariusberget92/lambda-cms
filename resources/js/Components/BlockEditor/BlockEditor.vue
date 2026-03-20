@@ -1,24 +1,27 @@
 <!-- resources/js/Components/BlockEditor/BlockEditor.vue -->
 <template>
   <div class="flex border rounded-lg overflow-hidden bg-background" style="min-height: 500px">
-    <!-- Left panel: block list -->
-    <BlockList
+    <!-- Left: block type palette -->
+    <BlockTypePanel :is-admin="isAdmin" />
+
+    <!-- Centre: canvas drop zone + reorder -->
+    <BlockCanvas
       :blocks="localBlocks"
       :selected-id="selectedBlockId"
-      :is-admin="isAdmin"
       @select="selectBlock"
-      @add="addBlock"
-      @remove="removeBlock"
       @reorder="onReorder"
     />
 
-    <!-- Centre panel: live preview -->
-    <BlockPreview :blocks="localBlocks" />
-
-    <!-- Right panel: settings -->
-    <BlockSettings
-      :block="selectedBlock"
+    <!-- Right: layers list + settings -->
+    <BlockLayers
+      :blocks="localBlocks"
+      :selected-id="selectedBlockId"
+      :selected-block="selectedBlock"
       :is-admin="isAdmin"
+      :meta="meta"
+      @select="selectBlock"
+      @remove="removeBlock"
+      @reorder="onReorder"
       @update="updateBlock"
     />
   </div>
@@ -26,13 +29,14 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import BlockList     from './BlockList.vue'
-import BlockPreview  from './BlockPreview.vue'
-import BlockSettings from './BlockSettings.vue'
+import BlockTypePanel from './BlockTypePanel.vue'
+import BlockCanvas    from './BlockCanvas.vue'
+import BlockLayers    from './BlockLayers.vue'
 
 const props = defineProps({
-  modelValue: { type: Array, default: () => [] },
+  modelValue: { type: Array,   default: () => [] },
   isAdmin:    { type: Boolean, default: false },
+  meta:       { type: Object,  default: () => ({}) },
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -46,43 +50,27 @@ const selectedBlock = computed(() =>
   localBlocks.value.find(b => b.id === selectedBlockId.value) ?? null
 )
 
-// ── Sync: parent → local (e.g. tab switch clears blocks) ─────────────────────
+// ── Sync: parent → local (skip our own echo-back) ────────────────────────────
 
 watch(
   () => props.modelValue,
   (newVal) => {
+    if (newVal === localBlocks.value) return
     localBlocks.value = [...(newVal ?? [])]
     if (!localBlocks.value.find(b => b.id === selectedBlockId.value)) {
       selectedBlockId.value = null
     }
-  },
-  { deep: true }
+  }
 )
 
-// ── Default data per block type ───────────────────────────────────────────────
+// ── Mutations ─────────────────────────────────────────────────────────────────
 
-function defaultData(type) {
-  const defaults = {
-    paragraph: { content: '' },
-    heading:   { level: 2, text: '' },
-    image:     { media_id: null, url: '', caption: '', alt: '' },
-    quote:     { text: '', attribution: '' },
-    code:      { code: '', language: 'javascript' },
-    gallery:   { items: [] },
-    video:     { url: '', caption: '' },
-    divider:   { style: 'line' },
-    cta:       { headline: '', text: '', button_label: '', button_url: '' },
-    html:      { content: '' },
-  }
-  return defaults[type] ?? {}
+function selectBlock(id) {
+  selectedBlockId.value = id
 }
 
-// ── Mutations (each immediately emits up) ─────────────────────────────────────
-
-function addBlock(type) {
-  const block = { id: generateId(), type, data: defaultData(type) }
-  localBlocks.value = [...localBlocks.value, block]
-  selectedBlockId.value = block.id
+function onReorder(newList) {
+  localBlocks.value = newList
   emit('update:modelValue', localBlocks.value)
 }
 
@@ -99,26 +87,10 @@ function removeBlock(id) {
   emit('update:modelValue', localBlocks.value)
 }
 
-function selectBlock(id) {
-  selectedBlockId.value = id
-}
-
-function onReorder(newList) {
-  localBlocks.value = newList
-  emit('update:modelValue', localBlocks.value)
-}
-
 function updateBlock({ id, data }) {
   localBlocks.value = localBlocks.value.map(b =>
     b.id === id ? { ...b, data: { ...b.data, ...data } } : b
   )
   emit('update:modelValue', localBlocks.value)
-}
-
-function generateId() {
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    return crypto.randomUUID()
-  }
-  return Math.random().toString(36).slice(2) + Date.now().toString(36)
 }
 </script>

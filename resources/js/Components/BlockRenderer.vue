@@ -21,6 +21,7 @@ import VideoBlock     from '@/Components/Blocks/VideoBlock.vue'
 import DividerBlock   from '@/Components/Blocks/DividerBlock.vue'
 import CtaBlock       from '@/Components/Blocks/CtaBlock.vue'
 import HtmlBlock      from '@/Components/Blocks/HtmlBlock.vue'
+import PostListBlock  from '@/Components/Blocks/PostListBlock.vue'
 
 defineProps({ blocks: { type: Array, default: () => [] } })
 
@@ -35,5 +36,6 @@ const BLOCK_MAP = {
   divider:   DividerBlock,
   cta:       CtaBlock,
   html:      HtmlBlock,
+  component: PostListBlock,
 }
 </script>
