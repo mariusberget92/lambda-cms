@@ -257,4 +257,85 @@ class PageTest extends TestCase
                 ->where('page.blocks.0.data.resolved.posts', [])
             );
     }
+
+    // ── Container block ───────────────────────────────────────────────────────
+
+    public function test_container_block_children_are_preserved_on_page_load(): void
+    {
+        $page = Page::create([
+            'user_id' => User::factory()->create()->id,
+            'title'   => 'Container Test',
+            'slug'    => 'container-test',
+            'status'  => 'published',
+            'blocks'  => [
+                [
+                    'id'            => 'container-1',
+                    'type'          => 'container',
+                    'data'          => ['direction' => 'row', 'gap' => 4, 'wrap' => true, 'justify' => 'start', 'align' => 'start', 'maxWidth' => 'full', 'padding' => 4],
+                    'children'      => [
+                        ['id' => 'child-1', 'type' => 'paragraph', 'data' => ['content' => 'Hello']],
+                    ],
+                    'customId'      => '',
+                    'customClasses' => '',
+                    'customCss'     => '',
+                    'fontFamily'    => '',
+                ],
+            ],
+        ]);
+
+        $this->get("/{$page->slug}")
+            ->assertOk()
+            ->assertInertia(fn ($p) => $p
+                ->component('Blog/Page')
+                ->where('page.blocks.0.type', 'container')
+                ->where('page.blocks.0.children.0.type', 'paragraph')
+                ->where('page.blocks.0.children.0.data.content', 'Hello')
+            );
+    }
+
+    public function test_nested_component_block_inside_container_is_resolved(): void
+    {
+        $post = Post::factory()->create([
+            'status'       => 'published',
+            'published_at' => now()->subDay(),
+        ]);
+
+        $page = Page::create([
+            'user_id' => User::factory()->create()->id,
+            'title'   => 'Nested Component Test',
+            'slug'    => 'nested-component-test',
+            'status'  => 'published',
+            'blocks'  => [
+                [
+                    'id'       => 'container-1',
+                    'type'     => 'container',
+                    'data'     => ['direction' => 'row', 'gap' => 4, 'wrap' => true, 'justify' => 'start', 'align' => 'start', 'maxWidth' => 'full', 'padding' => 4],
+                    'children' => [
+                        [
+                            'id'   => 'comp-1',
+                            'type' => 'component',
+                            'data' => [
+                                'component'     => 'post-list',
+                                'limit'         => 6,
+                                'offset'        => 0,
+                                'order'         => 'latest',
+                                'featured_only' => false,
+                                'category_ids'  => [],
+                                'tag_ids'       => [],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->get("/{$page->slug}")
+            ->assertOk()
+            ->assertInertia(fn ($p) => $p
+                ->component('Blog/Page')
+                ->where('page.blocks.0.type', 'container')
+                ->where('page.blocks.0.children.0.type', 'component')
+                ->has('page.blocks.0.children.0.data.resolved.posts')
+            );
+    }
 }
