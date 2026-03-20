@@ -21,7 +21,7 @@
           class="text-muted-foreground hover:text-foreground transition-colors"
           @click.stop="clear"
           @keydown.enter.stop="clear"
-          @keydown.space.stop="clear"
+          @keydown.space.prevent.stop="clear"
         >
           <X class="w-3.5 h-3.5" />
         </span>
@@ -94,7 +94,7 @@ import { onClickOutside } from '@vueuse/core'
 import { X, ChevronDown } from 'lucide-vue-next'
 
 const props = defineProps({
-  modelValue: { type: [String, Number, Array], default: null },
+  modelValue: { type: [String, Number, Array, null], default: null },
   data:        { type: Array,   default: () => [] },
   multiple:    { type: Boolean, default: false },
   searchable:  { type: Boolean, default: false },
