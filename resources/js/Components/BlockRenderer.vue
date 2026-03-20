@@ -5,7 +5,7 @@
       <component
         v-if="block.customCss"
         :is="'style'"
-      >#{{ block.customId || 'block-' + block.id }} { {{ block.customCss }} }</component>
+>#{{ block.customId ? CSS.escape(block.customId) : 'block-' + block.id }} { {{ sanitizeCss(block.customCss) }} }</component>
       <div
         :id="block.customId || `block-${block.id}`"
         :class="block.customClasses || undefined"
@@ -36,6 +36,11 @@ import PostListBlock  from '@/Components/Blocks/PostListBlock.vue'
 import ContainerBlock from '@/Components/Blocks/ContainerBlock.vue'
 
 const props = defineProps({ blocks: { type: Array, default: () => [] } })
+
+function sanitizeCss(css) {
+  // Prevent </style> tag breakout which would allow HTML injection
+  return css.replace(/<\/style/gi, '')
+}
 
 const BLOCK_MAP = {
   paragraph: ParagraphBlock,
