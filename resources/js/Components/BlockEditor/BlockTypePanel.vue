@@ -41,6 +41,7 @@ import {
   MousePointerClick,
   FileCode,
   Puzzle,
+  LayoutTemplate,
 } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -59,6 +60,7 @@ const ALL_TYPES = [
   { type: 'cta',       label: 'CTA',       icon: MousePointerClick },
   { type: 'html',      label: 'HTML',      icon: FileCode, adminOnly: true },
   { type: 'component', label: 'Component', icon: Puzzle },
+  { type: 'container', label: 'Container', icon: LayoutTemplate },
 ]
 
 const typeList = computed({
@@ -78,12 +80,22 @@ const DEFAULT_DATA = {
   cta:       { headline: '', text: '', button_label: '', button_url: '' },
   html:      { content: '' },
   component: { component: 'post-list', limit: 6, offset: 0, order: 'latest', featured_only: false, category_ids: [], tag_ids: [] },
+  container: { direction: 'row', wrap: true, gap: 4, justify: 'start', align: 'start', maxWidth: 'full', padding: 4 },
 }
 
 function cloneBlock(typeDef) {
   const id = typeof crypto !== 'undefined' && crypto.randomUUID
     ? crypto.randomUUID()
     : Math.random().toString(36).slice(2) + Date.now().toString(36)
-  return { id, type: typeDef.type, data: { ...(DEFAULT_DATA[typeDef.type] ?? {}) } }
+  return {
+    id,
+    type: typeDef.type,
+    data: { ...(DEFAULT_DATA[typeDef.type] ?? {}) },
+    customId: '',
+    customClasses: '',
+    customCss: '',
+    fontFamily: '',
+    ...(typeDef.type === 'container' ? { children: [] } : {}),
+  }
 }
 </script>
