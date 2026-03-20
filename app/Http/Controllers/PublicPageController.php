@@ -38,6 +38,11 @@ class PublicPageController extends Controller
     private function resolveBlocks(array $blocks): array
     {
         return array_map(function ($block) {
+            // Recurse into container children first
+            if (($block['type'] ?? '') === 'container' && !empty($block['children'])) {
+                $block['children'] = $this->resolveBlocks($block['children']);
+            }
+
             if (($block['type'] ?? '') !== 'component') {
                 return $block;
             }
