@@ -3,80 +3,80 @@
     <!-- Toolbar -->
     <div class="toolbar">
       <div class="toolbar-group">
-        <ToolbarButton @click="editor.chain().focus().toggleBold().run()" :active="editor?.isActive('bold')" title="Bold">
+        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('bold') }" @click="editor.chain().focus().toggleBold().run()" title="Bold">
           <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M15.6 11.8c.9-.6 1.5-1.6 1.5-2.8C17.1 6.6 15.5 5 13.1 5H7v14h6.6c2.4 0 4.4-1.8 4.4-4.2 0-1.6-.9-2.9-2.4-3zm-6.1-4.6h3c.8 0 1.5.7 1.5 1.5s-.7 1.5-1.5 1.5h-3V7.2zm3.6 9.6h-3.6v-3.4h3.6c1 0 1.7.8 1.7 1.7s-.8 1.7-1.7 1.7z"/></svg>
-        </ToolbarButton>
-        <ToolbarButton @click="editor.chain().focus().toggleItalic().run()" :active="editor?.isActive('italic')" title="Italic">
+        </button>
+        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('italic') }" @click="editor.chain().focus().toggleItalic().run()" title="Italic">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>
-        </ToolbarButton>
-        <ToolbarButton @click="editor.chain().focus().toggleUnderline().run()" :active="editor?.isActive('underline')" title="Underline">
+        </button>
+        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('underline') }" @click="editor.chain().focus().toggleUnderline().run()" title="Underline">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M7 4v6a5 5 0 0010 0V4M5 20h14"/></svg>
-        </ToolbarButton>
-        <ToolbarButton @click="editor.chain().focus().toggleStrike().run()" :active="editor?.isActive('strike')" title="Strikethrough">
+        </button>
+        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('strike') }" @click="editor.chain().focus().toggleStrike().run()" title="Strikethrough">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M17.3 12H6.7M12 5a4 4 0 00-4 3.5M12 19a4 4 0 004-3.5"/></svg>
-        </ToolbarButton>
+        </button>
       </div>
 
       <div class="toolbar-divider"/>
 
       <div class="toolbar-group">
-        <ToolbarButton @click="editor.chain().focus().toggleHeading({ level: 2 }).run()" :active="editor?.isActive('heading', { level: 2 })" title="Heading 2">
+        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('heading', { level: 2 }) }" @click="editor.chain().focus().toggleHeading({ level: 2 }).run()" title="Heading 2">
           <span class="text-xs font-bold">H2</span>
-        </ToolbarButton>
-        <ToolbarButton @click="editor.chain().focus().toggleHeading({ level: 3 }).run()" :active="editor?.isActive('heading', { level: 3 })" title="Heading 3">
+        </button>
+        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('heading', { level: 3 }) }" @click="editor.chain().focus().toggleHeading({ level: 3 }).run()" title="Heading 3">
           <span class="text-xs font-bold">H3</span>
-        </ToolbarButton>
+        </button>
       </div>
 
       <div class="toolbar-divider"/>
 
       <div class="toolbar-group">
-        <ToolbarButton @click="editor.chain().focus().toggleBulletList().run()" :active="editor?.isActive('bulletList')" title="Bullet list">
+        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('bulletList') }" @click="editor.chain().focus().toggleBulletList().run()" title="Bullet list">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
-        </ToolbarButton>
-        <ToolbarButton @click="editor.chain().focus().toggleOrderedList().run()" :active="editor?.isActive('orderedList')" title="Ordered list">
+        </button>
+        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('orderedList') }" @click="editor.chain().focus().toggleOrderedList().run()" title="Ordered list">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg>
-        </ToolbarButton>
-        <ToolbarButton @click="editor.chain().focus().toggleBlockquote().run()" :active="editor?.isActive('blockquote')" title="Blockquote">
+        </button>
+        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('blockquote') }" @click="editor.chain().focus().toggleBlockquote().run()" title="Blockquote">
           <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/></svg>
-        </ToolbarButton>
-        <ToolbarButton @click="editor.chain().focus().toggleCode().run()" :active="editor?.isActive('code')" title="Code">
+        </button>
+        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('code') }" @click="editor.chain().focus().toggleCode().run()" title="Code">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-        </ToolbarButton>
+        </button>
       </div>
 
       <div class="toolbar-divider"/>
 
       <div class="toolbar-group">
-        <ToolbarButton @click="editor.chain().focus().setTextAlign('left').run()" :active="editor?.isActive({ textAlign: 'left' })" title="Align left">
+        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive({ textAlign: 'left' }) }" @click="editor.chain().focus().setTextAlign('left').run()" title="Align left">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M3 6h18M3 12h12M3 18h15"/></svg>
-        </ToolbarButton>
-        <ToolbarButton @click="editor.chain().focus().setTextAlign('center').run()" :active="editor?.isActive({ textAlign: 'center' })" title="Align center">
+        </button>
+        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive({ textAlign: 'center' }) }" @click="editor.chain().focus().setTextAlign('center').run()" title="Align center">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M3 6h18M6 12h12M4 18h16"/></svg>
-        </ToolbarButton>
-        <ToolbarButton @click="editor.chain().focus().setTextAlign('right').run()" :active="editor?.isActive({ textAlign: 'right' })" title="Align right">
+        </button>
+        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive({ textAlign: 'right' }) }" @click="editor.chain().focus().setTextAlign('right').run()" title="Align right">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M3 6h18M9 12h12M6 18h15"/></svg>
-        </ToolbarButton>
+        </button>
       </div>
 
       <div class="toolbar-divider"/>
 
       <div class="toolbar-group">
-        <ToolbarButton @click="editor.chain().focus().undo().run()" :disabled="!editor?.can().undo()" title="Undo">
+        <button type="button" class="toolbar-btn" :disabled="!editor?.can().undo()" @click="editor.chain().focus().undo().run()" title="Undo">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
-        </ToolbarButton>
-        <ToolbarButton @click="editor.chain().focus().redo().run()" :disabled="!editor?.can().redo()" title="Redo">
+        </button>
+        <button type="button" class="toolbar-btn" :disabled="!editor?.can().redo()" @click="editor.chain().focus().redo().run()" title="Redo">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 10H11a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6"/></svg>
-        </ToolbarButton>
+        </button>
       </div>
 
       <div class="toolbar-divider"/>
       <div class="toolbar-group">
-        <ToolbarButton @click="pickerOpen = true" title="Insert image">
+        <button type="button" class="toolbar-btn" @click="pickerOpen = true" title="Insert image">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
           </svg>
-        </ToolbarButton>
+        </button>
       </div>
 
       <div class="ml-auto flex items-center text-xs text-muted-foreground/70 select-none pr-1">
@@ -105,11 +105,6 @@ import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import Image from "@tiptap/extension-image";
 import MediaPicker from "@/Components/MediaPicker.vue";
-
-const ToolbarButton = {
-  props: { active: Boolean, disabled: Boolean },
-  template: `<button type="button" class="toolbar-btn" :class="{ 'is-active': active }" :disabled="disabled" v-bind="$attrs"><slot /></button>`,
-};
 
 const props = defineProps({
   modelValue: { type: String, default: "" },
