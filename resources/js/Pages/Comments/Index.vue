@@ -111,14 +111,7 @@
               >{{ comment.post.title }}</a>
             </td>
             <td class="px-4 py-3 hidden sm:table-cell">
-              <span
-                class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
-                :class="{
-                  'bg-status-warning-bg text-status-warning-fg': comment.status === 'pending',
-                  'bg-status-success-bg text-status-success-fg': comment.status === 'approved',
-                  'bg-status-error-bg text-status-error-fg':    comment.status === 'rejected',
-                }"
-              >{{ comment.status }}</span>
+              <StatusBadge :status="comment.status" />
             </td>
             <td class="px-4 py-3 hidden md:table-cell text-xs text-muted-foreground">{{ comment.created_at }}</td>
             <td class="px-4 py-3">
@@ -217,6 +210,7 @@
 import { computed, ref } from "vue";
 import { Head, router } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import StatusBadge from "@/Components/StatusBadge.vue";
 
 const props = defineProps({
   comments:     { type: Object, required: true },

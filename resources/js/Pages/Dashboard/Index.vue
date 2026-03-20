@@ -131,14 +131,7 @@
               class="font-medium text-sm line-clamp-1 hover:text-primary transition-colors flex-1 min-w-0"
             >{{ post.title }}</a>
             <div class="flex items-center gap-2 shrink-0">
-              <span
-                class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
-                :class="{
-                  'bg-status-success-bg text-status-success-fg': post.status === 'published',
-                  'bg-indigo-50 text-indigo-700':                 post.status === 'scheduled',
-                  'bg-status-warning-bg text-status-warning-fg': post.status === 'draft',
-                }"
-              >{{ post.status }}</span>
+              <StatusBadge :status="post.status" />
               <span class="text-xs text-muted-foreground">{{ timeAgo(post.updated_at) }}</span>
             </div>
           </li>
@@ -177,6 +170,7 @@
 import { computed } from "vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import StatusBadge from "@/Components/StatusBadge.vue";
 
 defineProps({
   stats: {

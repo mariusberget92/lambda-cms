@@ -3,6 +3,7 @@
 import AppLayout  from '@/Layouts/AppLayout.vue'
 import { Head, router } from '@inertiajs/vue3'
 import { ref }    from 'vue'
+import StatusBadge from '@/Components/StatusBadge.vue'
 
 const props = defineProps({
   pages: Object, // paginated
@@ -81,14 +82,7 @@ const columns = [
             <td class="px-4 py-3 font-medium">{{ page.title }}</td>
             <td class="px-4 py-3 text-muted-foreground font-mono text-xs">/{{ page.slug }}</td>
             <td class="px-4 py-3">
-              <span
-                class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-                :class="page.status === 'published'
-                  ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                  : 'bg-muted text-muted-foreground'"
-              >
-                {{ page.status }}
-              </span>
+              <StatusBadge :status="page.status" />
             </td>
             <td class="px-4 py-3 text-muted-foreground">{{ page.created_at }}</td>
             <td class="px-4 py-3 text-right">

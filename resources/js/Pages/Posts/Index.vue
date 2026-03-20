@@ -123,26 +123,9 @@
             <span v-else class="text-muted-foreground/50">—</span>
           </td>
           <td class="hidden md:table-cell">
-            <span
-              class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium"
-              :class="{
-                'bg-status-success-bg text-status-success-fg': post.status === 'published',
-                'bg-indigo-50 text-indigo-700':                 post.status === 'scheduled',
-                'bg-status-warning-bg text-status-warning-fg': post.status === 'draft',
-              }"
-            >
-              <span
-                class="w-1.5 h-1.5 rounded-full"
-                :class="{
-                  'bg-status-success-fg': post.status === 'published',
-                  'bg-indigo-500':         post.status === 'scheduled',
-                  'bg-status-warning-fg': post.status === 'draft',
-                }"
-              ></span>
-              <template v-if="post.status === 'published'">Published</template>
-              <template v-else-if="post.status === 'scheduled'">Scheduled · {{ post.published_at }}</template>
-              <template v-else>Draft</template>
-            </span>
+            <StatusBadge :status="post.status">
+              <template v-if="post.status === 'scheduled'">Scheduled · {{ post.published_at }}</template>
+            </StatusBadge>
           </td>
           <td class="hidden lg:table-cell text-muted-foreground text-xs">
             {{ post.published_at ?? post.created_at }}
@@ -307,6 +290,7 @@ import { ref, computed, watch } from "vue";
 import { Head, router } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import DataTable from '@/Components/DataTable.vue'
+import StatusBadge from '@/Components/StatusBadge.vue'
 
 const props = defineProps({
   posts: Object,
