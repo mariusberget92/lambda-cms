@@ -8,7 +8,9 @@ import { filterEmptyBlocks } from '@/lib/utils.js'
 const authUser = usePage().props.auth.user
 
 const props = defineProps({
-  page: { type: Object, required: true },
+  page:       { type: Object, required: true },
+  categories: { type: Array,  default: () => [] },
+  tags:       { type: Array,  default: () => [] },
 })
 
 const form = useForm({
@@ -67,6 +69,7 @@ function submit() {
           <BlockEditor
             :model-value="form.blocks"
             :is-admin="authUser?.role === 'administrator'"
+            :meta="{ categories: props.categories, tags: props.tags }"
             @update:model-value="form.blocks = $event"
           />
         </div>
