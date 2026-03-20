@@ -30,7 +30,7 @@
       <button
         type="submit"
         :disabled="form.processing"
-        class="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-50"
+        class="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)] disabled:opacity-50"
       >
         <span v-if="form.processing">Sending...</span>
         <span v-else>Send reset link</span>

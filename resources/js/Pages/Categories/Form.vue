@@ -55,7 +55,7 @@
         <button
           type="submit"
           :disabled="form.processing"
-          class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-50"
+          class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)] disabled:opacity-50"
         >
           {{ form.processing ? 'Saving...' : isEditing ? 'Save changes' : 'Create category' }}
         </button>

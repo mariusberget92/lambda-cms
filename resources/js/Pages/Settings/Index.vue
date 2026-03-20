@@ -85,7 +85,7 @@
             <button
               type="submit"
               :disabled="siteForm.processing"
-              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-50"
+              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)] disabled:opacity-50"
             >
               {{ siteForm.processing ? 'Saving...' : 'Save changes' }}
             </button>
@@ -132,7 +132,7 @@
             <button
               type="submit"
               :disabled="localeForm.processing"
-              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-50"
+              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)] disabled:opacity-50"
             >
               {{ localeForm.processing ? 'Saving...' : 'Save changes' }}
             </button>
@@ -180,7 +180,7 @@
             <button
               type="submit"
               :disabled="mediaForm.processing"
-              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-50"
+              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)] disabled:opacity-50"
             >
               {{ mediaForm.processing ? 'Saving...' : 'Save changes' }}
             </button>
@@ -305,7 +305,7 @@
             <button
               type="submit"
               :disabled="mailForm.processing"
-              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-50"
+              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)] disabled:opacity-50"
             >
               {{ mailForm.processing ? 'Saving...' : 'Save changes' }}
             </button>
@@ -353,7 +353,7 @@
             <button
               type="submit"
               :disabled="commentsForm.processing"
-              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-50"
+              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)] disabled:opacity-50"
             >
               {{ commentsForm.processing ? 'Saving...' : 'Save changes' }}
             </button>
@@ -419,7 +419,7 @@
             <button
               type="submit"
               :disabled="seoForm.processing"
-              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-50"
+              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)] disabled:opacity-50"
             >
               {{ seoForm.processing ? 'Saving...' : 'Save changes' }}
             </button>
@@ -439,7 +439,7 @@
             <button
               type="submit"
               :disabled="testMailForm.processing"
-              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-50 inline-flex items-center gap-2"
+              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)] disabled:opacity-50 inline-flex items-center gap-2"
             >
               <svg
                 v-if="testMailForm.processing"

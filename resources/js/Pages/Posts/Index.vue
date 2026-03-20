@@ -3,18 +3,9 @@
     <Head title="Posts" />
 
     <!-- Page header -->
-    <div class="mb-6">
+    <div class="mb-4">
       <h2 class="text-lg font-semibold">Posts</h2>
       <p class="text-sm text-muted-foreground mt-0.5">Manage your blog articles</p>
-      <a
-        :href="route('posts.create')"
-        class="mt-3 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
-      >
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-        </svg>
-        New post
-      </a>
     </div>
 
     <!-- Flash message -->
@@ -30,8 +21,17 @@
       </div>
     </Transition>
 
-    <!-- Filters -->
+    <!-- Filters + actions -->
     <div class="flex items-center gap-3 mb-4">
+      <a
+        :href="route('posts.create')"
+        class="shrink-0 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)]"
+      >
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        </svg>
+        New post
+      </a>
       <div class="relative flex-1 max-w-xs">
         <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/>
@@ -250,7 +250,7 @@
             <button
               type="button"
               @click="bulkAction('publish')"
-              class="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary-hover transition-colors"
+              class="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-[var(--primary-hover)] transition-colors"
             >
               Publish
             </button>

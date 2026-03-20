@@ -48,7 +48,7 @@ function submit() {
         <button
           type="submit"
           :disabled="form.processing"
-          class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary-hover disabled:opacity-50 transition-colors"
+          class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-[var(--primary-hover)] disabled:opacity-50 transition-colors"
         >
           {{ form.processing ? 'Saving...' : 'Update page' }}
         </button>
