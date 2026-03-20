@@ -19,8 +19,8 @@ const form = useForm({
 })
 
 // Auto-generate slug from title
-watch(() => form.title, (val) => {
-  if (!form.slug || form.slug === slugify(form.title)) {
+watch(() => form.title, (val, oldVal) => {
+  if (!form.slug || form.slug === slugify(oldVal)) {
     form.slug = slugify(val)
   }
 })
