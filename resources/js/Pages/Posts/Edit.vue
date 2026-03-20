@@ -68,46 +68,11 @@
             </div>
           </div>
 
-          <!-- Editor (tabbed: Rich Text / Block Editor) -->
+          <!-- Editor -->
           <div>
-            <!-- Tab bar -->
-            <div class="flex border-b border-border mb-0">
-              <button
-                type="button"
-                class="px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px"
-                :class="!form.use_block_editor
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'"
-                @click="switchTab(false)"
-              >
-                Rich Text
-              </button>
-              <button
-                type="button"
-                class="px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px"
-                :class="form.use_block_editor
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'"
-                @click="switchTab(true)"
-              >
-                Block Editor
-              </button>
-            </div>
-
-            <!-- Rich text panel -->
-            <div v-if="!form.use_block_editor" class="border border-t-0 rounded-b-lg overflow-hidden">
+            <div class="rounded-lg border overflow-hidden">
               <TiptapEditor v-model="form.body" />
             </div>
-
-            <!-- Block editor panel -->
-            <div v-else class="border border-t-0 rounded-b-lg overflow-hidden">
-              <BlockEditor
-                :model-value="form.blocks"
-                :is-admin="$page.props.auth.user?.role === 'administrator'"
-                @update:model-value="form.blocks = filterEmptyBlocks($event)"
-              />
-            </div>
-
             <p v-if="form.errors.body" class="mt-1 text-xs text-destructive">{{ form.errors.body }}</p>
           </div>
         </div>
@@ -334,7 +299,6 @@ import { Head, useForm } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import TiptapEditor from "@/Components/TiptapEditor.vue";
 import MediaPicker from '@/Components/MediaPicker.vue'
-import BlockEditor from '@/Components/BlockEditor/BlockEditor.vue'
 
 const props = defineProps({
   post:       Object,
@@ -352,8 +316,6 @@ const form = useForm({
   tag_ids:           props.post.tag_ids ?? [],
   featured_image_id: props.post.featured_image_id ?? null,
   comments_enabled:  props.post.comments_enabled ?? true,
-  use_block_editor:  props.post.use_block_editor ?? false,
-  blocks:            props.post.blocks ?? [],
   meta_title:        props.post.meta_title ?? null,
   meta_description:  props.post.meta_description ?? null,
   meta_keywords:     props.post.meta_keywords ?? null,
@@ -382,32 +344,6 @@ function onFeaturedImageSelect(media) {
 function removeFeaturedImage() {
   featuredImage.value    = null
   form.featured_image_id = null
-}
-
-function switchTab(toBlockEditor) {
-  if (toBlockEditor === form.use_block_editor) return
-
-  const hasContent = toBlockEditor ? (form.body ?? '').trim().length > 0
-                                   : (form.blocks ?? []).length > 0
-
-  if (hasContent) {
-    const other = toBlockEditor ? 'rich text' : 'block editor'
-    if (!confirm(`Switching tabs will clear your ${other} content if you save. Continue?`)) return
-  }
-
-  form.use_block_editor = toBlockEditor
-  // Clear the inactive mode's data
-  if (toBlockEditor) { form.body   = '' }
-  else               { form.blocks = [] }
-}
-
-function filterEmptyBlocks(blocks) {
-  return (blocks ?? []).filter(b => {
-    const d = b.data ?? {}
-    return Object.values(d).some(v =>
-      v !== null && v !== '' && !(Array.isArray(v) && v.length === 0)
-    )
-  })
 }
 
 function submit() {

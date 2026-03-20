@@ -1,6 +1,6 @@
 <!-- resources/js/Components/BlockEditor/BlockEditor.vue -->
 <template>
-  <div class="flex border rounded-lg overflow-hidden bg-background" style="min-height: 500px">
+  <div class="flex border rounded-xl overflow-hidden bg-background" style="min-height: 500px">
     <!-- Left: block type palette -->
     <BlockTypePanel :is-admin="isAdmin" />
 
