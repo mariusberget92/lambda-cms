@@ -1,4 +1,4 @@
-<!-- resources/js/components/BlockEditor/LayerItem.vue -->
+<!-- resources/js/Components/BlockEditor/LayerItem.vue -->
 <template>
   <div>
     <!-- Layer row -->
@@ -14,9 +14,7 @@
         :class="block.id === selectedId ? 'text-primary-foreground/60' : 'text-muted-foreground'"
         @click.stop
       >
-        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M7 2a1 1 0 011 1v1a1 1 0 01-2 0V3a1 1 0 011-1zm6 0a1 1 0 011 1v1a1 1 0 01-2 0V3a1 1 0 011-1zM7 8a1 1 0 011 1v1a1 1 0 01-2 0V9a1 1 0 011-1zm6 0a1 1 0 011 1v1a1 1 0 01-2 0V9a1 1 0 011-1zM7 14a1 1 0 011 1v1a1 1 0 01-2 0v-1a1 1 0 011-1zm6 0a1 1 0 011 1v1a1 1 0 01-2 0v-1a1 1 0 011-1z"/>
-        </svg>
+        <GripVertical class="w-3 h-3" />
       </span>
 
       <span class="flex-1 truncate">{{ LABELS[block.type] ?? block.type }}</span>
@@ -28,9 +26,7 @@
         title="Remove block"
         @click.stop="$emit('remove', block.id)"
       >
-        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
+        <X class="w-3 h-3" />
       </button>
     </div>
 
@@ -49,6 +45,8 @@
 </template>
 
 <script setup>
+import { GripVertical, X } from 'lucide-vue-next'
+
 const LABELS = {
   paragraph: 'Paragraph', heading: 'Heading', image: 'Image',
   quote: 'Quote', code: 'Code', gallery: 'Gallery', video: 'Video',
