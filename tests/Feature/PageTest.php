@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
 use App\Models\Page;
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -146,5 +148,113 @@ class PageTest extends TestCase
 
         // Spatie role middleware redirects non-admins to dashboard instead of 403
         $this->actingAs($this->makeUser())->delete("/pages/{$page->id}")->assertRedirect(route('dashboard'));
+    }
+
+    // ── Public component block resolution ─────────────────────────────────────
+
+    public function test_component_post_list_block_is_resolved_on_page_load(): void
+    {
+        $post = Post::factory()->create([
+            'title'        => 'Test Post',
+            'status'       => 'published',
+            'published_at' => now()->subDay(),
+        ]);
+
+        $page = Page::create([
+            'user_id' => User::factory()->create()->id,
+            'title'   => 'My Page',
+            'slug'    => 'my-page',
+            'status'  => 'published',
+            'blocks'  => [
+                [
+                    'id'   => 'block-1',
+                    'type' => 'component',
+                    'data' => [
+                        'component'     => 'post-list',
+                        'limit'         => 6,
+                        'offset'        => 0,
+                        'order'         => 'latest',
+                        'featured_only' => false,
+                        'category_ids'  => [],
+                        'tag_ids'       => [],
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->get("/{$page->slug}")
+            ->assertOk()
+            ->assertInertia(
+                fn ($p) => $p
+                    ->component('Blog/Page')
+                    ->where('page.blocks.0.data.resolved.posts.0.title', 'Test Post')
+            );
+    }
+
+    public function test_component_post_list_respects_category_filter(): void
+    {
+        $category = Category::create(['name' => 'Test Category', 'slug' => 'test-category']);
+        $included = Post::factory()->published()->create([
+            'title'        => 'In Category',
+            'published_at' => now()->subDay(),
+        ]);
+        $excluded = Post::factory()->published()->create([
+            'title'        => 'Not In Category',
+            'published_at' => now()->subDay(),
+        ]);
+        $included->categories()->attach($category);
+
+        $page = Page::create([
+            'user_id' => User::factory()->create()->id,
+            'title'   => 'Filtered Page',
+            'slug'    => 'filtered-page',
+            'status'  => 'published',
+            'blocks'  => [[
+                'id'   => 'block-1',
+                'type' => 'component',
+                'data' => [
+                    'component'     => 'post-list',
+                    'limit'         => 6,
+                    'offset'        => 0,
+                    'order'         => 'latest',
+                    'featured_only' => false,
+                    'category_ids'  => [$category->id],
+                    'tag_ids'       => [],
+                ],
+            ]],
+        ]);
+
+        $this->get("/{$page->slug}")
+            ->assertOk()
+            ->assertInertia(fn ($p) => $p
+                ->where('page.blocks.0.data.resolved.posts.0.title', 'In Category')
+                ->where('page.blocks.0.data.resolved', fn ($resolved) =>
+                    count($resolved['posts']) === 1
+                )
+            );
+    }
+
+    public function test_draft_posts_are_excluded_from_component_post_list(): void
+    {
+        Post::factory()->create(['title' => 'Draft Post', 'status' => 'draft']);
+
+        $page = Page::create([
+            'user_id' => User::factory()->create()->id,
+            'title'   => 'Test Page',
+            'slug'    => 'test-page-draft',
+            'status'  => 'published',
+            'blocks'  => [[
+                'id'   => 'block-1',
+                'type' => 'component',
+                'data' => ['component' => 'post-list', 'limit' => 6, 'offset' => 0,
+                           'order' => 'latest', 'featured_only' => false,
+                           'category_ids' => [], 'tag_ids' => []],
+            ]],
+        ]);
+
+        $this->get("/{$page->slug}")
+            ->assertInertia(fn ($p) => $p
+                ->where('page.blocks.0.data.resolved.posts', [])
+            );
     }
 }
