@@ -37,6 +37,7 @@ class Post extends Model
         "published_at"     => "datetime",
         "comments_enabled" => "boolean",
         "use_block_editor" => "boolean",
+        "featured"         => "boolean",
         "blocks"           => "array",
     ];
 
