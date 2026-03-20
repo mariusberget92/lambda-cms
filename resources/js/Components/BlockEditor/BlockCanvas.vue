@@ -38,16 +38,23 @@
         >
           <!-- Drag handle -->
           <div
-            class="block-drag-handle absolute left-2 top-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+            class="block-drag-handle absolute left-2 top-3 cursor-grab active:cursor-grabbing text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
             @click.stop
           >
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M7 2a1 1 0 011 1v1a1 1 0 01-2 0V3a1 1 0 011-1zm6 0a1 1 0 011 1v1a1 1 0 01-2 0V3a1 1 0 011-1zM7 8a1 1 0 011 1v1a1 1 0 01-2 0V9a1 1 0 011-1zm6 0a1 1 0 011 1v1a1 1 0 01-2 0V9a1 1 0 011-1zM7 14a1 1 0 011 1v1a1 1 0 01-2 0v-1a1 1 0 011-1zm6 0a1 1 0 011 1v1a1 1 0 01-2 0v-1a1 1 0 011-1z"/>
-            </svg>
+            <GripVertical class="w-4 h-4" />
           </div>
 
-          <!-- Block preview -->
-          <div class="px-8 py-3">
+          <!-- Container block: nested sortable children -->
+          <EditorContainerBlock
+            v-if="block.type === 'container'"
+            :block="block"
+            :selected-id="selectedId"
+            @select="$emit('select', $event)"
+            @update-children="$emit('update-children', $event)"
+          />
+
+          <!-- Regular block: text preview -->
+          <div v-else class="px-8 py-3">
             <p class="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">{{ blockLabel(block.type) }}</p>
             <p class="text-sm text-foreground line-clamp-2 min-h-[1.25rem]">{{ blockPreview(block) }}</p>
           </div>
@@ -60,13 +67,15 @@
 <script setup>
 import { computed } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
+import { GripVertical } from 'lucide-vue-next'
+import EditorContainerBlock from './EditorContainerBlock.vue'
 
 const props = defineProps({
   blocks:     { type: Array,  default: () => [] },
   selectedId: { type: String, default: null },
 })
 
-const emit = defineEmits(['select', 'reorder'])
+const emit = defineEmits(['select', 'reorder', 'update-children'])
 
 const draggableBlocks = computed({
   get: () => props.blocks,
@@ -81,7 +90,8 @@ function onAdd(evt) {
 const LABELS = {
   paragraph: 'Paragraph', heading: 'Heading', image: 'Image',
   quote: 'Quote', code: 'Code', gallery: 'Gallery', video: 'Video',
-  divider: 'Divider', cta: 'CTA', html: 'HTML',
+  divider: 'Divider', cta: 'CTA', html: 'HTML', component: 'Component',
+  container: 'Container',
 }
 
 function blockLabel(type) {
