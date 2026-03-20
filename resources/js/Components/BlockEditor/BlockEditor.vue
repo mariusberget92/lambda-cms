@@ -126,7 +126,8 @@ function removeBlock(id) {
     const hasContent = Object.values(block.data ?? {}).some(v =>
       v !== null && v !== '' && !(Array.isArray(v) && v.length === 0)
     )
-    if (hasContent && !confirm('Remove this block? Its content will be lost.')) return
+    const hasChildren = (block.children?.length ?? 0) > 0
+    if ((hasContent || hasChildren) && !confirm('Remove this block? Its content will be lost.')) return
   }
   localBlocks.value = removeFromList(localBlocks.value, id)
   if (selectedBlockId.value === id) selectedBlockId.value = null
