@@ -37,14 +37,12 @@ const columns = [
   <AppLayout title="Pages">
     <Head title="Pages" />
 
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h2 class="text-lg font-semibold">Pages</h2>
-        <p class="text-sm text-muted-foreground mt-0.5">Manage custom site pages</p>
-      </div>
+    <div class="mb-6">
+      <h2 class="text-lg font-semibold">Pages</h2>
+      <p class="text-sm text-muted-foreground mt-0.5">Manage custom site pages</p>
       <a
         :href="route('pages.create')"
-        class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+        class="mt-3 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary-hover transition-colors"
       >
         New page
       </a>

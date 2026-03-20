@@ -17,8 +17,8 @@ onUnmounted(cleanup)
   <!-- Full-viewport backdrop -->
   <div class="min-h-screen bg-background flex items-center justify-center p-8">
 
-    <!-- 80% centered box with rounded corners -->
-    <div class="w-4/5 flex rounded-2xl overflow-hidden shadow-2xl min-h-[480px]">
+    <!-- 60% centered box with rounded corners -->
+    <div class="w-3/5 flex rounded-2xl overflow-hidden shadow-2xl min-h-[480px]">
 
       <!-- Left panel: particle canvas (desktop only) -->
       <div class="hidden md:flex w-1/2 bg-[oklch(14%_0.01_260)]" aria-hidden="true">

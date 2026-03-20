@@ -9,7 +9,8 @@
   --popover: #eceff4;
   --popover-foreground: #2e3440;
   --primary: #5e81ac;
-  --primary-foreground: #eceff4;
+  --primary-foreground: #ffffff;
+  --primary-hover: #4a6d92;
   --secondary: #d8dee9;
   --secondary-foreground: #3b4252;
   --muted: #d8dee9;
@@ -66,6 +67,7 @@
   --popover-foreground: #d8dee9;
   --primary: #88c0d0;              /* Nord8 */
   --primary-foreground: #2e3440;   /* Nord0 */
+  --primary-hover: #72a4b4;
   --secondary: #434c5e;            /* Nord2 */
   --secondary-foreground: #d8dee9;
   --muted: #3b4252;                /* Nord1 */
@@ -121,6 +123,7 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);

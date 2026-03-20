@@ -6,7 +6,7 @@
     <a
       v-if="block.data.button_url"
       :href="block.data.button_url"
-      class="inline-flex items-center rounded-md bg-primary px-5 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+      class="inline-flex items-center rounded-md bg-primary px-5 py-2 text-sm font-medium text-primary-foreground hover:bg-primary-hover transition-colors"
     >
       {{ block.data.button_label || 'Learn more' }}
     </a>

@@ -128,7 +128,7 @@ function submit() {
         <button
           type="submit"
           :disabled="form.processing"
-          class="inline-flex items-center gap-2 bg-primary text-primary-foreground text-sm font-medium px-5 py-2 rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
+          class="inline-flex items-center gap-2 bg-primary text-primary-foreground text-sm font-medium px-5 py-2 rounded-md hover:bg-primary-hover transition-colors disabled:opacity-50"
         >
           <span v-if="form.processing">Installing…</span>
           <span v-else>Install Lambda CMS</span>

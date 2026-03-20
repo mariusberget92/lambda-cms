@@ -61,7 +61,7 @@
             <button
               type="submit"
               :disabled="infoForm.processing"
-              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-50"
             >
               {{ infoForm.processing ? 'Saving...' : 'Save changes' }}
             </button>
@@ -118,7 +118,7 @@
             <button
               type="submit"
               :disabled="passwordForm.processing"
-              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-50"
             >
               {{ passwordForm.processing ? 'Updating...' : 'Update password' }}
             </button>
@@ -187,7 +187,7 @@
                 type="button"
                 :disabled="avatarForm.processing"
                 @click="submitAvatar"
-                class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+                class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-50"
               >
                 {{ avatarForm.processing ? 'Uploading...' : 'Save avatar' }}
               </button>

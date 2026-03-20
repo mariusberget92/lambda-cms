@@ -2,14 +2,12 @@
   <AppLayout title="Categories">
     <Head title="Categories" />
 
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h2 class="text-lg font-semibold">Categories</h2>
-        <p class="text-sm text-muted-foreground mt-0.5">Organise your posts by topic</p>
-      </div>
+    <div class="mb-6">
+      <h2 class="text-lg font-semibold">Categories</h2>
+      <p class="text-sm text-muted-foreground mt-0.5">Organise your posts by topic</p>
       <a
         :href="route('categories.create')"
-        class="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+        class="mt-3 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
       >
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
