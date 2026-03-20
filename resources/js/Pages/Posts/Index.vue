@@ -72,7 +72,7 @@
             :checked="isAllSelected"
             :indeterminate.prop="selectedIds.length > 0 && !isAllSelected"
             @change="toggleAll"
-            class="rounded border-border"
+            class="rounded border-border accent-nord-green"
             aria-label="Select all posts"
           />
         </th>
@@ -97,7 +97,7 @@
               type="checkbox"
               :checked="selectedIds.includes(post.id)"
               @change="toggleRow(post.id)"
-              class="rounded border-border"
+              class="rounded border-border accent-nord-green"
               :aria-label="`Select ${post.title}`"
             />
           </td>

@@ -62,7 +62,7 @@
                 :checked="allSelected"
                 :indeterminate="someSelected"
                 @change="toggleAll"
-                class="rounded border-border"
+                class="rounded border-border accent-nord-green"
               />
             </th>
             <th class="text-left font-medium px-4 py-3">Author</th>
@@ -93,7 +93,7 @@
                 type="checkbox"
                 :checked="selected.includes(comment.id)"
                 @change="toggleOne(comment.id)"
-                class="rounded border-border"
+                class="rounded border-border accent-nord-green"
               />
             </td>
             <td class="px-4 py-3">

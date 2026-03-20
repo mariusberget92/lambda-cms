@@ -387,7 +387,7 @@
                 id="comments_enabled"
                 v-model="commentsForm['comments.enabled']"
                 type="checkbox"
-                class="w-4 h-4 rounded border-border accent-primary"
+                class="w-4 h-4 rounded border-border accent-nord-green"
               />
             </div>
 

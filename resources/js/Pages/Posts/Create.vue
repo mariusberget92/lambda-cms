@@ -140,7 +140,7 @@
                   type="checkbox"
                   :value="cat.id"
                   v-model="form.category_ids"
-                  class="accent-primary rounded"
+                  class="accent-nord-green rounded"
                 />
                 <span
                   class="text-xs px-2 py-0.5 rounded-full border transition-colors"
@@ -171,7 +171,7 @@
                   type="checkbox"
                   :value="tag.id"
                   v-model="form.tag_ids"
-                  class="accent-primary rounded"
+                  class="accent-nord-green rounded"
                 />
                 <span
                   class="text-xs px-2 py-0.5 rounded-full border transition-colors"
@@ -226,7 +226,7 @@
               <input
                 type="checkbox"
                 v-model="form.comments_enabled"
-                class="w-4 h-4 rounded border-border accent-primary"
+                class="w-4 h-4 rounded border-border accent-nord-green"
               />
               <div>
                 <span class="text-sm font-medium">Allow comments</span>
