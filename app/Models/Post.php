@@ -23,6 +23,7 @@ class Post extends Model
         "excerpt",
         "body",
         "status",
+        "featured",
         "published_at",
         "comments_enabled",
         "use_block_editor",

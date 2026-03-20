@@ -20,6 +20,7 @@ class PostFactory extends Factory
             'excerpt'          => fake()->paragraph(2),
             'body'             => $this->generateBody(),
             'status'           => 'draft',
+            'featured'         => false,
             'published_at'     => null,
             'comments_enabled' => true,
             'meta_title'       => null,
