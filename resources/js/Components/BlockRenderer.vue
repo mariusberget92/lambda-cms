@@ -5,7 +5,7 @@
       <component
         v-if="block.customCss"
         :is="'style'"
-      >#block-{{ block.customId || block.id }} { {{ block.customCss }} }</component>
+      >#{{ block.customId || 'block-' + block.id }} { {{ block.customCss }} }</component>
       <div
         :id="block.customId || `block-${block.id}`"
         :class="block.customClasses || undefined"
