@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Page;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -28,7 +30,10 @@ class PageController extends Controller
 
     public function create()
     {
-        return Inertia::render('Pages/Create');
+        return Inertia::render('Pages/Create', [
+            'categories' => Category::orderBy('name')->get(['id', 'name']),
+            'tags'       => Tag::orderBy('name')->get(['id', 'name']),
+        ]);
     }
 
     public function store(Request $request)
@@ -64,6 +69,8 @@ class PageController extends Controller
                 'meta_description' => $page->meta_description,
                 'meta_keywords'    => $page->meta_keywords,
             ],
+            'categories' => Category::orderBy('name')->get(['id', 'name']),
+            'tags'       => Tag::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
