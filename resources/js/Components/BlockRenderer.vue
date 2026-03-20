@@ -38,8 +38,8 @@ import ContainerBlock from '@/Components/Blocks/ContainerBlock.vue'
 const props = defineProps({ blocks: { type: Array, default: () => [] } })
 
 function sanitizeCss(css) {
-  // Prevent </style> tag breakout which would allow HTML injection
-  return css.replace(/<\/style/gi, '')
+  // Strip both opening and closing style tags to prevent tag breakout / HTML injection
+  return css.replace(/<\/?style/gi, '')
 }
 
 const BLOCK_MAP = {
