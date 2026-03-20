@@ -2,7 +2,7 @@
   <AppLayout title="Dashboard">
     <Head title="Dashboard" />
 
-    <\!-- Error flash -->
+    <!-- Error flash -->
     <Transition name="fade">
       <div
         v-if="$page.props.flash?.error"
@@ -15,16 +15,16 @@
       </div>
     </Transition>
 
-    <\!-- Welcome -->
+    <!-- Welcome -->
     <div class="mb-6">
       <h2 class="text-lg font-semibold">Good to see you, {{ user.name }}</h2>
-      <p class="text-sm text-muted-foreground mt-0.5">Here’s what’s happening with your blog.</p>
+      <p class="text-sm text-muted-foreground mt-0.5">Here's what's happening with your blog.</p>
     </div>
 
-    <\!-- Stats (5 cards) -->
+    <!-- Stats (5 cards) -->
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5 mb-6">
 
-      <\!-- Total Posts -->
+      <!-- Total Posts -->
       <div class="rounded-lg border bg-card p-5">
         <div class="flex items-center justify-between mb-3">
           <p class="text-sm font-medium text-muted-foreground">Total Posts</p>
@@ -37,7 +37,7 @@
         <p class="text-3xl font-bold">{{ stats.total }}</p>
       </div>
 
-      <\!-- Published -->
+      <!-- Published -->
       <div class="rounded-lg border bg-card p-5">
         <div class="flex items-center justify-between mb-3">
           <p class="text-sm font-medium text-muted-foreground">Published</p>
@@ -50,7 +50,7 @@
         <p class="text-3xl font-bold">{{ stats.published }}</p>
       </div>
 
-      <\!-- Scheduled -->
+      <!-- Scheduled -->
       <div class="rounded-lg border bg-card p-5">
         <div class="flex items-center justify-between mb-3">
           <p class="text-sm font-medium text-muted-foreground">Scheduled</p>
@@ -63,7 +63,7 @@
         <p class="text-3xl font-bold">{{ stats.scheduled }}</p>
       </div>
 
-      <\!-- Drafts -->
+      <!-- Drafts -->
       <div class="rounded-lg border bg-card p-5">
         <div class="flex items-center justify-between mb-3">
           <p class="text-sm font-medium text-muted-foreground">Drafts</p>
@@ -76,7 +76,7 @@
         <p class="text-3xl font-bold">{{ stats.drafts }}</p>
       </div>
 
-      <\!-- Pending Comments -->
+      <!-- Pending Comments -->
       <a :href="route('comments.index') + '?filter=pending'" class="rounded-lg border bg-card p-5 hover:bg-accent transition-colors">
         <div class="flex items-center justify-between mb-3">
           <p class="text-sm font-medium text-muted-foreground">Pending Comments</p>
@@ -90,10 +90,10 @@
       </a>
     </div>
 
-    <\!-- Two-column panels -->
+    <!-- Two-column panels -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
 
-      <\!-- Upcoming Scheduled Posts -->
+      <!-- Upcoming Scheduled Posts -->
       <div class="rounded-lg border bg-card p-5">
         <h3 class="text-sm font-semibold mb-4">Upcoming scheduled posts</h3>
         <div v-if="upcoming_scheduled.length === 0" class="text-sm text-muted-foreground text-center py-6">
@@ -114,7 +114,7 @@
         </ul>
       </div>
 
-      <\!-- Recent Posts -->
+      <!-- Recent Posts -->
       <div class="rounded-lg border bg-card p-5">
         <h3 class="text-sm font-semibold mb-4">Recent posts</h3>
         <div v-if="recent_posts.length === 0" class="text-sm text-muted-foreground text-center py-6">
@@ -146,7 +146,7 @@
       </div>
     </div>
 
-    <\!-- Quick actions -->
+    <!-- Quick actions -->
     <div class="rounded-lg border bg-card p-5">
       <h3 class="text-sm font-semibold mb-3">Quick actions</h3>
       <div class="flex flex-wrap gap-3">

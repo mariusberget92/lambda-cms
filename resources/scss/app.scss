@@ -58,37 +58,37 @@
 }
 
 .dark {
-  --background: oklch(14% 0.01 260);
-  --foreground: #d8dee9;
-  --card: oklch(27% 0.01 260);
+  --background: #2e3440;           /* Nord0 */
+  --foreground: #d8dee9;           /* Nord4 */
+  --card: #3b4252;                 /* Nord1 */
   --card-foreground: #d8dee9;
-  --popover: oklch(27% 0.01 260);
+  --popover: #3b4252;              /* Nord1 */
   --popover-foreground: #d8dee9;
-  --primary: #88c0d0;
-  --primary-foreground: oklch(14% 0.01 260);
-  --secondary: oklch(32% 0.01 260);
+  --primary: #88c0d0;              /* Nord8 */
+  --primary-foreground: #2e3440;   /* Nord0 */
+  --secondary: #434c5e;            /* Nord2 */
   --secondary-foreground: #d8dee9;
-  --muted: oklch(27% 0.01 260);
-  --muted-foreground: oklch(60% 0.01 260);
-  --accent: oklch(37% 0.01 260);
-  --accent-foreground: #eceff4;
-  --destructive: #bf616a;
+  --muted: #3b4252;                /* Nord1 */
+  --muted-foreground: #7b8898;
+  --accent: #4c566a;               /* Nord3 */
+  --accent-foreground: #eceff4;    /* Nord6 */
+  --destructive: #bf616a;          /* Nord11 */
   --destructive-foreground: #eceff4;
-  --border: oklch(32% 0.01 260);
-  --input: oklch(32% 0.01 260);
+  --border: #434c5e;               /* Nord2 */
+  --input: #434c5e;                /* Nord2 */
   --ring: #88c0d0;
   --chart-1: #88c0d0;
   --chart-2: #8fbcbb;
   --chart-3: #a3be8c;
   --chart-4: #ebcb8b;
   --chart-5: #b48ead;
-  --sidebar: oklch(20% 0.01 260);
+  --sidebar: #2a2f3a;              /* slightly darker than Nord0 */
   --sidebar-foreground: #d8dee9;
   --sidebar-primary: #88c0d0;
-  --sidebar-primary-foreground: oklch(14% 0.01 260);
-  --sidebar-accent: oklch(32% 0.01 260);
+  --sidebar-primary-foreground: #2e3440;
+  --sidebar-accent: #434c5e;       /* Nord2 */
   --sidebar-accent-foreground: #d8dee9;
-  --sidebar-border: oklch(32% 0.01 260);
+  --sidebar-border: #434c5e;       /* Nord2 */
   --sidebar-ring: #88c0d0;
 
   /* Role badge tokens — dark mode */
