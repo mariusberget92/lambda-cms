@@ -7,7 +7,6 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import FlashMessage from '@/Components/FlashMessage.vue'
 import SelectBox from '@/Components/SelectBox.vue'
 
-defineOptions({ layout: AppLayout })
 
 const props = defineProps({
   items: { type: Array, default: () => [] },
@@ -76,6 +75,7 @@ function deleteItem(id) {
 </script>
 
 <template>
+  <AppLayout title="Navigation">
   <Head title="Navigation" />
   <FlashMessage />
 
@@ -200,4 +200,5 @@ function deleteItem(id) {
 
     </div>
   </div>
+  </AppLayout>
 </template>
