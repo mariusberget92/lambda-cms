@@ -99,7 +99,7 @@ const toggle = () => {
       </button>
 
       <!-- Icon buttons — clear and chevron, siblings of the label button -->
-      <span class="flex items-center gap-1 pr-2 shrink-0">
+      <span class="flex items-center gap-1 pr-2 shrink-0" @click="toggle">
         <button
           v-if="hasSelection"
           type="button"
@@ -133,7 +133,7 @@ const toggle = () => {
       </div>
 
       <!-- Item list -->
-      <ul role="listbox" class="max-h-60 overflow-y-auto py-1">
+      <ul role="listbox" :aria-multiselectable="multiple" class="max-h-60 overflow-y-auto py-1">
         <li
           v-if="filteredItems.length === 0"
           class="px-3 py-2 text-sm text-muted-foreground"
