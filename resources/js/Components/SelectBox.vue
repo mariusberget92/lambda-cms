@@ -3,6 +3,8 @@ import { ref, computed, watch, nextTick } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import { ChevronDown, X } from 'lucide-vue-next'
 
+defineOptions({ inheritAttrs: false })
+
 const props = defineProps({
   modelValue: { type: [String, Number, Array], default: null },
   data:        { type: Array,   default: () => [] },
@@ -90,6 +92,7 @@ const toggle = () => {
         :disabled="disabled"
         aria-haspopup="listbox"
         :aria-expanded="open"
+        v-bind="$attrs"
         class="flex-1 flex items-center px-3 py-2 text-left focus:outline-none disabled:cursor-not-allowed"
         @click="toggle"
       >

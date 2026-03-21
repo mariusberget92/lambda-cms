@@ -15,7 +15,7 @@
             { value: 'audio',    label: 'Audio' },
           ]"
           placeholder="All types"
-          @update:model-value="v => { filters.type = v; applyFilters() }"
+          @update:model-value="onTypeChange"
         />
 
         <input
@@ -299,6 +299,11 @@ const filters = ref({
 const { isOverDropZone } = useDropZone(dropZoneRef, {
   onDrop: (files) => uploadFiles(files),
 })
+
+function onTypeChange(v) {
+  filters.value.type = v
+  applyFilters()
+}
 
 function applyFilters() {
   router.get(route('media.index'), filters.value, { preserveState: true, replace: true })

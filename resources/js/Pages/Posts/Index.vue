@@ -53,7 +53,7 @@
           { value: 'draft',     label: 'Draft' },
         ]"
         placeholder="All statuses"
-        @update:model-value="v => { statusFilter = v; applyFilters() }"
+        @update:model-value="onStatusChange"
       />
     </div>
 
@@ -304,6 +304,11 @@ function decodeHtmlEntities(str) {
   const txt = document.createElement('textarea');
   txt.innerHTML = str;
   return txt.value;
+}
+
+function onStatusChange(v) {
+  statusFilter.value = v
+  applyFilters()
 }
 
 let searchTimeout = null;
