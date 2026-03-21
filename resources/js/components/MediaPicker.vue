@@ -5,16 +5,17 @@
       <div class="flex items-center justify-between px-6 py-4 border-b">
         <h2 class="text-base font-semibold">Media Library</h2>
         <div class="flex items-center gap-2">
-          <select
+          <SelectBox
             v-model="filters.type"
-            class="rounded-md border bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-          >
-            <option value="">All types</option>
-            <option value="image">Images</option>
-            <option value="document">Documents</option>
-            <option value="video">Video</option>
-            <option value="audio">Audio</option>
-          </select>
+            :data="[
+              { value: '',         label: 'All types' },
+              { value: 'image',    label: 'Images' },
+              { value: 'document', label: 'Documents' },
+              { value: 'video',    label: 'Video' },
+              { value: 'audio',    label: 'Audio' },
+            ]"
+            placeholder="All types"
+          />
           <input
             v-model="filters.search"
             type="text"
@@ -135,6 +136,7 @@ import { ref, computed, watch } from 'vue'
 import { useDropZone } from '@vueuse/core'
 import axios from 'axios'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
+import SelectBox from '@/Components/SelectBox.vue'
 
 const props = defineProps({
   modelValue:   { type: Boolean, default: false },
