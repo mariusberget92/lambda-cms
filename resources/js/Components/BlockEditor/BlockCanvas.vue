@@ -53,10 +53,18 @@
             @update-children="$emit('update-children', $event)"
           />
 
-          <!-- Regular block: text preview -->
-          <div v-else class="px-8 py-3">
-            <p class="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">{{ blockLabel(block.type) }}</p>
-            <p class="text-sm text-foreground line-clamp-2 min-h-[1.25rem]">{{ blockPreview(block) }}</p>
+          <!-- Regular block: live render -->
+          <div v-else class="px-8 py-3 min-h-[2.5rem]">
+            <div
+              v-if="isEmptyBlock(block)"
+              class="text-xs text-muted-foreground italic"
+            >{{ LABELS[block.type] ?? block.type }} — empty</div>
+            <component
+              v-else
+              :is="BLOCK_MAP[block.type]"
+              :block="block"
+              class="pointer-events-none"
+            />
           </div>
         </div>
       </VueDraggable>
@@ -66,9 +74,41 @@
 
 <script setup>
 import { computed } from 'vue'
-import { VueDraggable } from 'vue-draggable-plus'
-import { GripVertical } from 'lucide-vue-next'
+import { VueDraggable }  from 'vue-draggable-plus'
+import { GripVertical }  from 'lucide-vue-next'
 import EditorContainerBlock from './EditorContainerBlock.vue'
+import ParagraphBlock from '@/Components/Blocks/ParagraphBlock.vue'
+import HeadingBlock   from '@/Components/Blocks/HeadingBlock.vue'
+import ImageBlock     from '@/Components/Blocks/ImageBlock.vue'
+import QuoteBlock     from '@/Components/Blocks/QuoteBlock.vue'
+import CodeBlock      from '@/Components/Blocks/CodeBlock.vue'
+import GalleryBlock   from '@/Components/Blocks/GalleryBlock.vue'
+import VideoBlock     from '@/Components/Blocks/VideoBlock.vue'
+import DividerBlock   from '@/Components/Blocks/DividerBlock.vue'
+import CtaBlock       from '@/Components/Blocks/CtaBlock.vue'
+import HtmlBlock      from '@/Components/Blocks/HtmlBlock.vue'
+import PostListBlock  from '@/Components/Blocks/PostListBlock.vue'
+
+const BLOCK_MAP = {
+  paragraph: ParagraphBlock,
+  heading:   HeadingBlock,
+  image:     ImageBlock,
+  quote:     QuoteBlock,
+  code:      CodeBlock,
+  gallery:   GalleryBlock,
+  video:     VideoBlock,
+  divider:   DividerBlock,
+  cta:       CtaBlock,
+  html:      HtmlBlock,
+  component: PostListBlock,
+}
+
+const LABELS = {
+  paragraph: 'Paragraph', heading: 'Heading', image: 'Image',
+  quote: 'Quote', code: 'Code', gallery: 'Gallery', video: 'Video',
+  divider: 'Divider', cta: 'CTA', html: 'HTML', component: 'Component',
+  container: 'Container',
+}
 
 const props = defineProps({
   blocks:     { type: Array,  default: () => [] },
@@ -87,31 +127,19 @@ function onAdd(evt) {
   if (newBlock) emit('select', newBlock.id)
 }
 
-const LABELS = {
-  paragraph: 'Paragraph', heading: 'Heading', image: 'Image',
-  quote: 'Quote', code: 'Code', gallery: 'Gallery', video: 'Video',
-  divider: 'Divider', cta: 'CTA', html: 'HTML', component: 'Component',
-  container: 'Container',
-}
-
-function blockLabel(type) {
-  return LABELS[type] ?? type
-}
-
-function blockPreview(block) {
+function isEmptyBlock(block) {
   const d = block.data ?? {}
   switch (block.type) {
-    case 'paragraph': return d.content   || '(empty)'
-    case 'heading':   return d.text      || '(empty)'
-    case 'image':     return d.caption || d.alt || d.url || '(no image)'
-    case 'quote':     return d.text      || '(empty)'
-    case 'code':      return d.language  ? `[${d.language}]` : '(empty)'
-    case 'gallery':   return d.items?.length ? `${d.items.length} image(s)` : '(empty)'
-    case 'video':     return d.url       || '(no URL)'
-    case 'divider':   return '————————'
-    case 'cta':       return d.headline || d.text || '(empty)'
-    case 'html':      return d.content   ? '(HTML content)' : '(empty)'
-    default:          return ''
+    case 'paragraph': return !d.content
+    case 'heading':   return !d.text
+    case 'image':     return !d.url
+    case 'quote':     return !d.text
+    case 'code':      return !d.content
+    case 'gallery':   return !(d.items?.length)
+    case 'video':     return !d.url
+    case 'cta':       return !d.headline && !d.text
+    case 'html':      return !d.content
+    default:          return false
   }
 }
 </script>

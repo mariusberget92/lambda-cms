@@ -25,7 +25,15 @@
         <span class="child-drag-handle cursor-grab active:cursor-grabbing text-muted-foreground shrink-0" @click.stop>
           <GripVertical class="w-3 h-3" />
         </span>
-        <span class="flex-1 truncate text-muted-foreground">{{ LABELS[child.type] ?? child.type }}</span>
+        <div class="flex-1 min-w-0 overflow-hidden pointer-events-none">
+          <component
+            v-if="BLOCK_MAP[child.type]"
+            :is="BLOCK_MAP[child.type]"
+            :block="child"
+            class="text-xs scale-90 origin-left"
+          />
+          <span v-else class="text-muted-foreground text-xs">{{ LABELS[child.type] ?? child.type }}</span>
+        </div>
       </div>
 
       <div v-if="localChildren.length === 0"
@@ -40,6 +48,31 @@
 import { computed } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
 import { GripVertical } from 'lucide-vue-next'
+import ParagraphBlock from '@/Components/Blocks/ParagraphBlock.vue'
+import HeadingBlock   from '@/Components/Blocks/HeadingBlock.vue'
+import ImageBlock     from '@/Components/Blocks/ImageBlock.vue'
+import QuoteBlock     from '@/Components/Blocks/QuoteBlock.vue'
+import CodeBlock      from '@/Components/Blocks/CodeBlock.vue'
+import GalleryBlock   from '@/Components/Blocks/GalleryBlock.vue'
+import VideoBlock     from '@/Components/Blocks/VideoBlock.vue'
+import DividerBlock   from '@/Components/Blocks/DividerBlock.vue'
+import CtaBlock       from '@/Components/Blocks/CtaBlock.vue'
+import HtmlBlock      from '@/Components/Blocks/HtmlBlock.vue'
+import PostListBlock  from '@/Components/Blocks/PostListBlock.vue'
+
+const BLOCK_MAP = {
+  paragraph: ParagraphBlock,
+  heading:   HeadingBlock,
+  image:     ImageBlock,
+  quote:     QuoteBlock,
+  code:      CodeBlock,
+  gallery:   GalleryBlock,
+  video:     VideoBlock,
+  divider:   DividerBlock,
+  cta:       CtaBlock,
+  html:      HtmlBlock,
+  component: PostListBlock,
+}
 
 const LABELS = {
   paragraph: 'Paragraph', heading: 'Heading', image: 'Image',
