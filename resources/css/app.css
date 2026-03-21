@@ -164,6 +164,11 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* Nord green checkbox accent */
+[type="checkbox"] {
+  accent-color: var(--nord-green);
+}
+
 *,
 ::after,
 ::before,
