@@ -4,7 +4,7 @@ import { onClickOutside } from '@vueuse/core'
 import { ChevronDown, X } from 'lucide-vue-next'
 
 const props = defineProps({
-  modelValue: { default: null },
+  modelValue: { type: [String, Number, Array], default: null },
   data:        { type: Array,   default: () => [] },
   multiple:    { type: Boolean, default: false },
   searchable:  { type: Boolean, default: false },
@@ -89,14 +89,15 @@ const toggle = () => {
         {{ triggerLabel ?? placeholder }}
       </span>
       <span class="flex items-center gap-1 ml-2 shrink-0">
-        <span
+        <button
           v-if="hasSelection"
+          type="button"
+          aria-label="Clear selection"
           class="text-muted-foreground hover:text-foreground"
-          role="button"
           @click="clear"
         >
           <X class="w-3.5 h-3.5" />
-        </span>
+        </button>
         <ChevronDown
           class="w-4 h-4 text-muted-foreground transition-transform duration-150"
           :class="{ 'rotate-180': open }"
@@ -107,7 +108,7 @@ const toggle = () => {
     <!-- Dropdown panel -->
     <div
       v-show="open"
-      class="absolute z-50 mt-1 w-full rounded-md border bg-background shadow-md"
+      class="absolute left-0 top-full z-50 mt-1 w-full rounded-md border bg-background shadow-md"
     >
       <!-- Search input -->
       <div v-if="searchable" class="p-2 border-b">
@@ -116,14 +117,16 @@ const toggle = () => {
           v-model="search"
           type="text"
           placeholder="Search..."
-          class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          class="w-full rounded-md border bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
         />
       </div>
 
       <!-- Item list -->
-      <ul class="max-h-60 overflow-y-auto py-1">
+      <ul role="listbox" class="max-h-60 overflow-y-auto py-1">
         <li
           v-if="filteredItems.length === 0"
+          role="option"
+          aria-disabled="true"
           class="px-3 py-2 text-sm text-muted-foreground"
         >
           No results
@@ -131,6 +134,8 @@ const toggle = () => {
         <li
           v-for="item in filteredItems"
           :key="item.value"
+          role="option"
+          :aria-selected="isSelected(item.value)"
           class="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer select-none"
           :class="isSelected(item.value) && !multiple
             ? 'bg-primary text-primary-foreground'
@@ -141,8 +146,8 @@ const toggle = () => {
             v-if="multiple"
             type="checkbox"
             :checked="isSelected(item.value)"
-            class="shrink-0"
-            readonly
+            class="shrink-0 accent-nord-green"
+            tabindex="-1"
             @click.stop
           />
           {{ item.label }}
