@@ -106,6 +106,7 @@ async function restoreRevision(revision) {
   Object.keys(payload).forEach(key => {
     if (key in form) form[key] = payload[key]
   })
+  revisions.value = []
 }
 </script>
 

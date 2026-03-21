@@ -38,6 +38,16 @@ class RevisionController extends Controller
 
     public function restore(Revision $revision): JsonResponse
     {
+        $revisable = $revision->revisable;
+
+        if ($revisable instanceof Post) {
+            if ($revisable->user_id !== request()->user()->id
+                && ! request()->user()->hasRole('administrator')) {
+                abort(403);
+            }
+        }
+        // Pages are administrator-only via route middleware — no extra check needed.
+
         return response()->json($revision->payload);
     }
 }
