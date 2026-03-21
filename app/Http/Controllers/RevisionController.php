@@ -45,8 +45,11 @@ class RevisionController extends Controller
                 && ! request()->user()->hasRole('administrator')) {
                 abort(403);
             }
+        } elseif ($revisable instanceof Page) {
+            if (! request()->user()->hasRole('administrator')) {
+                abort(403);
+            }
         }
-        // Pages are administrator-only via route middleware — no extra check needed.
 
         return response()->json($revision->payload);
     }

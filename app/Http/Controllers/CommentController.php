@@ -131,6 +131,8 @@ class CommentController extends Controller
             'status'       => 'approved',
         ]);
 
+        $comment->loadMissing('post');
+
         if ($comment->author_email) {
             \Mail::to($comment->author_email)
                 ->queue(new \App\Mail\CommentReplyMail($comment, $reply));

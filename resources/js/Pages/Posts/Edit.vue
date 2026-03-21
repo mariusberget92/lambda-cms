@@ -21,9 +21,7 @@
             :href="route('posts.index')"
             class="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
           >
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-            </svg>
+            <ArrowLeft class="w-4 h-4" />
           </a>
           <div>
             <h2 class="text-lg font-semibold">Edit post</h2>
@@ -214,9 +212,7 @@
                 class="absolute top-1 right-1 w-6 h-6 rounded-full bg-background/80 flex items-center justify-center text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
                 @click="removeFeaturedImage"
               >
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
+                <X class="w-3.5 h-3.5" />
               </button>
             </div>
             <button
@@ -346,7 +342,7 @@
 import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import { Head, useForm } from "@inertiajs/vue3";
 import axios from 'axios'
-import { ChevronDown } from 'lucide-vue-next'
+import { ChevronDown, ArrowLeft, X } from 'lucide-vue-next'
 import AppLayout from "@/Layouts/AppLayout.vue";
 import TiptapEditor from "@/Components/TiptapEditor.vue";
 import MediaPicker from '@/Components/MediaPicker.vue'
@@ -448,6 +444,7 @@ async function restoreRevision(revision) {
     if (key in form) form[key] = payload[key]
   })
   revisions.value = []
+  revisionsOpen.value = false
 }
 
 const daysUntilPublish = computed(() => {

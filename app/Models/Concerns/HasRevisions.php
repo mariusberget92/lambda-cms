@@ -17,9 +17,13 @@ trait HasRevisions
      */
     public function saveRevision(int $userId): void
     {
+        $payload = collect($this->attributesToArray())
+            ->except(['id', 'created_at', 'updated_at'])
+            ->toArray();
+
         $this->revisions()->create([
             'user_id'    => $userId,
-            'payload'    => $this->getAttributes(),
+            'payload'    => $payload,
             'created_at' => now(),
         ]);
 

@@ -13,15 +13,19 @@ class CommentReplyMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public string $postTitle;
+
     public function __construct(
         public readonly Comment $parent,
         public readonly Comment $reply,
-    ) {}
+    ) {
+        $this->postTitle = $parent->post->title;
+    }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Someone replied to your comment on "' . $this->parent->post->title . '"',
+            subject: 'Someone replied to your comment on "' . $this->postTitle . '"',
         );
     }
 
