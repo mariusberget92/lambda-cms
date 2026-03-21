@@ -38,14 +38,14 @@ export function useParticleCanvas(canvasRef) {
     ctx.fillStyle = BG_COLOR
     ctx.fillRect(0, 0, width, height)
 
-    // 2. Move particles (toroidal wrap)
+    // 2. Move particles (bounce off all four walls)
     for (const p of particles) {
       p.x += p.vx
       p.y += p.vy
-      if (p.x < 0)      p.x += width
-      if (p.x > width)  p.x -= width
-      if (p.y < 0)      p.y += height
-      if (p.y > height) p.y -= height
+      if (p.x < PARTICLE_RADIUS)             { p.x = PARTICLE_RADIUS;              p.vx = -p.vx }
+      if (p.x > width  - PARTICLE_RADIUS)    { p.x = width  - PARTICLE_RADIUS;     p.vx = -p.vx }
+      if (p.y < PARTICLE_RADIUS)             { p.y = PARTICLE_RADIUS;              p.vy = -p.vy }
+      if (p.y > height - PARTICLE_RADIUS)    { p.y = height - PARTICLE_RADIUS;     p.vy = -p.vy }
     }
 
     // 3. Draw connection lines
