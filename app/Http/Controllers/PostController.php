@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Autosave;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
@@ -147,7 +148,7 @@ class PostController extends Controller
             ],
             'categories' => Category::orderBy('name')->get(['id', 'name']),
             'tags'       => Tag::orderBy('name')->get(['id', 'name']),
-            'autosave'   => \App\Models\Autosave::where([
+            'autosave'   => Autosave::where([
                 'autosaveable_type' => Post::class,
                 'autosaveable_id'   => $post->id,
                 'user_id'           => $request->user()->id,
@@ -207,6 +208,12 @@ class PostController extends Controller
         $post->update($validated);
         $post->tags()->sync($tagIds);
         $post->categories()->sync($categoryIds);
+
+        Autosave::where([
+            'autosaveable_type' => Post::class,
+            'autosaveable_id'   => $post->id,
+            'user_id'           => $request->user()->id,
+        ])->delete();
 
         return redirect()
             ->route('posts.index')

@@ -32,6 +32,10 @@ class AutosaveController extends Controller
 
     public function storePage(Request $request, Page $page): JsonResponse
     {
+        if ($page->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
+            abort(403);
+        }
+
         $request->validate(['payload' => ['required', 'array']]);
 
         Autosave::updateOrCreate(

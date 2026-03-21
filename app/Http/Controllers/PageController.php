@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Autosave;
 use App\Models\Category;
 use App\Models\Page;
 use App\Models\Tag;
@@ -72,7 +73,7 @@ class PageController extends Controller
             ],
             'categories' => Category::orderBy('name')->get(['id', 'name']),
             'tags'       => Tag::orderBy('name')->get(['id', 'name']),
-            'autosave'   => \App\Models\Autosave::where([
+            'autosave'   => Autosave::where([
                 'autosaveable_type' => Page::class,
                 'autosaveable_id'   => $page->id,
                 'user_id'           => $request->user()->id,
@@ -93,6 +94,12 @@ class PageController extends Controller
         ]);
 
         $page->update($validated);
+
+        Autosave::where([
+            'autosaveable_type' => Page::class,
+            'autosaveable_id'   => $page->id,
+            'user_id'           => $request->user()->id,
+        ])->delete();
 
         return redirect()->route('pages.index')->with('status', 'Page updated.');
     }

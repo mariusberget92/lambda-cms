@@ -309,7 +309,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import { Head, useForm } from "@inertiajs/vue3";
 import axios from 'axios'
 import AppLayout from "@/Layouts/AppLayout.vue";
@@ -381,6 +381,8 @@ async function dismissAutosave() {
   showRestoreBanner.value = false
   await axios.delete(route('posts.autosave.destroy', props.post.id))
 }
+
+onBeforeUnmount(() => clearTimeout(autosaveTimer))
 
 const daysUntilPublish = computed(() => {
   if (!form.published_at) return null

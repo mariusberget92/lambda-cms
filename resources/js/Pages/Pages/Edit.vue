@@ -4,7 +4,7 @@ import AppLayout   from '@/Layouts/AppLayout.vue'
 import BlockEditor from '@/Components/BlockEditor/BlockEditor.vue'
 import { useForm, usePage, Head } from '@inertiajs/vue3'
 import { filterEmptyBlocks } from '@/lib/utils.js'
-import { ref, watch } from 'vue'
+import { ref, watch, onBeforeUnmount } from 'vue'
 import axios from 'axios'
 
 const authUser = usePage().props.auth.user
@@ -74,6 +74,8 @@ async function dismissAutosave() {
   showRestoreBanner.value = false
   await axios.delete(route('pages.autosave.destroy', props.page.id))
 }
+
+onBeforeUnmount(() => clearTimeout(autosaveTimer))
 </script>
 
 <template>
