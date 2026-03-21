@@ -65,8 +65,7 @@ const select = (value) => {
   }
 }
 
-const clear = (e) => {
-  e.stopPropagation()
+const clear = () => {
   emit('update:modelValue', props.multiple ? [] : null)
 }
 
@@ -77,23 +76,35 @@ const toggle = () => {
 
 <template>
   <div ref="root" class="relative" @keydown.escape="open = false">
-    <!-- Trigger -->
-    <button
-      type="button"
-      :disabled="disabled"
-      class="w-full flex items-center justify-between rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
-      :class="open ? 'ring-2 ring-ring border-ring' : ''"
-      @click="toggle"
+    <!-- Trigger row — outer div wraps label button + icon buttons as siblings -->
+    <div
+      class="w-full flex items-center rounded-md border bg-background text-sm focus-within:ring-2 focus-within:ring-ring"
+      :class="[
+        open ? 'ring-2 ring-ring border-ring' : '',
+        disabled ? 'opacity-50 cursor-not-allowed' : '',
+      ]"
     >
-      <span :class="triggerLabel ? 'text-foreground' : 'text-muted-foreground'">
-        {{ triggerLabel ?? placeholder }}
-      </span>
-      <span class="flex items-center gap-1 ml-2 shrink-0">
+      <!-- Label area — clicking this toggles the dropdown -->
+      <button
+        type="button"
+        :disabled="disabled"
+        aria-haspopup="listbox"
+        :aria-expanded="open"
+        class="flex-1 flex items-center px-3 py-2 text-left focus:outline-none disabled:cursor-not-allowed"
+        @click="toggle"
+      >
+        <span :class="triggerLabel ? 'text-foreground' : 'text-muted-foreground'">
+          {{ triggerLabel ?? placeholder }}
+        </span>
+      </button>
+
+      <!-- Icon buttons — clear and chevron, siblings of the label button -->
+      <span class="flex items-center gap-1 pr-2 shrink-0">
         <button
           v-if="hasSelection"
           type="button"
           aria-label="Clear selection"
-          class="text-muted-foreground hover:text-foreground"
+          class="text-muted-foreground hover:text-foreground focus:outline-none"
           @click="clear"
         >
           <X class="w-3.5 h-3.5" />
@@ -103,7 +114,7 @@ const toggle = () => {
           :class="{ 'rotate-180': open }"
         />
       </span>
-    </button>
+    </div>
 
     <!-- Dropdown panel -->
     <div
@@ -125,8 +136,6 @@ const toggle = () => {
       <ul role="listbox" class="max-h-60 overflow-y-auto py-1">
         <li
           v-if="filteredItems.length === 0"
-          role="option"
-          aria-disabled="true"
           class="px-3 py-2 text-sm text-muted-foreground"
         >
           No results
