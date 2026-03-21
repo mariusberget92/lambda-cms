@@ -135,6 +135,7 @@ Route::middleware('installed')->group(function () {
         Route::patch('/comments/{comment}/reject',  [CommentController::class, 'reject'])->name('comments.reject');
         Route::delete('/comments/{comment}',        [CommentController::class, 'destroy'])->name('comments.destroy');
         Route::post('/comments/bulk',               [CommentController::class, 'bulk'])->name('comments.bulk');
+        Route::post('/comments/{comment}/reply',    [CommentController::class, 'reply'])->name('comments.reply');
 
         Route::get('/settings',             [SettingsController::class, 'index'])->name('settings.index');
         Route::put('/settings/{group}',     [SettingsController::class, 'update'])->name('settings.update');

@@ -18,7 +18,8 @@ class CommentController extends Controller
     {
         $filter = $request->input('filter', 'pending');
 
-        $comments = Comment::with(['post:id,title,slug', 'user:id,name'])
+        $comments = Comment::with(['post:id,title,slug', 'user:id,name', 'replies.user:id,name'])
+            ->whereNull('parent_id')
             ->when($filter !== 'all', fn ($q) => $q->where('status', $filter))
             ->latest()
             ->paginate(25)
@@ -28,13 +29,18 @@ class CommentController extends Controller
                 'author_name'  => $c->author_name,
                 'author_email' => $c->author_email,
                 'body'         => $c->body,
-                'body_excerpt' => \Illuminate\Support\Str::limit($c->body, 80),
                 'status'       => $c->status,
                 'created_at'   => $c->created_at->diffForHumans(),
                 'post'         => [
                     'title' => $c->post->title,
                     'slug'  => $c->post->slug,
                 ],
+                'replies' => $c->replies->map(fn ($r) => [
+                    'id'          => $r->id,
+                    'author_name' => $r->author_name,
+                    'body'        => $r->body,
+                    'created_at'  => $r->created_at->diffForHumans(),
+                ])->values(),
             ]);
 
         return Inertia::render('Comments/Index', [
@@ -102,6 +108,33 @@ class CommentController extends Controller
     {
         $comment->delete();
         return back()->with('status', 'Comment deleted.');
+    }
+
+    /**
+     * Admin — reply to a comment, optionally notify the original commenter.
+     */
+    public function reply(Request $request, Comment $comment): RedirectResponse
+    {
+        $validated = $request->validate([
+            'body' => ['required', 'string', 'max:2000'],
+        ]);
+
+        $reply = Comment::create([
+            'post_id'      => $comment->post_id,
+            'parent_id'    => $comment->id,
+            'user_id'      => $request->user()->id,
+            'author_name'  => $request->user()->name,
+            'author_email' => $request->user()->email,
+            'body'         => $validated['body'],
+            'status'       => 'approved',
+        ]);
+
+        if ($comment->author_email) {
+            \Mail::to($comment->author_email)
+                ->queue(new \App\Mail\CommentReplyMail($comment, $reply));
+        }
+
+        return back()->with('status', 'Reply sent.');
     }
 
     /**
