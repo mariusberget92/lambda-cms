@@ -95,6 +95,8 @@ class PageController extends Controller
 
         $page->update($validated);
 
+        $page->saveRevision($request->user()->id);
+
         Autosave::where([
             'autosaveable_type' => Page::class,
             'autosaveable_id'   => $page->id,

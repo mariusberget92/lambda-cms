@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Media;
 use App\Models\Setting;
+use App\Models\Concerns\HasRevisions;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,6 +15,7 @@ use Illuminate\Support\Str;
 class Post extends Model
 {
     use HasFactory;
+    use HasRevisions;
 
     protected $fillable = [
         "user_id",

@@ -20,6 +20,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\NavigationController;
 use App\Http\Controllers\AutosaveController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\RevisionController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -97,6 +98,10 @@ Route::middleware('installed')->group(function () {
         // Autosave
         Route::post('/posts/{post}/autosave',   [AutosaveController::class, 'storePost'])->name('posts.autosave');
         Route::delete('/posts/{post}/autosave', [AutosaveController::class, 'destroyPost'])->name('posts.autosave.destroy');
+
+        // Revisions
+        Route::get('/posts/{post}/revisions',       [RevisionController::class, 'indexPost'])->name('posts.revisions');
+        Route::get('/revisions/{revision}/restore', [RevisionController::class, 'restore'])->name('revisions.restore');
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::resource('tags',       TagController::class)->except(['show']);
 
@@ -122,6 +127,7 @@ Route::middleware('installed')->group(function () {
         Route::resource('pages', PageController::class)->except(['show']);
         Route::post('/pages/{page}/autosave',   [AutosaveController::class, 'storePage'])->name('pages.autosave');
         Route::delete('/pages/{page}/autosave', [AutosaveController::class, 'destroyPage'])->name('pages.autosave.destroy');
+        Route::get('/pages/{page}/revisions',   [RevisionController::class, 'indexPage'])->name('pages.revisions');
         Route::resource('users', UserController::class)->except(['show']);
 
         Route::get('/comments',                     [CommentController::class, 'index'])->name('comments.index');

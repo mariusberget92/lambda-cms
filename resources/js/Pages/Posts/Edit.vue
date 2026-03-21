@@ -302,6 +302,40 @@
               <span>{{ post.published_at?.replace('T', ' ') }}</span>
             </div>
           </div>
+
+          <!-- Revisions panel -->
+          <div class="rounded-lg border bg-card">
+            <button
+              type="button"
+              class="flex w-full items-center justify-between px-4 py-3 text-sm font-medium"
+              @click="toggleRevisions"
+            >
+              <span>Revision History</span>
+              <ChevronDown class="w-4 h-4 transition-transform" :class="{ 'rotate-180': revisionsOpen }" />
+            </button>
+
+            <div v-if="revisionsOpen" class="border-t px-4 py-3 space-y-1">
+              <div v-if="revisionsLoading" class="text-xs text-muted-foreground text-center py-3">Loading…</div>
+              <div v-else-if="revisions.length === 0" class="text-xs text-muted-foreground text-center py-3">No revisions yet.</div>
+              <div
+                v-for="rev in revisions"
+                :key="rev.id"
+                class="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 hover:bg-muted/50"
+              >
+                <div class="min-w-0">
+                  <p class="text-xs font-medium truncate">{{ rev.user?.name ?? 'Unknown' }}</p>
+                  <p class="text-[11px] text-muted-foreground">{{ new Date(rev.created_at).toLocaleString() }}</p>
+                </div>
+                <button
+                  type="button"
+                  class="shrink-0 rounded-md border px-2 py-1 text-xs hover:bg-accent transition-colors"
+                  @click="restoreRevision(rev)"
+                >
+                  Restore
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </form>
@@ -312,6 +346,7 @@
 import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import { Head, useForm } from "@inertiajs/vue3";
 import axios from 'axios'
+import { ChevronDown } from 'lucide-vue-next'
 import AppLayout from "@/Layouts/AppLayout.vue";
 import TiptapEditor from "@/Components/TiptapEditor.vue";
 import MediaPicker from '@/Components/MediaPicker.vue'
@@ -383,6 +418,36 @@ async function dismissAutosave() {
 }
 
 onBeforeUnmount(() => clearTimeout(autosaveTimer))
+
+// Revisions
+const revisionsOpen    = ref(false)
+const revisionsLoading = ref(false)
+const revisions        = ref([])
+
+async function loadRevisions() {
+  if (revisions.value.length > 0) return
+  revisionsLoading.value = true
+  try {
+    const res = await axios.get(route('posts.revisions', props.post.id))
+    revisions.value = res.data
+  } finally {
+    revisionsLoading.value = false
+  }
+}
+
+function toggleRevisions() {
+  revisionsOpen.value = !revisionsOpen.value
+  if (revisionsOpen.value) loadRevisions()
+}
+
+async function restoreRevision(revision) {
+  if (!window.confirm('Restore this version? Your current changes will be replaced.')) return
+  const res = await axios.get(route('revisions.restore', revision.id))
+  const payload = res.data
+  Object.keys(payload).forEach(key => {
+    if (key in form) form[key] = payload[key]
+  })
+}
 
 const daysUntilPublish = computed(() => {
   if (!form.published_at) return null

@@ -209,6 +209,8 @@ class PostController extends Controller
         $post->tags()->sync($tagIds);
         $post->categories()->sync($categoryIds);
 
+        $post->saveRevision($request->user()->id);
+
         Autosave::where([
             'autosaveable_type' => Post::class,
             'autosaveable_id'   => $post->id,
