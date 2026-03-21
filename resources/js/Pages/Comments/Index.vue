@@ -139,7 +139,7 @@
           >Reject</button>
           <button
             type="button"
-            @click="router.delete(route('comments.destroy', comment.id))"
+            @click="confirmDelete(comment.id)"
             class="rounded-md bg-destructive/10 px-3 py-1 text-xs font-medium text-destructive hover:bg-destructive/20 transition-colors"
           >Delete</button>
 
@@ -197,12 +197,11 @@
         v-for="page in comments.links"
         :key="page.label"
         :href="page.url"
-        v-html="page.label"
         class="rounded-md border px-3 py-1.5 text-sm transition-colors"
         :class="page.active
           ? 'bg-primary text-primary-foreground border-primary'
           : page.url ? 'hover:bg-accent' : 'opacity-40 cursor-default pointer-events-none'"
-      />
+      >{{ decodeHtmlEntities(page.label) }}</a>
     </div>
   </AppLayout>
 </template>
@@ -228,12 +227,6 @@ const tabs = [
 
 // Selection
 const selected = ref([])
-
-function toggleAll() {
-  selected.value = selected.value.length === props.comments.data.length
-    ? []
-    : props.comments.data.map(c => c.id)
-}
 
 function bulkAction(action) {
   router.post(route('comments.bulk'), { action, ids: selected.value }, {
@@ -287,6 +280,17 @@ function initials(name) {
     .slice(0, 2)
     .join('')
     .toUpperCase()
+}
+
+function confirmDelete(id) {
+  if (!window.confirm('Delete this comment? This cannot be undone.')) return
+  router.delete(route('comments.destroy', id))
+}
+
+function decodeHtmlEntities(str) {
+  const txt = document.createElement('textarea')
+  txt.innerHTML = str
+  return txt.value
 }
 </script>
 

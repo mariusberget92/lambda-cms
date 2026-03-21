@@ -46,7 +46,7 @@ class CommentController extends Controller
         return Inertia::render('Comments/Index', [
             'comments'     => $comments,
             'filter'       => $filter,
-            'pendingCount' => Comment::pending()->count(),
+            'pendingCount' => Comment::pending()->whereNull('parent_id')->count(),
         ]);
     }
 
@@ -115,6 +115,8 @@ class CommentController extends Controller
      */
     public function reply(Request $request, Comment $comment): RedirectResponse
     {
+        abort_if($comment->parent_id !== null, 422, 'Cannot reply to a reply.');
+
         $validated = $request->validate([
             'body' => ['required', 'string', 'max:2000'],
         ]);
