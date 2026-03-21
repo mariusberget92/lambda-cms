@@ -5,11 +5,11 @@
 
     <div>
       <label class="text-xs font-medium text-muted-foreground block mb-1">Font family</label>
-      <select :value="block.fontFamily ?? ''" @change="update('fontFamily', $event.target.value)"
-        class="w-full rounded-md border bg-background px-2 py-1.5 text-xs">
-        <option value="">Site default</option>
-        <option v-for="font in FONTS" :key="font" :value="font">{{ font }}</option>
-      </select>
+      <SelectBox
+        :model-value="block.fontFamily ?? ''"
+        :data="[{ value: '', label: 'Site default' }, ...FONTS.map(f => ({ value: f, label: f }))]"
+        @update:model-value="v => update('fontFamily', v)"
+      />
     </div>
 
     <div>
@@ -42,6 +42,8 @@
 </template>
 
 <script setup>
+import SelectBox from '@/Components/SelectBox.vue'
+
 const FONTS = [
   'Inter', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Poppins', 'Raleway', 'Nunito',
   'Source Sans 3', 'Merriweather', 'Playfair Display', 'Lora', 'PT Serif', 'Libre Baskerville',

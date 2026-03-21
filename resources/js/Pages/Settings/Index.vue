@@ -124,14 +124,12 @@
 
             <div class="space-y-1">
               <label for="locale_timezone" class="text-sm font-medium">Timezone</label>
-              <select
+              <SelectBox
                 id="locale_timezone"
                 v-model="localeForm['locale.timezone']"
-                class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                :class="{ 'border-destructive': localeForm.errors['locale.timezone'] }"
-              >
-                <option v-for="tz in timezones" :key="tz" :value="tz">{{ tz }}</option>
-              </select>
+                :data="timezoneOptions"
+                searchable
+              />
               <p v-if="localeForm.errors['locale.timezone']" class="text-xs text-destructive">{{ localeForm.errors['locale.timezone'] }}</p>
             </div>
 
@@ -176,16 +174,15 @@
 
             <div class="space-y-1">
               <label for="mail_driver" class="text-sm font-medium">Driver</label>
-              <select
+              <SelectBox
                 id="mail_driver"
                 v-model="mailForm['mail.driver']"
-                class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                :class="{ 'border-destructive': mailForm.errors['mail.driver'] }"
-              >
-                <option value="smtp">SMTP</option>
-                <option value="log">Log (development)</option>
-                <option value="mailgun">Mailgun</option>
-              </select>
+                :data="[
+                  { value: 'smtp',    label: 'SMTP' },
+                  { value: 'log',     label: 'Log (development)' },
+                  { value: 'mailgun', label: 'Mailgun' },
+                ]"
+              />
               <p v-if="mailForm.errors['mail.driver']" class="text-xs text-destructive">{{ mailForm.errors['mail.driver'] }}</p>
             </div>
 
@@ -266,16 +263,15 @@
 
             <div class="space-y-1">
               <label for="mail_encryption" class="text-sm font-medium">Encryption</label>
-              <select
+              <SelectBox
                 id="mail_encryption"
                 v-model="mailForm['mail.encryption']"
-                class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                :class="{ 'border-destructive': mailForm.errors['mail.encryption'] }"
-              >
-                <option value="tls">TLS</option>
-                <option value="ssl">SSL</option>
-                <option value="">None</option>
-              </select>
+                :data="[
+                  { value: 'tls', label: 'TLS' },
+                  { value: 'ssl', label: 'SSL' },
+                  { value: '',    label: 'None' },
+                ]"
+              />
               <p v-if="mailForm.errors['mail.encryption']" class="text-xs text-destructive">{{ mailForm.errors['mail.encryption'] }}</p>
             </div>
 
@@ -496,10 +492,11 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { Loader2 } from 'lucide-vue-next'
 import { Head, useForm, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import SelectBox from '@/Components/SelectBox.vue'
 
 const props = defineProps({
   settings: {
@@ -557,6 +554,8 @@ const timezones = [
   'Australia/Sydney',
   'Pacific/Auckland',
 ];
+
+const timezoneOptions = computed(() => timezones.map(tz => ({ value: tz, label: tz })))
 
 // ── Site form ────────────────────────────────────────────────────────────────
 const siteForm = useForm({

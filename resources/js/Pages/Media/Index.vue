@@ -5,17 +5,18 @@
     <!-- Toolbar -->
     <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
       <div class="flex items-center gap-2">
-        <select
-          v-model="filters.type"
-          class="rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-          @change="applyFilters"
-        >
-          <option value="">All types</option>
-          <option value="image">Images</option>
-          <option value="document">Documents</option>
-          <option value="video">Video</option>
-          <option value="audio">Audio</option>
-        </select>
+        <SelectBox
+          :model-value="filters.type"
+          :data="[
+            { value: '',         label: 'All types' },
+            { value: 'image',    label: 'Images' },
+            { value: 'document', label: 'Documents' },
+            { value: 'video',    label: 'Video' },
+            { value: 'audio',    label: 'Audio' },
+          ]"
+          placeholder="All types"
+          @update:model-value="v => { filters.type = v; applyFilters() }"
+        />
 
         <input
           v-model="filters.search"
@@ -268,6 +269,7 @@ import { useDropZone } from '@vueuse/core'
 import axios from 'axios'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
+import SelectBox from '@/Components/SelectBox.vue'
 
 const props = defineProps({
   media:   Object,

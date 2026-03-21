@@ -67,18 +67,12 @@
         <!-- Role -->
         <div class="space-y-1">
           <label for="role" class="text-sm font-medium">Role <span class="text-destructive">*</span></label>
-          <select
-            id="role"
+          <SelectBox
             v-model="form.role"
+            :data="roleOptions"
             :disabled="isLastAdmin"
-            class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
-            :class="{ 'border-destructive': form.errors.role }"
-          >
-            <option value="">— Select a role —</option>
-            <option v-for="r in roles" :key="r" :value="r">
-              {{ r === 'administrator' ? 'Administrator' : 'User' }}
-            </option>
-          </select>
+            placeholder="— Select a role —"
+          />
           <p v-if="form.errors.role" class="text-xs text-destructive">{{ form.errors.role }}</p>
           <p class="text-xs text-muted-foreground">
             <strong>Administrator</strong> — full access.
@@ -116,6 +110,7 @@
 import { computed } from "vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import SelectBox from '@/Components/SelectBox.vue'
 
 const props = defineProps({
   user:       { type: Object, default: null },
@@ -128,6 +123,11 @@ const isEditing = computed(() => !!props.user);
 const isLastAdmin = computed(
   () => props.user?.role === 'administrator' && props.adminCount <= 1
 );
+
+const roleOptions = computed(() => props.roles.map(r => ({
+  value: r,
+  label: r === 'administrator' ? 'Administrator' : 'User',
+})))
 
 const form = useForm({
   name:  props.user?.name  ?? "",

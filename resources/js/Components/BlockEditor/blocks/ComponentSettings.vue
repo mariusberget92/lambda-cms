@@ -4,28 +4,26 @@
     <!-- Sub-type selector -->
     <div>
       <label class="text-xs font-medium text-muted-foreground block mb-1">Component type</label>
-      <select
-        :value="block.data.component"
-        class="w-full rounded border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-        @change="update('component', $event.target.value)"
-      >
-        <option value="post-list">Post List</option>
-      </select>
+      <SelectBox
+        :model-value="block.data.component"
+        :data="[{ value: 'post-list', label: 'Post List' }]"
+        @update:model-value="v => update('component', v)"
+      />
     </div>
 
     <template v-if="block.data.component === 'post-list'">
       <!-- Order -->
       <div>
         <label class="text-xs font-medium text-muted-foreground block mb-1">Order</label>
-        <select
-          :value="block.data.order"
-          class="w-full rounded border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-          @change="update('order', $event.target.value)"
-        >
-          <option value="latest">Latest first</option>
-          <option value="oldest">Oldest first</option>
-          <option value="alpha">Alphabetical</option>
-        </select>
+        <SelectBox
+          :model-value="block.data.order"
+          :data="[
+            { value: 'latest', label: 'Latest first' },
+            { value: 'oldest', label: 'Oldest first' },
+            { value: 'alpha',  label: 'Alphabetical' },
+          ]"
+          @update:model-value="v => update('order', v)"
+        />
       </div>
 
       <!-- Limit + Offset -->
@@ -58,7 +56,7 @@
         <input
           type="checkbox"
           :checked="block.data.featured_only"
-          class="accent-primary"
+          class="accent-nord-green"
           @change="update('featured_only', $event.target.checked)"
         />
         <span class="text-xs font-medium text-muted-foreground">Featured posts only</span>
@@ -77,7 +75,7 @@
               type="checkbox"
               :value="cat.id"
               :checked="block.data.category_ids?.includes(cat.id)"
-              class="accent-primary"
+              class="accent-nord-green"
               @change="toggleId('category_ids', cat.id, $event.target.checked)"
             />
             <span class="text-xs">{{ cat.name }}</span>
@@ -98,7 +96,7 @@
               type="checkbox"
               :value="tag.id"
               :checked="block.data.tag_ids?.includes(tag.id)"
-              class="accent-primary"
+              class="accent-nord-green"
               @change="toggleId('tag_ids', tag.id, $event.target.checked)"
             />
             <span class="text-xs">{{ tag.name }}</span>
@@ -110,6 +108,8 @@
 </template>
 
 <script setup>
+import SelectBox from '@/Components/SelectBox.vue'
+
 const props = defineProps({
   block: { type: Object, required: true },
   meta:  { type: Object, default: () => ({ categories: [], tags: [] }) },

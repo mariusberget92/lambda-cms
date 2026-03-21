@@ -44,16 +44,17 @@
           @input="applyFilters"
         />
       </div>
-      <select
-        v-model="statusFilter"
-        class="rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-        @change="applyFilters"
-      >
-        <option value="">All statuses</option>
-        <option value="published">Published</option>
-        <option value="scheduled">Scheduled</option>
-        <option value="draft">Draft</option>
-      </select>
+      <SelectBox
+        :model-value="statusFilter"
+        :data="[
+          { value: '',          label: 'All statuses' },
+          { value: 'published', label: 'Published' },
+          { value: 'scheduled', label: 'Scheduled' },
+          { value: 'draft',     label: 'Draft' },
+        ]"
+        placeholder="All statuses"
+        @update:model-value="v => { statusFilter = v; applyFilters() }"
+      />
     </div>
 
     <!-- Table -->
@@ -289,6 +290,7 @@ import { Head, router } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import DataTable from '@/Components/DataTable.vue'
 import StatusBadge from '@/Components/StatusBadge.vue'
+import SelectBox from '@/Components/SelectBox.vue'
 
 const props = defineProps({
   posts: Object,

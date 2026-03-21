@@ -1,10 +1,11 @@
 <!-- resources/js/Pages/Navigation/Index.vue -->
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { Head, router, useForm } from '@inertiajs/vue3'
 import { VueDraggable } from 'vue-draggable-plus'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import FlashMessage from '@/Components/FlashMessage.vue'
+import SelectBox from '@/Components/SelectBox.vue'
 
 defineOptions({ layout: AppLayout })
 
@@ -49,10 +50,12 @@ function onTypeChange(type) {
   form.page_id = null
 }
 
-function onPageSelect(e) {
-  const pageId = parseInt(e.target.value)
-  form.page_id = Number.isInteger(pageId) ? pageId : null
-  const page   = props.pages.find(p => p.id === form.page_id)
+const pageOptions = computed(() => props.pages.map(p => ({ value: p.id, label: p.title })))
+
+function onPageSelect(pageId) {
+  if (!pageId) return
+  form.page_id = pageId
+  const page   = props.pages.find(p => p.id === pageId)
   if (page && !form.label) form.label = page.title
 }
 
@@ -153,14 +156,12 @@ function deleteItem(id) {
           <!-- Page selector -->
           <div v-if="addType === 'page'">
             <label class="text-xs font-medium text-muted-foreground block mb-1">Page</label>
-            <select
-              :value="form.page_id"
-              @change="onPageSelect"
-              class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            >
-              <option value="">Select a page…</option>
-              <option v-for="page in pages" :key="page.id" :value="page.id">{{ page.title }}</option>
-            </select>
+            <SelectBox
+              :model-value="null"
+              :data="pageOptions"
+              placeholder="Select a page…"
+              @update:model-value="onPageSelect"
+            />
             <p v-if="form.errors.page_id" class="mt-1 text-xs text-destructive">{{ form.errors.page_id }}</p>
           </div>
 
