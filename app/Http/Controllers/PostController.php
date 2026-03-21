@@ -112,9 +112,9 @@ class PostController extends Controller
             ->with('status', 'Post created successfully.');
     }
 
-    public function edit(Post $post)
+    public function edit(Request $request, Post $post)
     {
-        if ($post->user_id !== request()->user()->id && !request()->user()->hasRole('administrator')) {
+        if ($post->user_id !== $request->user()->id && !$request->user()->hasRole('administrator')) {
             abort(403);
         }
 
@@ -129,6 +129,7 @@ class PostController extends Controller
                 'body'              => $post->body,
                 'status'            => $post->status,
                 'published_at'      => $post->published_at?->format('Y-m-d\TH:i'),
+                'updated_at'        => $post->updated_at?->toISOString(),
                 'category_ids'      => $post->categories->pluck('id'),
                 'tag_ids'           => $post->tags->pluck('id'),
                 'featured_image_id' => $post->featured_image_id,
@@ -146,6 +147,11 @@ class PostController extends Controller
             ],
             'categories' => Category::orderBy('name')->get(['id', 'name']),
             'tags'       => Tag::orderBy('name')->get(['id', 'name']),
+            'autosave'   => \App\Models\Autosave::where([
+                'autosaveable_type' => Post::class,
+                'autosaveable_id'   => $post->id,
+                'user_id'           => $request->user()->id,
+            ])->first()?->only(['payload', 'updated_at']),
         ]);
     }
 

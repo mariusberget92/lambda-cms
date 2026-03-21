@@ -3,6 +3,18 @@
     <Head title="Edit Post" />
 
     <form @submit.prevent="submit">
+      <!-- Autosave recovery banner -->
+      <div
+        v-if="showRestoreBanner"
+        class="mb-4 flex items-center gap-3 rounded-md border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 px-4 py-3 text-sm"
+      >
+        <span class="flex-1 text-amber-800 dark:text-amber-300">
+          You have unsaved changes from a previous session.
+        </span>
+        <button type="button" @click="restoreAutosave" class="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-[var(--primary-hover)]">Restore</button>
+        <button type="button" @click="dismissAutosave" class="rounded-md border px-3 py-1.5 text-xs font-medium hover:bg-accent">Dismiss</button>
+      </div>
+
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-3">
           <a
@@ -35,6 +47,9 @@
           >
             {{ form.processing ? 'Saving...' : form.status === 'published' ? 'Update' : 'Publish' }}
           </button>
+          <span v-if="autosaveStatus === 'saving'" class="text-xs text-muted-foreground self-center">Saving draft…</span>
+          <span v-else-if="autosaveStatus === 'saved'" class="text-xs text-muted-foreground self-center">Draft saved at {{ autosaveSavedAt }}</span>
+          <span v-else-if="autosaveStatus === 'error'" class="text-xs text-destructive self-center">Autosave failed</span>
         </div>
       </div>
 
@@ -294,8 +309,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { Head, useForm } from "@inertiajs/vue3";
+import axios from 'axios'
 import AppLayout from "@/Layouts/AppLayout.vue";
 import TiptapEditor from "@/Components/TiptapEditor.vue";
 import MediaPicker from '@/Components/MediaPicker.vue'
@@ -304,6 +320,7 @@ const props = defineProps({
   post:       Object,
   categories: { type: Array, default: () => [] },
   tags:       { type: Array, default: () => [] },
+  autosave:   { type: Object, default: null },
 });
 
 const form = useForm({
@@ -320,6 +337,50 @@ const form = useForm({
   meta_description:  props.post.meta_description ?? null,
   meta_keywords:     props.post.meta_keywords ?? null,
 });
+
+// Autosave
+const autosaveStatus  = ref(null) // null | 'saving' | 'saved' | 'error'
+const autosaveSavedAt = ref(null)
+
+const showRestoreBanner = ref(
+  props.autosave !== null &&
+  props.post.updated_at !== null &&
+  new Date(props.autosave.updated_at) > new Date(props.post.updated_at)
+)
+
+let autosaveTimer = null
+
+watch(form, () => {
+  clearTimeout(autosaveTimer)
+  autosaveTimer = setTimeout(doAutosave, 10000)
+}, { deep: true })
+
+async function doAutosave() {
+  autosaveStatus.value = 'saving'
+  try {
+    const res = await axios.post(route('posts.autosave', props.post.id), {
+      payload: form.data(),
+    })
+    autosaveSavedAt.value = res.data.saved_at
+    autosaveStatus.value  = 'saved'
+  } catch {
+    autosaveStatus.value = 'error'
+  }
+}
+
+async function restoreAutosave() {
+  const payload = props.autosave.payload
+  Object.keys(payload).forEach(key => {
+    if (key in form) form[key] = payload[key]
+  })
+  showRestoreBanner.value = false
+  await axios.delete(route('posts.autosave.destroy', props.post.id))
+}
+
+async function dismissAutosave() {
+  showRestoreBanner.value = false
+  await axios.delete(route('posts.autosave.destroy', props.post.id))
+}
 
 const daysUntilPublish = computed(() => {
   if (!form.published_at) return null

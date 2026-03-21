@@ -56,7 +56,7 @@ class PageController extends Controller
         return redirect()->route('pages.index')->with('status', 'Page created.');
     }
 
-    public function edit(Page $page)
+    public function edit(Request $request, Page $page)
     {
         return Inertia::render('Pages/Edit', [
             'page' => [
@@ -64,6 +64,7 @@ class PageController extends Controller
                 'title'            => $page->title,
                 'slug'             => $page->slug,
                 'status'           => $page->status,
+                'updated_at'       => $page->updated_at?->toISOString(),
                 'blocks'           => $page->blocks,
                 'meta_title'       => $page->meta_title,
                 'meta_description' => $page->meta_description,
@@ -71,6 +72,11 @@ class PageController extends Controller
             ],
             'categories' => Category::orderBy('name')->get(['id', 'name']),
             'tags'       => Tag::orderBy('name')->get(['id', 'name']),
+            'autosave'   => \App\Models\Autosave::where([
+                'autosaveable_type' => Page::class,
+                'autosaveable_id'   => $page->id,
+                'user_id'           => $request->user()->id,
+            ])->first()?->only(['payload', 'updated_at']),
         ]);
     }
 
