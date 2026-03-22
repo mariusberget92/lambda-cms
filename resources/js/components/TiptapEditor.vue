@@ -2,83 +2,98 @@
   <div class="tiptap-editor" :class="{ 'is-focused': editor?.isFocused }">
     <!-- Toolbar -->
     <div class="toolbar">
-      <div class="toolbar-group">
-        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('bold') }" @click="editor.chain().focus().toggleBold().run()" title="Bold">
-          <Bold class="w-3.5 h-3.5" />
-        </button>
-        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('italic') }" @click="editor.chain().focus().toggleItalic().run()" title="Italic">
-          <Italic class="w-3.5 h-3.5" />
-        </button>
-        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('underline') }" @click="editor.chain().focus().toggleUnderline().run()" title="Underline">
-          <UnderlineIcon class="w-3.5 h-3.5" />
-        </button>
-        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('strike') }" @click="editor.chain().focus().toggleStrike().run()" title="Strikethrough">
-          <Strikethrough class="w-3.5 h-3.5" />
-        </button>
-      </div>
+      <template v-if="!htmlMode">
+        <div class="toolbar-group">
+          <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('bold') }" @click="editor.chain().focus().toggleBold().run()" title="Bold">
+            <Bold class="w-3.5 h-3.5" />
+          </button>
+          <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('italic') }" @click="editor.chain().focus().toggleItalic().run()" title="Italic">
+            <Italic class="w-3.5 h-3.5" />
+          </button>
+          <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('underline') }" @click="editor.chain().focus().toggleUnderline().run()" title="Underline">
+            <UnderlineIcon class="w-3.5 h-3.5" />
+          </button>
+          <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('strike') }" @click="editor.chain().focus().toggleStrike().run()" title="Strikethrough">
+            <Strikethrough class="w-3.5 h-3.5" />
+          </button>
+        </div>
 
-      <div class="toolbar-divider"/>
+        <div class="toolbar-divider"/>
 
-      <div class="toolbar-group">
-        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('heading', { level: 2 }) }" @click="editor.chain().focus().toggleHeading({ level: 2 }).run()" title="Heading 2">
-          <Heading2 class="w-3.5 h-3.5" />
-        </button>
-        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('heading', { level: 3 }) }" @click="editor.chain().focus().toggleHeading({ level: 3 }).run()" title="Heading 3">
-          <Heading3 class="w-3.5 h-3.5" />
-        </button>
-      </div>
+        <div class="toolbar-group">
+          <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('heading', { level: 2 }) }" @click="editor.chain().focus().toggleHeading({ level: 2 }).run()" title="Heading 2">
+            <Heading2 class="w-3.5 h-3.5" />
+          </button>
+          <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('heading', { level: 3 }) }" @click="editor.chain().focus().toggleHeading({ level: 3 }).run()" title="Heading 3">
+            <Heading3 class="w-3.5 h-3.5" />
+          </button>
+        </div>
 
-      <div class="toolbar-divider"/>
+        <div class="toolbar-divider"/>
 
-      <div class="toolbar-group">
-        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('bulletList') }" @click="editor.chain().focus().toggleBulletList().run()" title="Bullet list">
-          <List class="w-3.5 h-3.5" />
-        </button>
-        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('orderedList') }" @click="editor.chain().focus().toggleOrderedList().run()" title="Ordered list">
-          <ListOrdered class="w-3.5 h-3.5" />
-        </button>
-        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('blockquote') }" @click="editor.chain().focus().toggleBlockquote().run()" title="Blockquote">
-          <Quote class="w-3.5 h-3.5" />
-        </button>
-        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('code') }" @click="editor.chain().focus().toggleCode().run()" title="Code">
-          <Code class="w-3.5 h-3.5" />
-        </button>
-      </div>
+        <div class="toolbar-group">
+          <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('bulletList') }" @click="editor.chain().focus().toggleBulletList().run()" title="Bullet list">
+            <List class="w-3.5 h-3.5" />
+          </button>
+          <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('orderedList') }" @click="editor.chain().focus().toggleOrderedList().run()" title="Ordered list">
+            <ListOrdered class="w-3.5 h-3.5" />
+          </button>
+          <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('blockquote') }" @click="editor.chain().focus().toggleBlockquote().run()" title="Blockquote">
+            <Quote class="w-3.5 h-3.5" />
+          </button>
+          <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive('code') }" @click="editor.chain().focus().toggleCode().run()" title="Code">
+            <Code class="w-3.5 h-3.5" />
+          </button>
+        </div>
 
-      <div class="toolbar-divider"/>
+        <div class="toolbar-divider"/>
 
-      <div class="toolbar-group">
-        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive({ textAlign: 'left' }) }" @click="editor.chain().focus().setTextAlign('left').run()" title="Align left">
-          <AlignLeft class="w-3.5 h-3.5" />
-        </button>
-        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive({ textAlign: 'center' }) }" @click="editor.chain().focus().setTextAlign('center').run()" title="Align center">
-          <AlignCenter class="w-3.5 h-3.5" />
-        </button>
-        <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive({ textAlign: 'right' }) }" @click="editor.chain().focus().setTextAlign('right').run()" title="Align right">
-          <AlignRight class="w-3.5 h-3.5" />
-        </button>
-      </div>
+        <div class="toolbar-group">
+          <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive({ textAlign: 'left' }) }" @click="editor.chain().focus().setTextAlign('left').run()" title="Align left">
+            <AlignLeft class="w-3.5 h-3.5" />
+          </button>
+          <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive({ textAlign: 'center' }) }" @click="editor.chain().focus().setTextAlign('center').run()" title="Align center">
+            <AlignCenter class="w-3.5 h-3.5" />
+          </button>
+          <button type="button" class="toolbar-btn" :class="{ 'is-active': editor?.isActive({ textAlign: 'right' }) }" @click="editor.chain().focus().setTextAlign('right').run()" title="Align right">
+            <AlignRight class="w-3.5 h-3.5" />
+          </button>
+        </div>
 
-      <div class="toolbar-divider"/>
+        <div class="toolbar-divider"/>
 
-      <div class="toolbar-group">
-        <button type="button" class="toolbar-btn" :disabled="!editor?.can().undo()" @click="editor.chain().focus().undo().run()" title="Undo">
-          <Undo2 class="w-3.5 h-3.5" />
-        </button>
-        <button type="button" class="toolbar-btn" :disabled="!editor?.can().redo()" @click="editor.chain().focus().redo().run()" title="Redo">
-          <Redo2 class="w-3.5 h-3.5" />
-        </button>
-      </div>
+        <div class="toolbar-group">
+          <button type="button" class="toolbar-btn" :disabled="!editor?.can().undo()" @click="editor.chain().focus().undo().run()" title="Undo">
+            <Undo2 class="w-3.5 h-3.5" />
+          </button>
+          <button type="button" class="toolbar-btn" :disabled="!editor?.can().redo()" @click="editor.chain().focus().redo().run()" title="Redo">
+            <Redo2 class="w-3.5 h-3.5" />
+          </button>
+        </div>
 
-      <div class="toolbar-divider"/>
-      <div class="toolbar-group">
-        <button type="button" class="toolbar-btn" @click="pickerOpen = true" title="Insert image">
-          <ImageIcon class="w-3.5 h-3.5" />
-        </button>
-      </div>
+        <div class="toolbar-divider"/>
+        <div class="toolbar-group">
+          <button type="button" class="toolbar-btn" @click="pickerOpen = true" title="Insert image">
+            <ImageIcon class="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </template>
 
-      <div class="ml-auto flex items-center text-xs text-muted-foreground/70 select-none pr-1">
-        {{ wordCount }} words
+      <span v-else class="text-xs text-muted-foreground/70 select-none pl-1">HTML source</span>
+
+      <div class="ml-auto flex items-center gap-2 pr-1">
+        <span v-if="!htmlMode" class="text-xs text-muted-foreground/70 select-none">{{ wordCount }} words</span>
+        <div class="toolbar-divider" />
+        <!-- HTML source toggle -->
+        <button
+          type="button"
+          class="toolbar-btn"
+          :class="{ 'is-active': htmlMode }"
+          title="Toggle HTML source"
+          @click="toggleHtmlMode"
+        >
+          <Code2 class="w-3.5 h-3.5" />
+        </button>
       </div>
     </div>
 
@@ -88,8 +103,17 @@
       @select="(m) => insertImage(m.url, m.alt)"
     />
 
-    <!-- Content -->
-    <EditorContent :editor="editor" class="editor-body" />
+    <!-- Visual editor -->
+    <EditorContent v-if="!htmlMode" :editor="editor" class="editor-body" />
+
+    <!-- HTML source editor -->
+    <textarea
+      v-else
+      v-model="rawHtml"
+      class="editor-body html-source"
+      spellcheck="false"
+      @input="onHtmlInput"
+    />
   </div>
 </template>
 
@@ -106,7 +130,7 @@ import MediaPicker from "@/Components/MediaPicker.vue";
 import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough,
   Heading2, Heading3, List, ListOrdered, Quote, Code,
-  AlignLeft, AlignCenter, AlignRight, Undo2, Redo2, ImageIcon,
+  AlignLeft, AlignCenter, AlignRight, Undo2, Redo2, ImageIcon, Code2,
 } from "lucide-vue-next";
 
 const props = defineProps({
@@ -116,6 +140,25 @@ const props = defineProps({
 const emit = defineEmits(["update:modelValue"]);
 
 const pickerOpen = ref(false)
+const htmlMode   = ref(false)
+const rawHtml    = ref('')
+
+function toggleHtmlMode() {
+  if (!htmlMode.value) {
+    // Entering HTML mode — snapshot current content into the textarea
+    rawHtml.value = editor.value?.getHTML() ?? ''
+  } else {
+    // Leaving HTML mode — push textarea content back into the editor
+    editor.value?.commands.setContent(rawHtml.value, false)
+    emit('update:modelValue', rawHtml.value)
+  }
+  htmlMode.value = !htmlMode.value
+}
+
+function onHtmlInput() {
+  // Live-sync as the user types in the textarea so the model stays up-to-date
+  emit('update:modelValue', rawHtml.value)
+}
 
 const editor = useEditor({
   content: props.modelValue,
@@ -221,5 +264,21 @@ defineExpose({ insertImage })
   height: auto;
   border-radius: var(--radius-md);
   margin: 0.75rem 0;
+}
+
+.html-source {
+  flex: 1;
+  width: 100%;
+  min-height: 22rem;
+  padding: 1.25rem 1.5rem;
+  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  color: var(--foreground);
+  background: var(--background);
+  border: none;
+  outline: none;
+  resize: vertical;
+  tab-size: 2;
 }
 </style>
