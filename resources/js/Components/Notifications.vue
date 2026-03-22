@@ -20,7 +20,7 @@ watch(
 <template>
   <Teleport to="body">
     <div class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none">
-      <TransitionGroup name="notif" tag="div" class="flex flex-col gap-2">
+      <TransitionGroup name="notif" tag="div" class="flex flex-col gap-2" style="position: relative">
         <div v-for="n in notifications" :key="n.id" class="pointer-events-auto">
           <NotificationItem
             :id="n.id"

@@ -375,6 +375,7 @@ async function doAutosave() {
     autosaveToastId = notify(`Draft saved at ${res.data.saved_at}`, 'info')
   } catch {
     notify('Autosave failed — check your connection', 'error')
+    autosaveToastId = null
   }
 }
 
