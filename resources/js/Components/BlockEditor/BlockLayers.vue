@@ -54,10 +54,18 @@
             :block="selectedBlock"
             :is-admin="isAdmin"
             :meta="meta"
+            :loop-fields="loopFields"
             @update="$emit('update', $event)"
           />
           <AdvancedSettings
             :block="selectedBlock"
+            @update="$emit('update', $event)"
+          />
+          <!-- Condition settings — only shown when block is inside a Loop -->
+          <ConditionSettings
+            v-if="loopFields.length"
+            :block="selectedBlock"
+            :loop-fields="loopFields"
             @update="$emit('update', $event)"
           />
         </template>
@@ -71,6 +79,8 @@ import { computed } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
 import LayerItem         from './LayerItem.vue'
 import AdvancedSettings  from './blocks/AdvancedSettings.vue'
+import ConditionSettings from './blocks/ConditionSettings.vue'
+import LoopSettings      from './blocks/LoopSettings.vue'
 import ContainerSettings from './blocks/ContainerSettings.vue'
 import SectionSettings  from './blocks/SectionSettings.vue'
 import SpacerSettings   from './blocks/SpacerSettings.vue'
@@ -92,6 +102,7 @@ const props = defineProps({
   selectedBlock: { type: Object,  default: null },
   isAdmin:       { type: Boolean, default: false },
   meta:          { type: Object,  default: () => ({}) },
+  loopFields:    { type: Array,   default: () => [] },
 })
 
 const emit = defineEmits(['select', 'remove', 'reorder', 'update'])
@@ -105,7 +116,7 @@ const LABELS = {
   paragraph: 'Paragraph', heading: 'Heading', image: 'Image',
   quote: 'Quote', code: 'Code', gallery: 'Gallery', video: 'Video',
   divider: 'Divider', cta: 'CTA', html: 'HTML', component: 'Component',
-  container: 'Container', section: 'Section', spacer: 'Spacer',
+  container: 'Container', section: 'Section', spacer: 'Spacer', loop: 'Loop',
 }
 
 const COMPONENT_MAP = {
@@ -113,7 +124,7 @@ const COMPONENT_MAP = {
   quote: QuoteSettings, code: CodeSettings, gallery: GallerySettings,
   video: VideoSettings, divider: DividerSettings, cta: CtaSettings,
   html: HtmlSettings, component: ComponentSettings, container: ContainerSettings,
-  section: SectionSettings, spacer: SpacerSettings,
+  section: SectionSettings, spacer: SpacerSettings, loop: LoopSettings,
 }
 
 const settingsComponent = computed(() =>

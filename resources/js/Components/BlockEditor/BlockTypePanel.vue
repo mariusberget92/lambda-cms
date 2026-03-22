@@ -44,6 +44,7 @@ import {
   LayoutTemplate,
   Rows2,
   ArrowUpDown,
+  Repeat2,
 } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -65,6 +66,7 @@ const ALL_TYPES = [
   { type: 'container', label: 'Container', icon: LayoutTemplate },
   { type: 'section',   label: 'Section',   icon: Rows2 },
   { type: 'spacer',    label: 'Spacer',    icon: ArrowUpDown },
+  { type: 'loop',      label: 'Loop',      icon: Repeat2 },
 ]
 
 const typeList = computed({
@@ -99,6 +101,15 @@ const DEFAULT_DATA = {
   spacer: {
     height: { default: 8, sm: 4 },
   },
+  loop: {
+    source:  'posts',
+    filters: [],
+    sort:    { field: 'published_at', direction: 'desc' },
+    limit:   6,
+    offset:  0,
+    columns: 1,
+    gap:     'md',
+  },
 }
 
 function cloneBlock(typeDef) {
@@ -113,7 +124,9 @@ function cloneBlock(typeDef) {
     customClasses: '',
     customCss: '',
     fontFamily: '',
-    ...(typeDef.type === 'container' || typeDef.type === 'section' ? { children: [] } : {}),
+    ...(typeDef.type === 'container' || typeDef.type === 'section' || typeDef.type === 'loop'
+      ? { children: [] }
+      : {}),
   }
 }
 </script>
