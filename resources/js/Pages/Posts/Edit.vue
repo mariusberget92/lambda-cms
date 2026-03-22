@@ -3,18 +3,6 @@
     <Head title="Edit Post" />
 
     <form @submit.prevent="submit">
-      <!-- Autosave recovery banner -->
-      <div
-        v-if="showRestoreBanner"
-        class="mb-4 flex items-center gap-3 rounded-md border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 px-4 py-3 text-sm"
-      >
-        <span class="flex-1 text-amber-800 dark:text-amber-300">
-          You have unsaved changes from a previous session.
-        </span>
-        <button type="button" @click="restoreAutosave" class="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-[var(--primary-hover)]">Restore</button>
-        <button type="button" @click="dismissAutosave" class="rounded-md border px-3 py-1.5 text-xs font-medium hover:bg-accent">Dismiss</button>
-      </div>
-
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-3">
           <a
@@ -45,9 +33,6 @@
           >
             {{ form.processing ? 'Saving...' : form.status === 'published' ? 'Update' : 'Publish' }}
           </button>
-          <span v-if="autosaveStatus === 'saving'" class="text-xs text-muted-foreground self-center">Saving draft…</span>
-          <span v-else-if="autosaveStatus === 'saved'" class="text-xs text-muted-foreground self-center">Draft saved at {{ autosaveSavedAt }}</span>
-          <span v-else-if="autosaveStatus === 'error'" class="text-xs text-destructive self-center">Autosave failed</span>
         </div>
       </div>
 
@@ -339,13 +324,16 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { Head, useForm } from "@inertiajs/vue3";
 import axios from 'axios'
 import { ChevronDown, ArrowLeft, X } from 'lucide-vue-next'
 import AppLayout from "@/Layouts/AppLayout.vue";
 import TiptapEditor from "@/Components/TiptapEditor.vue";
 import MediaPicker from '@/Components/MediaPicker.vue'
+import { useNotifications } from '@/composables/useNotifications.js'
+
+const { notify } = useNotifications()
 
 const props = defineProps({
   post:       Object,
@@ -370,15 +358,6 @@ const form = useForm({
 });
 
 // Autosave
-const autosaveStatus  = ref(null) // null | 'saving' | 'saved' | 'error'
-const autosaveSavedAt = ref(null)
-
-const showRestoreBanner = ref(
-  props.autosave !== null &&
-  props.post.updated_at !== null &&
-  new Date(props.autosave.updated_at) > new Date(props.post.updated_at)
-)
-
 let autosaveTimer = null
 
 watch(form, () => {
@@ -387,15 +366,13 @@ watch(form, () => {
 }, { deep: true })
 
 async function doAutosave() {
-  autosaveStatus.value = 'saving'
   try {
     const res = await axios.post(route('posts.autosave', props.post.id), {
       payload: form.data(),
     })
-    autosaveSavedAt.value = res.data.saved_at
-    autosaveStatus.value  = 'saved'
+    notify(`Draft saved at ${res.data.saved_at}`, 'info')
   } catch {
-    autosaveStatus.value = 'error'
+    notify('Autosave failed — check your connection', 'error')
   }
 }
 
@@ -404,14 +381,28 @@ async function restoreAutosave() {
   Object.keys(payload).forEach(key => {
     if (key in form) form[key] = payload[key]
   })
-  showRestoreBanner.value = false
   await axios.delete(route('posts.autosave.destroy', props.post.id))
 }
 
 async function dismissAutosave() {
-  showRestoreBanner.value = false
   await axios.delete(route('posts.autosave.destroy', props.post.id))
 }
+
+onMounted(() => {
+  if (props.autosave) {
+    notify(
+      'You have unsaved changes from a previous session.',
+      'info',
+      {
+        duration: null,
+        actions: [
+          { label: 'Restore', handler: restoreAutosave },
+          { label: 'Dismiss', handler: dismissAutosave },
+        ],
+      }
+    )
+  }
+})
 
 onBeforeUnmount(() => clearTimeout(autosaveTimer))
 
