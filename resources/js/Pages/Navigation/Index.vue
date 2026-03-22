@@ -4,7 +4,6 @@ import { ref, computed, watch } from 'vue'
 import { Head, router, useForm } from '@inertiajs/vue3'
 import { VueDraggable } from 'vue-draggable-plus'
 import AppLayout from '@/Layouts/AppLayout.vue'
-import FlashMessage from '@/Components/FlashMessage.vue'
 import SelectBox from '@/Components/SelectBox.vue'
 
 
@@ -77,7 +76,6 @@ function deleteItem(id) {
 <template>
   <AppLayout title="Navigation">
   <Head title="Navigation" />
-  <FlashMessage />
 
   <div class="max-w-4xl space-y-6">
     <h2 class="text-lg font-semibold">Navigation</h2>

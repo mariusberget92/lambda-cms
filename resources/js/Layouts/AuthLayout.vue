@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { Sun, Moon } from 'lucide-vue-next'
 import { useTheme } from '@/composables/useTheme.js'
 import { useParticleCanvas } from '@/composables/useParticleCanvas.js'
+import Notifications from '@/Components/Notifications.vue'
 
 const { isDark, toggleTheme } = useTheme()
 
@@ -49,6 +50,8 @@ onUnmounted(cleanup)
       <Sun v-if="isDark" class="w-4 h-4" />
       <Moon v-else class="w-4 h-4" />
     </button>
+
+    <Notifications />
 
   </div>
 </template>

@@ -187,6 +187,8 @@
       </div>
     </aside>
 
+    <Notifications />
+
     <!-- Main area -->
     <div class="flex flex-col flex-1 overflow-hidden">
       <!-- Topbar -->
@@ -217,6 +219,7 @@ import { router, usePage } from "@inertiajs/vue3";
 import { Sun, Moon, Calendar, ExternalLink } from "lucide-vue-next";
 import SidebarLink from "@/Components/SidebarLink.vue";
 import { useTheme } from "@/composables/useTheme.js";
+import Notifications from "@/Components/Notifications.vue";
 
 defineProps({
   title: {
