@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Post;
-use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
@@ -14,9 +13,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->call([
-            SettingsSeeder::class,
-        ]);
+        $this->call(SettingsSeeder::class);
 
         // ── Roles & Permissions ──────────────────────────────────────────────
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
@@ -30,6 +27,9 @@ class DatabaseSeeder extends Seeder
 
         $adminRole->syncPermissions(Permission::all());
         $userRole->syncPermissions(['manage posts', 'manage categories', 'manage tags']);
+
+        // ── Admin user (roles must exist first) ──────────────────────────────
+        $this->call(AdminSeeder::class);
     }
 
     /**
