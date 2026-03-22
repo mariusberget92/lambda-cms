@@ -4,11 +4,13 @@ import AppLayout   from '@/Layouts/AppLayout.vue'
 import BlockEditor from '@/Components/BlockEditor/BlockEditor.vue'
 import { useForm, usePage, Head } from '@inertiajs/vue3'
 import { filterEmptyBlocks } from '@/lib/utils.js'
-import { ref, watch, onBeforeUnmount } from 'vue'
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import axios from 'axios'
 import { ChevronDown, ArrowLeft } from 'lucide-vue-next'
+import { useNotifications } from '@/composables/useNotifications.js'
 
 const authUser = usePage().props.auth.user
+const { notify, dismiss } = useNotifications()
 
 const props = defineProps({
   page:       { type: Object, required: true },
@@ -33,16 +35,8 @@ function submit() {
 }
 
 // Autosave
-const autosaveStatus  = ref(null)
-const autosaveSavedAt = ref(null)
-
-const showRestoreBanner = ref(
-  props.autosave !== null &&
-  props.page.updated_at !== null &&
-  new Date(props.autosave.updated_at) > new Date(props.page.updated_at)
-)
-
 let autosaveTimer = null
+let autosaveToastId = null
 
 watch(form, () => {
   clearTimeout(autosaveTimer)
@@ -50,31 +44,57 @@ watch(form, () => {
 }, { deep: true })
 
 async function doAutosave() {
-  autosaveStatus.value = 'saving'
   try {
     const res = await axios.post(route('pages.autosave', props.page.id), {
       payload: form.data(),
     })
-    autosaveSavedAt.value = res.data.saved_at
-    autosaveStatus.value  = 'saved'
+    if (autosaveToastId !== null) dismiss(autosaveToastId)
+    autosaveToastId = notify(`Draft saved at ${res.data.saved_at}`, 'info')
   } catch {
-    autosaveStatus.value = 'error'
+    notify('Autosave failed — check your connection', 'error')
   }
 }
 
 async function restoreAutosave() {
-  const payload = props.autosave.payload
-  Object.keys(payload).forEach(key => {
-    if (key in form) form[key] = payload[key]
-  })
-  showRestoreBanner.value = false
-  await axios.delete(route('pages.autosave.destroy', props.page.id))
+  try {
+    const payload = props.autosave.payload
+    Object.keys(payload).forEach(key => {
+      if (key in form) form[key] = payload[key]
+    })
+    await axios.delete(route('pages.autosave.destroy', props.page.id))
+    notify('Draft restored.', 'success')
+  } catch {
+    notify('Failed to restore draft.', 'error')
+  }
 }
 
 async function dismissAutosave() {
-  showRestoreBanner.value = false
-  await axios.delete(route('pages.autosave.destroy', props.page.id))
+  try {
+    await axios.delete(route('pages.autosave.destroy', props.page.id))
+  } catch {
+    // non-critical
+  }
 }
+
+onMounted(() => {
+  if (
+    props.autosave &&
+    props.page.updated_at &&
+    new Date(props.autosave.updated_at) > new Date(props.page.updated_at)
+  ) {
+    notify(
+      'You have unsaved changes from a previous session.',
+      'info',
+      {
+        duration: null,
+        actions: [
+          { label: 'Restore', handler: restoreAutosave },
+          { label: 'Dismiss', handler: dismissAutosave },
+        ],
+      }
+    )
+  }
+})
 
 onBeforeUnmount(() => clearTimeout(autosaveTimer))
 
@@ -115,18 +135,6 @@ async function restoreRevision(revision) {
   <AppLayout title="Edit Page">
     <Head title="Edit Page" />
     <form @submit.prevent="submit">
-      <!-- Autosave recovery banner -->
-      <div
-        v-if="showRestoreBanner"
-        class="mb-4 flex items-center gap-3 rounded-md border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 px-4 py-3 text-sm"
-      >
-        <span class="flex-1 text-amber-800 dark:text-amber-300">
-          You have unsaved changes from a previous session.
-        </span>
-        <button type="button" @click="restoreAutosave" class="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-[var(--primary-hover)]">Restore</button>
-        <button type="button" @click="dismissAutosave" class="rounded-md border px-3 py-1.5 text-xs font-medium hover:bg-accent">Dismiss</button>
-      </div>
-
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-3">
           <a :href="route('pages.index')" class="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:bg-accent transition-colors">
@@ -138,9 +146,6 @@ async function restoreRevision(revision) {
           </div>
         </div>
         <div class="flex items-center gap-3">
-          <span v-if="autosaveStatus === 'saving'" class="text-xs text-muted-foreground">Saving draft…</span>
-          <span v-else-if="autosaveStatus === 'saved'" class="text-xs text-muted-foreground">Draft saved at {{ autosaveSavedAt }}</span>
-          <span v-else-if="autosaveStatus === 'error'" class="text-xs text-destructive">Autosave failed</span>
           <button
             type="submit"
             :disabled="form.processing"
