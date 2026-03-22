@@ -1,6 +1,6 @@
 <!-- resources/js/Components/BlockRenderer.vue -->
 <template>
-  <div class="space-y-4">
+  <div :class="wrapperClass">
     <template v-for="block in blocks" :key="block.id">
       <component
         v-if="block.customCss"
@@ -8,7 +8,7 @@
 >#{{ block.customId ? CSS.escape(block.customId) : 'block-' + block.id }} { {{ sanitizeCss(block.customCss) }} }</component>
       <div
         :id="block.customId || `block-${block.id}`"
-        :class="block.customClasses || undefined"
+        :class="[block.customClasses || undefined, itemClass || undefined]"
         :style="block.fontFamily ? { fontFamily: `'${block.fontFamily}', sans-serif` } : undefined"
       >
         <component
@@ -37,7 +37,15 @@ import ContainerBlock from '@/Components/Blocks/ContainerBlock.vue'
 import SectionBlock  from '@/Components/Blocks/SectionBlock.vue'
 import SpacerBlock   from '@/Components/Blocks/SpacerBlock.vue'
 
-const props = defineProps({ blocks: { type: Array, default: () => [] } })
+const props = defineProps({
+  blocks:       { type: Array,  default: () => [] },
+  // wrapperClass: replaces 'space-y-4' on the outer div.
+  // Pass 'contents' to make the wrapper layout-transparent (e.g. inside a flex/grid container).
+  wrapperClass: { type: String, default: 'space-y-4' },
+  // itemClass: extra class(es) applied to every block's wrapper <div>.
+  // Pass 'flex-1 min-w-0' from a flex-row ContainerBlock so blocks share space equally.
+  itemClass:    { type: String, default: '' },
+})
 
 function sanitizeCss(css) {
   // Strip both opening and closing style tags to prevent tag breakout / HTML injection
