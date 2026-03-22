@@ -30,12 +30,18 @@
         <div
           v-for="block in draggableBlocks"
           :key="block.id"
+          :id="block.customId || `block-${block.id}`"
           class="group relative rounded-lg border bg-card transition-colors cursor-pointer"
           :class="block.id === selectedId
             ? 'border-primary ring-1 ring-primary'
             : 'border-border hover:border-muted-foreground'"
           @click="$emit('select', block.id)"
         >
+          <!-- Custom CSS injection -->
+          <component v-if="block.customCss" :is="'style'">
+            #{{ block.customId ? CSS.escape(block.customId) : 'block-' + block.id }} { {{ sanitizeCss(block.customCss) }} }
+          </component>
+
           <!-- Drag handle -->
           <div
             class="block-drag-handle absolute left-2 top-3 cursor-grab active:cursor-grabbing text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
@@ -148,6 +154,10 @@ const draggableBlocks = computed({
 function onAdd(evt) {
   const newBlock = draggableBlocks.value[evt.newIndex]
   if (newBlock) emit('select', newBlock.id)
+}
+
+function sanitizeCss(css) {
+  return css.replace(/<\/?style/gi, '')
 }
 
 function isEmptyBlock(block) {
