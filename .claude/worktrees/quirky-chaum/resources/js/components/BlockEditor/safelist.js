@@ -11,7 +11,7 @@ export default [
   'lg:grid-cols-1','lg:grid-cols-2','lg:grid-cols-3','lg:grid-cols-4','lg:grid-cols-5','lg:grid-cols-6',
   'lg:grid-cols-7','lg:grid-cols-8','lg:grid-cols-9','lg:grid-cols-10','lg:grid-cols-11','lg:grid-cols-12',
   // ── Flex direction (responsive) ───────────────────────────────────────────
-  'sm:flex-row','sm:flex-col','lg:flex-row','lg:flex-col',
+  'flex-row','flex-col','sm:flex-row','sm:flex-col','lg:flex-row','lg:flex-col',
   // ── Heights: spacer + section min-height ─────────────────────────────────
   'h-1','h-2','h-3','h-4','h-5','h-6','h-7','h-8','h-9','h-10','h-11','h-12',
   'h-14','h-16','h-20','h-24','h-28','h-32','h-40','h-48','h-56','h-64',
