@@ -30,8 +30,8 @@
       </button>
     </div>
 
-    <!-- Indented children (container blocks only) -->
-    <ul v-if="block.type === 'container' && block.children?.length" class="pl-4 space-y-0.5 mt-0.5">
+    <!-- Indented children — works for container, section, loop and any future parent -->
+    <ul v-if="block.children?.length" class="pl-4 space-y-0.5 mt-0.5">
       <li v-for="child in block.children" :key="child.id">
         <LayerItem
           :block="child"
@@ -51,7 +51,7 @@ const LABELS = {
   paragraph: 'Paragraph', heading: 'Heading', image: 'Image',
   quote: 'Quote', code: 'Code', gallery: 'Gallery', video: 'Video',
   divider: 'Divider', cta: 'CTA', html: 'HTML', component: 'Component',
-  container: 'Container',
+  container: 'Container', section: 'Section', spacer: 'Spacer', loop: 'Loop',
 }
 
 defineProps({
