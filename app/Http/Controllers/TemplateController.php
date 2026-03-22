@@ -52,7 +52,6 @@ class TemplateController extends Controller
         }
 
         $template = Template::create([...$validated, 'user_id' => auth()->id()]);
-        $template->saveRevision(auth()->id());
 
         return redirect()->route('templates.index')->with('status', 'Template created.');
     }
@@ -98,8 +97,8 @@ class TemplateController extends Controller
                 ->update(['status' => 'draft']);
         }
 
-        $template->saveRevision(auth()->id());
         $template->update($validated);
+        $template->saveRevision(auth()->id());
         $template->autosaves()->where('user_id', auth()->id())->delete();
 
         return redirect()->route('templates.index')->with('status', 'Template saved.');

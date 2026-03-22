@@ -42,6 +42,7 @@ class RevisionController extends Controller
         $revisions = $template->revisions()
             ->with('user:id,name')
             ->orderByDesc('id')
+            ->limit(25)
             ->get()
             ->map(fn ($r) => [
                 'id'         => $r->id,
