@@ -5,11 +5,9 @@
       class="flex flex-col w-64 border-r bg-sidebar text-sidebar-foreground shrink-0"
     >
       <!-- Logo / App name -->
-      <div class="flex items-center gap-2 h-16 px-6 border-b border-sidebar-border">
-        <div class="w-7 h-7 rounded-md bg-sidebar-primary flex items-center justify-center">
-          <svg class="w-4 h-4 text-sidebar-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3L2 7l10 4 10-4-10-4zM2 17l10 4 10-4M2 12l10 4 10-4" />
-          </svg>
+      <div class="flex items-center gap-2.5 h-16 px-6 border-b border-sidebar-border">
+        <div class="w-7 h-7 rounded-md bg-sidebar-primary flex items-center justify-center shrink-0">
+          <span class="text-sidebar-primary-foreground font-bold text-base leading-none select-none">Λ</span>
         </div>
         <span class="font-semibold text-sm tracking-tight">Lambda CMS</span>
       </div>

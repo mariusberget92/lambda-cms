@@ -112,7 +112,7 @@
               <input
                 type="datetime-local"
                 v-model="form.published_at"
-                class="w-full rounded-md border bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                class="w-full rounded-md border bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring dark:[color-scheme:dark]"
               />
               <p v-if="daysUntilPublish" class="text-xs text-indigo-600 mt-1">
                 ⏱ publishes in {{ daysUntilPublish }} day{{ daysUntilPublish === 1 ? '' : 's' }}
@@ -131,26 +131,16 @@
               <a :href="route('categories.create')" class="underline hover:text-foreground">Create one</a>
             </div>
             <div v-else class="flex flex-wrap gap-2">
-              <label
+              <button
                 v-for="cat in categories"
                 :key="cat.id"
-                class="flex items-center gap-1.5 cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  :value="cat.id"
-                  v-model="form.category_ids"
-                  class="accent-nord-green rounded"
-                />
-                <span
-                  class="text-xs px-2 py-0.5 rounded-full border transition-colors"
-                  :class="form.category_ids.includes(cat.id)
-                    ? 'bg-primary text-primary-foreground border-primary'
-                    : 'text-muted-foreground border-border hover:border-foreground'"
-                >
-                  {{ cat.name }}
-                </span>
-              </label>
+                type="button"
+                @click="toggleCategory(cat.id)"
+                class="text-xs px-3 py-1 rounded-full border transition-colors cursor-pointer"
+                :class="form.category_ids.includes(cat.id)
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'text-muted-foreground border-border hover:border-foreground hover:text-foreground'"
+              >{{ cat.name }}</button>
             </div>
           </div>
 
@@ -330,6 +320,12 @@ function onFeaturedImageSelect(media) {
 function removeFeaturedImage() {
   featuredImage.value    = null
   form.featured_image_id = null
+}
+
+function toggleCategory(id) {
+  const idx = form.category_ids.indexOf(id)
+  if (idx === -1) form.category_ids.push(id)
+  else form.category_ids.splice(idx, 1)
 }
 
 function submit() {
