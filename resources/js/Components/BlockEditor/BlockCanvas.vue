@@ -71,6 +71,15 @@
               @update-children="$emit('update-children', $event)"
             />
 
+            <!-- Loop block: teal-bordered nested drop zone -->
+            <EditorLoopBlock
+              v-else-if="block.type === 'loop'"
+              :block="block"
+              :selected-id="selectedId"
+              @select="$emit('select', $event)"
+              @update-children="$emit('update-children', $event)"
+            />
+
             <!-- Spacer block: visual placeholder -->
             <div v-else-if="block.type === 'spacer'" class="px-3 py-3">
               <div
@@ -108,6 +117,7 @@ import { VueDraggable }  from 'vue-draggable-plus'
 import { GripVertical }  from 'lucide-vue-next'
 import EditorContainerBlock from './EditorContainerBlock.vue'
 import EditorSectionBlock   from './EditorSectionBlock.vue'
+import EditorLoopBlock      from './EditorLoopBlock.vue'
 import ParagraphBlock from '@/Components/Blocks/ParagraphBlock.vue'
 import HeadingBlock   from '@/Components/Blocks/HeadingBlock.vue'
 import ImageBlock     from '@/Components/Blocks/ImageBlock.vue'
@@ -138,7 +148,7 @@ const LABELS = {
   paragraph: 'Paragraph', heading: 'Heading', image: 'Image',
   quote: 'Quote', code: 'Code', gallery: 'Gallery', video: 'Video',
   divider: 'Divider', cta: 'CTA', html: 'HTML', component: 'Component',
-  container: 'Container', section: 'Section', spacer: 'Spacer',
+  container: 'Container', section: 'Section', spacer: 'Spacer', loop: 'Loop',
 }
 
 const props = defineProps({
