@@ -20,7 +20,13 @@ watch(
 <template>
   <Teleport to="body">
     <div class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none">
-      <TransitionGroup name="notif" tag="div" class="flex flex-col gap-2" style="position: relative">
+      <TransitionGroup
+        tag="div"
+        class="flex flex-col gap-2"
+        style="position: relative"
+        enter-active-class="animate__animated animate__fadeInDown"
+        leave-active-class="animate__animated animate__fadeOut"
+      >
         <div v-for="n in notifications" :key="n.id" class="pointer-events-auto">
           <NotificationItem
             :id="n.id"
@@ -36,9 +42,9 @@ watch(
   </Teleport>
 </template>
 
-<style scoped>
-.notif-enter-active { transition: transform 0.25s ease, opacity 0.25s ease; }
-.notif-leave-active { transition: opacity 0.2s ease; position: absolute; }
-.notif-enter-from   { transform: translateY(-110%); opacity: 0; }
-.notif-leave-to     { opacity: 0; }
+<style>
+.animate__fadeInDown,
+.animate__fadeOut {
+  --animate-duration: 0.25s;
+}
 </style>

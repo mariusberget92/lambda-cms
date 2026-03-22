@@ -1,4 +1,5 @@
 import '../css/app.css';
+import 'animate.css';
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { route } from 'ziggy-js';
