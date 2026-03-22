@@ -72,6 +72,8 @@ import { VueDraggable } from 'vue-draggable-plus'
 import LayerItem         from './LayerItem.vue'
 import AdvancedSettings  from './blocks/AdvancedSettings.vue'
 import ContainerSettings from './blocks/ContainerSettings.vue'
+import SectionSettings  from './blocks/SectionSettings.vue'
+import SpacerSettings   from './blocks/SpacerSettings.vue'
 import HeadingSettings   from './blocks/HeadingSettings.vue'
 import ParagraphSettings from './blocks/ParagraphSettings.vue'
 import ImageSettings     from './blocks/ImageSettings.vue'
@@ -103,7 +105,7 @@ const LABELS = {
   paragraph: 'Paragraph', heading: 'Heading', image: 'Image',
   quote: 'Quote', code: 'Code', gallery: 'Gallery', video: 'Video',
   divider: 'Divider', cta: 'CTA', html: 'HTML', component: 'Component',
-  container: 'Container',
+  container: 'Container', section: 'Section', spacer: 'Spacer',
 }
 
 const COMPONENT_MAP = {
@@ -111,6 +113,7 @@ const COMPONENT_MAP = {
   quote: QuoteSettings, code: CodeSettings, gallery: GallerySettings,
   video: VideoSettings, divider: DividerSettings, cta: CtaSettings,
   html: HtmlSettings, component: ComponentSettings, container: ContainerSettings,
+  section: SectionSettings, spacer: SpacerSettings,
 }
 
 const settingsComponent = computed(() =>

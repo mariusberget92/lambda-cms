@@ -42,6 +42,8 @@ import {
   FileCode,
   Puzzle,
   LayoutTemplate,
+  Rows2,
+  ArrowUpDown,
 } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -61,6 +63,8 @@ const ALL_TYPES = [
   { type: 'html',      label: 'HTML',      icon: FileCode, adminOnly: true },
   { type: 'component', label: 'Component', icon: Puzzle },
   { type: 'container', label: 'Container', icon: LayoutTemplate },
+  { type: 'section',   label: 'Section',   icon: Rows2 },
+  { type: 'spacer',    label: 'Spacer',    icon: ArrowUpDown },
 ]
 
 const typeList = computed({
@@ -81,6 +85,20 @@ const DEFAULT_DATA = {
   html:      { content: '' },
   component: { component: 'post-list', limit: 6, offset: 0, order: 'latest', featured_only: false, category_ids: [], tag_ids: [] },
   container: { direction: 'row', wrap: true, gap: 4, justify: 'start', align: 'start', maxWidth: 'full', padding: 4 },
+  section: {
+    bgType: 'none',
+    bgColor: '#ffffff',
+    bgImage: { url: '', position: 'center', size: 'cover' },
+    bgGradient: { from: '#3b4252', to: '#4c566a', direction: 'to-r' },
+    fullWidth: false,
+    innerMaxWidth: 'xl',
+    paddingY: { default: 16, sm: 8 },
+    paddingX: { default: 8,  sm: 4 },
+    minHeight: 'auto',
+  },
+  spacer: {
+    height: { default: 8, sm: 4 },
+  },
 }
 
 function cloneBlock(typeDef) {
@@ -95,7 +113,7 @@ function cloneBlock(typeDef) {
     customClasses: '',
     customCss: '',
     fontFamily: '',
-    ...(typeDef.type === 'container' ? { children: [] } : {}),
+    ...(typeDef.type === 'container' || typeDef.type === 'section' ? { children: [] } : {}),
   }
 }
 </script>

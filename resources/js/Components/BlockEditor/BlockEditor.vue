@@ -49,11 +49,15 @@ const selectedBlockId = ref(null)
 
 // ── Recursive helpers ─────────────────────────────────────────────────────────
 
+function hasChildren(block) {
+  return block.type === 'container' || block.type === 'section'
+}
+
 function findBlock(blocks, id) {
   if (!id) return null
   for (const b of blocks) {
     if (b.id === id) return b
-    if (b.type === 'container' && b.children?.length) {
+    if (hasChildren(b) && b.children?.length) {
       const found = findBlock(b.children, id)
       if (found) return found
     }
@@ -71,7 +75,7 @@ function updateBlockInList(blocks, id, data, attrs) {
         ...(data !== undefined ? { data: { ...b.data, ...data } } : {}),
       }
     }
-    if (b.type === 'container' && b.children?.length) {
+    if (hasChildren(b) && b.children?.length) {
       return { ...b, children: updateBlockInList(b.children, id, data, attrs) }
     }
     return b
@@ -83,7 +87,7 @@ function removeFromList(blocks, id) {
   return blocks
     .filter(b => b.id !== id)
     .map(b => {
-      if (b.type === 'container' && b.children?.length) {
+      if (hasChildren(b) && b.children?.length) {
         return { ...b, children: removeFromList(b.children, id) }
       }
       return b

@@ -34,6 +34,8 @@ import CtaBlock       from '@/Components/Blocks/CtaBlock.vue'
 import HtmlBlock      from '@/Components/Blocks/HtmlBlock.vue'
 import PostListBlock  from '@/Components/Blocks/PostListBlock.vue'
 import ContainerBlock from '@/Components/Blocks/ContainerBlock.vue'
+import SectionBlock  from '@/Components/Blocks/SectionBlock.vue'
+import SpacerBlock   from '@/Components/Blocks/SpacerBlock.vue'
 
 const props = defineProps({ blocks: { type: Array, default: () => [] } })
 
@@ -55,6 +57,8 @@ const BLOCK_MAP = {
   html:      HtmlBlock,
   component: PostListBlock,
   container: ContainerBlock,
+  section:   SectionBlock,
+  spacer:    SpacerBlock,
 }
 
 const loadedFonts = new Set()
@@ -71,7 +75,7 @@ function loadFont(family) {
 function loadFontsFromBlocks(blocks) {
   for (const block of blocks) {
     if (block.fontFamily) loadFont(block.fontFamily)
-    if (block.type === 'container' && block.children?.length) {
+    if ((block.type === 'container' || block.type === 'section') && block.children?.length) {
       loadFontsFromBlocks(block.children)
     }
   }
