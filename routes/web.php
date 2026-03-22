@@ -22,6 +22,8 @@ use App\Http\Controllers\AutosaveController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\RevisionController;
 use App\Http\Controllers\PublicPageController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -128,6 +130,12 @@ Route::middleware('installed')->group(function () {
         Route::post('/pages/{page}/autosave',   [AutosaveController::class, 'storePage'])->name('pages.autosave');
         Route::delete('/pages/{page}/autosave', [AutosaveController::class, 'destroyPage'])->name('pages.autosave.destroy');
         Route::get('/pages/{page}/revisions',   [RevisionController::class, 'indexPage'])->name('pages.revisions');
+
+        Route::resource('templates', TemplateController::class)->except(['show']);
+        Route::post('/templates/{template}/autosave',   [AutosaveController::class, 'storeTemplate'])->name('templates.autosave');
+        Route::delete('/templates/{template}/autosave', [AutosaveController::class, 'destroyTemplate'])->name('templates.autosave.destroy');
+        Route::get('/templates/{template}/revisions',   [RevisionController::class, 'indexTemplate'])->name('templates.revisions');
+
         Route::resource('users', UserController::class)->except(['show']);
 
         Route::get('/comments',                     [CommentController::class, 'index'])->name('comments.index');
@@ -146,9 +154,11 @@ Route::middleware('installed')->group(function () {
         Route::post('/navigation/reorder',     [NavigationController::class, 'reorder'])->name('navigation.reorder');
         Route::delete('/navigation/{navItem}', [NavigationController::class, 'destroy'])->name('navigation.destroy');
     });
+    Route::get('/search', [SearchController::class, 'index'])->name('search');
+
     // ── Public custom pages (catch-all — must be last inside this group) ─────
     Route::get('/{slug}', [PublicPageController::class, 'show'])
-        ->where('slug', '^(?!login|logout|dashboard|blog|feed|sitemap\.xml|posts|categories|tags|users|profile|settings|media|comments|pages|navigation|calendar|password|register|verify|install|email|forgot-password|reset-password).*$')
+        ->where('slug', '^(?!login|logout|dashboard|blog|feed|sitemap\.xml|posts|categories|tags|users|profile|settings|media|comments|pages|templates|navigation|calendar|password|register|verify|install|email|forgot-password|reset-password|search).*$')
         ->name('pages.show');
 
 });

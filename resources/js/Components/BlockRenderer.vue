@@ -40,6 +40,15 @@ import ContainerBlock from '@/Components/Blocks/ContainerBlock.vue'
 import SectionBlock  from '@/Components/Blocks/SectionBlock.vue'
 import SpacerBlock   from '@/Components/Blocks/SpacerBlock.vue'
 import LoopBlock     from '@/Components/Blocks/LoopBlock.vue'
+import PostTitleBlock         from '@/Components/Blocks/PostTitleBlock.vue'
+import PostBodyBlock          from '@/Components/Blocks/PostBodyBlock.vue'
+import PostFeaturedImageBlock from '@/Components/Blocks/PostFeaturedImageBlock.vue'
+import PostMetaBlock          from '@/Components/Blocks/PostMetaBlock.vue'
+import PostAuthorBlock        from '@/Components/Blocks/PostAuthorBlock.vue'
+import PostTaxonomyBlock      from '@/Components/Blocks/PostTaxonomyBlock.vue'
+import PostCommentsBlock      from '@/Components/Blocks/PostCommentsBlock.vue'
+import ArchiveTitleBlock      from '@/Components/Blocks/ArchiveTitleBlock.vue'
+import SearchBlock            from '@/Components/Blocks/SearchBlock.vue'
 
 const props = defineProps({
   blocks:       { type: Array,  default: () => [] },
@@ -72,6 +81,16 @@ const BLOCK_MAP = {
   section:   SectionBlock,
   spacer:    SpacerBlock,
   loop:      LoopBlock,
+  'post-title':          PostTitleBlock,
+  'post-body':           PostBodyBlock,
+  'post-featured-image': PostFeaturedImageBlock,
+  'post-meta':           PostMetaBlock,
+  'post-author':         PostAuthorBlock,
+  'post-taxonomy':       PostTaxonomyBlock,
+  'post-comments':       PostCommentsBlock,
+  'archive-title':       ArchiveTitleBlock,
+  'archive-loop':        LoopBlock,
+  search:                SearchBlock,
 }
 
 // Injected by LoopItemProvider when this renderer is inside a loop iteration
@@ -106,7 +125,7 @@ function loadFont(family) {
 function loadFontsFromBlocks(blocks) {
   for (const block of blocks) {
     if (block.fontFamily) loadFont(block.fontFamily)
-    if (['container', 'section', 'loop'].includes(block.type) && block.children?.length) {
+    if (['container', 'section', 'loop', 'archive-loop'].includes(block.type) && block.children?.length) {
       loadFontsFromBlocks(block.children)
     }
   }
