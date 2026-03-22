@@ -1,9 +1,11 @@
 <!-- resources/js/Components/Blocks/HeadingBlock.vue -->
 <template>
   <component :is="'h' + block.data.level" class="font-bold leading-tight">
-    {{ block.data.text }}
+    {{ resolvedText }}
   </component>
 </template>
 <script setup>
-defineProps({ block: { type: Object, required: true } })
+import { useFieldBinding } from '@/composables/useLoopBinding.js'
+const props = defineProps({ block: { type: Object, required: true } })
+const resolvedText = useFieldBinding(() => props.block, 'text')
 </script>

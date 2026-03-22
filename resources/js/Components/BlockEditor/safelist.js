@@ -25,4 +25,8 @@ export default [
   'px-1','px-2','px-3','px-4','px-6','px-8','px-10','px-12','px-16',
   'sm:px-1','sm:px-2','sm:px-4','sm:px-6','sm:px-8','sm:px-12',
   'lg:px-1','lg:px-2','lg:px-4','lg:px-6','lg:px-8','lg:px-12',
+  // ── Loop block grid columns + gap ─────────────────────────────────────────
+  'gap-2','gap-4','gap-6','gap-8',
+  // ── Max-width (container width option) ────────────────────────────────────
+  'max-w-sm','max-w-md','max-w-lg','max-w-xl','max-w-2xl','max-w-4xl','max-w-6xl','max-w-full',
 ]
