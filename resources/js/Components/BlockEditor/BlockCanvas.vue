@@ -31,7 +31,7 @@
           v-for="block in draggableBlocks"
           :key="block.id"
           :id="block.customId || `block-${block.id}`"
-          class="group relative rounded-lg border bg-card transition-colors cursor-pointer"
+          class="group flex items-stretch rounded-lg border bg-card transition-colors cursor-pointer"
           :class="block.id === selectedId
             ? 'border-primary ring-1 ring-primary'
             : 'border-border hover:border-muted-foreground'"
@@ -42,57 +42,59 @@
             #{{ block.customId ? CSS.escape(block.customId) : 'block-' + block.id }} { {{ sanitizeCss(block.customCss) }} }
           </component>
 
-          <!-- Drag handle -->
+          <!-- Fixed-width drag handle column — always reserves the same space -->
           <div
-            class="block-drag-handle absolute left-2 top-3 cursor-grab active:cursor-grabbing text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+            class="block-drag-handle shrink-0 w-7 flex items-center justify-center border-r border-transparent group-hover:border-border/50 cursor-grab active:cursor-grabbing text-muted-foreground/40 group-hover:text-muted-foreground transition-colors"
             @click.stop
           >
-            <GripVertical class="w-4 h-4" />
+            <GripVertical class="w-3.5 h-3.5" />
           </div>
 
-          <!-- Container block: nested sortable children -->
-          <EditorContainerBlock
-            v-if="block.type === 'container'"
-            :block="block"
-            :selected-id="selectedId"
-            @select="$emit('select', $event)"
-            @update-children="$emit('update-children', $event)"
-          />
+          <!-- Content area — always starts at the same x position -->
+          <div class="flex-1 min-w-0">
 
-          <!-- Section block: nested sortable children with visual label -->
-          <EditorSectionBlock
-            v-else-if="block.type === 'section'"
-            :block="block"
-            :selected-id="selectedId"
-            @select="$emit('select', $event)"
-            @update-children="$emit('update-children', $event)"
-          />
-
-          <!-- Spacer block: visual placeholder -->
-          <div
-            v-else-if="block.type === 'spacer'"
-            class="px-8 py-3"
-          >
-            <div
-              class="w-full flex items-center justify-center bg-muted/30 border border-dashed border-muted-foreground/30 rounded text-xs text-muted-foreground select-none"
-              :style="{ height: `${(block.data?.height?.default ?? 8) * 4}px` }"
-            >
-              Spacer (h-{{ block.data?.height?.default ?? 8 }})
-            </div>
-          </div>
-
-          <!-- Regular block: live render -->
-          <div v-else class="px-8 py-3 min-h-[2.5rem]">
-            <div
-              v-if="isEmptyBlock(block)"
-              class="text-xs text-muted-foreground italic"
-            >{{ LABELS[block.type] ?? block.type }} — empty</div>
-            <component
-              v-else
-              :is="BLOCK_MAP[block.type]"
+            <!-- Container block: nested sortable children -->
+            <EditorContainerBlock
+              v-if="block.type === 'container'"
               :block="block"
-              class="pointer-events-none"
+              :selected-id="selectedId"
+              @select="$emit('select', $event)"
+              @update-children="$emit('update-children', $event)"
             />
+
+            <!-- Section block: nested sortable children with visual label -->
+            <EditorSectionBlock
+              v-else-if="block.type === 'section'"
+              :block="block"
+              :selected-id="selectedId"
+              @select="$emit('select', $event)"
+              @update-children="$emit('update-children', $event)"
+            />
+
+            <!-- Spacer block: visual placeholder -->
+            <div v-else-if="block.type === 'spacer'" class="px-3 py-3">
+              <div
+                class="w-full flex items-center justify-center bg-muted/30 border border-dashed border-muted-foreground/30 rounded text-xs text-muted-foreground select-none"
+                :style="{ height: `${(block.data?.height?.default ?? 8) * 4}px` }"
+              >
+                Spacer (h-{{ block.data?.height?.default ?? 8 }})
+              </div>
+            </div>
+
+            <!-- Regular block: live render -->
+            <div v-else class="px-3 py-3 min-h-[2.5rem]">
+              <div
+                v-if="isEmptyBlock(block)"
+                class="text-xs text-muted-foreground italic"
+              >{{ LABELS[block.type] ?? block.type }} — empty</div>
+              <component
+                v-else
+                :is="BLOCK_MAP[block.type]"
+                :block="block"
+                class="pointer-events-none"
+              />
+            </div>
+
           </div>
         </div>
       </VueDraggable>
