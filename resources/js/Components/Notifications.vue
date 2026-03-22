@@ -38,7 +38,7 @@ watch(
 
 <style scoped>
 .notif-enter-active { transition: transform 0.25s ease, opacity 0.25s ease; }
-.notif-leave-active { transition: transform 0.2s ease, opacity 0.2s ease; position: absolute; }
-.notif-enter-from,
-.notif-leave-to     { transform: translateX(110%); opacity: 0; }
+.notif-leave-active { transition: opacity 0.2s ease; position: absolute; }
+.notif-enter-from   { transform: translateY(-110%); opacity: 0; }
+.notif-leave-to     { opacity: 0; }
 </style>
