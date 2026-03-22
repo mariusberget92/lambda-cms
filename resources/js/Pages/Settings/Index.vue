@@ -492,7 +492,7 @@ watch(
     // The generic flash.status is emitted by all forms; we can't distinguish which
     // panel it came from, so leave the tab as-is (user already knows where they saved).
   },
-  { immediate: true }
+  { immediate: false }
 )
 
 // ── Common timezones ─────────────────────────────────────────────────────────

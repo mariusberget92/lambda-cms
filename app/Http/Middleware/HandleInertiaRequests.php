@@ -30,8 +30,10 @@ class HandleInertiaRequests extends Middleware
                 ) : null,
             ],
             "flash" => [
-                "status" => fn () => $request->session()->get("status"),
-                "error"  => fn () => $request->session()->get("error"),
+                "status"       => fn () => $request->session()->get("status"),
+                "error"        => fn () => $request->session()->get("error"),
+                "mail_status"  => fn () => $request->session()->get("mail_status"),
+                "mail_error"   => fn () => $request->session()->get("mail_error"),
             ],
             "currentRoute"         => $request->route()?->getName(),
             "pendingCommentsCount" => fn () => $request->user()?->hasRole('administrator')
