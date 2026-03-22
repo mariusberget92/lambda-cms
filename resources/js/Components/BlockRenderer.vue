@@ -2,26 +2,29 @@
 <template>
   <div :class="wrapperClass">
     <template v-for="block in blocks" :key="block.id">
-      <component
-        v-if="block.customCss"
-        :is="'style'"
->#{{ block.customId ? CSS.escape(block.customId) : 'block-' + block.id }} { {{ sanitizeCss(block.customCss) }} }</component>
-      <div
-        :id="block.customId || `block-${block.id}`"
-        :class="[block.customClasses || undefined, itemClass || undefined]"
-        :style="block.fontFamily ? { fontFamily: `'${block.fontFamily}', sans-serif` } : undefined"
-      >
+      <!-- Skip block if its visibility condition evaluates to false -->
+      <template v-if="isVisible(block)">
         <component
-          :is="BLOCK_MAP[block.type]"
-          :block="block"
-        />
-      </div>
+          v-if="block.customCss"
+          :is="'style'"
+        >#{{ block.customId ? CSS.escape(block.customId) : 'block-' + block.id }} { {{ sanitizeCss(block.customCss) }} }</component>
+        <div
+          :id="block.customId || `block-${block.id}`"
+          :class="[block.customClasses || undefined, itemClass || undefined]"
+          :style="block.fontFamily ? { fontFamily: `'${block.fontFamily}', sans-serif` } : undefined"
+        >
+          <component
+            :is="BLOCK_MAP[block.type]"
+            :block="block"
+          />
+        </div>
+      </template>
     </template>
   </div>
 </template>
 
 <script setup>
-import { onMounted, watch } from 'vue'
+import { inject, onMounted, watch } from 'vue'
 import ParagraphBlock from '@/Components/Blocks/ParagraphBlock.vue'
 import HeadingBlock   from '@/Components/Blocks/HeadingBlock.vue'
 import ImageBlock     from '@/Components/Blocks/ImageBlock.vue'
@@ -36,6 +39,7 @@ import PostListBlock  from '@/Components/Blocks/PostListBlock.vue'
 import ContainerBlock from '@/Components/Blocks/ContainerBlock.vue'
 import SectionBlock  from '@/Components/Blocks/SectionBlock.vue'
 import SpacerBlock   from '@/Components/Blocks/SpacerBlock.vue'
+import LoopBlock     from '@/Components/Blocks/LoopBlock.vue'
 
 const props = defineProps({
   blocks:       { type: Array,  default: () => [] },
@@ -67,6 +71,25 @@ const BLOCK_MAP = {
   container: ContainerBlock,
   section:   SectionBlock,
   spacer:    SpacerBlock,
+  loop:      LoopBlock,
+}
+
+// Injected by LoopItemProvider when this renderer is inside a loop iteration
+const loopItem = inject('loopItem', null)
+
+// Evaluate a block's visibility condition against the current loop item.
+// If the block has no condition, or we're not inside a loop, always show it.
+function isVisible(block) {
+  const c = block.condition
+  if (!c || !loopItem?.value) return true
+  const v = loopItem.value[c.field]
+  switch (c.op) {
+    case '=':         return String(v) === String(c.value)
+    case '!=':        return String(v) !== String(c.value)
+    case 'not_empty': return !!v
+    case 'empty':     return !v
+    default:          return true
+  }
 }
 
 const loadedFonts = new Set()
@@ -83,7 +106,7 @@ function loadFont(family) {
 function loadFontsFromBlocks(blocks) {
   for (const block of blocks) {
     if (block.fontFamily) loadFont(block.fontFamily)
-    if ((block.type === 'container' || block.type === 'section') && block.children?.length) {
+    if (['container', 'section', 'loop'].includes(block.type) && block.children?.length) {
       loadFontsFromBlocks(block.children)
     }
   }
