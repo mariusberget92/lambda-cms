@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Post;
 use App\Models\Template;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -150,5 +151,35 @@ class TemplateTest extends TestCase
 
         $resolver = app(\App\Services\TemplateResolver::class);
         $this->assertNotNull($resolver->resolve('blog-index'));
+    }
+
+    public function test_blog_index_uses_template_when_published(): void
+    {
+        $admin = $this->makeAdmin();
+        Template::create([
+            'user_id' => $admin->id, 'title' => 'Blog Index Template',
+            'type' => 'blog-index', 'status' => 'published', 'blocks' => [],
+        ]);
+
+        $this->get('/')->assertInertia(fn ($page) => $page->component('Blog/TemplatePage'));
+    }
+
+    public function test_blog_index_uses_default_view_without_template(): void
+    {
+        $this->get('/')->assertInertia(fn ($page) => $page->component('Blog/Index'));
+    }
+
+    public function test_single_post_uses_template_when_published(): void
+    {
+        $admin = $this->makeAdmin();
+        $post  = Post::factory()->create(['status' => 'published', 'published_at' => now()]);
+
+        Template::create([
+            'user_id' => $admin->id, 'title' => 'Single Post Template',
+            'type' => 'single-post', 'status' => 'published', 'blocks' => [],
+        ]);
+
+        $this->get("/blog/{$post->slug}")
+            ->assertInertia(fn ($page) => $page->component('Blog/TemplatePage'));
     }
 }

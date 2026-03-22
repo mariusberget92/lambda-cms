@@ -22,6 +22,7 @@ use App\Http\Controllers\AutosaveController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\RevisionController;
 use App\Http\Controllers\PublicPageController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -153,6 +154,8 @@ Route::middleware('installed')->group(function () {
         Route::post('/navigation/reorder',     [NavigationController::class, 'reorder'])->name('navigation.reorder');
         Route::delete('/navigation/{navItem}', [NavigationController::class, 'destroy'])->name('navigation.destroy');
     });
+    Route::get('/search', [SearchController::class, 'index'])->name('search');
+
     // ── Public custom pages (catch-all — must be last inside this group) ─────
     Route::get('/{slug}', [PublicPageController::class, 'show'])
         ->where('slug', '^(?!login|logout|dashboard|blog|feed|sitemap\.xml|posts|categories|tags|users|profile|settings|media|comments|pages|templates|navigation|calendar|password|register|verify|install|email|forgot-password|reset-password).*$')

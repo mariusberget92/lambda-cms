@@ -7,37 +7,43 @@ use App\Models\Comment;
 use App\Models\Post;
 use App\Models\Setting;
 use App\Models\Tag;
+use App\Services\TemplateResolver;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class BlogController extends Controller
 {
+    public function __construct(private readonly TemplateResolver $templates) {}
+
     /**
      * Public blog index — paginated published posts + sidebar data.
      */
     public function index(): Response
     {
+        if ($template = $this->templates->resolve('blog-index')) {
+            $posts = Post::published()
+                ->with(['author:id,name,avatar', 'categories:id,name,slug', 'tags:id,name,slug', 'featuredImage:id,path,disk'])
+                ->orderByDesc('published_at')
+                ->paginate(15)
+                ->through(fn (Post $post) => $this->postData($post));
+
+            return Inertia::render('Blog/TemplatePage', [
+                'blocks'      => $template->blocks ?? [],
+                'postContext' => ['posts' => $posts, 'sidebar' => $this->sidebarData()],
+                'seo'         => $this->buildIndexSeo(),
+            ]);
+        }
+
         $posts = Post::published()
             ->with(['author:id,name,avatar', 'categories:id,name,slug', 'tags:id,name,slug', 'featuredImage:id,path,disk'])
             ->orderByDesc('published_at')
             ->paginate(15)
             ->through(fn (Post $post) => $this->postData($post));
 
-        $siteName = Setting::get('site.name', config('app.name'));
-
-        $seo = [
-            'title'       => $siteName,
-            'description' => Setting::get('seo.default_description', ''),
-            'image'       => Setting::get('seo.default_og_image_url', ''),
-            'canonical'   => url('/blog'),
-            'type'        => 'website',
-            'keywords'    => Setting::get('seo.default_keywords', ''),
-        ];
-
         return Inertia::render('Blog/Index', [
             'posts'   => $posts,
             'sidebar' => $this->sidebarData(),
-            'seo'     => $seo,
+            'seo'     => $this->buildIndexSeo(),
         ]);
     }
 
@@ -65,17 +71,33 @@ class BlogController extends Controller
             ->limit($perPage)
             ->get();
 
-        $separator = Setting::get('seo.title_separator', ' | ');
-        $siteName  = Setting::get('site.name', config('app.name'));
-
-        $seo = [
-            'title'       => ($post->meta_title ?: $post->title) . $separator . $siteName,
-            'description' => $post->meta_description ?: $post->excerpt ?: Setting::get('seo.default_description', ''),
-            'image'       => $post->featuredImage?->url ?: Setting::get('seo.default_og_image_url', ''),
-            'canonical'   => url("/blog/{$post->slug}"),
-            'type'        => 'article',
-            'keywords'    => $post->meta_keywords ?: Setting::get('seo.default_keywords', ''),
-        ];
+        if ($template = $this->templates->resolve('single-post')) {
+            return Inertia::render('Blog/TemplatePage', [
+                'blocks'      => $template->blocks ?? [],
+                'postContext' => [
+                    'id'                 => $post->id,
+                    'title'              => $post->title,
+                    'slug'               => $post->slug,
+                    'excerpt'            => $post->excerpt,
+                    'body'               => $post->body,
+                    'use_block_editor'   => (bool) $post->use_block_editor,
+                    'blocks'             => $post->blocks,
+                    'published_at'       => $post->published_at?->toDateString(),
+                    'featured_image_url' => $post->featuredImage?->url,
+                    'featured_image_alt' => $post->featuredImage?->alt,
+                    'author'             => ['name' => $post->author->name, 'avatar_url' => $post->author->avatar_url],
+                    'categories'         => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug])->values(),
+                    'tags'               => $post->tags->map(fn ($t) => ['name' => $t->name, 'slug' => $t->slug]),
+                ],
+                'commentsData' => [
+                    'total'   => $total,
+                    'hasMore' => $firstPage->count() < $total,
+                    'perPage' => $perPage,
+                    'enabled' => $post->commentsOpen(),
+                ],
+                'seo' => $this->buildShowSeo($post),
+            ]);
+        }
 
         return Inertia::render('Blog/Show', [
             'post' => [
@@ -111,7 +133,7 @@ class BlogController extends Controller
             'commentsHasMore' => $firstPage->count() < $total,
             'commentsPerPage' => $perPage,
             'commentsEnabled' => $post->commentsOpen(),
-            'seo'             => $seo,
+            'seo'             => $this->buildShowSeo($post),
             'authUser'        => auth()->check() ? [
                 'name'  => auth()->user()->name,
                 'email' => auth()->user()->email,
@@ -173,6 +195,20 @@ class BlogController extends Controller
             'keywords'    => Setting::get('seo.default_keywords', ''),
         ];
 
+        if ($template = $this->templates->resolve('archive')) {
+            return Inertia::render('Blog/TemplatePage', [
+                'blocks'         => $template->blocks ?? [],
+                'archiveContext' => [
+                    'type'       => 'category',
+                    'name'       => $category->name,
+                    'slug'       => $category->slug,
+                    'postsCount' => $posts->total(),
+                    'posts'      => $posts,
+                ],
+                'seo' => $seo,
+            ]);
+        }
+
         return Inertia::render('Blog/Archive', [
             'posts'   => $posts,
             'sidebar' => $this->sidebarData(),
@@ -210,6 +246,20 @@ class BlogController extends Controller
             'keywords'    => Setting::get('seo.default_keywords', ''),
         ];
 
+        if ($template = $this->templates->resolve('archive')) {
+            return Inertia::render('Blog/TemplatePage', [
+                'blocks'         => $template->blocks ?? [],
+                'archiveContext' => [
+                    'type'       => 'tag',
+                    'name'       => $tag->name,
+                    'slug'       => $tag->slug,
+                    'postsCount' => $posts->total(),
+                    'posts'      => $posts,
+                ],
+                'seo' => $seo,
+            ]);
+        }
+
         return Inertia::render('Blog/Archive', [
             'posts'   => $posts,
             'sidebar' => $this->sidebarData(),
@@ -224,6 +274,35 @@ class BlogController extends Controller
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────
+
+    private function buildIndexSeo(): array
+    {
+        $siteName = Setting::get('site.name', config('app.name'));
+
+        return [
+            'title'       => $siteName,
+            'description' => Setting::get('seo.default_description', ''),
+            'image'       => Setting::get('seo.default_og_image_url', ''),
+            'canonical'   => url('/blog'),
+            'type'        => 'website',
+            'keywords'    => Setting::get('seo.default_keywords', ''),
+        ];
+    }
+
+    private function buildShowSeo(Post $post): array
+    {
+        $separator = Setting::get('seo.title_separator', ' | ');
+        $siteName  = Setting::get('site.name', config('app.name'));
+
+        return [
+            'title'       => ($post->meta_title ?: $post->title) . $separator . $siteName,
+            'description' => $post->meta_description ?: $post->excerpt ?: Setting::get('seo.default_description', ''),
+            'image'       => $post->featuredImage?->url ?: Setting::get('seo.default_og_image_url', ''),
+            'canonical'   => url("/blog/{$post->slug}"),
+            'type'        => 'article',
+            'keywords'    => $post->meta_keywords ?: Setting::get('seo.default_keywords', ''),
+        ];
+    }
 
     /**
      * Transform a Post model into the array shape used by Blog pages.
