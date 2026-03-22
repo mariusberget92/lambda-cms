@@ -53,6 +53,15 @@
             @update-children="$emit('update-children', $event)"
           />
 
+          <!-- Section block: nested sortable children with visual label -->
+          <EditorSectionBlock
+            v-else-if="block.type === 'section'"
+            :block="block"
+            :selected-id="selectedId"
+            @select="$emit('select', $event)"
+            @update-children="$emit('update-children', $event)"
+          />
+
           <!-- Regular block: live render -->
           <div v-else class="px-8 py-3 min-h-[2.5rem]">
             <div
@@ -77,6 +86,7 @@ import { computed } from 'vue'
 import { VueDraggable }  from 'vue-draggable-plus'
 import { GripVertical }  from 'lucide-vue-next'
 import EditorContainerBlock from './EditorContainerBlock.vue'
+import EditorSectionBlock   from './EditorSectionBlock.vue'
 import ParagraphBlock from '@/Components/Blocks/ParagraphBlock.vue'
 import HeadingBlock   from '@/Components/Blocks/HeadingBlock.vue'
 import ImageBlock     from '@/Components/Blocks/ImageBlock.vue'
@@ -107,7 +117,7 @@ const LABELS = {
   paragraph: 'Paragraph', heading: 'Heading', image: 'Image',
   quote: 'Quote', code: 'Code', gallery: 'Gallery', video: 'Video',
   divider: 'Divider', cta: 'CTA', html: 'HTML', component: 'Component',
-  container: 'Container',
+  container: 'Container', section: 'Section',
 }
 
 const props = defineProps({
