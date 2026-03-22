@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@source "../js/Components/BlockEditor/safelist.js";
+
 :root {
   --background: #eceff4;
   --foreground: #2e3440;
