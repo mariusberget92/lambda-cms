@@ -1,0 +1,209 @@
+<!-- resources/js/Components/BlockEditor/blocks/LoopSettings.vue -->
+<template>
+  <div class="space-y-4">
+
+    <!-- ── Data Source ─────────────────────────────────────────────── -->
+    <div>
+      <label class="text-xs font-medium text-muted-foreground block mb-1">Data Source</label>
+      <SelectBox
+        :model-value="block.data.source"
+        :data="SOURCES"
+        @update:model-value="onSourceChange"
+      />
+    </div>
+
+    <!-- ── Filters ────────────────────────────────────────────────── -->
+    <div>
+      <div class="flex items-center justify-between mb-2">
+        <label class="text-xs font-medium text-muted-foreground">Filters</label>
+        <button
+          type="button"
+          class="text-xs text-primary hover:underline"
+          @click="addFilter"
+        >+ Add filter</button>
+      </div>
+
+      <div
+        v-for="(filter, i) in filters"
+        :key="i"
+        class="mb-2 p-2 rounded-md border bg-muted/30 space-y-1.5"
+      >
+        <!-- Field -->
+        <SelectBox
+          :model-value="filter.field"
+          :data="filterableFields"
+          placeholder="Field..."
+          @update:model-value="v => updateFilter(i, { field: v })"
+        />
+
+        <!-- Operator -->
+        <SelectBox
+          :model-value="filter.op"
+          :data="FILTER_OPS"
+          @update:model-value="v => updateFilter(i, { op: v })"
+        />
+
+        <!-- Value or URL param (hidden when op is not_empty / empty) -->
+        <template v-if="filter.op !== 'not_empty' && filter.op !== 'empty'">
+          <label class="flex items-center gap-2 text-xs cursor-pointer">
+            <input
+              type="checkbox"
+              :checked="!!filter.urlParam"
+              class="accent-primary"
+              @change="toggleUrlParam(i, $event)"
+            />
+            From URL param
+          </label>
+
+          <input
+            v-if="filter.urlParam"
+            :value="filter.urlParam"
+            type="text"
+            placeholder="param name (e.g. category)"
+            class="w-full rounded border bg-background px-2 py-1 text-xs"
+            @input="updateFilter(i, { urlParam: $event.target.value })"
+          />
+          <input
+            v-else
+            :value="filter.value ?? ''"
+            type="text"
+            placeholder="Value..."
+            class="w-full rounded border bg-background px-2 py-1 text-xs"
+            @input="updateFilter(i, { value: $event.target.value })"
+          />
+        </template>
+
+        <button
+          type="button"
+          class="text-xs text-destructive hover:underline"
+          @click="removeFilter(i)"
+        >Remove</button>
+      </div>
+    </div>
+
+    <!-- ── Sort ───────────────────────────────────────────────────── -->
+    <div>
+      <label class="text-xs font-medium text-muted-foreground block mb-1">Sort By</label>
+      <div class="flex gap-2">
+        <SelectBox
+          :model-value="block.data.sort?.field"
+          :data="sortFieldOptions"
+          class="flex-1"
+          @update:model-value="v => emitData({ sort: { ...block.data.sort, field: v } })"
+        />
+        <SelectBox
+          :model-value="block.data.sort?.direction ?? 'desc'"
+          :data="[{ value: 'desc', label: 'Desc' }, { value: 'asc', label: 'Asc' }]"
+          class="w-[4.5rem]"
+          @update:model-value="v => emitData({ sort: { ...block.data.sort, direction: v } })"
+        />
+      </div>
+    </div>
+
+    <!-- ── Limit + Offset ─────────────────────────────────────────── -->
+    <div class="flex gap-2">
+      <div class="flex-1">
+        <label class="text-xs font-medium text-muted-foreground block mb-1">Limit</label>
+        <input
+          type="number"
+          min="1"
+          max="100"
+          :value="block.data.limit ?? 12"
+          class="w-full rounded border bg-background px-2 py-1.5 text-sm"
+          @input="emitData({ limit: parseInt($event.target.value) || 12 })"
+        />
+      </div>
+      <div class="flex-1">
+        <label class="text-xs font-medium text-muted-foreground block mb-1">Offset</label>
+        <input
+          type="number"
+          min="0"
+          :value="block.data.offset ?? 0"
+          class="w-full rounded border bg-background px-2 py-1.5 text-sm"
+          @input="emitData({ offset: parseInt($event.target.value) || 0 })"
+        />
+      </div>
+    </div>
+
+    <!-- ── Appearance ─────────────────────────────────────────────── -->
+    <div>
+      <label class="text-xs font-medium text-muted-foreground block mb-1">Columns per row</label>
+      <SelectBox
+        :model-value="block.data.columns ?? 1"
+        :data="[1, 2, 3, 4].map(n => ({ value: n, label: `${n} col${n > 1 ? 's' : ''}` }))"
+        @update:model-value="v => emitData({ columns: Number(v) })"
+      />
+    </div>
+
+    <div>
+      <label class="text-xs font-medium text-muted-foreground block mb-1">Gap</label>
+      <SelectBox
+        :model-value="block.data.gap ?? 'md'"
+        :data="[
+          { value: 'sm', label: 'Small' },
+          { value: 'md', label: 'Medium' },
+          { value: 'lg', label: 'Large' },
+          { value: 'xl', label: 'X-Large' },
+        ]"
+        @update:model-value="v => emitData({ gap: v })"
+      />
+    </div>
+
+  </div>
+</template>
+
+<script setup>
+import { computed } from 'vue'
+import SelectBox from '@/Components/SelectBox.vue'
+import { SOURCES, SOURCE_FIELDS, SORT_FIELDS, FILTER_OPS } from '@/lib/loopSources.js'
+
+const props = defineProps({ block: { type: Object, required: true } })
+const emit  = defineEmits(['update'])
+
+const source = computed(() => props.block.data?.source ?? 'posts')
+const filters = computed(() => props.block.data?.filters ?? [])
+
+const filterableFields = computed(() =>
+  (SOURCE_FIELDS[source.value] ?? []).map(f => ({ value: f, label: f }))
+)
+
+const sortFieldOptions = computed(() =>
+  (SORT_FIELDS[source.value] ?? []).map(f => ({ value: f, label: f }))
+)
+
+function emitData(patch) {
+  emit('update', { id: props.block.id, data: patch })
+}
+
+function onSourceChange(v) {
+  // Clear filters when source changes — field names differ per source
+  emit('update', { id: props.block.id, data: { source: v, filters: [] } })
+}
+
+function addFilter() {
+  emitData({ filters: [...filters.value, { field: '', op: '=', value: '' }] })
+}
+
+function removeFilter(i) {
+  const updated = filters.value.filter((_, idx) => idx !== i)
+  emitData({ filters: updated })
+}
+
+function updateFilter(i, patch) {
+  const updated = filters.value.map((f, idx) => idx === i ? { ...f, ...patch } : f)
+  emitData({ filters: updated })
+}
+
+function toggleUrlParam(i, e) {
+  if (e.target.checked) {
+    updateFilter(i, { urlParam: '', value: undefined })
+  } else {
+    const updated = filters.value.map((f, idx) => {
+      if (idx !== i) return f
+      const { urlParam, ...rest } = f
+      return { ...rest, value: '' }
+    })
+    emitData({ filters: updated })
+  }
+}
+</script>
