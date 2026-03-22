@@ -6,10 +6,6 @@
     </div>
 
     <form @submit.prevent="submit" class="space-y-4">
-      <div v-if="$page.props.flash?.status" class="text-sm text-green-600 bg-green-50 border border-green-200 rounded-md px-4 py-3">
-        {{ $page.props.flash.status }}
-      </div>
-
       <div class="space-y-1">
         <label for="email" class="text-sm font-medium">Email</label>
         <input

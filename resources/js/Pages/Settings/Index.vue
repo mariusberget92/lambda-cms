@@ -10,45 +10,6 @@
         <p class="text-sm text-muted-foreground mt-0.5">Manage site, locale, media, and mail configuration.</p>
       </div>
 
-      <!-- Flash: general status (success) -->
-      <Transition name="fade">
-        <div
-          v-if="$page.props.flash?.status"
-          class="flex items-center gap-2 rounded-md bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700"
-        >
-          <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          {{ $page.props.flash.status }}
-        </div>
-      </Transition>
-
-      <!-- Flash: mail test success -->
-      <Transition name="fade">
-        <div
-          v-if="$page.props.flash?.mail_status"
-          class="flex items-center gap-2 rounded-md bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700"
-        >
-          <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          {{ $page.props.flash.mail_status }}
-        </div>
-      </Transition>
-
-      <!-- Flash: mail test error -->
-      <Transition name="fade">
-        <div
-          v-if="$page.props.flash?.mail_error"
-          class="flex items-center gap-2 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700"
-        >
-          <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          {{ $page.props.flash.mail_error }}
-        </div>
-      </Transition>
-
       <!-- Tab bar -->
       <div class="flex border-b border-border">
         <button
@@ -495,6 +456,7 @@
 import { ref, computed, watch } from 'vue'
 import { Loader2 } from 'lucide-vue-next'
 import { Head, useForm, usePage } from "@inertiajs/vue3";
+import { useNotifications } from '@/composables/useNotifications.js'
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SelectBox from '@/Components/SelectBox.vue'
 
@@ -518,16 +480,19 @@ const tabs = [
 
 // ── Auto-switch to mail tab when mail flash messages appear ───────────────────
 const page = usePage()
+const { notify } = useNotifications()
 
 watch(
   () => page.props.flash,
   (flash) => {
     if (!flash) return
-    if (flash.mail_status || flash.mail_error) { activeTab.value = 'mail'; return }
+    if (flash.mail_status || flash.mail_error) { activeTab.value = 'mail' }
+    if (flash.mail_status) notify(flash.mail_status, 'success')
+    if (flash.mail_error)  notify(flash.mail_error,  'error')
     // The generic flash.status is emitted by all forms; we can't distinguish which
     // panel it came from, so leave the tab as-is (user already knows where they saved).
   },
-  { immediate: false }
+  { immediate: true }
 )
 
 // ── Common timezones ─────────────────────────────────────────────────────────

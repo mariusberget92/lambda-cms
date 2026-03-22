@@ -10,17 +10,6 @@
       </div>
     </div>
 
-    <!-- Flash message -->
-    <Transition name="fade">
-      <div
-        v-if="$page.props.flash?.status"
-        class="mb-4 flex items-center gap-2 rounded-md bg-status-success-bg border border-status-success-border px-4 py-3 text-sm text-status-success-fg"
-      >
-        <CircleCheck class="w-4 h-4 shrink-0" />
-        {{ $page.props.flash.status }}
-      </div>
-    </Transition>
-
     <!-- Filter tabs -->
     <div class="flex gap-1 mb-4 border-b">
       <a
@@ -210,7 +199,7 @@
 import { ref, reactive } from 'vue'
 import { Head, router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { CircleCheck, MessageSquare } from 'lucide-vue-next'
+import { MessageSquare } from 'lucide-vue-next'
 
 const props = defineProps({
   comments:     Object,
