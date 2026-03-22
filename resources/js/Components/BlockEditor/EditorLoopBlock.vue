@@ -1,8 +1,8 @@
-<!-- resources/js/Components/BlockEditor/EditorSectionBlock.vue -->
+<!-- resources/js/Components/BlockEditor/EditorLoopBlock.vue -->
 <template>
-  <div class="border-2 border-dashed border-blue-400/50 rounded-lg p-2 relative min-h-[60px]">
-    <span class="absolute top-1 left-1 text-[10px] text-blue-400 font-semibold uppercase tracking-wider select-none">
-      {{ block.blockName || 'Section' }}
+  <div class="border-2 border-dashed border-teal-400/60 rounded-lg p-2 relative min-h-[60px]">
+    <span class="absolute top-1 left-1 text-[10px] text-teal-500 font-semibold uppercase tracking-wider select-none">
+      {{ block.blockName || ('Loop — ' + (SOURCE_LABELS[block.data?.source] ?? block.data?.source ?? 'Posts')) }}
     </span>
 
     <VueDraggable
@@ -37,9 +37,11 @@
         </div>
       </div>
 
-      <div v-if="localChildren.length === 0"
-        class="text-center py-2 text-xs text-muted-foreground/60 pointer-events-none">
-        Drop blocks here
+      <div
+        v-if="localChildren.length === 0"
+        class="text-center py-2 text-xs text-muted-foreground/60 pointer-events-none"
+      >
+        Drop blocks here — they repeat for each item
       </div>
     </VueDraggable>
   </div>
@@ -80,6 +82,10 @@ const LABELS = {
   quote: 'Quote', code: 'Code', gallery: 'Gallery', video: 'Video',
   divider: 'Divider', cta: 'CTA', html: 'HTML', component: 'Component',
   container: 'Container', section: 'Section', spacer: 'Spacer', loop: 'Loop',
+}
+
+const SOURCE_LABELS = {
+  posts: 'Posts', categories: 'Categories', tags: 'Tags', pages: 'Pages',
 }
 
 const props = defineProps({

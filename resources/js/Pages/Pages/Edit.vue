@@ -100,6 +100,7 @@ onMounted(() => {
 onBeforeUnmount(() => clearTimeout(autosaveTimer))
 
 // Revisions
+const seoOpen          = ref(false)
 const revisionsOpen    = ref(false)
 const revisionsLoading = ref(false)
 const revisions        = ref([])
@@ -135,8 +136,10 @@ async function restoreRevision(revision) {
 <template>
   <AppLayout title="Edit Page">
     <Head title="Edit Page" />
-    <form @submit.prevent="submit">
-      <div class="flex items-center justify-between mb-6">
+    <form @submit.prevent="submit" class="space-y-4">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
           <a :href="route('pages.index')" class="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:bg-accent transition-colors">
             <ArrowLeft class="w-4 h-4" />
@@ -146,119 +149,123 @@ async function restoreRevision(revision) {
             <p class="text-sm text-muted-foreground mt-0.5 line-clamp-1">{{ page.title }}</p>
           </div>
         </div>
-        <div class="flex items-center gap-3">
-          <button
-            type="submit"
-            :disabled="form.processing"
-            class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-[var(--primary-hover)] disabled:opacity-50 transition-colors"
-          >
-            {{ form.processing ? 'Saving...' : 'Update page' }}
+        <button type="submit" :disabled="form.processing"
+          class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-[var(--primary-hover)] disabled:opacity-50 transition-colors">
+          {{ form.processing ? 'Saving...' : 'Update page' }}
+        </button>
+      </div>
+
+      <!-- Meta card: title + slug/status/SEO/revisions inline -->
+      <div class="rounded-lg border bg-card p-4 space-y-3">
+        <!-- Title -->
+        <div>
+          <input
+            v-model="form.title"
+            type="text"
+            class="w-full rounded-lg border bg-background px-4 py-3 text-xl font-semibold focus:outline-none focus:ring-2 focus:ring-ring"
+            :class="{ 'border-destructive': form.errors.title }"
+          />
+          <p v-if="form.errors.title" class="mt-1 text-xs text-destructive">{{ form.errors.title }}</p>
+        </div>
+
+        <!-- Inline sub-fields: slug · status · SEO · Revisions -->
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-2 pt-2 border-t border-border/50">
+          <!-- Slug -->
+          <div class="flex items-center gap-1.5 min-w-0">
+            <span class="text-xs font-medium text-muted-foreground shrink-0">Slug /</span>
+            <input
+              v-model="form.slug"
+              type="text"
+              class="w-44 rounded border bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              :class="{ 'border-destructive': form.errors.slug }"
+            />
+          </div>
+          <p v-if="form.errors.slug" class="w-full text-xs text-destructive -mt-1">{{ form.errors.slug }}</p>
+
+          <div class="h-4 w-px bg-border hidden sm:block shrink-0" />
+
+          <!-- Status -->
+          <div class="flex items-center gap-4 shrink-0">
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="radio" v-model="form.status" value="draft" class="accent-primary" />
+              <span class="text-sm font-medium">Draft</span>
+            </label>
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="radio" v-model="form.status" value="published" class="accent-primary" />
+              <span class="text-sm font-medium">Published</span>
+            </label>
+          </div>
+
+          <div class="h-4 w-px bg-border hidden sm:block shrink-0" />
+
+          <!-- SEO toggle -->
+          <button type="button" @click="seoOpen = !seoOpen"
+            class="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors shrink-0">
+            SEO
+            <ChevronDown class="w-3.5 h-3.5 transition-transform" :class="{ 'rotate-180': seoOpen }" />
+          </button>
+
+          <div class="h-4 w-px bg-border hidden sm:block shrink-0" />
+
+          <!-- Revisions toggle -->
+          <button type="button" @click="toggleRevisions"
+            class="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors shrink-0">
+            Revisions
+            <ChevronDown class="w-3.5 h-3.5 transition-transform" :class="{ 'rotate-180': revisionsOpen }" />
           </button>
         </div>
-      </div>
 
-      <!-- Same layout as Create: 2-col main + sidebar -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 space-y-4">
+        <!-- SEO fields (expanded) -->
+        <div v-if="seoOpen" class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-border/50">
           <div>
-            <input
-              v-model="form.title"
-              type="text"
-              class="w-full rounded-lg border bg-background px-4 py-3 text-xl font-semibold focus:outline-none focus:ring-2 focus:ring-ring"
-              :class="{ 'border-destructive': form.errors.title }"
-            />
-            <p v-if="form.errors.title" class="mt-1 text-xs text-destructive">{{ form.errors.title }}</p>
+            <label class="text-xs text-muted-foreground block mb-1">Meta title</label>
+            <input v-model="form.meta_title" type="text"
+              class="w-full rounded border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
           </div>
-          <BlockEditor
-            :model-value="form.blocks"
-            :is-admin="authUser?.role === 'administrator'"
-            :meta="{ categories: props.categories, tags: props.tags }"
-            @update:model-value="form.blocks = $event"
-          />
+          <div>
+            <label class="text-xs text-muted-foreground block mb-1">Meta description</label>
+            <textarea v-model="form.meta_description" rows="2"
+              class="w-full rounded border bg-background px-2 py-1.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring" />
+          </div>
+          <div>
+            <label class="text-xs text-muted-foreground block mb-1">Meta keywords</label>
+            <input v-model="form.meta_keywords" type="text"
+              class="w-full rounded border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+          </div>
         </div>
 
-        <div class="space-y-4">
-          <div class="rounded-lg border bg-card p-4">
-            <h3 class="text-sm font-medium mb-3">URL Slug</h3>
-            <div class="flex items-center gap-1">
-              <span class="text-sm text-muted-foreground">/</span>
-              <input
-                v-model="form.slug"
-                type="text"
-                class="flex-1 rounded border bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                :class="{ 'border-destructive': form.errors.slug }"
-              />
-            </div>
-            <p v-if="form.errors.slug" class="mt-1 text-xs text-destructive">{{ form.errors.slug }}</p>
-          </div>
-
-          <div class="rounded-lg border bg-card p-4">
-            <h3 class="text-sm font-medium mb-3">Status</h3>
-            <div class="space-y-2">
-              <label class="flex items-center gap-3 cursor-pointer">
-                <input type="radio" v-model="form.status" value="draft" class="accent-primary" />
-                <span class="text-sm font-medium">Draft</span>
-              </label>
-              <label class="flex items-center gap-3 cursor-pointer">
-                <input type="radio" v-model="form.status" value="published" class="accent-primary" />
-                <span class="text-sm font-medium">Published</span>
-              </label>
-            </div>
-          </div>
-
-          <details class="rounded-lg border bg-card">
-            <summary class="px-4 py-3 text-sm font-medium cursor-pointer">SEO (optional)</summary>
-            <div class="px-4 pb-4 space-y-3 border-t pt-3">
-              <div>
-                <label class="text-xs text-muted-foreground block mb-1">Meta title</label>
-                <input v-model="form.meta_title" type="text" class="w-full rounded border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-              </div>
-              <div>
-                <label class="text-xs text-muted-foreground block mb-1">Meta description</label>
-                <textarea v-model="form.meta_description" rows="3" class="w-full rounded border bg-background px-2 py-1.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring" />
-              </div>
-              <div>
-                <label class="text-xs text-muted-foreground block mb-1">Meta keywords</label>
-                <input v-model="form.meta_keywords" type="text" class="w-full rounded border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-              </div>
-            </div>
-          </details>
-
-          <!-- Revisions panel -->
-          <div class="rounded-lg border bg-card">
-            <button
-              type="button"
-              class="flex w-full items-center justify-between px-4 py-3 text-sm font-medium"
-              @click="toggleRevisions"
+        <!-- Revisions list (expanded) -->
+        <div v-if="revisionsOpen" class="pt-2 border-t border-border/50">
+          <div v-if="revisionsLoading" class="text-xs text-muted-foreground text-center py-3">Loading…</div>
+          <div v-else-if="revisions.length === 0" class="text-xs text-muted-foreground text-center py-3">No revisions yet.</div>
+          <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+            <div
+              v-for="rev in revisions"
+              :key="rev.id"
+              class="flex items-center justify-between gap-2 rounded-md border px-3 py-2 hover:bg-muted/50"
             >
-              <span>Revision History</span>
-              <ChevronDown class="w-4 h-4 transition-transform" :class="{ 'rotate-180': revisionsOpen }" />
-            </button>
-
-            <div v-if="revisionsOpen" class="border-t px-4 py-3 space-y-1">
-              <div v-if="revisionsLoading" class="text-xs text-muted-foreground text-center py-3">Loading…</div>
-              <div v-else-if="revisions.length === 0" class="text-xs text-muted-foreground text-center py-3">No revisions yet.</div>
-              <div
-                v-for="rev in revisions"
-                :key="rev.id"
-                class="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 hover:bg-muted/50"
-              >
-                <div class="min-w-0">
-                  <p class="text-xs font-medium truncate">{{ rev.user?.name ?? 'Unknown' }}</p>
-                  <p class="text-[11px] text-muted-foreground">{{ new Date(rev.created_at).toLocaleString() }}</p>
-                </div>
-                <button
-                  type="button"
-                  class="shrink-0 rounded-md border px-2 py-1 text-xs hover:bg-accent transition-colors"
-                  @click="restoreRevision(rev)"
-                >
-                  Restore
-                </button>
+              <div class="min-w-0">
+                <p class="text-xs font-medium truncate">{{ rev.user?.name ?? 'Unknown' }}</p>
+                <p class="text-[11px] text-muted-foreground">{{ new Date(rev.created_at).toLocaleString() }}</p>
               </div>
+              <button
+                type="button"
+                class="shrink-0 rounded border px-2 py-0.5 text-xs hover:bg-accent transition-colors"
+                @click="restoreRevision(rev)"
+              >Restore</button>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Block editor: full remaining width -->
+      <BlockEditor
+        :model-value="form.blocks"
+        :is-admin="authUser?.role === 'administrator'"
+        :meta="{ categories: props.categories, tags: props.tags }"
+        @update:model-value="form.blocks = $event"
+      />
+
     </form>
   </AppLayout>
 </template>

@@ -5,11 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Page;
 use App\Models\Post;
 use App\Models\Setting;
+use App\Services\QueryBuilder;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class PublicPageController extends Controller
 {
-    public function show(string $slug)
+    public function __construct(private QueryBuilder $queryBuilder) {}
+
+    public function show(Request $request, string $slug)
     {
         $page = Page::published()->where('slug', $slug)->firstOrFail();
 
@@ -29,20 +33,29 @@ class PublicPageController extends Controller
             'page' => [
                 'title'  => $page->title,
                 'slug'   => $page->slug,
-                'blocks' => $this->resolveBlocks($page->blocks ?? []),
+                'blocks' => $this->resolveBlocks($page->blocks ?? [], $request->query()),
             ],
             'seo' => $seo,
         ]);
     }
 
-    private function resolveBlocks(array $blocks): array
+    private function resolveBlocks(array $blocks, array $urlParams = []): array
     {
-        return array_map(function ($block) {
-            // Recurse into container children first
-            if (($block['type'] ?? '') === 'container' && !empty($block['children'])) {
-                $block['children'] = $this->resolveBlocks($block['children']);
+        return array_map(function ($block) use ($urlParams) {
+            // Recurse into container/section children
+            if (in_array($block['type'] ?? '', ['container', 'section'], true) && !empty($block['children'])) {
+                $block['children'] = $this->resolveBlocks($block['children'], $urlParams);
             }
 
+            // Resolve loop block — query data, embed in block.data.resolved
+            if (($block['type'] ?? '') === 'loop') {
+                $result = $this->queryBuilder->resolve($block['data'] ?? [], $urlParams);
+                $block['data']['resolved'] = $result;
+                // Children are templates — do NOT recurse them (no real blocks to resolve)
+                return $block;
+            }
+
+            // Legacy component block
             if (($block['type'] ?? '') !== 'component') {
                 return $block;
             }

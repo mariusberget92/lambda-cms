@@ -4,6 +4,14 @@
     <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Advanced</p>
 
     <div>
+      <label class="text-xs font-medium text-muted-foreground block mb-1">Block label</label>
+      <input type="text" :value="block.blockName ?? ''" @input="update('blockName', $event.target.value)"
+        placeholder="e.g. Hero heading"
+        class="w-full rounded-md border bg-background px-2 py-1.5 text-xs" />
+      <p class="text-[10px] text-muted-foreground mt-1">Shown in the canvas and layers panel.</p>
+    </div>
+
+    <div>
       <label class="text-xs font-medium text-muted-foreground block mb-1">Font family</label>
       <SelectBox
         :model-value="block.fontFamily ?? ''"

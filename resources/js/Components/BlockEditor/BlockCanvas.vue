@@ -30,63 +30,94 @@
         <div
           v-for="block in draggableBlocks"
           :key="block.id"
-          class="group relative rounded-lg border bg-card transition-colors cursor-pointer"
+          :id="block.customId || `block-${block.id}`"
+          class="group flex items-stretch rounded-lg border bg-card transition-colors cursor-pointer"
           :class="block.id === selectedId
             ? 'border-primary ring-1 ring-primary'
             : 'border-border hover:border-muted-foreground'"
           @click="$emit('select', block.id)"
         >
-          <!-- Drag handle -->
+          <!-- Custom CSS injection -->
+          <component v-if="block.customCss" :is="'style'">
+            #{{ block.customId ? CSS.escape(block.customId) : 'block-' + block.id }} { {{ sanitizeCss(block.customCss) }} }
+          </component>
+
+          <!-- Fixed-width drag handle column — always reserves the same space -->
           <div
-            class="block-drag-handle absolute left-2 top-3 cursor-grab active:cursor-grabbing text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+            class="block-drag-handle shrink-0 w-7 flex items-center justify-center border-r border-transparent group-hover:border-border/50 cursor-grab active:cursor-grabbing text-muted-foreground/40 group-hover:text-muted-foreground transition-colors"
             @click.stop
           >
-            <GripVertical class="w-4 h-4" />
+            <GripVertical class="w-3.5 h-3.5" />
           </div>
 
-          <!-- Container block: nested sortable children -->
-          <EditorContainerBlock
-            v-if="block.type === 'container'"
-            :block="block"
-            :selected-id="selectedId"
-            @select="$emit('select', $event)"
-            @update-children="$emit('update-children', $event)"
-          />
+          <!-- Content area — always starts at the same x position -->
+          <div class="flex-1 min-w-0">
 
-          <!-- Section block: nested sortable children with visual label -->
-          <EditorSectionBlock
-            v-else-if="block.type === 'section'"
-            :block="block"
-            :selected-id="selectedId"
-            @select="$emit('select', $event)"
-            @update-children="$emit('update-children', $event)"
-          />
-
-          <!-- Spacer block: visual placeholder -->
-          <div
-            v-else-if="block.type === 'spacer'"
-            class="px-8 py-3"
-          >
-            <div
-              class="w-full flex items-center justify-center bg-muted/30 border border-dashed border-muted-foreground/30 rounded text-xs text-muted-foreground select-none"
-              :style="{ height: `${(block.data?.height?.default ?? 8) * 4}px` }"
-            >
-              Spacer (h-{{ block.data?.height?.default ?? 8 }})
-            </div>
-          </div>
-
-          <!-- Regular block: live render -->
-          <div v-else class="px-8 py-3 min-h-[2.5rem]">
-            <div
-              v-if="isEmptyBlock(block)"
-              class="text-xs text-muted-foreground italic"
-            >{{ LABELS[block.type] ?? block.type }} — empty</div>
-            <component
-              v-else
-              :is="BLOCK_MAP[block.type]"
+            <!-- Container block: nested sortable children -->
+            <EditorContainerBlock
+              v-if="block.type === 'container'"
               :block="block"
-              class="pointer-events-none"
+              :selected-id="selectedId"
+              @select="$emit('select', $event)"
+              @update-children="$emit('update-children', $event)"
             />
+
+            <!-- Section block: nested sortable children with visual label -->
+            <EditorSectionBlock
+              v-else-if="block.type === 'section'"
+              :block="block"
+              :selected-id="selectedId"
+              @select="$emit('select', $event)"
+              @update-children="$emit('update-children', $event)"
+            />
+
+            <!-- Loop block: teal-bordered nested drop zone -->
+            <EditorLoopBlock
+              v-else-if="block.type === 'loop'"
+              :block="block"
+              :selected-id="selectedId"
+              @select="$emit('select', $event)"
+              @update-children="$emit('update-children', $event)"
+            />
+
+            <!-- Spacer block: visual placeholder -->
+            <div v-else-if="block.type === 'spacer'" class="flex flex-col">
+              <div class="px-3 py-1.5 border-b border-border/40 flex items-center">
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {{ block.blockName || 'Spacer' }}
+                </span>
+              </div>
+              <div class="px-3 py-2">
+                <div
+                  class="w-full flex items-center justify-center bg-muted/30 border border-dashed border-muted-foreground/30 rounded text-xs text-muted-foreground select-none"
+                  :style="{ height: `${(block.data?.height?.default ?? 8) * 4}px` }"
+                >
+                  h-{{ block.data?.height?.default ?? 8 }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Regular block: label header + live render -->
+            <div v-else class="flex flex-col min-h-[2.5rem]">
+              <div class="px-3 py-1.5 border-b border-border/40 flex items-center gap-2">
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {{ block.blockName || LABELS[block.type] || block.type }}
+                </span>
+                <span v-if="block.blockName" class="text-[10px] text-muted-foreground/40 uppercase tracking-wider">
+                  {{ LABELS[block.type] || block.type }}
+                </span>
+              </div>
+              <div class="px-3 py-2">
+                <span v-if="isEmptyBlock(block)" class="text-xs text-muted-foreground/50 italic">empty</span>
+                <component
+                  v-else
+                  :is="BLOCK_MAP[block.type]"
+                  :block="block"
+                  class="pointer-events-none"
+                />
+              </div>
+            </div>
+
           </div>
         </div>
       </VueDraggable>
@@ -95,11 +126,12 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { VueDraggable }  from 'vue-draggable-plus'
 import { GripVertical }  from 'lucide-vue-next'
 import EditorContainerBlock from './EditorContainerBlock.vue'
 import EditorSectionBlock   from './EditorSectionBlock.vue'
+import EditorLoopBlock      from './EditorLoopBlock.vue'
 import ParagraphBlock from '@/Components/Blocks/ParagraphBlock.vue'
 import HeadingBlock   from '@/Components/Blocks/HeadingBlock.vue'
 import ImageBlock     from '@/Components/Blocks/ImageBlock.vue'
@@ -130,7 +162,7 @@ const LABELS = {
   paragraph: 'Paragraph', heading: 'Heading', image: 'Image',
   quote: 'Quote', code: 'Code', gallery: 'Gallery', video: 'Video',
   divider: 'Divider', cta: 'CTA', html: 'HTML', component: 'Component',
-  container: 'Container', section: 'Section', spacer: 'Spacer',
+  container: 'Container', section: 'Section', spacer: 'Spacer', loop: 'Loop',
 }
 
 const props = defineProps({
@@ -140,14 +172,29 @@ const props = defineProps({
 
 const emit = defineEmits(['select', 'reorder', 'update-children'])
 
+// Use a local ref so the getter reflects the setter's value synchronously.
+// With a pure computed(get: props.blocks), vue-draggable-plus calls the setter
+// then immediately reads the getter to verify the change — it still sees the
+// old prop (Vue re-renders async) and reverts cross-list moves. A local ref
+// updates in the same tick as the setter, so the library accepts the change.
+const _list = ref([...(props.blocks ?? [])])
+watch(() => props.blocks, (v) => { _list.value = v })
+
 const draggableBlocks = computed({
-  get: () => props.blocks,
-  set: (val) => emit('reorder', val),
+  get: () => _list.value,
+  set: (val) => {
+    _list.value = val          // synchronous — getter now returns new value immediately
+    emit('reorder', val)
+  },
 })
 
 function onAdd(evt) {
   const newBlock = draggableBlocks.value[evt.newIndex]
   if (newBlock) emit('select', newBlock.id)
+}
+
+function sanitizeCss(css) {
+  return css.replace(/<\/?style/gi, '')
 }
 
 function isEmptyBlock(block) {
