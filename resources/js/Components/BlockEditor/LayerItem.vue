@@ -17,7 +17,7 @@
         <GripVertical class="w-3 h-3" />
       </span>
 
-      <span class="flex-1 truncate">{{ LABELS[block.type] ?? block.type }}</span>
+      <span class="flex-1 truncate">{{ block.blockName || LABELS[block.type] || block.type }}</span>
 
       <button
         type="button"

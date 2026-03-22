@@ -1,7 +1,9 @@
 <!-- resources/js/Components/BlockEditor/EditorSectionBlock.vue -->
 <template>
   <div class="border-2 border-dashed border-blue-400/50 rounded-lg p-2 relative min-h-[60px]">
-    <span class="absolute top-1 left-1 text-[10px] text-blue-400 font-semibold uppercase tracking-wider select-none">Section</span>
+    <span class="absolute top-1 left-1 text-[10px] text-blue-400 font-semibold uppercase tracking-wider select-none">
+      {{ block.blockName || 'Section' }}
+    </span>
 
     <VueDraggable
       v-model="localChildren"
@@ -25,14 +27,13 @@
         <span class="child-drag-handle cursor-grab active:cursor-grabbing text-muted-foreground shrink-0" @click.stop>
           <GripVertical class="w-3 h-3" />
         </span>
-        <div class="flex-1 min-w-0 overflow-hidden pointer-events-none">
-          <component
-            v-if="BLOCK_MAP[child.type]"
-            :is="BLOCK_MAP[child.type]"
-            :block="child"
-            class="text-xs scale-90 origin-left"
-          />
-          <span v-else class="text-muted-foreground text-xs">{{ LABELS[child.type] ?? child.type }}</span>
+        <div class="flex-1 min-w-0 overflow-hidden">
+          <span class="text-xs block truncate leading-none">
+            {{ child.blockName || LABELS[child.type] || child.type }}
+          </span>
+          <span v-if="child.blockName" class="text-[10px] text-muted-foreground/50 leading-none mt-0.5 block">
+            {{ LABELS[child.type] || child.type }}
+          </span>
         </div>
       </div>
 
@@ -78,7 +79,7 @@ const LABELS = {
   paragraph: 'Paragraph', heading: 'Heading', image: 'Image',
   quote: 'Quote', code: 'Code', gallery: 'Gallery', video: 'Video',
   divider: 'Divider', cta: 'CTA', html: 'HTML', component: 'Component',
-  container: 'Container', section: 'Section',
+  container: 'Container', section: 'Section', spacer: 'Spacer', loop: 'Loop',
 }
 
 const props = defineProps({

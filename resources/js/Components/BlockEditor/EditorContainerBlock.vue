@@ -1,7 +1,9 @@
 <!-- resources/js/Components/BlockEditor/EditorContainerBlock.vue -->
 <template>
   <div class="px-3 py-3">
-    <p class="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Container</p>
+    <p class="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
+      {{ block.blockName || 'Container' }}
+    </p>
 
     <!-- Custom CSS injection for children -->
     <template v-for="child in localChildren" :key="'style-' + child.id">
@@ -36,14 +38,13 @@
         <span class="child-drag-handle cursor-grab active:cursor-grabbing text-muted-foreground shrink-0" @click.stop>
           <GripVertical class="w-3 h-3" />
         </span>
-        <div class="flex-1 min-w-0 overflow-hidden pointer-events-none">
-          <component
-            v-if="BLOCK_MAP[child.type]"
-            :is="BLOCK_MAP[child.type]"
-            :block="child"
-            class="text-xs scale-90 origin-left"
-          />
-          <span v-else class="text-muted-foreground text-xs">{{ LABELS[child.type] ?? child.type }}</span>
+        <div class="flex-1 min-w-0 overflow-hidden">
+          <span class="text-xs block truncate leading-none">
+            {{ child.blockName || LABELS[child.type] || child.type }}
+          </span>
+          <span v-if="child.blockName" class="text-[10px] text-muted-foreground/50 leading-none mt-0.5 block">
+            {{ LABELS[child.type] || child.type }}
+          </span>
         </div>
       </div>
 
@@ -89,7 +90,7 @@ const LABELS = {
   paragraph: 'Paragraph', heading: 'Heading', image: 'Image',
   quote: 'Quote', code: 'Code', gallery: 'Gallery', video: 'Video',
   divider: 'Divider', cta: 'CTA', html: 'HTML', component: 'Component',
-  container: 'Container',
+  container: 'Container', section: 'Section', spacer: 'Spacer', loop: 'Loop',
 }
 
 const props = defineProps({

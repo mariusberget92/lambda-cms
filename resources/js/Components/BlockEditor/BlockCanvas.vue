@@ -81,27 +81,41 @@
             />
 
             <!-- Spacer block: visual placeholder -->
-            <div v-else-if="block.type === 'spacer'" class="px-3 py-3">
-              <div
-                class="w-full flex items-center justify-center bg-muted/30 border border-dashed border-muted-foreground/30 rounded text-xs text-muted-foreground select-none"
-                :style="{ height: `${(block.data?.height?.default ?? 8) * 4}px` }"
-              >
-                Spacer (h-{{ block.data?.height?.default ?? 8 }})
+            <div v-else-if="block.type === 'spacer'" class="flex flex-col">
+              <div class="px-3 py-1.5 border-b border-border/40 flex items-center">
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {{ block.blockName || 'Spacer' }}
+                </span>
+              </div>
+              <div class="px-3 py-2">
+                <div
+                  class="w-full flex items-center justify-center bg-muted/30 border border-dashed border-muted-foreground/30 rounded text-xs text-muted-foreground select-none"
+                  :style="{ height: `${(block.data?.height?.default ?? 8) * 4}px` }"
+                >
+                  h-{{ block.data?.height?.default ?? 8 }}
+                </div>
               </div>
             </div>
 
-            <!-- Regular block: live render -->
-            <div v-else class="px-3 py-3 min-h-[2.5rem]">
-              <div
-                v-if="isEmptyBlock(block)"
-                class="text-xs text-muted-foreground italic"
-              >{{ LABELS[block.type] ?? block.type }} — empty</div>
-              <component
-                v-else
-                :is="BLOCK_MAP[block.type]"
-                :block="block"
-                class="pointer-events-none"
-              />
+            <!-- Regular block: label header + live render -->
+            <div v-else class="flex flex-col min-h-[2.5rem]">
+              <div class="px-3 py-1.5 border-b border-border/40 flex items-center gap-2">
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {{ block.blockName || LABELS[block.type] || block.type }}
+                </span>
+                <span v-if="block.blockName" class="text-[10px] text-muted-foreground/40 uppercase tracking-wider">
+                  {{ LABELS[block.type] || block.type }}
+                </span>
+              </div>
+              <div class="px-3 py-2">
+                <span v-if="isEmptyBlock(block)" class="text-xs text-muted-foreground/50 italic">empty</span>
+                <component
+                  v-else
+                  :is="BLOCK_MAP[block.type]"
+                  :block="block"
+                  class="pointer-events-none"
+                />
+              </div>
             </div>
 
           </div>
