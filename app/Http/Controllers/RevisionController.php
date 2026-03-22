@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Page;
 use App\Models\Post;
 use App\Models\Revision;
+use App\Models\Template;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -32,6 +33,21 @@ class RevisionController extends Controller
             ->limit(25)
             ->with('user:id,name')
             ->get(['id', 'user_id', 'created_at']);
+
+        return response()->json($revisions);
+    }
+
+    public function indexTemplate(Template $template): JsonResponse
+    {
+        $revisions = $template->revisions()
+            ->with('user:id,name')
+            ->orderByDesc('id')
+            ->get()
+            ->map(fn ($r) => [
+                'id'         => $r->id,
+                'user'       => $r->user->name,
+                'created_at' => $r->created_at->diffForHumans(),
+            ]);
 
         return response()->json($revisions);
     }
