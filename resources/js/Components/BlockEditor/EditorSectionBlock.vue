@@ -45,7 +45,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
 import { GripVertical } from 'lucide-vue-next'
 import ParagraphBlock from '@/Components/Blocks/ParagraphBlock.vue'
@@ -88,9 +88,15 @@ const props = defineProps({
 
 const emit = defineEmits(['select', 'update-children'])
 
+const _children = ref([...(props.block.children ?? [])])
+watch(() => props.block.children, (v) => { _children.value = v ?? [] })
+
 const localChildren = computed({
-  get: () => props.block.children ?? [],
-  set: (val) => emit('update-children', { id: props.block.id, children: val }),
+  get: () => _children.value,
+  set: (val) => {
+    _children.value = val
+    emit('update-children', { id: props.block.id, children: val })
+  },
 })
 
 function onAdd(evt) {

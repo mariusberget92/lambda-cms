@@ -75,7 +75,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
 import LayerItem         from './LayerItem.vue'
 import AdvancedSettings  from './blocks/AdvancedSettings.vue'
@@ -107,9 +107,15 @@ const props = defineProps({
 
 const emit = defineEmits(['select', 'remove', 'reorder', 'update'])
 
+const _list = ref([...(props.blocks ?? [])])
+watch(() => props.blocks, (v) => { _list.value = v })
+
 const draggableBlocks = computed({
-  get: () => props.blocks,
-  set: (val) => emit('reorder', val),
+  get: () => _list.value,
+  set: (val) => {
+    _list.value = val
+    emit('reorder', val)
+  },
 })
 
 const LABELS = {

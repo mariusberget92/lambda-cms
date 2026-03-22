@@ -112,7 +112,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { VueDraggable }  from 'vue-draggable-plus'
 import { GripVertical }  from 'lucide-vue-next'
 import EditorContainerBlock from './EditorContainerBlock.vue'
@@ -158,9 +158,20 @@ const props = defineProps({
 
 const emit = defineEmits(['select', 'reorder', 'update-children'])
 
+// Use a local ref so the getter reflects the setter's value synchronously.
+// With a pure computed(get: props.blocks), vue-draggable-plus calls the setter
+// then immediately reads the getter to verify the change — it still sees the
+// old prop (Vue re-renders async) and reverts cross-list moves. A local ref
+// updates in the same tick as the setter, so the library accepts the change.
+const _list = ref([...(props.blocks ?? [])])
+watch(() => props.blocks, (v) => { _list.value = v })
+
 const draggableBlocks = computed({
-  get: () => props.blocks,
-  set: (val) => emit('reorder', val),
+  get: () => _list.value,
+  set: (val) => {
+    _list.value = val          // synchronous — getter now returns new value immediately
+    emit('reorder', val)
+  },
 })
 
 function onAdd(evt) {
