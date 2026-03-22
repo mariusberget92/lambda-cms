@@ -22,7 +22,9 @@ let timer = null
 
 onMounted(() => {
   if (props.duration !== null) {
-    setTimeout(() => { progressWidth.value = 0 }, 0)
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => { progressWidth.value = 0 })
+    })
     timer = setTimeout(() => emit('dismiss', props.id), props.duration)
   }
 })
@@ -32,7 +34,7 @@ onBeforeUnmount(() => {
 })
 
 function handleAction(handler) {
-  handler()
+  if (typeof handler === 'function') handler()
   emit('dismiss', props.id)
 }
 </script>
@@ -48,6 +50,7 @@ function handleAction(handler) {
     <!-- Actions -->
     <div v-if="actions.length" class="flex gap-2 px-3 pb-2">
       <button
+        type="button"
         v-for="action in actions"
         :key="action.label"
         class="text-xs underline"
@@ -59,7 +62,7 @@ function handleAction(handler) {
          class="h-0.5"
          :style="{ backgroundColor: accent, width: progressWidth + '%', transition: `width ${duration}ms linear` }" />
     <!-- Dismiss -->
-    <button class="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
+    <button type="button" aria-label="Dismiss" class="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
             @click="emit('dismiss', id)">
       <X class="w-3.5 h-3.5" />
     </button>
