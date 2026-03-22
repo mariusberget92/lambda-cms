@@ -56,6 +56,17 @@
 
         <SidebarLink
           v-if="user.role === 'administrator'"
+          :href="route('templates.index')"
+          :active="currentRoute?.startsWith('templates.')"
+        >
+          <template #icon>
+            <LayoutTemplate class="w-4 h-4" />
+          </template>
+          Templates
+        </SidebarLink>
+
+        <SidebarLink
+          v-if="user.role === 'administrator'"
           :href="route('navigation.index')"
           :active="currentRoute?.startsWith('navigation.')"
         >
@@ -214,7 +225,7 @@
 <script setup>
 import { computed, onMounted } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
-import { Sun, Moon, Calendar, ExternalLink } from "lucide-vue-next";
+import { Sun, Moon, Calendar, ExternalLink, LayoutTemplate } from "lucide-vue-next";
 import SidebarLink from "@/Components/SidebarLink.vue";
 import { useTheme } from "@/composables/useTheme.js";
 import Notifications from "@/Components/Notifications.vue";
