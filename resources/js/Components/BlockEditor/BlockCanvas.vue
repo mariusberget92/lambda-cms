@@ -62,6 +62,19 @@
             @update-children="$emit('update-children', $event)"
           />
 
+          <!-- Spacer block: visual placeholder -->
+          <div
+            v-else-if="block.type === 'spacer'"
+            class="px-8 py-3"
+          >
+            <div
+              class="w-full flex items-center justify-center bg-muted/30 border border-dashed border-muted-foreground/30 rounded text-xs text-muted-foreground select-none"
+              :style="{ height: `${(block.data?.height?.default ?? 8) * 4}px` }"
+            >
+              Spacer (h-{{ block.data?.height?.default ?? 8 }})
+            </div>
+          </div>
+
           <!-- Regular block: live render -->
           <div v-else class="px-8 py-3 min-h-[2.5rem]">
             <div
@@ -117,7 +130,7 @@ const LABELS = {
   paragraph: 'Paragraph', heading: 'Heading', image: 'Image',
   quote: 'Quote', code: 'Code', gallery: 'Gallery', video: 'Video',
   divider: 'Divider', cta: 'CTA', html: 'HTML', component: 'Component',
-  container: 'Container', section: 'Section',
+  container: 'Container', section: 'Section', spacer: 'Spacer',
 }
 
 const props = defineProps({
