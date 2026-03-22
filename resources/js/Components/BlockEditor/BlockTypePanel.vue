@@ -45,6 +45,14 @@ import {
   Rows2,
   ArrowUpDown,
   Repeat2,
+  Heading1,
+  Info,
+  User,
+  Tag,
+  MessageCircle,
+  FolderOpen,
+  List,
+  Search,
 } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -67,6 +75,19 @@ const ALL_TYPES = [
   { type: 'section',   label: 'Section',   icon: Rows2 },
   { type: 'spacer',    label: 'Spacer',    icon: ArrowUpDown },
   { type: 'loop',      label: 'Loop',      icon: Repeat2 },
+  // Post group
+  { type: 'post-title',          label: 'Post Title',    icon: Heading1 },
+  { type: 'post-body',           label: 'Post Body',     icon: AlignLeft },
+  { type: 'post-featured-image', label: 'Feat. Image',   icon: ImageIcon },
+  { type: 'post-meta',           label: 'Post Meta',     icon: Info },
+  { type: 'post-author',         label: 'Author',        icon: User },
+  { type: 'post-taxonomy',       label: 'Categories & Tags', icon: Tag },
+  { type: 'post-comments',       label: 'Comments',      icon: MessageCircle },
+  // Archive group
+  { type: 'archive-title',       label: 'Archive Title', icon: FolderOpen },
+  { type: 'archive-loop',        label: 'Archive Loop',  icon: List },
+  // Interactive group
+  { type: 'search',              label: 'Search',        icon: Search },
 ]
 
 const typeList = computed({
@@ -110,6 +131,16 @@ const DEFAULT_DATA = {
     columns: 1,
     gap:     'md',
   },
+  'post-title':          { tag: 'h1' },
+  'post-body':           {},
+  'post-featured-image': { maxWidth: '100%', aspectRatio: 'auto' },
+  'post-meta':           { date: true, author: true, readTime: true },
+  'post-author':         { showAvatar: true },
+  'post-taxonomy':       { showCategories: true, showTags: true },
+  'post-comments':       {},
+  'archive-title':       { tag: 'h1' },
+  'archive-loop':        { source: 'posts', limit: 12, columns: 3, gap: 6 },
+  search:                { placeholder: 'Search…', buttonLabel: 'Search', scope: 'posts' },
 }
 
 function cloneBlock(typeDef) {
@@ -124,7 +155,7 @@ function cloneBlock(typeDef) {
     customClasses: '',
     customCss: '',
     fontFamily: '',
-    ...(typeDef.type === 'container' || typeDef.type === 'section' || typeDef.type === 'loop'
+    ...(['container', 'section', 'loop', 'archive-loop'].includes(typeDef.type)
       ? { children: [] }
       : {}),
   }

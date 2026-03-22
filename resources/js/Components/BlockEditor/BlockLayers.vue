@@ -81,6 +81,14 @@ import LayerItem         from './LayerItem.vue'
 import AdvancedSettings  from './blocks/AdvancedSettings.vue'
 import ConditionSettings from './blocks/ConditionSettings.vue'
 import LoopSettings      from './blocks/LoopSettings.vue'
+import PostTitleSettings         from './blocks/PostTitleSettings.vue'
+import PostBodySettings          from './blocks/PostBodySettings.vue'
+import PostFeaturedImageSettings from './blocks/PostFeaturedImageSettings.vue'
+import PostMetaSettings          from './blocks/PostMetaSettings.vue'
+import PostAuthorSettings        from './blocks/PostAuthorSettings.vue'
+import PostTaxonomySettings      from './blocks/PostTaxonomySettings.vue'
+import ArchiveTitleSettings      from './blocks/ArchiveTitleSettings.vue'
+import SearchSettings            from './blocks/SearchSettings.vue'
 import ContainerSettings from './blocks/ContainerSettings.vue'
 import SectionSettings  from './blocks/SectionSettings.vue'
 import SpacerSettings   from './blocks/SpacerSettings.vue'
@@ -123,6 +131,16 @@ const LABELS = {
   quote: 'Quote', code: 'Code', gallery: 'Gallery', video: 'Video',
   divider: 'Divider', cta: 'CTA', html: 'HTML', component: 'Component',
   container: 'Container', section: 'Section', spacer: 'Spacer', loop: 'Loop',
+  'post-title': 'Post Title',
+  'post-body': 'Post Body',
+  'post-featured-image': 'Featured Image',
+  'post-meta': 'Post Meta',
+  'post-author': 'Author',
+  'post-taxonomy': 'Categories & Tags',
+  'post-comments': 'Comments',
+  'archive-title': 'Archive Title',
+  'archive-loop': 'Archive Loop',
+  search: 'Search',
 }
 
 const COMPONENT_MAP = {
@@ -131,6 +149,16 @@ const COMPONENT_MAP = {
   video: VideoSettings, divider: DividerSettings, cta: CtaSettings,
   html: HtmlSettings, component: ComponentSettings, container: ContainerSettings,
   section: SectionSettings, spacer: SpacerSettings, loop: LoopSettings,
+  'post-title':          PostTitleSettings,
+  'post-body':           PostBodySettings,
+  'post-featured-image': PostFeaturedImageSettings,
+  'post-meta':           PostMetaSettings,
+  'post-author':         PostAuthorSettings,
+  'post-taxonomy':       PostTaxonomySettings,
+  'post-comments':       null,
+  'archive-title':       ArchiveTitleSettings,
+  'archive-loop':        LoopSettings,
+  search:                SearchSettings,
 }
 
 const settingsComponent = computed(() =>
