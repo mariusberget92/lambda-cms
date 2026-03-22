@@ -333,7 +333,8 @@ import TiptapEditor from "@/Components/TiptapEditor.vue";
 import MediaPicker from '@/Components/MediaPicker.vue'
 import { useNotifications } from '@/composables/useNotifications.js'
 
-const { notify } = useNotifications()
+const { notify, dismiss } = useNotifications()
+let autosaveToastId = null
 
 const props = defineProps({
   post:       Object,
@@ -370,26 +371,40 @@ async function doAutosave() {
     const res = await axios.post(route('posts.autosave', props.post.id), {
       payload: form.data(),
     })
-    notify(`Draft saved at ${res.data.saved_at}`, 'info')
+    if (autosaveToastId !== null) dismiss(autosaveToastId)
+    autosaveToastId = notify(`Draft saved at ${res.data.saved_at}`, 'info')
   } catch {
     notify('Autosave failed — check your connection', 'error')
   }
 }
 
 async function restoreAutosave() {
-  const payload = props.autosave.payload
-  Object.keys(payload).forEach(key => {
-    if (key in form) form[key] = payload[key]
-  })
-  await axios.delete(route('posts.autosave.destroy', props.post.id))
+  try {
+    const fields = props.autosave.payload
+    Object.keys(fields).forEach(key => {
+      if (key in form) form[key] = fields[key]
+    })
+    await axios.delete(route('posts.autosave.destroy', props.post.id))
+    notify('Draft restored.', 'success')
+  } catch {
+    notify('Could not restore draft — please try again.', 'error')
+  }
 }
 
 async function dismissAutosave() {
-  await axios.delete(route('posts.autosave.destroy', props.post.id))
+  try {
+    await axios.delete(route('posts.autosave.destroy', props.post.id))
+  } catch {
+    // autosave cleanup failed — not critical
+  }
 }
 
 onMounted(() => {
-  if (props.autosave) {
+  if (
+    props.autosave &&
+    props.post.updated_at &&
+    new Date(props.autosave.updated_at) > new Date(props.post.updated_at)
+  ) {
     notify(
       'You have unsaved changes from a previous session.',
       'info',
