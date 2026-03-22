@@ -58,7 +58,7 @@ class TemplateTest extends TestCase
             'blocks' => [],
         ]);
 
-        $response->assertRedirect('/templates');
+        $response->assertRedirect(route('templates.index'));
         $this->assertDatabaseHas('templates', ['type' => 'blog-index', 'title' => 'My Blog Index']);
     }
 
@@ -109,7 +109,7 @@ class TemplateTest extends TestCase
 
         $this->actingAs($admin)
             ->put("/templates/{$template->id}", ['title' => 'New', 'type' => 'single-post', 'status' => 'draft', 'blocks' => []])
-            ->assertRedirect('/templates');
+            ->assertRedirect(route('templates.index'));
 
         $this->assertEquals('New', $template->fresh()->title);
     }
@@ -127,7 +127,7 @@ class TemplateTest extends TestCase
 
         $this->actingAs($admin)
             ->delete("/templates/{$template->id}")
-            ->assertRedirect('/templates');
+            ->assertRedirect(route('templates.index'));
 
         $this->assertDatabaseMissing('templates', ['id' => $template->id]);
     }
@@ -136,7 +136,7 @@ class TemplateTest extends TestCase
 
     public function test_template_resolver_returns_null_when_no_published_template(): void
     {
-        $resolver = new \App\Services\TemplateResolver();
+        $resolver = app(\App\Services\TemplateResolver::class);
         $this->assertNull($resolver->resolve('blog-index'));
     }
 
@@ -148,7 +148,7 @@ class TemplateTest extends TestCase
             'status' => 'published', 'blocks' => [],
         ]);
 
-        $resolver = new \App\Services\TemplateResolver();
+        $resolver = app(\App\Services\TemplateResolver::class);
         $this->assertNotNull($resolver->resolve('blog-index'));
     }
 }

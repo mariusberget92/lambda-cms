@@ -19,7 +19,7 @@ return new class extends Migration
             $table->enum('status', ['draft', 'published'])->default('draft');
             $table->json('blocks')->nullable();
             $table->string('meta_title', 100)->nullable();
-            $table->string('meta_description', 300)->nullable();
+            $table->text('meta_description')->nullable();
             $table->string('meta_keywords', 255)->nullable();
             $table->timestamps();
         });
