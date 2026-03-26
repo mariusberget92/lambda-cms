@@ -182,7 +182,14 @@ function selectBlock(id) {
 }
 
 function onReorder(newList) {
-  localBlocks.value = newList
+  // newList comes from VueDraggable's internal array, which holds block object references
+  // that may be stale (not yet updated by the async _list watcher in BlockCanvas).
+  // Cross-list drags can cause the top-level setter to fire after onUpdateChildren has
+  // already updated localBlocks with a fresh block object — if we replace wholesale we
+  // lose those updates and get duplicates or disappearing blocks.
+  // Fix: keep the fresh block objects from localBlocks; only apply the new ordering.
+  const current = new Map(localBlocks.value.map(b => [b.id, b]))
+  localBlocks.value = newList.map(b => current.get(b.id) ?? b)
   emit('update:modelValue', localBlocks.value)
 }
 
