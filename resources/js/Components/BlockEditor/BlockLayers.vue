@@ -1,6 +1,6 @@
 <!-- resources/js/Components/BlockEditor/BlockLayers.vue -->
 <template>
-  <div class="w-64 shrink-0 border-l flex flex-col bg-sidebar overflow-hidden">
+  <div class="w-80 shrink-0 border-l flex flex-col bg-sidebar overflow-hidden">
 
     <!-- Layers list -->
     <div class="flex flex-col shrink-0" style="max-height: 40%">
@@ -8,27 +8,28 @@
         <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Layers</p>
       </div>
 
-      <div v-if="draggableBlocks.length === 0" class="px-3 py-4 text-xs text-muted-foreground text-center">
+      <div v-if="blocks.length === 0" class="px-3 py-4 text-xs text-muted-foreground text-center">
         No blocks yet
       </div>
 
-      <VueDraggable
-        v-else
-        v-model="draggableBlocks"
-        tag="div"
-        class="overflow-y-auto p-1.5 space-y-0.5"
-        handle=".layer-handle"
-        :animation="150"
-      >
-        <div v-for="block in draggableBlocks" :key="block.id">
-          <LayerItem
-            :block="block"
-            :selected-id="selectedId"
-            @select="$emit('select', $event)"
-            @remove="$emit('remove', $event)"
-          />
-        </div>
-      </VueDraggable>
+      <div v-else class="flex-1 overflow-y-auto scrollbar-hidden">
+        <VueDraggable
+          v-model="draggableBlocks"
+          tag="div"
+          class="p-1.5 space-y-0.5"
+          handle=".layer-handle"
+          :animation="150"
+        >
+          <div v-for="block in draggableBlocks" :key="block.id">
+            <LayerItem
+              :block="block"
+              :selected-id="selectedId"
+              @select="$emit('select', $event)"
+              @remove="$emit('remove', $event)"
+            />
+          </div>
+        </VueDraggable>
+      </div>
     </div>
 
     <!-- Settings panel -->
@@ -39,7 +40,7 @@
         </p>
       </div>
 
-      <div class="flex-1 overflow-y-auto p-3">
+      <div class="flex-1 overflow-y-auto scrollbar-hidden"><div class="p-3">
         <div v-if="!selectedBlock" class="h-full flex items-center justify-center">
           <p class="text-xs text-muted-foreground text-center">Select a block<br>to edit its settings</p>
         </div>
@@ -69,15 +70,15 @@
             @update="$emit('update', $event)"
           />
         </template>
-      </div>
+      </div></div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
-import LayerItem         from './LayerItem.vue'
+import LayerItem from './LayerItem.vue'
 import AdvancedSettings  from './blocks/AdvancedSettings.vue'
 import ConditionSettings from './blocks/ConditionSettings.vue'
 import LoopSettings      from './blocks/LoopSettings.vue'
@@ -113,10 +114,17 @@ const props = defineProps({
   loopFields:    { type: Array,   default: () => [] },
 })
 
-const emit = defineEmits(['select', 'remove', 'reorder', 'update'])
+const emit = defineEmits(['select', 'remove', 'update', 'reorder'])
 
+// ── Drag-to-reorder ───────────────────────────────────────────────────────────
+// _list is kept in sync with props.blocks via a flush:'sync' watcher so it is
+// always up-to-date before VueDraggable can react, preventing stale-data reverts.
 const _list = ref([...(props.blocks ?? [])])
-watch(() => props.blocks, (v) => { _list.value = v })
+watch(
+  () => props.blocks,
+  (v) => { _list.value = [...(v ?? [])] },
+  { flush: 'sync' }
+)
 
 const draggableBlocks = computed({
   get: () => _list.value,

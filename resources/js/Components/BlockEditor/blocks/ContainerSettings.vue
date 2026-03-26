@@ -1,6 +1,8 @@
 <script setup>
 import { computed } from 'vue'
 import SelectBox from '@/Components/SelectBox.vue'
+import DimensionInput from '../DimensionInput.vue'
+import SpacingControl from '../SpacingControl.vue'
 
 const props = defineProps({ block: { type: Object, required: true } })
 const emit   = defineEmits(['update'])
@@ -125,9 +127,12 @@ function update(key, value) {
 
     <!-- Shared controls -->
     <div>
-      <label class="text-xs font-medium text-muted-foreground block mb-1">Gap: {{ block.data.gap }}</label>
-      <input type="range" min="0" max="16" :value="block.data.gap"
-        @input="update('gap', parseInt($event.target.value))" class="w-full" />
+      <label class="text-xs font-medium text-muted-foreground block mb-1">Gap</label>
+      <DimensionInput
+        :model-value="typeof block.data.gap === 'string' ? block.data.gap : ''"
+        placeholder="0"
+        @update:model-value="v => update('gap', v)"
+      />
     </div>
 
     <div>
@@ -148,9 +153,11 @@ function update(key, value) {
     </div>
 
     <div>
-      <label class="text-xs font-medium text-muted-foreground block mb-1">Padding: {{ block.data.padding }}</label>
-      <input type="range" min="0" max="16" :value="block.data.padding"
-        @input="update('padding', parseInt($event.target.value))" class="w-full" />
+      <label class="text-xs font-medium text-muted-foreground block mb-1">Padding</label>
+      <SpacingControl
+        :model-value="typeof block.data.padding === 'object' ? block.data.padding : {}"
+        @update:model-value="v => update('padding', v)"
+      />
     </div>
 
   </div>

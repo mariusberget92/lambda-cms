@@ -22,31 +22,78 @@
       ghost-class="opacity-40"
       @add="onAdd"
     >
-      <div
-        v-for="child in localChildren"
-        :key="child.id"
-        :id="child.customId || `block-${child.id}`"
-        class="group relative flex items-center gap-2 rounded-md border bg-background px-2 py-1.5 cursor-pointer text-xs transition-colors"
-        :class="[
-          child.id === selectedId
+      <template v-for="child in localChildren" :key="child.id">
+        <!-- Nestable child: render as full recursive editor -->
+        <div
+          v-if="isNestable(child.type)"
+          :id="child.customId || `block-${child.id}`"
+          class="rounded-md border bg-background/50 overflow-hidden transition-colors"
+          :class="child.id === selectedId
             ? 'border-primary ring-1 ring-primary'
-            : 'border-border hover:border-muted-foreground',
-          isFlexRow ? 'flex-1 min-w-0' : '',
-        ]"
-        @click.stop="$emit('select', child.id)"
-      >
-        <span class="child-drag-handle cursor-grab active:cursor-grabbing text-muted-foreground shrink-0" @click.stop>
-          <GripVertical class="w-3 h-3" />
-        </span>
-        <div class="flex-1 min-w-0 overflow-hidden">
-          <span class="text-xs block truncate leading-none">
-            {{ child.blockName || LABELS[child.type] || child.type }}
-          </span>
-          <span v-if="child.blockName" class="text-[10px] text-muted-foreground/50 leading-none mt-0.5 block">
-            {{ LABELS[child.type] || child.type }}
-          </span>
+            : 'border-border hover:border-muted-foreground'"
+        >
+          <!-- Header row: drag handle + label -->
+          <div
+            class="flex items-center gap-2 px-2 py-1.5 border-b border-border/30 cursor-pointer"
+            @click.stop="$emit('select', child.id)"
+          >
+            <span class="child-drag-handle cursor-grab active:cursor-grabbing text-muted-foreground shrink-0" @click.stop>
+              <GripVertical class="w-3 h-3" />
+            </span>
+            <span class="flex-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground truncate">
+              {{ child.blockName || LABELS[child.type] || child.type }}
+            </span>
+          </div>
+          <!-- Recursive editor -->
+          <EditorContainerBlock
+            v-if="child.type === 'container'"
+            :block="child"
+            :selected-id="selectedId"
+            @select="$emit('select', $event)"
+            @update-children="$emit('update-children', $event)"
+          />
+          <EditorSectionBlock
+            v-else-if="child.type === 'section'"
+            :block="child"
+            :selected-id="selectedId"
+            @select="$emit('select', $event)"
+            @update-children="$emit('update-children', $event)"
+          />
+          <EditorLoopBlock
+            v-else-if="child.type === 'loop' || child.type === 'archive-loop'"
+            :block="child"
+            :selected-id="selectedId"
+            @select="$emit('select', $event)"
+            @update-children="$emit('update-children', $event)"
+          />
         </div>
-      </div>
+
+        <!-- Leaf child: pill -->
+        <div
+          v-else
+          :id="child.customId || `block-${child.id}`"
+          class="group relative flex items-center gap-2 rounded-md border bg-background px-2 py-1.5 cursor-pointer text-xs transition-colors"
+          :class="[
+            child.id === selectedId
+              ? 'border-primary ring-1 ring-primary'
+              : 'border-border hover:border-muted-foreground',
+            isFlexRow ? 'flex-1 min-w-0' : '',
+          ]"
+          @click.stop="$emit('select', child.id)"
+        >
+          <span class="child-drag-handle cursor-grab active:cursor-grabbing text-muted-foreground shrink-0" @click.stop>
+            <GripVertical class="w-3 h-3" />
+          </span>
+          <div class="flex-1 min-w-0 overflow-hidden">
+            <span class="text-xs block truncate leading-none">
+              {{ child.blockName || LABELS[child.type] || child.type }}
+            </span>
+            <span v-if="child.blockName" class="text-[10px] text-muted-foreground/50 leading-none mt-0.5 block">
+              {{ LABELS[child.type] || child.type }}
+            </span>
+          </div>
+        </div>
+      </template>
 
       <div v-if="localChildren.length === 0"
         class="text-center py-2 text-xs text-muted-foreground/60 pointer-events-none">
@@ -57,40 +104,24 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
 import { GripVertical } from 'lucide-vue-next'
-import ParagraphBlock from '@/Components/Blocks/ParagraphBlock.vue'
-import HeadingBlock   from '@/Components/Blocks/HeadingBlock.vue'
-import ImageBlock     from '@/Components/Blocks/ImageBlock.vue'
-import QuoteBlock     from '@/Components/Blocks/QuoteBlock.vue'
-import CodeBlock      from '@/Components/Blocks/CodeBlock.vue'
-import GalleryBlock   from '@/Components/Blocks/GalleryBlock.vue'
-import VideoBlock     from '@/Components/Blocks/VideoBlock.vue'
-import DividerBlock   from '@/Components/Blocks/DividerBlock.vue'
-import CtaBlock       from '@/Components/Blocks/CtaBlock.vue'
-import HtmlBlock      from '@/Components/Blocks/HtmlBlock.vue'
-import PostListBlock  from '@/Components/Blocks/PostListBlock.vue'
 
-const BLOCK_MAP = {
-  paragraph: ParagraphBlock,
-  heading:   HeadingBlock,
-  image:     ImageBlock,
-  quote:     QuoteBlock,
-  code:      CodeBlock,
-  gallery:   GalleryBlock,
-  video:     VideoBlock,
-  divider:   DividerBlock,
-  cta:       CtaBlock,
-  html:      HtmlBlock,
-  component: PostListBlock,
-}
+defineOptions({ name: 'EditorContainerBlock' })
+
+const EditorSectionBlock = defineAsyncComponent(() => import('./EditorSectionBlock.vue'))
+const EditorLoopBlock    = defineAsyncComponent(() => import('./EditorLoopBlock.vue'))
+
+const NESTABLE = ['container', 'section', 'loop', 'archive-loop']
+function isNestable(type) { return NESTABLE.includes(type) }
 
 const LABELS = {
   paragraph: 'Paragraph', heading: 'Heading', image: 'Image',
   quote: 'Quote', code: 'Code', gallery: 'Gallery', video: 'Video',
   divider: 'Divider', cta: 'CTA', html: 'HTML', component: 'Component',
   container: 'Container', section: 'Section', spacer: 'Spacer', loop: 'Loop',
+  'archive-loop': 'Archive Loop',
 }
 
 const props = defineProps({

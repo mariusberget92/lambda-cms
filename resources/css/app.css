@@ -3,6 +3,10 @@
 
 @source "../js/Components/BlockEditor/safelist.js";
 
+/* Hidden scrollbar — scrollable via wheel/touch, no visible bar */
+.scrollbar-hidden { scrollbar-width: none; }
+.scrollbar-hidden::-webkit-scrollbar { display: none; }
+
 :root {
   --background: #eceff4;
   --foreground: #2e3440;

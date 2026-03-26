@@ -1,6 +1,6 @@
 <!-- resources/js/Components/BlockEditor/BlockEditor.vue -->
 <template>
-  <div class="flex border rounded-xl overflow-hidden bg-background" style="min-height: 500px">
+  <div class="flex border rounded-xl overflow-hidden bg-background" style="min-height: 500px; max-height: calc(100vh - 220px)">
     <!-- Left: block type palette -->
     <BlockTypePanel :is-admin="isAdmin" />
 
@@ -23,8 +23,8 @@
       :loop-fields="loopFields"
       @select="selectBlock"
       @remove="removeBlock"
-      @reorder="onReorder"
       @update="updateBlock"
+      @reorder="onReorder"
     />
   </div>
 </template>

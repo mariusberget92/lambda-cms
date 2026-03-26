@@ -5,7 +5,7 @@
       <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Canvas</p>
     </div>
 
-    <div class="relative flex-1 overflow-y-auto">
+    <div class="relative flex-1 overflow-y-auto scrollbar-hidden">
       <!-- Empty state overlay -->
       <div
         v-if="draggableBlocks.length === 0"

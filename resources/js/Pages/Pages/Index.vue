@@ -4,18 +4,22 @@ import AppLayout  from '@/Layouts/AppLayout.vue'
 import { Head, router } from '@inertiajs/vue3'
 import { ref }    from 'vue'
 import StatusBadge from '@/Components/StatusBadge.vue'
+import DataTable from '@/Components/DataTable.vue'
 
 const props = defineProps({
   pages: Object, // paginated
 })
 
-const deletingId = ref(null)
+const deleteTarget = ref(null)
 
 function confirmDelete(page) {
-  if (!confirm(`Delete "${page.title}"? This cannot be undone.`)) return
-  deletingId.value = page.id
-  router.delete(route('pages.destroy', page.id), {
-    onFinish: () => { deletingId.value = null },
+  deleteTarget.value = page
+}
+
+function deletePage() {
+  if (!deleteTarget.value) return
+  router.delete(route('pages.destroy', deleteTarget.value.id), {
+    onFinish: () => { deleteTarget.value = null },
   })
 }
 
@@ -25,12 +29,6 @@ function decodeHtmlEntities(str) {
   return txt.value
 }
 
-const columns = [
-  { key: 'title',      label: 'Title' },
-  { key: 'slug',       label: 'Slug' },
-  { key: 'status',     label: 'Status' },
-  { key: 'created_at', label: 'Created' },
-]
 </script>
 
 <template>
@@ -51,53 +49,55 @@ const columns = [
       </a>
     </div>
 
-    <div class="rounded-lg border bg-card overflow-hidden">
-      <table class="w-full text-sm">
-        <thead class="border-b bg-muted/50">
-          <tr>
-            <th v-for="col in columns" :key="col.key" class="px-4 py-3 text-left font-medium text-muted-foreground">
-              {{ col.label }}
-            </th>
-            <th class="px-4 py-3 text-right font-medium text-muted-foreground">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="page in pages.data"
-            :key="page.id"
-            class="border-b last:border-0 hover:bg-muted/30 transition-colors"
-          >
-            <td class="px-4 py-3 font-medium">{{ page.title }}</td>
-            <td class="px-4 py-3 text-muted-foreground font-mono text-xs">/{{ page.slug }}</td>
-            <td class="px-4 py-3">
-              <StatusBadge :status="page.status" />
-            </td>
-            <td class="px-4 py-3 text-muted-foreground">{{ page.created_at }}</td>
-            <td class="px-4 py-3 text-right">
-              <div class="flex items-center justify-end gap-2">
-                <a
-                  :href="route('pages.edit', page.id)"
-                  class="text-xs font-medium text-primary hover:underline"
-                >Edit</a>
-                <button
-                  type="button"
-                  class="text-xs font-medium text-destructive hover:underline"
-                  :disabled="deletingId === page.id"
-                  @click="confirmDelete(page)"
-                >
-                  {{ deletingId === page.id ? 'Deleting...' : 'Delete' }}
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr v-if="!pages.data.length">
-            <td colspan="5" class="px-4 py-8 text-center text-muted-foreground text-sm">
-              No pages yet. <a :href="route('pages.create')" class="text-primary hover:underline">Create one.</a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <DataTable :loading="false" :empty="!pages.data.length">
+      <template #empty>
+        No pages yet. <a :href="route('pages.create')" class="text-primary hover:underline">Create one.</a>
+      </template>
+      <template #headers>
+        <th class="text-left">Title</th>
+        <th class="text-left hidden sm:table-cell">Slug</th>
+        <th class="text-left hidden sm:table-cell">Status</th>
+        <th class="text-left hidden md:table-cell">Created</th>
+        <th class="w-10"></th>
+      </template>
+      <template #rows>
+        <tr
+          v-for="page in pages.data"
+          :key="page.id"
+          class="hover:bg-muted/30 transition-colors group"
+        >
+          <td class="font-medium">{{ page.title }}</td>
+          <td class="hidden sm:table-cell text-muted-foreground font-mono text-xs">/{{ page.slug }}</td>
+          <td class="hidden sm:table-cell">
+            <StatusBadge :status="page.status" />
+          </td>
+          <td class="hidden md:table-cell text-muted-foreground text-xs">{{ page.created_at }}</td>
+          <td>
+            <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <a
+                :href="route('pages.edit', page.id)"
+                class="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+                title="Edit"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+              </a>
+              <button
+                type="button"
+                @click="confirmDelete(page)"
+                class="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                title="Delete"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </template>
+    </DataTable>
 
     <!-- Pagination -->
     <div v-if="pages.last_page > 1" class="flex items-center justify-between mt-4 text-sm">
@@ -118,6 +118,39 @@ const columns = [
         >{{ decodeHtmlEntities(link.label) }}</a>
       </div>
     </div>
+
+    <!-- Delete confirmation modal -->
+    <Transition name="fade">
+      <div v-if="deleteTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="deleteTarget = null" />
+        <div class="relative bg-card border rounded-xl shadow-xl w-full max-w-sm p-6">
+          <h3 class="font-semibold text-base mb-2">Delete page?</h3>
+          <p class="text-sm text-muted-foreground mb-5">
+            "<span class="font-medium text-foreground">{{ deleteTarget.title }}</span>" will be permanently deleted.
+          </p>
+          <div class="flex gap-3 justify-end">
+            <button
+              type="button"
+              @click="deleteTarget = null"
+              class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              @click="deletePage"
+              class="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </AppLayout>
 </template>
 
+<style scoped>
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+</style>

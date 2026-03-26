@@ -15,6 +15,7 @@ const MIN_HEIGHT_MAP = {
 }
 
 const outerStyle = computed(() => {
+  const padding = outerPaddingStyle.value
   const d = props.block.data ?? {}
   const styles = {}
 
@@ -35,17 +36,41 @@ const outerStyle = computed(() => {
     styles.backgroundImage = `linear-gradient(${dir}, ${from ?? '#3b4252'}, ${to ?? '#4c566a'})`
   }
 
-  return styles
+  return { ...styles, ...padding }
 })
+
+// New format: d.padding = { top, right, bottom, left } with CSS strings
+// Legacy format: d.paddingY / d.paddingX as responsive Tailwind integers
+const paddingIsObject = computed(() =>
+  typeof (props.block.data?.padding) === 'object' && props.block.data?.padding !== null
+)
 
 const outerClasses = computed(() => {
   const d = props.block.data ?? {}
+  if (paddingIsObject.value) {
+    return [
+      'w-full',
+      MIN_HEIGHT_MAP[d.minHeight] ?? '',
+    ].filter(Boolean).join(' ')
+  }
+  // legacy
   return [
     'w-full',
     resolveResponsive(d.paddingY ?? { default: 16 }, v => `py-${v}`),
     resolveResponsive(d.paddingX ?? { default: 8 },  v => `px-${v}`),
     MIN_HEIGHT_MAP[d.minHeight] ?? '',
   ].filter(Boolean).join(' ')
+})
+
+const outerPaddingStyle = computed(() => {
+  if (!paddingIsObject.value) return {}
+  const p = props.block.data?.padding ?? {}
+  const style = {}
+  if (p.top)    style.paddingTop    = p.top
+  if (p.right)  style.paddingRight  = p.right
+  if (p.bottom) style.paddingBottom = p.bottom
+  if (p.left)   style.paddingLeft   = p.left
+  return style
 })
 
 const innerClasses = computed(() => {

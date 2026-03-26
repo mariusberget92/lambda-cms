@@ -11,7 +11,7 @@
         <div
           :id="block.customId || `block-${block.id}`"
           :class="[block.customClasses || undefined, itemClass || undefined]"
-          :style="block.fontFamily ? { fontFamily: `'${block.fontFamily}', sans-serif` } : undefined"
+          :style="blockWrapperStyle(block)"
         >
           <component
             :is="BLOCK_MAP[block.type]"
@@ -59,6 +59,29 @@ const props = defineProps({
   // Pass 'flex-1 min-w-0' from a flex-row ContainerBlock so blocks share space equally.
   itemClass:    { type: String, default: '' },
 })
+
+// Blocks that manage their own padding internally (do not apply AdvancedSettings padding on wrapper)
+const SELF_PADDED_TYPES = new Set(['container', 'section'])
+
+function spacingStyle(obj, prop) {
+  if (!obj || typeof obj !== 'object') return {}
+  const out = {}
+  if (obj.top)    out[prop + 'Top']    = obj.top
+  if (obj.right)  out[prop + 'Right']  = obj.right
+  if (obj.bottom) out[prop + 'Bottom'] = obj.bottom
+  if (obj.left)   out[prop + 'Left']   = obj.left
+  return out
+}
+
+function blockWrapperStyle(block) {
+  const style = {}
+  if (block.fontFamily) style.fontFamily = `'${block.fontFamily}', sans-serif`
+  if (block.data?.margin) Object.assign(style, spacingStyle(block.data.margin, 'margin'))
+  if (block.data?.padding && !SELF_PADDED_TYPES.has(block.type)) {
+    Object.assign(style, spacingStyle(block.data.padding, 'padding'))
+  }
+  return Object.keys(style).length ? style : undefined
+}
 
 function sanitizeCss(css) {
   // Strip both opening and closing style tags to prevent tag breakout / HTML injection

@@ -33,7 +33,7 @@
         <tr
           v-for="user in users.data"
           :key="user.id"
-          class="hover:bg-muted/20 transition-colors"
+          class="hover:bg-muted/30 transition-colors group"
         >
           <!-- User -->
           <td>
@@ -80,13 +80,13 @@
           </td>
           <!-- Actions -->
           <td>
-            <div class="flex items-center justify-end gap-2">
+            <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <a
                 :href="route('users.edit', user.id)"
-                class="rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                class="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
                 title="Edit"
               >
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>
               </a>
@@ -96,9 +96,9 @@
                 @click="handleDeleteClick(user)"
                 :disabled="isLastAdmin(user)"
                 :aria-label="isLastAdmin(user) ? 'Cannot delete the only administrator' : 'Delete ' + user.name"
-                class="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-muted-foreground"
+                class="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-muted-foreground"
               >
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                 </svg>
               </button>
@@ -114,24 +114,25 @@
         v-for="link in users.links"
         :key="link.label"
         :href="link.url ?? '#'"
-        class="px-3 py-1.5 rounded-md text-sm border transition-colors"
+        class="inline-flex items-center justify-center px-3 py-1.5 rounded-md text-sm transition-colors"
         :class="link.active
-          ? 'bg-primary text-primary-foreground border-primary'
+          ? 'bg-primary text-primary-foreground font-medium'
           : link.url
-            ? 'hover:bg-accent text-foreground border-border'
-            : 'text-muted-foreground border-border cursor-default pointer-events-none'"
+            ? 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+            : 'text-muted-foreground/40 cursor-not-allowed pointer-events-none'"
       >{{ decodeHtmlEntities(link.label) }}</a>
     </div>
 
     <!-- Delete confirmation modal -->
     <Transition name="fade">
-      <div v-if="deleteTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-        <div class="bg-card rounded-lg border shadow-lg max-w-sm w-full p-6 space-y-4">
-          <h3 class="text-sm font-semibold">Delete user?</h3>
-          <p class="text-sm text-muted-foreground">
+      <div v-if="deleteTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="deleteTarget = null" />
+        <div class="relative bg-card border rounded-xl shadow-xl w-full max-w-sm p-6">
+          <h3 class="font-semibold text-base mb-2">Delete user?</h3>
+          <p class="text-sm text-muted-foreground mb-5">
             <strong>{{ deleteTarget.name }}</strong> ({{ deleteTarget.email }}) will be permanently removed. This action cannot be undone.
           </p>
-          <div class="flex justify-end gap-3">
+          <div class="flex gap-3 justify-end">
             <button
               type="button"
               @click="deleteTarget = null"

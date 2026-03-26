@@ -19,13 +19,16 @@ const TYPE_LABELS = {
 
 const ALL_TYPES = ['blog-index', 'single-post', 'archive', 'search-results']
 
-const deletingId = ref(null)
+const deleteTarget = ref(null)
 
-function deleteTemplate(id) {
-  if (!confirm('Delete this template?')) return
-  deletingId.value = id
-  router.delete(route('templates.destroy', id), {
-    onFinish: () => { deletingId.value = null },
+function confirmDelete(template) {
+  deleteTarget.value = template
+}
+
+function deleteTemplate() {
+  if (!deleteTarget.value) return
+  router.delete(route('templates.destroy', deleteTarget.value.id), {
+    onFinish: () => { deleteTarget.value = null },
   })
 }
 
@@ -71,35 +74,34 @@ function hasAny() {
                   <th class="px-4 py-3 text-left font-medium text-muted-foreground">Name</th>
                   <th class="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
                   <th class="px-4 py-3 text-left font-medium text-muted-foreground">Updated</th>
-                  <th class="px-4 py-3 text-right font-medium text-muted-foreground">Actions</th>
+                  <th class="px-4 py-3 w-10"></th>
                 </tr>
               </thead>
               <tbody>
                 <tr
                   v-for="template in templates[type]"
                   :key="template.id"
-                  class="border-b last:border-0 hover:bg-muted/30 transition-colors"
+                  class="border-b last:border-0 hover:bg-muted/30 transition-colors group"
                 >
                   <td class="px-4 py-3 font-medium">{{ template.name }}</td>
                   <td class="px-4 py-3">
                     <StatusBadge :status="template.status" />
                   </td>
                   <td class="px-4 py-3 text-muted-foreground">{{ template.updated_at }}</td>
-                  <td class="px-4 py-3 text-right">
-                    <div class="flex items-center justify-end gap-2">
+                  <td class="px-4 py-3">
+                    <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <a
                         :href="route('templates.edit', template.id)"
-                        class="inline-flex items-center justify-center w-7 h-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                        class="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
                         title="Edit"
                       >
                         <Pencil class="w-3.5 h-3.5" />
                       </a>
                       <button
                         type="button"
-                        class="inline-flex items-center justify-center w-7 h-7 rounded-md text-muted-foreground hover:text-destructive hover:bg-accent transition-colors"
-                        :disabled="deletingId === template.id"
+                        class="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
                         title="Delete"
-                        @click="deleteTemplate(template.id)"
+                        @click="confirmDelete(template)"
                       >
                         <Trash2 class="w-3.5 h-3.5" />
                       </button>
@@ -119,5 +121,39 @@ function hasAny() {
       <p class="text-sm text-muted-foreground mb-4">No templates yet. Create one using the buttons above.</p>
     </div>
 
+    <!-- Delete confirmation modal -->
+    <Transition name="fade">
+      <div v-if="deleteTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="deleteTarget = null" />
+        <div class="relative bg-card border rounded-xl shadow-xl w-full max-w-sm p-6">
+          <h3 class="font-semibold text-base mb-2">Delete template?</h3>
+          <p class="text-sm text-muted-foreground mb-5">
+            "<span class="font-medium text-foreground">{{ deleteTarget.name }}</span>" will be permanently deleted.
+          </p>
+          <div class="flex gap-3 justify-end">
+            <button
+              type="button"
+              @click="deleteTarget = null"
+              class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              @click="deleteTemplate"
+              class="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
   </AppLayout>
 </template>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+</style>

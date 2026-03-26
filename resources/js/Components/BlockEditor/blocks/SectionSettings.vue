@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import SelectBox from '@/Components/SelectBox.vue'
+import SpacingControl from '../SpacingControl.vue'
 
 const props = defineProps({ block: { type: Object, required: true } })
 const emit   = defineEmits(['update'])
@@ -13,23 +14,6 @@ function update(key, value) {
 
 function updateNested(key, subKey, value) {
   emit('update', { id: props.block.id, data: { [key]: { ...(d.value[key] ?? {}), [subKey]: value } } })
-}
-
-function getBreakpoint(field, bp) {
-  const val = d.value[field]
-  if (typeof val === 'object' && val !== null) return val[bp] ?? ''
-  if (bp === 'default') return val ?? ''
-  return ''
-}
-
-function setBreakpoint(field, bp, value) {
-  const current = d.value[field]
-  const base = (typeof current === 'object' && current !== null) ? { ...current } : { default: current }
-  const parsed = parseInt(value, 10)
-  emit('update', {
-    id: props.block.id,
-    data: { [field]: { ...base, [bp]: isNaN(parsed) ? null : parsed } },
-  })
 }
 </script>
 
@@ -145,23 +129,11 @@ function setBreakpoint(field, bp, value) {
 
     <!-- Spacing -->
     <div class="space-y-2">
-      <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block">Spacing</label>
-      <div v-for="field in ['paddingY', 'paddingX']" :key="field">
-        <label class="text-xs text-muted-foreground block mb-1">{{ field === 'paddingY' ? 'Padding Y' : 'Padding X' }}</label>
-        <div class="grid grid-cols-3 gap-1">
-          <div v-for="bp in ['default', 'sm', 'lg']" :key="bp">
-            <span class="text-[10px] text-muted-foreground block mb-0.5 text-center">
-              {{ bp === 'default' ? 'Mobile' : bp === 'sm' ? 'SM' : 'LG' }}
-            </span>
-            <input type="number" min="0" max="32"
-              :value="getBreakpoint(field, bp)"
-              placeholder="–"
-              class="w-full rounded border border-border bg-background px-1.5 py-1 text-xs text-center"
-              @change="e => setBreakpoint(field, bp, e.target.value)"
-            />
-          </div>
-        </div>
-      </div>
+      <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block">Padding</label>
+      <SpacingControl
+        :model-value="typeof d.padding === 'object' ? d.padding : {}"
+        @update:model-value="v => update('padding', v)"
+      />
     </div>
 
     <!-- Min height -->

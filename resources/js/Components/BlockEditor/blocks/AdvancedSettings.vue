@@ -1,7 +1,27 @@
 <!-- resources/js/components/BlockEditor/blocks/AdvancedSettings.vue -->
 <template>
   <div class="space-y-3 pt-3 border-t mt-3">
-    <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Advanced</p>
+    <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Spacing</p>
+
+    <div>
+      <label class="text-xs font-medium text-muted-foreground block mb-2">Padding</label>
+      <SpacingControl
+        :model-value="block.data?.padding && typeof block.data.padding === 'object' ? block.data.padding : {}"
+        allow-auto
+        @update:model-value="v => updateData('padding', v)"
+      />
+    </div>
+
+    <div>
+      <label class="text-xs font-medium text-muted-foreground block mb-2">Margin</label>
+      <SpacingControl
+        :model-value="block.data?.margin && typeof block.data.margin === 'object' ? block.data.margin : {}"
+        allow-auto
+        @update:model-value="v => updateData('margin', v)"
+      />
+    </div>
+
+    <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground pt-1 border-t">Advanced</p>
 
     <div>
       <label class="text-xs font-medium text-muted-foreground block mb-1">Block label</label>
@@ -51,6 +71,7 @@
 
 <script setup>
 import SelectBox from '@/Components/SelectBox.vue'
+import SpacingControl from '../SpacingControl.vue'
 
 const FONTS = [
   'Inter', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Poppins', 'Raleway', 'Nunito',
@@ -65,5 +86,10 @@ const emit = defineEmits(['update'])
 
 function update(key, value) {
   emit('update', { id: props.block.id, [key]: value })
+}
+
+// For data-level properties (padding, margin stored in block.data)
+function updateData(key, value) {
+  emit('update', { id: props.block.id, data: { [key]: value } })
 }
 </script>
