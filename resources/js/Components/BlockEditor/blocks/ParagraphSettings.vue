@@ -5,7 +5,7 @@
       label="Content"
       field-name="content"
       :block="block"
-      :loop-fields="availableFields"
+      :available-fields="availableFields"
       @bind="onBind"
       @unbind="onUnbind"
     >

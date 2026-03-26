@@ -6,7 +6,7 @@
       label="Image URL"
       field-name="url"
       :block="block"
-      :loop-fields="availableFields"
+      :available-fields="availableFields"
       @bind="onBind"
       @unbind="onUnbind"
     >
@@ -29,7 +29,7 @@
       label="Alt text"
       field-name="alt"
       :block="block"
-      :loop-fields="availableFields"
+      :available-fields="availableFields"
       @bind="onBind"
       @unbind="onUnbind"
     >

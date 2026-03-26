@@ -14,7 +14,7 @@
       label="Text"
       field-name="text"
       :block="block"
-      :loop-fields="availableFields"
+      :available-fields="availableFields"
       @bind="onBind"
       @unbind="onUnbind"
     >
