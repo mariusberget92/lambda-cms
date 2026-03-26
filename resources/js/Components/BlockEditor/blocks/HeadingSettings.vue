@@ -14,7 +14,7 @@
       label="Text"
       field-name="text"
       :block="block"
-      :loop-fields="loopFields"
+      :loop-fields="availableFields"
       @bind="onBind"
       @unbind="onUnbind"
     >
@@ -35,7 +35,7 @@ import DynamicField from './DynamicField.vue'
 
 const props = defineProps({
   block:      { type: Object, required: true },
-  loopFields: { type: Array,  default: () => [] },
+  availableFields: { type: Array,  default: () => [] },
 })
 const emit = defineEmits(['update'])
 

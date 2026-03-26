@@ -11,7 +11,7 @@
       />
     </div>
     <div v-else class="aspect-video rounded-lg border-2 border-dashed border-border flex items-center justify-center text-muted-foreground text-sm">
-      {{ block.data.url ? 'Invalid video URL' : 'No video URL set' }}
+      {{ resolvedUrl ? 'Invalid video URL' : 'No video URL set' }}
     </div>
     <figcaption v-if="block.data.caption" class="mt-2 text-center text-sm text-muted-foreground">
       {{ block.data.caption }}
@@ -20,10 +20,13 @@
 </template>
 <script setup>
 import { computed } from 'vue'
+import { useFieldBinding } from '@/composables/useLoopBinding.js'
 const props = defineProps({ block: { type: Object, required: true } })
 
+const resolvedUrl = useFieldBinding(() => props.block, 'url')
+
 const embedUrl = computed(() => {
-  const url = props.block.data.url ?? ''
+  const url = resolvedUrl.value ?? ''
   const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/)
   if (yt) return `https://www.youtube.com/embed/${yt[1]}`
   const vm = url.match(/vimeo\.com\/(\d+)/)

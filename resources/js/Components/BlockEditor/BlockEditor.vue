@@ -21,6 +21,7 @@
       :is-admin="isAdmin"
       :meta="meta"
       :loop-fields="loopFields"
+      :available-fields="availableFields"
       @select="selectBlock"
       @remove="removeBlock"
       @update="updateBlock"
@@ -34,12 +35,13 @@ import { ref, computed, watch } from 'vue'
 import BlockTypePanel from './BlockTypePanel.vue'
 import BlockCanvas    from './BlockCanvas.vue'
 import BlockLayers    from './BlockLayers.vue'
-import { SOURCE_FIELDS } from '@/lib/loopSources.js'
+import { SOURCE_FIELDS, SOURCES } from '@/lib/loopSources.js'
 
 const props = defineProps({
-  modelValue: { type: Array,   default: () => [] },
-  isAdmin:    { type: Boolean, default: false },
-  meta:       { type: Object,  default: () => ({}) },
+  modelValue:    { type: Array,   default: () => [] },
+  isAdmin:       { type: Boolean, default: false },
+  meta:          { type: Object,  default: () => ({}) },
+  contextFields: { type: Array,   default: () => [] },
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -132,6 +134,32 @@ const loopAncestor = computed(() => {
 const loopFields = computed(() => {
   if (!loopAncestor.value) return []
   return SOURCE_FIELDS[loopAncestor.value.data?.source ?? 'posts'] ?? []
+})
+
+// availableFields: merged prefixed list for DynamicField dropdowns.
+// Groups: "Current Post" (from contextFields) + "Loop — <Source>" (from loop ancestor).
+const availableFields = computed(() => {
+  const fields = []
+
+  if (props.contextFields.length) {
+    fields.push(
+      ...props.contextFields.map(f => ({ value: f.value, label: f.label, group: 'Current Post' }))
+    )
+  }
+
+  if (loopFields.value.length) {
+    const source      = loopAncestor.value?.data?.source ?? 'posts'
+    const sourceLabel = SOURCES.find(s => s.value === source)?.label ?? source
+    fields.push(
+      ...loopFields.value.map(f => ({
+        value: `loop:${f.value}`,
+        label: f.label,
+        group: `Loop — ${sourceLabel}`,
+      }))
+    )
+  }
+
+  return fields
 })
 
 // ── Sync: parent → local (skip our own echo-back) ────────────────────────────

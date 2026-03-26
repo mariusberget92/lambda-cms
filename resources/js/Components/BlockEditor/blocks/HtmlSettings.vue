@@ -4,23 +4,43 @@
   <div v-if="!isAdmin" class="rounded-md border border-dashed p-4 text-center">
     <p class="text-xs text-muted-foreground">HTML blocks are admin-only.</p>
   </div>
-  <div v-else>
-    <label class="text-xs font-medium text-muted-foreground block mb-1">Raw HTML</label>
-    <textarea
-      :value="block.data.content"
-      rows="12"
-      placeholder="<div>...</div>"
-      class="w-full rounded-md border bg-background px-2 py-1.5 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-ring resize-y"
-      @input="emit('update', { id: block.id, data: { content: $event.target.value } })"
-    />
-    <p class="mt-1 text-xs text-muted-foreground">&#x26A0; Admin only &mdash; rendered as-is in the page.</p>
+  <div v-else class="space-y-2">
+    <DynamicField
+      label="Raw HTML"
+      field-name="content"
+      :block="block"
+      :available-fields="availableFields"
+      @bind="onBind"
+      @unbind="onUnbind"
+    >
+      <textarea
+        :value="block.data.content"
+        rows="12"
+        placeholder="<div>...</div>"
+        class="w-full rounded-md border bg-background px-2 py-1.5 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-ring resize-y"
+        @input="emit('update', { id: block.id, data: { content: $event.target.value } })"
+      />
+    </DynamicField>
+    <p class="text-xs text-muted-foreground">&#x26A0; Admin only &mdash; rendered as-is in the page.</p>
   </div>
 </template>
 
 <script setup>
-defineProps({
-  block:   { type: Object,  required: true },
-  isAdmin: { type: Boolean, default: false },
+import DynamicField from './DynamicField.vue'
+
+const props = defineProps({
+  block:           { type: Object,  required: true },
+  isAdmin:         { type: Boolean, default: false },
+  availableFields: { type: Array,   default: () => [] },
 })
 const emit = defineEmits(['update'])
+
+function onBind(fieldName, value) {
+  emit('update', { id: props.block.id, bindings: { ...props.block.bindings, [fieldName]: value } })
+}
+function onUnbind(fieldName) {
+  const b = { ...(props.block.bindings ?? {}) }
+  delete b[fieldName]
+  emit('update', { id: props.block.id, bindings: Object.keys(b).length ? b : undefined })
+}
 </script>

@@ -55,7 +55,7 @@ const OPS = [
   { value: 'empty',     label: 'Is empty' },
 ]
 
-const fieldOptions = computed(() => props.loopFields.map(f => ({ value: f, label: f })))
+const fieldOptions = computed(() => props.loopFields)
 const hasCondition = computed(() => !!props.block.condition)
 const condition    = computed(() => props.block.condition ?? { field: '', op: '=', value: '' })
 

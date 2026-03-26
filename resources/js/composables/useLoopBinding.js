@@ -1,26 +1,64 @@
 import { inject, computed } from 'vue'
 
 /**
- * Resolve a block field, preferring the loop item binding when inside a Loop block.
+ * Resolve a block field, preferring a dynamic binding over the static data value.
  *
- * @param {() => Object} getBlock   - getter for the block prop (e.g. () => props.block)
- * @param {string}       fieldName  - the block.data field name (e.g. 'text', 'url', 'content')
- * @returns {ComputedRef<any>}
+ * Binding value formats:
+ *   'loop:title'        → loopItem.value.title
+ *   'post:title'        → postContext.title
+ *   'post:author_name'  → postContext.author?.name  (flattened nested field)
+ *   'title'             → legacy — treated as 'loop:title'
  *
- * How it works:
- *   1. injects 'loopItem' from the nearest LoopItemProvider ancestor (null if not inside a loop)
- *   2. if block.bindings[fieldName] is set AND loopItem exists, returns loopItem[binding]
- *   3. otherwise falls back to block.data[fieldName]
+ * Falls back to block.data[fieldName] when no binding, or when the provider
+ * is not available in the current component tree.
  */
 export function useFieldBinding(getBlock, fieldName) {
-  const loopItem = inject('loopItem', null)
+  const loopItem    = inject('loopItem',    null)
+  const postContext = inject('postContext', null)
 
   return computed(() => {
-    const block   = getBlock()
-    const binding = block?.bindings?.[fieldName]
-    if (binding && loopItem?.value) {
-      return loopItem.value[binding] ?? block?.data?.[fieldName]
+    const block    = getBlock()
+    const binding  = block?.bindings?.[fieldName]
+    const fallback = block?.data?.[fieldName]
+
+    if (!binding) return fallback
+
+    const colon = binding.indexOf(':')
+
+    // Legacy: no prefix → treat as loop binding
+    if (colon === -1) {
+      return loopItem?.value?.[binding] ?? fallback
     }
-    return block?.data?.[fieldName]
+
+    const source = binding.slice(0, colon)
+    const field  = binding.slice(colon + 1)
+
+    if (source === 'loop') {
+      return loopItem?.value?.[field] ?? fallback
+    }
+
+    if (source === 'post') {
+      return resolvePostField(postContext, field) ?? fallback
+    }
+
+    return fallback
   })
+}
+
+/**
+ * Resolve a field from the postContext object.
+ * Handles flattened keys that map to nested paths on the context object.
+ */
+function resolvePostField(postContext, field) {
+  const ctx = postContext  // postContext is a plain object (not a ref) from TemplatePage.provide
+  if (!ctx) return undefined
+
+  // Nested field mappings
+  const nested = {
+    author_name:       c => c.author?.name,
+    author_avatar_url: c => c.author?.avatar_url,
+  }
+
+  if (nested[field]) return nested[field](ctx)
+  return ctx[field]
 }

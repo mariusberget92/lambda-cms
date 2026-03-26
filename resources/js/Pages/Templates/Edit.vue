@@ -3,6 +3,7 @@
 import AppLayout   from '@/Layouts/AppLayout.vue'
 import BlockEditor from '@/Components/BlockEditor/BlockEditor.vue'
 import { useForm, usePage, Head } from '@inertiajs/vue3'
+import { POST_CONTEXT_FIELDS } from '@/lib/loopSources.js'
 import { filterEmptyBlocks } from '@/lib/utils.js'
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import axios from 'axios'
@@ -253,9 +254,9 @@ async function restoreRevision(revision) {
 
       <!-- Block editor: full remaining width -->
       <BlockEditor
-        :template-type="template.type"
         :model-value="form.blocks"
         :is-admin="authUser?.role === 'administrator'"
+        :context-fields="template.type === 'single-post' ? POST_CONTEXT_FIELDS : []"
         @update:model-value="form.blocks = $event"
       />
 

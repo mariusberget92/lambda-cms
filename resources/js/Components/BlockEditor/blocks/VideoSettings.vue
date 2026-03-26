@@ -1,18 +1,26 @@
 <!-- resources/js/Components/BlockEditor/blocks/VideoSettings.vue -->
 <template>
   <div class="space-y-3">
-    <div>
-      <label class="text-xs font-medium text-muted-foreground block mb-1">YouTube or Vimeo URL</label>
-      <input
-        :value="block.data.url"
-        type="url"
-        placeholder="https://www.youtube.com/watch?v=..."
-        class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-        :class="{ 'border-destructive': urlError }"
-        @input="onUrlInput"
-      />
-      <p v-if="urlError" class="mt-1 text-xs text-destructive">{{ urlError }}</p>
-    </div>
+    <DynamicField
+      label="YouTube or Vimeo URL"
+      field-name="url"
+      :block="block"
+      :available-fields="availableFields"
+      @bind="onBind"
+      @unbind="onUnbind"
+    >
+      <div>
+        <input
+          :value="block.data.url"
+          type="url"
+          placeholder="https://www.youtube.com/watch?v=..."
+          class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          :class="{ 'border-destructive': urlError }"
+          @input="onUrlInput"
+        />
+        <p v-if="urlError" class="mt-1 text-xs text-destructive">{{ urlError }}</p>
+      </div>
+    </DynamicField>
 
     <!-- Embedded preview (read-only) -->
     <div v-if="embedUrl" class="rounded-md overflow-hidden border aspect-video">
@@ -41,9 +49,13 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import DynamicField from './DynamicField.vue'
 
-const props = defineProps({ block: { type: Object, required: true } })
-const emit  = defineEmits(['update'])
+const props = defineProps({
+  block:           { type: Object, required: true },
+  availableFields: { type: Array,  default: () => [] },
+})
+const emit = defineEmits(['update'])
 
 const urlError = ref('')
 
@@ -63,5 +75,14 @@ function onUrlInput(e) {
   const isVm = /vimeo\.com/.test(url)
   urlError.value = url && !isYt && !isVm ? 'Must be a YouTube or Vimeo URL' : ''
   emit('update', { id: props.block.id, data: { url } })
+}
+
+function onBind(fieldName, value) {
+  emit('update', { id: props.block.id, bindings: { ...props.block.bindings, [fieldName]: value } })
+}
+function onUnbind(fieldName) {
+  const b = { ...(props.block.bindings ?? {}) }
+  delete b[fieldName]
+  emit('update', { id: props.block.id, bindings: Object.keys(b).length ? b : undefined })
 }
 </script>

@@ -163,9 +163,7 @@ const emit  = defineEmits(['update'])
 const source = computed(() => props.block.data?.source ?? 'posts')
 const filters = computed(() => props.block.data?.filters ?? [])
 
-const filterableFields = computed(() =>
-  (SOURCE_FIELDS[source.value] ?? []).map(f => ({ value: f, label: f }))
-)
+const filterableFields = computed(() => SOURCE_FIELDS[source.value] ?? [])
 
 const sortFieldOptions = computed(() =>
   (SORT_FIELDS[source.value] ?? []).map(f => ({ value: f, label: f }))

@@ -3,6 +3,7 @@
 import AppLayout   from '@/Layouts/AppLayout.vue'
 import BlockEditor from '@/Components/BlockEditor/BlockEditor.vue'
 import { useForm, usePage, Head } from '@inertiajs/vue3'
+import { POST_CONTEXT_FIELDS } from '@/lib/loopSources.js'
 import { ref } from 'vue'
 import { filterEmptyBlocks } from '@/lib/utils.js'
 import { ChevronDown, ArrowLeft } from 'lucide-vue-next'
@@ -122,9 +123,9 @@ function submit() {
 
       <!-- Block editor: full remaining width -->
       <BlockEditor
-        :template-type="type"
         :model-value="form.blocks"
         :is-admin="authUser?.role === 'administrator'"
+        :context-fields="props.type === 'single-post' ? POST_CONTEXT_FIELDS : []"
         @update:model-value="form.blocks = $event"
       />
 

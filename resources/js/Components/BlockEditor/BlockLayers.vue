@@ -56,6 +56,7 @@
             :is-admin="isAdmin"
             :meta="meta"
             :loop-fields="loopFields"
+            :available-fields="availableFields"
             @update="$emit('update', $event)"
           />
           <AdvancedSettings
@@ -111,7 +112,8 @@ const props = defineProps({
   selectedBlock: { type: Object,  default: null },
   isAdmin:       { type: Boolean, default: false },
   meta:          { type: Object,  default: () => ({}) },
-  loopFields:    { type: Array,   default: () => [] },
+  loopFields:      { type: Array,   default: () => [] },
+  availableFields: { type: Array,   default: () => [] },
 })
 
 const emit = defineEmits(['select', 'remove', 'update', 'reorder'])

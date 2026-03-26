@@ -5,7 +5,7 @@
       label="Headline"
       field-name="headline"
       :block="block"
-      :loop-fields="loopFields"
+      :available-fields="availableFields"
       @bind="onBind"
       @unbind="onUnbind"
     >
@@ -18,8 +18,14 @@
       />
     </DynamicField>
 
-    <div>
-      <label class="text-xs font-medium text-muted-foreground block mb-1">Body text</label>
+    <DynamicField
+      label="Body text"
+      field-name="text"
+      :block="block"
+      :available-fields="availableFields"
+      @bind="onBind"
+      @unbind="onUnbind"
+    >
       <input
         :value="block.data.text"
         type="text"
@@ -27,10 +33,16 @@
         class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
         @input="emit('update', { id: block.id, data: { text: $event.target.value } })"
       />
-    </div>
+    </DynamicField>
 
-    <div>
-      <label class="text-xs font-medium text-muted-foreground block mb-1">Button label</label>
+    <DynamicField
+      label="Button label"
+      field-name="button_label"
+      :block="block"
+      :available-fields="availableFields"
+      @bind="onBind"
+      @unbind="onUnbind"
+    >
       <input
         :value="block.data.button_label"
         type="text"
@@ -38,13 +50,13 @@
         class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
         @input="emit('update', { id: block.id, data: { button_label: $event.target.value } })"
       />
-    </div>
+    </DynamicField>
 
     <DynamicField
       label="Button URL"
       field-name="button_url"
       :block="block"
-      :loop-fields="loopFields"
+      :available-fields="availableFields"
       @bind="onBind"
       @unbind="onUnbind"
     >
@@ -63,13 +75,13 @@
 import DynamicField from './DynamicField.vue'
 
 const props = defineProps({
-  block:      { type: Object, required: true },
-  loopFields: { type: Array,  default: () => [] },
+  block:           { type: Object, required: true },
+  availableFields: { type: Array,  default: () => [] },
 })
 const emit = defineEmits(['update'])
 
-function onBind(fieldName, loopField) {
-  emit('update', { id: props.block.id, bindings: { ...props.block.bindings, [fieldName]: loopField } })
+function onBind(fieldName, value) {
+  emit('update', { id: props.block.id, bindings: { ...props.block.bindings, [fieldName]: value } })
 }
 function onUnbind(fieldName) {
   const b = { ...(props.block.bindings ?? {}) }

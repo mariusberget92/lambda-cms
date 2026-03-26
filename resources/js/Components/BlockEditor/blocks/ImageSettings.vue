@@ -6,7 +6,7 @@
       label="Image URL"
       field-name="url"
       :block="block"
-      :loop-fields="loopFields"
+      :loop-fields="availableFields"
       @bind="onBind"
       @unbind="onUnbind"
     >
@@ -29,7 +29,7 @@
       label="Alt text"
       field-name="alt"
       :block="block"
-      :loop-fields="loopFields"
+      :loop-fields="availableFields"
       @bind="onBind"
       @unbind="onUnbind"
     >
@@ -62,7 +62,7 @@ import DynamicField from './DynamicField.vue'
 
 const props = defineProps({
   block:      { type: Object, required: true },
-  loopFields: { type: Array,  default: () => [] },
+  availableFields: { type: Array,  default: () => [] },
 })
 const emit = defineEmits(['update'])
 
