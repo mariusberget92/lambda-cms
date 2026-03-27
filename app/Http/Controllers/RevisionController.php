@@ -40,15 +40,10 @@ class RevisionController extends Controller
     public function indexTemplate(Template $template): JsonResponse
     {
         $revisions = $template->revisions()
-            ->with('user:id,name')
             ->orderByDesc('id')
             ->limit(25)
-            ->get()
-            ->map(fn ($r) => [
-                'id'         => $r->id,
-                'user'       => $r->user->name,
-                'created_at' => $r->created_at->diffForHumans(),
-            ]);
+            ->with('user:id,name')
+            ->get(['id', 'user_id', 'created_at']);
 
         return response()->json($revisions);
     }
