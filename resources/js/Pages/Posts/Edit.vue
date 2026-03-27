@@ -107,7 +107,8 @@
               <input
                 type="datetime-local"
                 v-model="form.published_at"
-                class="w-full rounded-md border bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring dark:[color-scheme:dark]"
+                class="w-full rounded-md border bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring [color-scheme:light] dark:[color-scheme:dark]"
+                @click="$event.target.showPicker?.()"
               />
               <p v-if="daysUntilPublish" class="text-xs text-indigo-600 mt-1">
                 ⏱ publishes in {{ daysUntilPublish }} day{{ daysUntilPublish === 1 ? '' : 's' }}
