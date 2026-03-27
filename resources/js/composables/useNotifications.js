@@ -24,13 +24,14 @@ export function useNotifications() {
     const id = Date.now() + (++counter)
     const duration = 'duration' in options ? options.duration : readingDuration(message)
     const actions  = options.actions ?? []
+    const items    = options.items ?? []
 
     // Enforce max 5 — remove oldest if needed
     if (notifications.value.length >= 5) {
       notifications.value.shift()
     }
 
-    notifications.value.push({ id, type, message, duration, actions })
+    notifications.value.push({ id, type, message, duration, actions, items })
     return id
   }
 
