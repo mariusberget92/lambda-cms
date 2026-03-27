@@ -58,9 +58,11 @@
             <!-- Colour dot -->
             <span
               v-if="cell.dotColor"
-              class="absolute bottom-0.5 w-1 h-1 rounded-full"
-              :class="cell.dotColor"
-            />
+              class="absolute bottom-0.5 inline-flex h-1.5 w-1.5"
+            >
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" :class="cell.dotColor" />
+              <span class="relative inline-flex rounded-full h-1.5 w-1.5" :class="cell.dotColor" />
+            </span>
           </button>
         </div>
 
