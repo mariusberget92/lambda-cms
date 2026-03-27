@@ -22,16 +22,24 @@
       :meta="meta"
       :loop-fields="loopFields"
       :available-fields="availableFields"
+      :clipboard="clipboard"
+      :can-undo="canUndo"
+      :can-redo="canRedo"
       @select="selectBlock"
       @remove="removeBlock"
       @update="updateBlock"
       @reorder="onReorder"
+      @duplicate="duplicateBlock"
+      @copy="copyBlock"
+      @paste="pasteBlock"
+      @undo="undo"
+      @redo="redo"
     />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import BlockTypePanel from './BlockTypePanel.vue'
 import BlockCanvas    from './BlockCanvas.vue'
 import BlockLayers    from './BlockLayers.vue'
@@ -46,15 +54,54 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
+const CHILD_CAPABLE = new Set(['container', 'section', 'loop', 'archive-loop'])
+
 // ── Internal state ────────────────────────────────────────────────────────────
 
 const localBlocks     = ref([...(props.modelValue ?? [])])
 const selectedBlockId = ref(null)
 
+// ── Undo / Redo ───────────────────────────────────────────────────────────────
+const history      = ref([JSON.parse(JSON.stringify(props.modelValue ?? []))])
+const historyIndex = ref(0)
+
+const canUndo = computed(() => historyIndex.value > 0)
+const canRedo = computed(() => historyIndex.value < history.value.length - 1)
+
+function pushHistory() {
+  // Discard redo future
+  history.value = history.value.slice(0, historyIndex.value + 1)
+  history.value.push(JSON.parse(JSON.stringify(localBlocks.value)))
+  if (history.value.length > 50) {
+    history.value.shift()
+  } else {
+    historyIndex.value++
+  }
+}
+
+function undo() {
+  if (!canUndo.value) return
+  historyIndex.value--
+  localBlocks.value = JSON.parse(JSON.stringify(history.value[historyIndex.value]))
+  selectedBlockId.value = null
+  emit('update:modelValue', localBlocks.value)
+}
+
+function redo() {
+  if (!canRedo.value) return
+  historyIndex.value++
+  localBlocks.value = JSON.parse(JSON.stringify(history.value[historyIndex.value]))
+  selectedBlockId.value = null
+  emit('update:modelValue', localBlocks.value)
+}
+
+// ── Clipboard ─────────────────────────────────────────────────────────────────
+const clipboard = ref(null)
+
 // ── Recursive helpers ─────────────────────────────────────────────────────────
 
 function hasChildren(block) {
-  return block.type === 'container' || block.type === 'section' || block.type === 'loop'
+  return block.type === 'container' || block.type === 'section' || block.type === 'loop' || block.type === 'archive-loop'
 }
 
 function findBlock(blocks, id) {
@@ -108,13 +155,63 @@ function removeFromList(blocks, id) {
 function findLoopAncestor(blocks, targetId, currentLoop = null) {
   for (const b of blocks) {
     if (b.id === targetId) return currentLoop
-    const nextLoop = b.type === 'loop' ? b : currentLoop
+    const nextLoop = (b.type === 'loop' || b.type === 'archive-loop') ? b : currentLoop
     if (hasChildren(b) && b.children?.length) {
       const found = findLoopAncestor(b.children, targetId, nextLoop)
       if (found !== undefined) return found
     }
   }
   return undefined
+}
+
+// ── Clone + insert helpers ────────────────────────────────────────────────────
+
+function newId() {
+  return typeof crypto !== 'undefined' && crypto.randomUUID
+    ? crypto.randomUUID()
+    : Math.random().toString(36).slice(2) + Date.now().toString(36)
+}
+
+function cloneWithNewIds(block) {
+  const cloned = JSON.parse(JSON.stringify(block))
+  cloned.id = newId()
+  if (cloned.children?.length) {
+    cloned.children = cloned.children.map(cloneWithNewIds)
+  }
+  return cloned
+}
+
+function insertAfterInList(blocks, targetId, newBlock) {
+  const result = []
+  let inserted = false
+  for (const b of blocks) {
+    result.push(b)
+    if (b.id === targetId) {
+      result.push(newBlock)
+      inserted = true
+      continue
+    }
+    if (b.children?.length) {
+      const newChildren = insertAfterInList(b.children, targetId, newBlock)
+      if (newChildren !== b.children) {
+        result[result.length - 1] = { ...b, children: newChildren }
+        inserted = true
+      }
+    }
+  }
+  return inserted ? result : blocks
+}
+
+function appendChildInList(blocks, targetId, newBlock) {
+  return blocks.map(b => {
+    if (b.id === targetId) {
+      return { ...b, children: [...(b.children ?? []), newBlock] }
+    }
+    if (b.children?.length) {
+      return { ...b, children: appendChildInList(b.children, targetId, newBlock) }
+    }
+    return b
+  })
 }
 
 // ── Computed ──────────────────────────────────────────────────────────────────
@@ -190,6 +287,7 @@ function onReorder(newList) {
   // Fix: keep the fresh block objects from localBlocks; only apply the new ordering.
   const current = new Map(localBlocks.value.map(b => [b.id, b]))
   localBlocks.value = newList.map(b => current.get(b.id) ?? b)
+  pushHistory()
   emit('update:modelValue', localBlocks.value)
 }
 
@@ -204,17 +302,119 @@ function removeBlock(id) {
   }
   localBlocks.value = removeFromList(localBlocks.value, id)
   if (selectedBlockId.value === id) selectedBlockId.value = null
+  pushHistory()
   emit('update:modelValue', localBlocks.value)
 }
 
 // data merges into block.data; remaining attrs (customId, fontFamily, children, etc.) go top-level
 function updateBlock({ id, data, ...attrs }) {
   localBlocks.value = updateBlockInList(localBlocks.value, id, data, attrs)
+  pushHistory()
   emit('update:modelValue', localBlocks.value)
 }
 
 function onUpdateChildren({ id, children }) {
-  localBlocks.value = updateBlockInList(localBlocks.value, id, undefined, { children })
+  // The `children` array arrives from EditorContainerBlock / EditorLoopBlock /
+  // EditorSectionBlock, which each hold a LOCAL _children ref driven by an *async*
+  // watcher.  When a parent block gets a new sibling dropped in, its VueDraggable
+  // still references the OLD child objects — those objects may be stale (they
+  // pre-date deeper nesting that onUpdateChildren already committed to localBlocks).
+  // Replacing localBlocks with those stale objects silently throws away all the
+  // deeply-nested data that was already saved.
+  //
+  // Fix (same pattern as onReorder): build a flat map of EVERY block currently
+  // known in localBlocks, then swap each incoming child for its freshest version.
+  const allCurrent = new Map()
+  function collectAll(blocks) {
+    for (const b of blocks) {
+      allCurrent.set(b.id, b)
+      if (b.children?.length) collectAll(b.children)
+    }
+  }
+  collectAll(localBlocks.value)
+
+  const freshChildren = children.map(c => allCurrent.get(c.id) ?? c)
+  localBlocks.value = updateBlockInList(localBlocks.value, id, undefined, { children: freshChildren })
+  pushHistory()
   emit('update:modelValue', localBlocks.value)
 }
+
+// ── Duplicate ─────────────────────────────────────────────────────────────────
+
+function duplicateBlock(id) {
+  const block = findBlock(localBlocks.value, id)
+  if (!block) return
+  const clone = cloneWithNewIds(block)
+  const newList = insertAfterInList(localBlocks.value, id, clone)
+  localBlocks.value = newList !== localBlocks.value ? newList : [...localBlocks.value, clone]
+  selectedBlockId.value = clone.id
+  pushHistory()
+  emit('update:modelValue', localBlocks.value)
+}
+
+// ── Copy / Paste ──────────────────────────────────────────────────────────────
+
+function copyBlock(id) {
+  const block = findBlock(localBlocks.value, id)
+  if (!block) return
+  clipboard.value = JSON.parse(JSON.stringify(block))
+}
+
+function pasteBlock(targetId) {
+  if (!clipboard.value) return
+  const clone = cloneWithNewIds(clipboard.value)
+
+  if (targetId) {
+    localBlocks.value = appendChildInList(localBlocks.value, targetId, clone)
+    selectedBlockId.value = clone.id
+    pushHistory()
+    emit('update:modelValue', localBlocks.value)
+    return
+  }
+
+  const sel = selectedBlockId.value
+    ? findBlock(localBlocks.value, selectedBlockId.value)
+    : null
+
+  if (sel && CHILD_CAPABLE.has(sel.type)) {
+    localBlocks.value = appendChildInList(localBlocks.value, sel.id, clone)
+  } else if (sel) {
+    const result = insertAfterInList(localBlocks.value, sel.id, clone)
+    localBlocks.value = result !== localBlocks.value ? result : [...localBlocks.value, clone]
+  } else {
+    localBlocks.value = [...localBlocks.value, clone]
+  }
+
+  selectedBlockId.value = clone.id
+  pushHistory()
+  emit('update:modelValue', localBlocks.value)
+}
+
+// ── Keyboard shortcuts ────────────────────────────────────────────────────────
+
+function onKeydown(e) {
+  const tag = document.activeElement?.tagName?.toLowerCase()
+  if (tag === 'input' || tag === 'textarea' || document.activeElement?.isContentEditable) return
+
+  const ctrl = e.ctrlKey || e.metaKey
+
+  if (ctrl && e.key === 'z' && !e.shiftKey) {
+    e.preventDefault()
+    undo()
+  } else if (ctrl && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+    e.preventDefault()
+    redo()
+  } else if (ctrl && e.key === 'd') {
+    e.preventDefault()
+    if (selectedBlockId.value) duplicateBlock(selectedBlockId.value)
+  } else if (ctrl && e.key === 'c') {
+    if (selectedBlockId.value) copyBlock(selectedBlockId.value)
+  } else if (ctrl && e.key === 'v') {
+    e.preventDefault()
+    pasteBlock()
+  }
+}
+
+onMounted(() => document.addEventListener('keydown', onKeydown))
+onUnmounted(() => document.removeEventListener('keydown', onKeydown))
 </script>
