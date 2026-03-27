@@ -79,6 +79,13 @@ function pushHistory() {
   }
 }
 
+// Debounced version for text-editing changes — waits 800ms of inactivity
+let _pushHistoryTimer = null
+function pushHistoryDebounced() {
+  clearTimeout(_pushHistoryTimer)
+  _pushHistoryTimer = setTimeout(() => pushHistory(), 800)
+}
+
 function undo() {
   if (!canUndo.value) return
   historyIndex.value--
@@ -309,7 +316,7 @@ function removeBlock(id) {
 // data merges into block.data; remaining attrs (customId, fontFamily, children, etc.) go top-level
 function updateBlock({ id, data, ...attrs }) {
   localBlocks.value = updateBlockInList(localBlocks.value, id, data, attrs)
-  pushHistory()
+  pushHistoryDebounced()
   emit('update:modelValue', localBlocks.value)
 }
 
