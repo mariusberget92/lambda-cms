@@ -24,6 +24,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'avatar',
+        'banned_at',
+        'banned_until',
+        'ban_reason',
     ];
 
     /**
@@ -54,6 +57,8 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
             'last_seen_at'      => 'datetime',
+            'banned_at'         => 'datetime',
+            'banned_until'      => 'datetime',
         ];
     }
 
@@ -75,5 +80,32 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->last_seen_at !== null
             && $this->last_seen_at->diffInMinutes(now()) < 5;
+    }
+
+    /**
+     * Whether the user is currently banned (and ban has not expired).
+     */
+    public function isBanned(): bool
+    {
+        return $this->banned_at !== null
+            && ($this->banned_until === null || $this->banned_until->isFuture());
+    }
+
+    /**
+     * If the timed ban has expired, clear the ban columns.
+     * Returns true if a ban was lifted, false otherwise.
+     */
+    public function liftExpiredBan(): bool
+    {
+        if (
+            $this->banned_at !== null
+            && $this->banned_until !== null
+            && $this->banned_until->isPast()
+        ) {
+            $this->update(['banned_at' => null, 'banned_until' => null, 'ban_reason' => null]);
+            return true;
+        }
+
+        return false;
     }
 }

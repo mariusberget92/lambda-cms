@@ -163,4 +163,55 @@ class UserTest extends TestCase
         $this->actingAs($user)->delete("/users/{$target->id}")->assertRedirect(route('dashboard'));
         $this->assertDatabaseHas('users', ['id' => $target->id]);
     }
+
+    // ── Ban helpers ───────────────────────────────────────────────────────────────
+
+    public function test_is_banned_returns_false_when_not_banned(): void
+    {
+        $user = $this->makeUser();
+        $this->assertFalse($user->isBanned());
+    }
+
+    public function test_is_banned_returns_true_for_permanent_ban(): void
+    {
+        $user = $this->makeUser();
+        $user->update(['banned_at' => now(), 'banned_until' => null, 'ban_reason' => 'spam']);
+        $this->assertTrue($user->isBanned());
+    }
+
+    public function test_is_banned_returns_true_for_active_timed_ban(): void
+    {
+        $user = $this->makeUser();
+        $user->update(['banned_at' => now(), 'banned_until' => now()->addDay(), 'ban_reason' => 'spam']);
+        $this->assertTrue($user->isBanned());
+    }
+
+    public function test_is_banned_returns_false_for_expired_ban(): void
+    {
+        $user = $this->makeUser();
+        $user->update(['banned_at' => now()->subDay(), 'banned_until' => now()->subHour(), 'ban_reason' => 'spam']);
+        $this->assertFalse($user->isBanned());
+    }
+
+    public function test_lift_expired_ban_clears_columns(): void
+    {
+        $user = $this->makeUser();
+        $user->update(['banned_at' => now()->subDay(), 'banned_until' => now()->subHour(), 'ban_reason' => 'spam']);
+        $lifted = $user->liftExpiredBan();
+        $this->assertTrue($lifted);
+        $user->refresh();
+        $this->assertNull($user->banned_at);
+        $this->assertNull($user->banned_until);
+        $this->assertNull($user->ban_reason);
+    }
+
+    public function test_lift_expired_ban_does_nothing_for_active_ban(): void
+    {
+        $user = $this->makeUser();
+        $user->update(['banned_at' => now(), 'banned_until' => now()->addDay(), 'ban_reason' => 'spam']);
+        $lifted = $user->liftExpiredBan();
+        $this->assertFalse($lifted);
+        $user->refresh();
+        $this->assertNotNull($user->banned_at);
+    }
 }
