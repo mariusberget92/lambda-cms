@@ -61,25 +61,17 @@ class RevisionController extends Controller
         return response()->json($revisions);
     }
 
-    public function restore(Revision $revision): JsonResponse
+    public function restore(Request $request, Revision $revision): JsonResponse
     {
         $revisable = $revision->revisable;
 
-        if ($revisable instanceof Post) {
-            if ($revisable->user_id !== request()->user()->id
-                && ! request()->user()->hasRole('administrator')) {
-                abort(403);
-            }
-        } elseif ($revisable instanceof Page) {
-            if ($revisable->user_id !== request()->user()->id
-                && ! request()->user()->hasRole('administrator')) {
-                abort(403);
-            }
-        } elseif ($revisable instanceof Template) {
-            if ($revisable->user_id !== request()->user()->id
-                && ! request()->user()->hasRole('administrator')) {
-                abort(403);
-            }
+        if ($revisable === null) {
+            abort(404);
+        }
+
+        if ($revisable->user_id !== $request->user()->id
+            && ! $request->user()->hasRole('administrator')) {
+            abort(403);
         }
 
         return response()->json($revision->payload);

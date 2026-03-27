@@ -32,6 +32,84 @@ class RevisionTest extends TestCase
         return User::factory()->create()->assignRole('user');
     }
 
+    // ── Post revisions — indexPost ────────────────────────────────────────────
+
+    public function test_admin_can_view_revisions_for_any_post(): void
+    {
+        $admin = $this->makeAdmin();
+        $owner = $this->makeUser();
+        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post->saveRevision($owner->id);
+
+        $this->actingAs($admin)
+            ->getJson(route('posts.revisions', $post))
+            ->assertOk()
+            ->assertJsonStructure([['id', 'user_id', 'created_at']]);
+    }
+
+    public function test_owner_can_view_own_post_revisions(): void
+    {
+        $owner = $this->makeUser();
+        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post->saveRevision($owner->id);
+
+        $this->actingAs($owner)
+            ->getJson(route('posts.revisions', $post))
+            ->assertOk();
+    }
+
+    public function test_non_owner_non_admin_gets_403_on_post_revisions(): void
+    {
+        $owner = $this->makeUser();
+        $other = $this->makeUser();
+        $post  = Post::factory()->create(['user_id' => $owner->id]);
+
+        $this->actingAs($other)
+            ->withoutMiddleware([RoleMiddleware::class])
+            ->getJson(route('posts.revisions', $post))
+            ->assertForbidden();
+    }
+
+    // ── Post revisions — restore() ────────────────────────────────────────────
+
+    public function test_admin_can_restore_any_post_revision(): void
+    {
+        $admin = $this->makeAdmin();
+        $owner = $this->makeUser();
+        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post->saveRevision($owner->id);
+        $revision = $post->revisions()->first();
+
+        $this->actingAs($admin)
+            ->getJson(route('revisions.restore', $revision))
+            ->assertOk();
+    }
+
+    public function test_owner_can_restore_own_post_revision(): void
+    {
+        $owner = $this->makeUser();
+        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post->saveRevision($owner->id);
+        $revision = $post->revisions()->first();
+
+        $this->actingAs($owner)
+            ->getJson(route('revisions.restore', $revision))
+            ->assertOk();
+    }
+
+    public function test_non_owner_non_admin_gets_403_on_restore_post_revision(): void
+    {
+        $owner = $this->makeUser();
+        $other = $this->makeUser();
+        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post->saveRevision($owner->id);
+        $revision = $post->revisions()->first();
+
+        $this->actingAs($other)
+            ->getJson(route('revisions.restore', $revision))
+            ->assertForbidden();
+    }
+
     // ── Page revisions — indexPage ─────────────────────────────────────────────
     // The /pages/{page}/revisions route is behind role:administrator middleware.
     // The controller owner-or-admin check is defense-in-depth; we verify it by
