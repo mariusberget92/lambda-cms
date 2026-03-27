@@ -2,6 +2,7 @@
 import { useForm } from '@inertiajs/vue3'
 import InstallLayout from '@/Layouts/InstallLayout.vue'
 import { useNotifications } from '@/composables/useNotifications.js'
+import NumberInput from '@/Components/NumberInput.vue'
 
 defineOptions({ layout: InstallLayout })
 
@@ -68,11 +69,9 @@ function submit() {
           </div>
           <div>
             <label class="block text-sm font-medium mb-1.5">Port</label>
-            <input
+            <NumberInput
               v-model="form.port"
-              type="number"
-              class="w-full border rounded-md px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
-              :class="{ 'border-destructive': form.errors.port }"
+              :error="!!form.errors.port"
             />
           </div>
         </div>
