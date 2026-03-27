@@ -139,10 +139,8 @@ Route::middleware('installed')->group(function () {
 
         Route::resource('users', UserController::class)->except(['show']);
 
-        Route::middleware('role:administrator')->group(function () {
-            Route::post('/users/{user}/ban',   [BanController::class, 'ban'])->name('users.ban');
-            Route::delete('/users/{user}/ban', [BanController::class, 'unban'])->name('users.unban');
-        });
+        Route::post('/users/{user}/ban',   [BanController::class, 'ban'])->name('users.ban');
+        Route::delete('/users/{user}/ban', [BanController::class, 'unban'])->name('users.unban');
 
         Route::get('/comments',                     [CommentController::class, 'index'])->name('comments.index');
         Route::patch('/comments/{comment}/approve', [CommentController::class, 'approve'])->name('comments.approve');
