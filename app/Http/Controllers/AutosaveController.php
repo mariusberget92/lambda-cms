@@ -53,10 +53,14 @@ class AutosaveController extends Controller
 
     public function destroyPost(Request $request, Post $post): JsonResponse
     {
+        if ($post->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
+            abort(403);
+        }
+
         Autosave::where([
             'autosaveable_type' => Post::class,
             'autosaveable_id'   => $post->id,
-            'user_id'           => $request->user()->id,
+            'user_id'           => $post->user_id,
         ])->delete();
 
         return response()->json(['ok' => true]);
@@ -64,10 +68,14 @@ class AutosaveController extends Controller
 
     public function destroyPage(Request $request, Page $page): JsonResponse
     {
+        if ($page->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
+            abort(403);
+        }
+
         Autosave::where([
             'autosaveable_type' => Page::class,
             'autosaveable_id'   => $page->id,
-            'user_id'           => $request->user()->id,
+            'user_id'           => $page->user_id,
         ])->delete();
 
         return response()->json(['ok' => true]);
@@ -75,6 +83,10 @@ class AutosaveController extends Controller
 
     public function storeTemplate(Request $request, Template $template): JsonResponse
     {
+        if ($template->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
+            abort(403);
+        }
+
         $request->validate(['payload' => ['required', 'array']]);
 
         Autosave::updateOrCreate(
@@ -91,10 +103,14 @@ class AutosaveController extends Controller
 
     public function destroyTemplate(Request $request, Template $template): JsonResponse
     {
+        if ($template->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
+            abort(403);
+        }
+
         Autosave::where([
             'autosaveable_type' => Template::class,
             'autosaveable_id'   => $template->id,
-            'user_id'           => $request->user()->id,
+            'user_id'           => $template->user_id,
         ])->delete();
 
         return response()->json(['ok' => true]);

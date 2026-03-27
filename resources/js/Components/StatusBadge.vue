@@ -51,8 +51,8 @@ const MAP = {
     label:    'Rejected',
   },
   banned: {
-    classes:  'bg-destructive/10 text-destructive',
-    dotClass: 'bg-destructive',
+    classes:  'bg-status-error-bg text-status-error-fg',
+    dotClass: 'bg-status-error-fg',
     label:    'Banned',
   },
 }

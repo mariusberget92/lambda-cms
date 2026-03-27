@@ -26,8 +26,12 @@ class RevisionController extends Controller
         return response()->json($revisions);
     }
 
-    public function indexPage(Page $page): JsonResponse
+    public function indexPage(Request $request, Page $page): JsonResponse
     {
+        if ($page->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
+            abort(403);
+        }
+
         $revisions = $page->revisions()
             ->orderByDesc('id')
             ->limit(25)
@@ -37,8 +41,12 @@ class RevisionController extends Controller
         return response()->json($revisions);
     }
 
-    public function indexTemplate(Template $template): JsonResponse
+    public function indexTemplate(Request $request, Template $template): JsonResponse
     {
+        if ($template->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
+            abort(403);
+        }
+
         $revisions = $template->revisions()
             ->orderByDesc('id')
             ->limit(25)
@@ -48,19 +56,17 @@ class RevisionController extends Controller
         return response()->json($revisions);
     }
 
-    public function restore(Revision $revision): JsonResponse
+    public function restore(Request $request, Revision $revision): JsonResponse
     {
         $revisable = $revision->revisable;
 
-        if ($revisable instanceof Post) {
-            if ($revisable->user_id !== request()->user()->id
-                && ! request()->user()->hasRole('administrator')) {
-                abort(403);
-            }
-        } elseif ($revisable instanceof Page) {
-            if (! request()->user()->hasRole('administrator')) {
-                abort(403);
-            }
+        if ($revisable === null) {
+            abort(404);
+        }
+
+        if ($revisable->user_id !== $request->user()->id
+            && ! $request->user()->hasRole('administrator')) {
+            abort(403);
         }
 
         return response()->json($revision->payload);

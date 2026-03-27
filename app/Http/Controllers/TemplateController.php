@@ -58,6 +58,10 @@ class TemplateController extends Controller
 
     public function edit(Request $request, Template $template)
     {
+        if ($template->user_id !== $request->user()->id && !$request->user()->hasRole('administrator')) {
+            abort(403);
+        }
+
         $autosave = $template->autosave(auth()->id());
 
         return Inertia::render('Templates/Edit', [
@@ -80,6 +84,10 @@ class TemplateController extends Controller
 
     public function update(Request $request, Template $template)
     {
+        if ($template->user_id !== $request->user()->id && !$request->user()->hasRole('administrator')) {
+            abort(403);
+        }
+
         $validated = $request->validate([
             'title'            => ['required', 'string', 'max:255'],
             'type'             => ['required', 'in:blog-index,single-post,archive,search-results'],
@@ -104,8 +112,12 @@ class TemplateController extends Controller
         return redirect()->route('templates.index')->with('status', 'Template saved.');
     }
 
-    public function destroy(Template $template)
+    public function destroy(Request $request, Template $template)
     {
+        if ($template->user_id !== $request->user()->id && !$request->user()->hasRole('administrator')) {
+            abort(403);
+        }
+
         $template->delete();
 
         return redirect()->route('templates.index')->with('status', 'Template deleted.');
