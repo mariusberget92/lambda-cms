@@ -1,6 +1,7 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3'
 import InstallLayout from '@/Layouts/InstallLayout.vue'
+import { useNotifications } from '@/composables/useNotifications.js'
 
 defineOptions({ layout: InstallLayout })
 
@@ -9,13 +10,17 @@ const props = defineProps({
   siteUrl: String,
 })
 
+const { notify } = useNotifications()
+
 const form = useForm({
   site_name: 'Lambda CMS',
   site_url: props.siteUrl ?? '',
 })
 
 function submit() {
-  form.post('/install/site')
+  form.post('/install/site', {
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+  })
 }
 </script>
 
@@ -34,7 +39,6 @@ function submit() {
           class="w-full border rounded-md px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
           :class="{ 'border-destructive': form.errors.site_name }"
         />
-        <p v-if="form.errors.site_name" class="text-xs text-destructive mt-1">{{ form.errors.site_name }}</p>
       </div>
 
       <div>
@@ -46,7 +50,6 @@ function submit() {
           class="w-full border rounded-md px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
           :class="{ 'border-destructive': form.errors.site_url }"
         />
-        <p v-if="form.errors.site_url" class="text-xs text-destructive mt-1">{{ form.errors.site_url }}</p>
       </div>
 
       <div class="flex items-center justify-between pt-2">

@@ -1,12 +1,15 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3'
 import InstallLayout from '@/Layouts/InstallLayout.vue'
+import { useNotifications } from '@/composables/useNotifications.js'
 
 defineOptions({ layout: InstallLayout })
 
 defineProps({
   step: Number,
 })
+
+const { notify } = useNotifications()
 
 const form = useForm({
   driver: 'sqlite',
@@ -19,7 +22,9 @@ const form = useForm({
 })
 
 function submit() {
-  form.post('/install/database')
+  form.post('/install/database', {
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+  })
 }
 </script>
 
@@ -55,7 +60,6 @@ function submit() {
               class="w-full border rounded-md px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
               :class="{ 'border-destructive': form.errors.host }"
             />
-            <p v-if="form.errors.host" class="text-xs text-destructive mt-1">{{ form.errors.host }}</p>
           </div>
           <div>
             <label class="block text-sm font-medium mb-1.5">Port</label>
@@ -65,7 +69,6 @@ function submit() {
               class="w-full border rounded-md px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
               :class="{ 'border-destructive': form.errors.port }"
             />
-            <p v-if="form.errors.port" class="text-xs text-destructive mt-1">{{ form.errors.port }}</p>
           </div>
         </div>
 
@@ -77,7 +80,6 @@ function submit() {
             class="w-full border rounded-md px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
             :class="{ 'border-destructive': form.errors.database }"
           />
-          <p v-if="form.errors.database" class="text-xs text-destructive mt-1">{{ form.errors.database }}</p>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
@@ -89,7 +91,6 @@ function submit() {
               class="w-full border rounded-md px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
               :class="{ 'border-destructive': form.errors.username }"
             />
-            <p v-if="form.errors.username" class="text-xs text-destructive mt-1">{{ form.errors.username }}</p>
           </div>
           <div>
             <label class="block text-sm font-medium mb-1.5">Password</label>
@@ -111,7 +112,6 @@ function submit() {
           />
         </div>
 
-        <p v-if="form.errors.database" class="text-sm text-destructive">{{ form.errors.database }}</p>
       </template>
 
       <div v-if="form.driver === 'sqlite'" class="rounded-lg border bg-muted/40 p-4 text-sm text-muted-foreground">

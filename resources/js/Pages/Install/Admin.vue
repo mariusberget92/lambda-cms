@@ -1,12 +1,15 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3'
 import InstallLayout from '@/Layouts/InstallLayout.vue'
+import { useNotifications } from '@/composables/useNotifications.js'
 
 defineOptions({ layout: InstallLayout })
 
 defineProps({
   step: Number,
 })
+
+const { notify } = useNotifications()
 
 const form = useForm({
   name: '',
@@ -16,7 +19,9 @@ const form = useForm({
 })
 
 function submit() {
-  form.post('/install/admin')
+  form.post('/install/admin', {
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+  })
 }
 </script>
 
@@ -36,7 +41,6 @@ function submit() {
           class="w-full border rounded-md px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
           :class="{ 'border-destructive': form.errors.name }"
         />
-        <p v-if="form.errors.name" class="text-xs text-destructive mt-1">{{ form.errors.name }}</p>
       </div>
 
       <div>
@@ -49,7 +53,6 @@ function submit() {
           class="w-full border rounded-md px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
           :class="{ 'border-destructive': form.errors.email }"
         />
-        <p v-if="form.errors.email" class="text-xs text-destructive mt-1">{{ form.errors.email }}</p>
       </div>
 
       <div class="grid grid-cols-2 gap-3">
@@ -62,7 +65,6 @@ function submit() {
             class="w-full border rounded-md px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
             :class="{ 'border-destructive': form.errors.password }"
           />
-          <p v-if="form.errors.password" class="text-xs text-destructive mt-1">{{ form.errors.password }}</p>
         </div>
         <div>
           <label class="block text-sm font-medium mb-1.5">Confirm Password</label>
