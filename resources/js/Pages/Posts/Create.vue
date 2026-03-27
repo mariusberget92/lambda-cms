@@ -50,7 +50,6 @@
               class="w-full rounded-lg border bg-background px-4 py-3 text-xl font-semibold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring"
               :class="{ 'border-destructive': form.errors.title }"
             />
-            <p v-if="form.errors.title" class="mt-1 text-xs text-destructive">{{ form.errors.title }}</p>
           </div>
 
           <!-- Excerpt -->
@@ -63,8 +62,7 @@
               :class="{ 'border-destructive': form.errors.excerpt }"
             />
             <div class="flex justify-between mt-1">
-              <p v-if="form.errors.excerpt" class="text-xs text-destructive">{{ form.errors.excerpt }}</p>
-              <p v-else class="text-xs text-muted-foreground ml-auto">{{ (form.excerpt ?? '').length }}/500</p>
+              <p class="text-xs text-muted-foreground ml-auto">{{ (form.excerpt ?? '').length }}/500</p>
             </div>
           </div>
 
@@ -73,7 +71,6 @@
             <div class="rounded-lg border overflow-hidden">
               <TiptapEditor v-model="form.body" />
             </div>
-            <p v-if="form.errors.body" class="mt-1 text-xs text-destructive">{{ form.errors.body }}</p>
           </div>
         </div>
 
@@ -116,9 +113,6 @@
               />
               <p v-if="daysUntilPublish" class="text-xs text-indigo-600 mt-1">
                 ⏱ publishes in {{ daysUntilPublish }} day{{ daysUntilPublish === 1 ? '' : 's' }}
-              </p>
-              <p v-if="form.errors.published_at" class="text-xs text-destructive mt-1">
-                {{ form.errors.published_at }}
               </p>
             </div>
           </div>
@@ -276,6 +270,8 @@ import { Head, useForm } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import TiptapEditor from "@/Components/TiptapEditor.vue";
 import MediaPicker from '@/Components/MediaPicker.vue'
+import { useNotifications } from '@/composables/useNotifications.js'
+const { notify } = useNotifications()
 
 defineProps({
   categories: { type: Array, default: () => [] },
@@ -329,6 +325,8 @@ function toggleCategory(id) {
 }
 
 function submit() {
-  form.post(route("posts.store"));
+  form.post(route("posts.store"), {
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+  });
 }
 </script>

@@ -6,6 +6,8 @@ import { useForm, usePage, Head } from '@inertiajs/vue3'
 import { watch, ref } from 'vue'
 import { filterEmptyBlocks } from '@/lib/utils.js'
 import { ChevronDown, ArrowLeft } from 'lucide-vue-next'
+import { useNotifications } from '@/composables/useNotifications.js'
+const { notify } = useNotifications()
 
 const seoOpen = ref(false)
 
@@ -39,7 +41,9 @@ function slugify(str) {
 
 function submit() {
   form.blocks = filterEmptyBlocks(form.blocks)
-  form.post(route('pages.store'))
+  form.post(route('pages.store'), {
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+  })
 }
 </script>
 
@@ -76,7 +80,6 @@ function submit() {
             class="w-full rounded-lg border bg-background px-4 py-3 text-xl font-semibold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring"
             :class="{ 'border-destructive': form.errors.title }"
           />
-          <p v-if="form.errors.title" class="mt-1 text-xs text-destructive">{{ form.errors.title }}</p>
         </div>
 
         <!-- Inline sub-fields: slug · status · SEO -->
@@ -92,8 +95,6 @@ function submit() {
               :class="{ 'border-destructive': form.errors.slug }"
             />
           </div>
-          <p v-if="form.errors.slug" class="w-full text-xs text-destructive -mt-1">{{ form.errors.slug }}</p>
-
           <div class="h-4 w-px bg-border hidden sm:block shrink-0" />
 
           <!-- Status -->

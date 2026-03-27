@@ -31,7 +31,9 @@ const form = useForm({
 
 function submit() {
   form.blocks = filterEmptyBlocks(form.blocks)
-  form.put(route('pages.update', props.page.id))
+  form.put(route('pages.update', props.page.id), {
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+  })
 }
 
 // Autosave
@@ -165,7 +167,6 @@ async function restoreRevision(revision) {
             class="w-full rounded-lg border bg-background px-4 py-3 text-xl font-semibold focus:outline-none focus:ring-2 focus:ring-ring"
             :class="{ 'border-destructive': form.errors.title }"
           />
-          <p v-if="form.errors.title" class="mt-1 text-xs text-destructive">{{ form.errors.title }}</p>
         </div>
 
         <!-- Inline sub-fields: slug · status · SEO · Revisions -->
@@ -180,8 +181,6 @@ async function restoreRevision(revision) {
               :class="{ 'border-destructive': form.errors.slug }"
             />
           </div>
-          <p v-if="form.errors.slug" class="w-full text-xs text-destructive -mt-1">{{ form.errors.slug }}</p>
-
           <div class="h-4 w-px bg-border hidden sm:block shrink-0" />
 
           <!-- Status -->
