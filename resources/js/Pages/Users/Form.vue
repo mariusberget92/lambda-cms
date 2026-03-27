@@ -84,6 +84,67 @@
         </div>
       </div>
 
+      <!-- Account Status -->
+      <div v-if="isEditing && user.role !== 'administrator'" class="rounded-lg border bg-card p-6 space-y-4 mt-4">
+        <h3 class="text-sm font-semibold">Account Status</h3>
+
+        <!-- Currently banned -->
+        <template v-if="user.is_banned">
+          <div class="rounded-md bg-destructive/5 border border-destructive/20 px-4 py-3 space-y-1">
+            <p class="text-sm font-medium text-destructive">Banned</p>
+            <p class="text-xs text-muted-foreground">Reason: {{ user.ban_reason }}</p>
+            <p class="text-xs text-muted-foreground">
+              {{ user.banned_until ? 'Expires: ' + new Date(user.banned_until).toLocaleString() : 'Permanent ban' }}
+            </p>
+          </div>
+          <button
+            type="button"
+            class="rounded-md border px-4 py-2 text-sm hover:bg-accent transition-colors"
+            @click="submitUnban"
+          >
+            Unban user
+          </button>
+        </template>
+
+        <!-- Not banned — show ban form -->
+        <template v-else>
+          <div class="space-y-1">
+            <label class="text-sm font-medium">Reason</label>
+            <textarea
+              v-model="banForm.reason"
+              rows="2"
+              placeholder="Reason for ban…"
+              class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+              :class="{ 'border-destructive': banForm.errors.reason }"
+            />
+          </div>
+          <div class="space-y-1">
+            <label class="text-sm font-medium">Duration</label>
+            <select
+              v-model="banForm.duration"
+              class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              :class="{ 'border-destructive': banForm.errors.duration }"
+            >
+              <option value="">— Select duration —</option>
+              <option value="1h">1 hour</option>
+              <option value="6h">6 hours</option>
+              <option value="24h">24 hours</option>
+              <option value="7d">7 days</option>
+              <option value="30d">30 days</option>
+              <option value="permanent">Permanent</option>
+            </select>
+          </div>
+          <button
+            type="button"
+            class="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-white hover:bg-destructive/90 transition-colors"
+            :disabled="banForm.processing"
+            @click="submitBan"
+          >
+            Ban user
+          </button>
+        </template>
+      </div>
+
       <div class="flex gap-3 mt-4 justify-end">
         <a
           :href="route('users.index')"
@@ -134,6 +195,21 @@ const form = useForm({
   email: props.user?.email ?? "",
   role:  props.user?.role  ?? "",
 });
+
+const banForm = useForm({ reason: '', duration: '' })
+
+function submitBan() {
+  banForm.post(route('users.ban', props.user.id), {
+    onSuccess: () => banForm.reset(),
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+  })
+}
+
+function submitUnban() {
+  useForm({}).delete(route('users.unban', props.user.id), {
+    onError: () => notify('Failed to unban user.', 'error'),
+  })
+}
 
 function submit() {
   if (isEditing.value) {
