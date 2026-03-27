@@ -8,6 +8,7 @@ const props = defineProps({
   message:  { type: String, required: true },
   duration: { type: Number, default: null },
   actions:  { type: Array, default: () => [] },
+  items:    { type: Array, default: () => [] },
 })
 const emit = defineEmits(['dismiss'])
 
@@ -45,7 +46,14 @@ function handleAction(handler) {
     <!-- Icon + message -->
     <div class="flex items-start gap-2 p-3 pr-8">
       <component :is="Icon" class="w-4 h-4 mt-0.5 shrink-0" :style="{ color: accent }" />
-      <span class="text-sm leading-snug">{{ message }}</span>
+      <div class="min-w-0 flex-1">
+        <span class="text-sm leading-snug">{{ message }}</span>
+        <ul v-if="items.length" class="mt-1.5 space-y-0.5 list-disc list-inside">
+          <li v-for="(item, i) in items" :key="i" class="text-xs text-muted-foreground leading-snug">
+            {{ item }}
+          </li>
+        </ul>
+      </div>
     </div>
     <!-- Actions -->
     <div v-if="actions.length" class="flex gap-2 px-3 pb-2">
