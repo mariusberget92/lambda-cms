@@ -34,6 +34,7 @@ watch(
             :message="n.message"
             :duration="n.duration"
             :actions="n.actions"
+            :items="n.items"
             @dismiss="dismiss"
           />
         </div>
