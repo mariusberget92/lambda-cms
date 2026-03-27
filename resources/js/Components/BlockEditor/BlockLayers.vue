@@ -4,8 +4,28 @@
 
     <!-- Layers list -->
     <div class="flex flex-col shrink-0" style="max-height: 40%">
-      <div class="px-3 py-2 border-b shrink-0">
+      <div class="px-3 py-2 border-b shrink-0 flex items-center justify-between">
         <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Layers</p>
+        <div class="flex items-center gap-1">
+          <button
+            type="button"
+            :disabled="!canUndo"
+            class="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            title="Undo (Ctrl+Z)"
+            @click="$emit('undo')"
+          >
+            <RotateCcw class="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            :disabled="!canRedo"
+            class="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            title="Redo (Ctrl+Y)"
+            @click="$emit('redo')"
+          >
+            <RotateCw class="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
 
       <div v-if="blocks.length === 0" class="px-3 py-4 text-xs text-muted-foreground text-center">
@@ -20,12 +40,18 @@
           handle=".layer-handle"
           :animation="150"
         >
-          <div v-for="block in draggableBlocks" :key="block.id">
+          <!-- Render from props.blocks (not draggableBlocks) so deep nested children
+               are always live — VueDraggable's internal model can lag on external updates -->
+          <div v-for="block in blocks" :key="block.id">
             <LayerItem
               :block="block"
               :selected-id="selectedId"
+              :clipboard="clipboard"
               @select="$emit('select', $event)"
               @remove="$emit('remove', $event)"
+              @duplicate="$emit('duplicate', $event)"
+              @copy="$emit('copy', $event)"
+              @paste="$emit('paste', $event)"
             />
           </div>
         </VueDraggable>
@@ -78,6 +104,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { RotateCcw, RotateCw } from 'lucide-vue-next'
 import { VueDraggable } from 'vue-draggable-plus'
 import LayerItem from './LayerItem.vue'
 import AdvancedSettings  from './blocks/AdvancedSettings.vue'
@@ -114,9 +141,12 @@ const props = defineProps({
   meta:          { type: Object,  default: () => ({}) },
   loopFields:      { type: Array,   default: () => [] },
   availableFields: { type: Array,   default: () => [] },
+  clipboard: { type: Object,  default: null },
+  canUndo:   { type: Boolean, default: false },
+  canRedo:   { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['select', 'remove', 'update', 'reorder'])
+const emit = defineEmits(['select', 'remove', 'update', 'reorder', 'duplicate', 'copy', 'paste', 'undo', 'redo'])
 
 // ── Drag-to-reorder ───────────────────────────────────────────────────────────
 // _list is kept in sync with props.blocks via a flush:'sync' watcher so it is
