@@ -24,6 +24,7 @@ use App\Http\Controllers\RevisionController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\TemplateController;
+use App\Http\Controllers\BanController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -137,6 +138,11 @@ Route::middleware('installed')->group(function () {
         Route::get('/templates/{template}/revisions',   [RevisionController::class, 'indexTemplate'])->name('templates.revisions');
 
         Route::resource('users', UserController::class)->except(['show']);
+
+        Route::middleware('role:administrator')->group(function () {
+            Route::post('/users/{user}/ban',   [BanController::class, 'ban'])->name('users.ban');
+            Route::delete('/users/{user}/ban', [BanController::class, 'unban'])->name('users.unban');
+        });
 
         Route::get('/comments',                     [CommentController::class, 'index'])->name('comments.index');
         Route::patch('/comments/{comment}/approve', [CommentController::class, 'approve'])->name('comments.approve');
