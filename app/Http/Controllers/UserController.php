@@ -26,6 +26,9 @@ class UserController extends Controller
                 'email_verified'  => $user->hasVerifiedEmail(),
                 'is_online'       => $user->isOnline(),
                 'last_seen_at'    => $user->last_seen_at?->diffForHumans(),
+                'is_banned'       => $user->isBanned(),
+                'ban_reason'      => $user->ban_reason,
+                'banned_until'    => $user->banned_until?->toISOString(),
             ]);
 
         return Inertia::render('Users/Index', [
@@ -71,7 +74,10 @@ class UserController extends Controller
                 'id'    => $user->id,
                 'name'  => $user->name,
                 'email' => $user->email,
-                'role'  => $user->getRoleNames()->first(),
+                'role'         => $user->getRoleNames()->first(),
+                'is_banned'    => $user->isBanned(),
+                'ban_reason'   => $user->ban_reason,
+                'banned_until' => $user->banned_until?->toISOString(),
             ],
             'roles'      => Role::orderBy('name')->pluck('name'),
             'adminCount' => $this->adminCount(),
