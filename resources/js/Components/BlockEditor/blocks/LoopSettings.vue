@@ -104,23 +104,19 @@
     <div class="flex gap-2">
       <div class="flex-1">
         <label class="text-xs font-medium text-muted-foreground block mb-1">Limit</label>
-        <input
-          type="number"
-          min="1"
-          max="100"
-          :value="block.data.limit ?? 12"
-          class="w-full rounded border bg-background px-2 py-1.5 text-sm"
-          @input="emitData({ limit: parseInt($event.target.value) || 12 })"
+        <NumberInput
+          :model-value="block.data.limit ?? 12"
+          :min="1"
+          :max="100"
+          @update:model-value="emitData({ limit: $event || 12 })"
         />
       </div>
       <div class="flex-1">
         <label class="text-xs font-medium text-muted-foreground block mb-1">Offset</label>
-        <input
-          type="number"
-          min="0"
-          :value="block.data.offset ?? 0"
-          class="w-full rounded border bg-background px-2 py-1.5 text-sm"
-          @input="emitData({ offset: parseInt($event.target.value) || 0 })"
+        <NumberInput
+          :model-value="block.data.offset ?? 0"
+          :min="0"
+          @update:model-value="emitData({ offset: $event || 0 })"
         />
       </div>
     </div>
@@ -155,6 +151,7 @@
 <script setup>
 import { computed } from 'vue'
 import SelectBox from '@/Components/SelectBox.vue'
+import NumberInput from '@/Components/NumberInput.vue'
 import { SOURCES, SOURCE_FIELDS, SORT_FIELDS, FILTER_OPS } from '@/lib/loopSources.js'
 
 const props = defineProps({ block: { type: Object, required: true } })

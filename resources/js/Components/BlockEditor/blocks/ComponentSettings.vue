@@ -30,23 +30,19 @@
       <div class="grid grid-cols-2 gap-2">
         <div>
           <label class="text-xs font-medium text-muted-foreground block mb-1">Limit</label>
-          <input
-            type="number"
-            min="1"
-            max="100"
-            :value="block.data.limit"
-            class="w-full rounded border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            @input="update('limit', parseInt($event.target.value) || 6)"
+          <NumberInput
+            :model-value="block.data.limit"
+            :min="1"
+            :max="100"
+            @update:model-value="update('limit', $event || 6)"
           />
         </div>
         <div>
           <label class="text-xs font-medium text-muted-foreground block mb-1">Offset</label>
-          <input
-            type="number"
-            min="0"
-            :value="block.data.offset"
-            class="w-full rounded border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            @input="update('offset', parseInt($event.target.value) || 0)"
+          <NumberInput
+            :model-value="block.data.offset"
+            :min="0"
+            @update:model-value="update('offset', $event || 0)"
           />
         </div>
       </div>
@@ -109,6 +105,7 @@
 
 <script setup>
 import SelectBox from '@/Components/SelectBox.vue'
+import NumberInput from '@/Components/NumberInput.vue'
 
 const props = defineProps({
   block: { type: Object, required: true },

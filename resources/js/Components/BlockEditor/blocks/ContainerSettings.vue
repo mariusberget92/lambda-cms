@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import SelectBox from '@/Components/SelectBox.vue'
+import NumberInput from '@/Components/NumberInput.vue'
 import DimensionInput from '../DimensionInput.vue'
 import SpacingControl from '../SpacingControl.vue'
 
@@ -113,12 +114,11 @@ function update(key, value) {
             <span class="text-[10px] text-muted-foreground block mb-0.5 text-center">
               {{ bp === 'default' ? 'Mobile' : bp === 'sm' ? 'SM' : 'LG' }}
             </span>
-            <input
-              type="number" min="1" max="12"
-              :value="getBreakpoint('columns', bp) ?? ''"
-              placeholder="–"
-              class="w-full rounded border border-border bg-background px-1.5 py-1 text-xs text-center"
-              @change="v => setBreakpoint('columns', bp, parseInt(v.target.value) || null)"
+            <NumberInput
+              :model-value="getBreakpoint('columns', bp) ?? ''"
+              :min="1"
+              :max="12"
+              @update:model-value="v => setBreakpoint('columns', bp, v || null)"
             />
           </div>
         </div>
