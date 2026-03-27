@@ -133,7 +133,6 @@ class TemplateTest extends TestCase
     public function test_non_owner_regular_user_cannot_edit_template(): void
     {
         $owner    = $this->makeAdmin();
-        $other    = $this->makeAdmin();
         $notOwner = $this->makeUser();
         $template = Template::create([
             'user_id' => $owner->id,
@@ -143,12 +142,7 @@ class TemplateTest extends TestCase
             'blocks'  => [],
         ]);
 
-        // Regular users cannot even access the templates section (role middleware
-        // redirects to dashboard), but if they somehow bypass the index guard the
-        // ownership check must also block them on the individual resource routes.
-        // Because the role middleware fires first and redirects, we test a user
-        // that is an admin but not the owner to verify the 403 path is unreachable
-        // via normal routing — and separately confirm the non-admin redirect.
+        // Role middleware redirects non-admins to the dashboard before the ownership check fires.
         $this->actingAs($notOwner)
             ->get("/templates/{$template->id}/edit")
             ->assertRedirect(route('dashboard'));

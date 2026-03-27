@@ -58,7 +58,7 @@ class TemplateController extends Controller
 
     public function edit(Request $request, Template $template)
     {
-        if ($template->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
+        if ($template->user_id !== $request->user()->id && !$request->user()->hasRole('administrator')) {
             abort(403);
         }
 
@@ -84,7 +84,7 @@ class TemplateController extends Controller
 
     public function update(Request $request, Template $template)
     {
-        if ($template->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
+        if ($template->user_id !== $request->user()->id && !$request->user()->hasRole('administrator')) {
             abort(403);
         }
 
@@ -114,7 +114,7 @@ class TemplateController extends Controller
 
     public function destroy(Request $request, Template $template)
     {
-        if ($template->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
+        if ($template->user_id !== $request->user()->id && !$request->user()->hasRole('administrator')) {
             abort(403);
         }
 
