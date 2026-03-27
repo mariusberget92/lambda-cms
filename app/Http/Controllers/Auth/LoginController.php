@@ -34,6 +34,19 @@ class LoginController extends Controller
         }
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $user = Auth::user();
+            $user->liftExpiredBan();
+
+            if ($user->isBanned()) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()->withErrors([
+                    'email' => 'Your account has been suspended: ' . $user->ban_reason,
+                ])->onlyInput('email');
+            }
+
             RateLimiter::clear($throttleKey);
             $request->session()->regenerate();
             return redirect()->intended(route('dashboard'));

@@ -242,4 +242,45 @@ class UserTest extends TestCase
         $user->refresh();
         $this->assertNull($user->banned_at); // ban was auto-lifted
     }
+
+    // ── Ban login gate ─────────────────────────────────────────────────────────────
+
+    public function test_banned_user_cannot_login(): void
+    {
+        $user = User::factory()->create([
+            'password'     => bcrypt('password'),
+            'banned_at'    => now(),
+            'banned_until' => null,
+            'ban_reason'   => 'Abuse',
+        ]);
+        $user->assignRole('user');
+
+        $response = $this->post('/login', [
+            'email'    => $user->email,
+            'password' => 'password',
+        ]);
+
+        $response->assertSessionHasErrors('email');
+        $this->assertGuest();
+    }
+
+    public function test_user_with_expired_ban_can_login(): void
+    {
+        $user = User::factory()->create([
+            'password'     => bcrypt('password'),
+            'banned_at'    => now()->subDay(),
+            'banned_until' => now()->subHour(),
+            'ban_reason'   => 'Old ban',
+        ]);
+        $user->assignRole('user');
+
+        $this->post('/login', [
+            'email'    => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+        $user->refresh();
+        $this->assertNull($user->banned_at); // auto-lifted
+    }
 }
