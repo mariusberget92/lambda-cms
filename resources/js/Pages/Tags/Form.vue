@@ -30,7 +30,6 @@
             :class="{ 'border-destructive': form.errors.name }"
             autofocus
           />
-          <p v-if="form.errors.name" class="text-xs text-destructive">{{ form.errors.name }}</p>
         </div>
       </div>
 
@@ -52,6 +51,8 @@
 import { computed } from "vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import { useNotifications } from '@/composables/useNotifications.js'
+const { notify } = useNotifications()
 
 const props = defineProps({
   tag: { type: Object, default: null },
@@ -65,9 +66,13 @@ const form = useForm({
 
 function submit() {
   if (isEditing.value) {
-    form.put(route("tags.update", props.tag.id));
+    form.put(route("tags.update", props.tag.id), {
+      onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+    });
   } else {
-    form.post(route("tags.store"));
+    form.post(route("tags.store"), {
+      onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+    });
   }
 }
 </script>

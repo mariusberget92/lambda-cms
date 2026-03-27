@@ -47,7 +47,6 @@
             class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             :class="{ 'border-destructive': form.errors.name }"
           />
-          <p v-if="form.errors.name" class="text-xs text-destructive">{{ form.errors.name }}</p>
         </div>
 
         <!-- Email -->
@@ -61,7 +60,6 @@
             class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             :class="{ 'border-destructive': form.errors.email }"
           />
-          <p v-if="form.errors.email" class="text-xs text-destructive">{{ form.errors.email }}</p>
         </div>
 
         <!-- Role -->
@@ -73,7 +71,6 @@
             :disabled="isLastAdmin"
             placeholder="— Select a role —"
           />
-          <p v-if="form.errors.role" class="text-xs text-destructive">{{ form.errors.role }}</p>
           <p class="text-xs text-muted-foreground">
             <strong>Administrator</strong> — full access.
             <strong>User</strong> — can manage posts, categories and tags.
@@ -111,6 +108,8 @@ import { computed } from "vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SelectBox from '@/Components/SelectBox.vue'
+import { useNotifications } from '@/composables/useNotifications.js'
+const { notify } = useNotifications()
 
 const props = defineProps({
   user:       { type: Object, default: null },
@@ -137,9 +136,13 @@ const form = useForm({
 
 function submit() {
   if (isEditing.value) {
-    form.put(route("users.update", props.user.id));
+    form.put(route("users.update", props.user.id), {
+      onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+    });
   } else {
-    form.post(route("users.store"));
+    form.post(route("users.store"), {
+      onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+    });
   }
 }
 </script>

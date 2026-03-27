@@ -30,7 +30,6 @@
             :class="{ 'border-destructive': form.errors.name }"
             autofocus
           />
-          <p v-if="form.errors.name" class="text-xs text-destructive">{{ form.errors.name }}</p>
         </div>
 
         <div class="space-y-1">
@@ -44,8 +43,7 @@
             :class="{ 'border-destructive': form.errors.description }"
           />
           <div class="flex justify-between">
-            <p v-if="form.errors.description" class="text-xs text-destructive">{{ form.errors.description }}</p>
-            <p v-else class="text-xs text-muted-foreground ml-auto">{{ (form.description ?? '').length }}/500</p>
+            <p class="text-xs text-muted-foreground ml-auto">{{ (form.description ?? '').length }}/500</p>
           </div>
         </div>
       </div>
@@ -68,6 +66,8 @@
 import { computed } from "vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import { useNotifications } from '@/composables/useNotifications.js'
+const { notify } = useNotifications()
 
 const props = defineProps({
   category: { type: Object, default: null },
@@ -82,9 +82,13 @@ const form = useForm({
 
 function submit() {
   if (isEditing.value) {
-    form.put(route("categories.update", props.category.id));
+    form.put(route("categories.update", props.category.id), {
+      onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+    });
   } else {
-    form.post(route("categories.store"));
+    form.post(route("categories.store"), {
+      onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+    });
   }
 }
 </script>
