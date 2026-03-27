@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import {
@@ -25,11 +25,15 @@ const hours   = ref(12)   // 1–12
 const minutes = ref(0)    // 0–59
 const period  = ref('AM') // 'AM' | 'PM'
 
+// Suppress the emit watcher while we are parsing an incoming modelValue
+const parsing = ref(false)
+
 // Parse incoming modelValue → internal state
 watch(() => props.modelValue, (val) => {
-  if (!val) { selectedCalDate.value = undefined; return }
+  parsing.value = true
+  if (!val) { selectedCalDate.value = undefined; parsing.value = false; return }
   const [datePart, timePart] = val.split('T')
-  if (!datePart) return
+  if (!datePart) { parsing.value = false; return }
   const [y, m, d] = datePart.split('-').map(Number)
   selectedCalDate.value = new CalendarDate(y, m, d)
   if (timePart) {
@@ -38,11 +42,12 @@ watch(() => props.modelValue, (val) => {
     hours.value   = h === 0 ? 12 : h > 12 ? h - 12 : h
     minutes.value = min
   }
+  nextTick(() => { parsing.value = false })
 }, { immediate: true })
 
 // Emit combined YYYY-MM-DDTHH:mm whenever anything changes
 watch([selectedCalDate, hours, minutes, period], () => {
-  if (!selectedCalDate.value) return
+  if (!selectedCalDate.value || parsing.value) return
   let h = hours.value
   if (period.value === 'AM' && h === 12) h = 0
   if (period.value === 'PM' && h !== 12) h += 12
@@ -91,11 +96,14 @@ function clampMinutes(e) {
 </script>
 
 <template>
-  <div ref="container" class="relative">
+  <div ref="container" class="relative" @keydown.escape="open = false">
     <!-- Trigger -->
     <button
       type="button"
-      class="w-full flex items-center gap-2 rounded-md border bg-background px-3 py-1.5 text-sm text-left focus:outline-none focus:ring-2 focus:ring-ring"
+      class="w-full flex items-center gap-2 rounded-md border border-border bg-background px-3 py-1.5 text-sm text-left focus:outline-none focus:ring-2 focus:ring-ring"
+      aria-haspopup="dialog"
+      :aria-expanded="open"
+      :aria-label="displayValue || 'Pick a date and time'"
       @click="open = !open"
     >
       <CalendarDays class="w-4 h-4 text-muted-foreground shrink-0" />
@@ -114,7 +122,7 @@ function clampMinutes(e) {
       leave-to-class="opacity-0 scale-95"
     >
       <div
-        v-if="open"
+        v-show="open"
         class="absolute left-0 top-full z-50 mt-1 w-72 rounded-lg border border-border bg-card p-3 shadow-lg dark:shadow-black/40"
       >
         <!-- reka-ui Calendar -->
@@ -197,7 +205,7 @@ function clampMinutes(e) {
             min="1"
             max="12"
             class="w-10 text-center rounded border border-border bg-background text-sm px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-ring [appearance:textfield]"
-            @change="clampHours"
+            @input="clampHours"
           />
           <span class="text-muted-foreground font-medium">:</span>
           <input
@@ -206,7 +214,7 @@ function clampMinutes(e) {
             min="0"
             max="59"
             class="w-10 text-center rounded border border-border bg-background text-sm px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-ring [appearance:textfield]"
-            @change="clampMinutes"
+            @input="clampMinutes"
           />
           <div class="ml-auto flex rounded border border-border overflow-hidden text-xs">
             <button
