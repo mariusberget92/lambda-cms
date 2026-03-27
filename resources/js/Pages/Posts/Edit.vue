@@ -104,12 +104,7 @@
             <!-- Datetime picker — only when Scheduled -->
             <div v-show="form.status === 'scheduled'" class="mt-3 pt-3 border-t border-border">
               <label class="text-xs font-medium text-muted-foreground mb-1 block">Publish on</label>
-              <input
-                type="datetime-local"
-                v-model="form.published_at"
-                class="w-full rounded-md border bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring [color-scheme:light] dark:[color-scheme:dark]"
-                @click="$event.target.showPicker?.()"
-              />
+              <DateTimePicker v-model="form.published_at" />
               <p v-if="daysUntilPublish" class="text-xs text-indigo-600 mt-1">
                 ⏱ publishes in {{ daysUntilPublish }} day{{ daysUntilPublish === 1 ? '' : 's' }}
               </p>
@@ -316,6 +311,7 @@ import { ChevronDown, ArrowLeft, X } from 'lucide-vue-next'
 import AppLayout from "@/Layouts/AppLayout.vue";
 import TiptapEditor from "@/Components/TiptapEditor.vue";
 import MediaPicker from '@/Components/MediaPicker.vue'
+import DateTimePicker from '@/Components/DateTimePicker.vue'
 import { useNotifications } from '@/composables/useNotifications.js'
 
 const { notify, dismiss } = useNotifications()
