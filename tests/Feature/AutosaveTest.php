@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Autosave;
 use App\Models\Page;
 use App\Models\Post;
 use App\Models\Template;
@@ -107,6 +108,37 @@ class AutosaveTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_admin_destroy_post_autosave_deletes_owners_record(): void
+    {
+        $owner = $this->makeUser();
+        $admin = $this->makeAdmin();
+        $post  = Post::factory()->create(['user_id' => $owner->id]);
+
+        Autosave::create([
+            'autosaveable_type' => Post::class,
+            'autosaveable_id'   => $post->id,
+            'user_id'           => $owner->id,
+            'payload'           => ['title' => 'Owner draft'],
+        ]);
+
+        $this->assertDatabaseHas('autosaves', [
+            'autosaveable_type' => Post::class,
+            'autosaveable_id'   => $post->id,
+            'user_id'           => $owner->id,
+        ]);
+
+        $this->actingAs($admin)
+            ->deleteJson("/posts/{$post->id}/autosave")
+            ->assertOk()
+            ->assertJson(['ok' => true]);
+
+        $this->assertDatabaseMissing('autosaves', [
+            'autosaveable_type' => Post::class,
+            'autosaveable_id'   => $post->id,
+            'user_id'           => $owner->id,
+        ]);
+    }
+
     // ── storePage ─────────────────────────────────────────────────────────────
 
     public function test_admin_owner_can_autosave_own_page(): void
@@ -179,6 +211,37 @@ class AutosaveTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_admin_destroy_page_autosave_deletes_owners_record(): void
+    {
+        $owner = $this->makeAdmin();
+        $admin = $this->makeAdmin();
+        $page  = Page::factory()->create(['user_id' => $owner->id]);
+
+        Autosave::create([
+            'autosaveable_type' => Page::class,
+            'autosaveable_id'   => $page->id,
+            'user_id'           => $owner->id,
+            'payload'           => ['title' => 'Owner draft'],
+        ]);
+
+        $this->assertDatabaseHas('autosaves', [
+            'autosaveable_type' => Page::class,
+            'autosaveable_id'   => $page->id,
+            'user_id'           => $owner->id,
+        ]);
+
+        $this->actingAs($admin)
+            ->deleteJson("/pages/{$page->id}/autosave")
+            ->assertOk()
+            ->assertJson(['ok' => true]);
+
+        $this->assertDatabaseMissing('autosaves', [
+            'autosaveable_type' => Page::class,
+            'autosaveable_id'   => $page->id,
+            'user_id'           => $owner->id,
+        ]);
+    }
+
     // ── storeTemplate ─────────────────────────────────────────────────────────
 
     public function test_admin_owner_can_autosave_own_template(): void
@@ -249,5 +312,36 @@ class AutosaveTest extends TestCase
             ->withoutMiddleware()
             ->deleteJson("/templates/{$template->id}/autosave")
             ->assertForbidden();
+    }
+
+    public function test_admin_destroy_template_autosave_deletes_owners_record(): void
+    {
+        $owner    = $this->makeAdmin();
+        $admin    = $this->makeAdmin();
+        $template = Template::factory()->create(['user_id' => $owner->id]);
+
+        Autosave::create([
+            'autosaveable_type' => Template::class,
+            'autosaveable_id'   => $template->id,
+            'user_id'           => $owner->id,
+            'payload'           => ['title' => 'Owner draft'],
+        ]);
+
+        $this->assertDatabaseHas('autosaves', [
+            'autosaveable_type' => Template::class,
+            'autosaveable_id'   => $template->id,
+            'user_id'           => $owner->id,
+        ]);
+
+        $this->actingAs($admin)
+            ->deleteJson("/templates/{$template->id}/autosave")
+            ->assertOk()
+            ->assertJson(['ok' => true]);
+
+        $this->assertDatabaseMissing('autosaves', [
+            'autosaveable_type' => Template::class,
+            'autosaveable_id'   => $template->id,
+            'user_id'           => $owner->id,
+        ]);
     }
 }
