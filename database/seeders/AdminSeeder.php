@@ -47,6 +47,20 @@ class AdminSeeder extends Seeder
             $post->categories()->sync([$category->id]);
         }
 
+        // Seed a regular test user
+        $testUser = User::firstOrCreate(
+            ['email' => 'test@lambdacms.test'],
+            [
+                'name'              => 'Test User',
+                'password'          => Hash::make('lambdacms'),
+                'email_verified_at' => now(),
+            ]
+        );
+
+        if (! $testUser->hasRole('user')) {
+            $testUser->assignRole('user');
+        }
+
         // Write the installed lockfile so the app skips the install wizard
         file_put_contents(storage_path('app/installed'), now()->toDateTimeString());
     }
