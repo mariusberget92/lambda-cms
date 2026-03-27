@@ -76,6 +76,8 @@ class PostController extends Controller
             'category_ids.*' => ['exists:categories,id'],
             'tag_ids'          => ['nullable', 'array'],
             'tag_ids.*'        => ['exists:tags,id'],
+            'new_tag_names'    => ['nullable', 'array'],
+            'new_tag_names.*'  => ['string', 'max:50'],
             'featured_image_id' => ['nullable', 'exists:media,id'],
             'comments_enabled' => ['nullable', 'boolean'],
             'meta_title'       => ['nullable', 'string', 'max:100'],
@@ -87,7 +89,17 @@ class PostController extends Controller
 
         $tagIds      = $validated['tag_ids'] ?? [];
         $categoryIds = $validated['category_ids'] ?? [];
-        unset($validated['tag_ids'], $validated['category_ids']);
+        $newTagNames = $validated['new_tag_names'] ?? [];
+        unset($validated['tag_ids'], $validated['category_ids'], $validated['new_tag_names']);
+
+        foreach ($newTagNames as $name) {
+            $name = trim($name);
+            if ($name === '') continue;
+            $tagIds[] = Tag::firstOrCreate(
+                ['slug' => Tag::generateSlug($name)],
+                ['name' => $name]
+            )->id;
+        }
 
         $validated['comments_enabled'] = $validated['comments_enabled'] ?? true;
         $validated['meta_title']       = $validated['meta_title']       ?? null;
@@ -175,6 +187,8 @@ class PostController extends Controller
             'category_ids.*' => ['exists:categories,id'],
             'tag_ids'           => ['nullable', 'array'],
             'tag_ids.*'         => ['exists:tags,id'],
+            'new_tag_names'     => ['nullable', 'array'],
+            'new_tag_names.*'   => ['string', 'max:50'],
             'featured_image_id' => ['nullable', 'exists:media,id'],
             'comments_enabled'  => ['nullable', 'boolean'],
             'meta_title'       => ['nullable', 'string', 'max:100'],
@@ -186,7 +200,17 @@ class PostController extends Controller
 
         $tagIds      = $validated['tag_ids'] ?? [];
         $categoryIds = $validated['category_ids'] ?? [];
-        unset($validated['tag_ids'], $validated['category_ids']);
+        $newTagNames = $validated['new_tag_names'] ?? [];
+        unset($validated['tag_ids'], $validated['category_ids'], $validated['new_tag_names']);
+
+        foreach ($newTagNames as $name) {
+            $name = trim($name);
+            if ($name === '') continue;
+            $tagIds[] = Tag::firstOrCreate(
+                ['slug' => Tag::generateSlug($name)],
+                ['name' => $name]
+            )->id;
+        }
 
         $validated['comments_enabled'] = $validated['comments_enabled'] ?? $post->comments_enabled;
         $validated['meta_title']       = $validated['meta_title']       ?? $post->meta_title;
