@@ -26,7 +26,7 @@ class EnsureUserIsNotBanned
             $request->session()->regenerateToken();
 
             return redirect()->route('login')
-                ->withErrors(['email' => 'Your account has been suspended: ' . $user->ban_reason]);
+                ->withErrors(['email' => 'Your account has been suspended: ' . ($user->ban_reason ?? 'no reason given')]);
         }
 
         return $next($request);

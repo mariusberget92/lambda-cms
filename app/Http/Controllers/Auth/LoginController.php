@@ -43,7 +43,7 @@ class LoginController extends Controller
                 $request->session()->regenerateToken();
 
                 return back()->withErrors([
-                    'email' => 'Your account has been suspended: ' . $user->ban_reason,
+                    'email' => 'Your account has been suspended: ' . ($user->ban_reason ?? 'no reason given'),
                 ])->onlyInput('email');
             }
 
