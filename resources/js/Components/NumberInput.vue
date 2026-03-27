@@ -21,12 +21,14 @@ function onInput(e) {
 }
 
 function stepUp() {
-  inputRef.value?.stepUp()
+  if (!inputRef.value) return
+  inputRef.value.stepUp()
   emit('update:modelValue', Number(inputRef.value.value))
 }
 
 function stepDown() {
-  inputRef.value?.stepDown()
+  if (!inputRef.value) return
+  inputRef.value.stepDown()
   emit('update:modelValue', Number(inputRef.value.value))
 }
 </script>
