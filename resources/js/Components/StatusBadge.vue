@@ -50,6 +50,11 @@ const MAP = {
     dotClass: 'bg-status-error-fg',
     label:    'Rejected',
   },
+  banned: {
+    classes:  'bg-destructive/10 text-destructive',
+    dotClass: 'bg-destructive',
+    label:    'Banned',
+  },
 }
 
 const entry   = computed(() => MAP[props.status] ?? MAP.draft)
