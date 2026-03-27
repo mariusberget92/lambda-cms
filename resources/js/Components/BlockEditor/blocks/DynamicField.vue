@@ -46,7 +46,7 @@ const props = defineProps({
 
 const emit = defineEmits(['bind', 'unbind'])
 
-const isBound    = computed(() => !!props.block.bindings?.[props.fieldName])
+const isBound    = computed(() => props.fieldName in (props.block.bindings ?? {}))
 const boundField = computed(() => props.block.bindings?.[props.fieldName] ?? '')
 
 // Group availableFields by their .group property.

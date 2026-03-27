@@ -423,5 +423,8 @@ function onKeydown(e) {
 }
 
 onMounted(() => document.addEventListener('keydown', onKeydown))
-onUnmounted(() => document.removeEventListener('keydown', onKeydown))
+onUnmounted(() => {
+  document.removeEventListener('keydown', onKeydown)
+  clearTimeout(_pushHistoryTimer)
+})
 </script>
