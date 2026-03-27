@@ -306,6 +306,69 @@ class TemplateTest extends TestCase
         $this->assertDatabaseHas('templates', ['id' => $template->id]);
     }
 
+    // ── Direct 403 coverage (middleware bypassed) ─────────────────────────────
+
+    public function test_non_owner_user_gets_403_on_edit_bypassing_middleware(): void
+    {
+        $owner    = $this->makeAdmin();
+        $notOwner = User::factory()->create();
+        $notOwner->assignRole('user');
+        $template = Template::create([
+            'user_id' => $owner->id,
+            'title'   => 'Not Yours Edit',
+            'type'    => 'single-post',
+            'status'  => 'draft',
+            'blocks'  => [],
+        ]);
+
+        $this->actingAs($notOwner)
+            ->withoutMiddleware()
+            ->get("/templates/{$template->id}/edit")
+            ->assertForbidden();
+    }
+
+    public function test_non_owner_user_gets_403_on_update_bypassing_middleware(): void
+    {
+        $owner    = $this->makeAdmin();
+        $notOwner = User::factory()->create();
+        $notOwner->assignRole('user');
+        $template = Template::create([
+            'user_id' => $owner->id,
+            'title'   => 'Not Yours Update',
+            'type'    => 'archive',
+            'status'  => 'draft',
+            'blocks'  => [],
+        ]);
+
+        $this->actingAs($notOwner)
+            ->withoutMiddleware()
+            ->patch("/templates/{$template->id}", ['title' => 'Hijacked', 'type' => 'archive', 'status' => 'draft', 'blocks' => []])
+            ->assertForbidden();
+
+        $this->assertEquals('Not Yours Update', $template->fresh()->title);
+    }
+
+    public function test_non_owner_user_gets_403_on_destroy_bypassing_middleware(): void
+    {
+        $owner    = $this->makeAdmin();
+        $notOwner = User::factory()->create();
+        $notOwner->assignRole('user');
+        $template = Template::create([
+            'user_id' => $owner->id,
+            'title'   => 'Not Yours Delete',
+            'type'    => 'search-results',
+            'status'  => 'draft',
+            'blocks'  => [],
+        ]);
+
+        $this->actingAs($notOwner)
+            ->withoutMiddleware()
+            ->delete("/templates/{$template->id}")
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('templates', ['id' => $template->id]);
+    }
+
     // ── TemplateResolver ──────────────────────────────────────────────────────
 
     public function test_template_resolver_returns_null_when_no_published_template(): void
