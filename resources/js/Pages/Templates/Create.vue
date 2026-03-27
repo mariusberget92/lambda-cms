@@ -7,6 +7,8 @@ import { POST_CONTEXT_FIELDS } from '@/lib/loopSources.js'
 import { ref } from 'vue'
 import { filterEmptyBlocks } from '@/lib/utils.js'
 import { ChevronDown, ArrowLeft } from 'lucide-vue-next'
+import { useNotifications } from '@/composables/useNotifications.js'
+const { notify } = useNotifications()
 
 const seoOpen = ref(false)
 
@@ -37,7 +39,9 @@ const form = useForm({
 
 function submit() {
   form.blocks = filterEmptyBlocks(form.blocks)
-  form.post(route('templates.store'))
+  form.post(route('templates.store'), {
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+  })
 }
 </script>
 
@@ -74,7 +78,6 @@ function submit() {
             class="w-full rounded-lg border bg-background px-4 py-3 text-xl font-semibold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring"
             :class="{ 'border-destructive': form.errors.name }"
           />
-          <p v-if="form.errors.name" class="mt-1 text-xs text-destructive">{{ form.errors.name }}</p>
         </div>
 
         <!-- Inline sub-fields: status · SEO -->

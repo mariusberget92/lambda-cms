@@ -28,7 +28,6 @@
               class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               :class="{ 'border-destructive': infoForm.errors.name }"
             />
-            <p v-if="infoForm.errors.name" class="text-xs text-destructive">{{ infoForm.errors.name }}</p>
           </div>
 
           <div class="space-y-1">
@@ -41,7 +40,6 @@
               class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               :class="{ 'border-destructive': infoForm.errors.email }"
             />
-            <p v-if="infoForm.errors.email" class="text-xs text-destructive">{{ infoForm.errors.email }}</p>
           </div>
 
           <div class="flex justify-end pt-1">
@@ -74,7 +72,6 @@
               class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               :class="{ 'border-destructive': passwordForm.errors.current_password }"
             />
-            <p v-if="passwordForm.errors.current_password" class="text-xs text-destructive">{{ passwordForm.errors.current_password }}</p>
           </div>
 
           <div class="space-y-1">
@@ -87,7 +84,6 @@
               class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               :class="{ 'border-destructive': passwordForm.errors.password }"
             />
-            <p v-if="passwordForm.errors.password" class="text-xs text-destructive">{{ passwordForm.errors.password }}</p>
           </div>
 
           <div class="space-y-1">
@@ -191,7 +187,6 @@
             </div>
 
             <p class="text-xs text-muted-foreground">JPG, PNG, GIF or WebP &mdash; max 5 MB.</p>
-            <p v-if="avatarForm.errors.avatar" class="text-xs text-destructive">{{ avatarForm.errors.avatar }}</p>
           </div>
         </div>
 
@@ -230,6 +225,8 @@
 import { ref, computed } from "vue";
 import { Head, useForm, usePage, router } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import { useNotifications } from '@/composables/useNotifications.js'
+const { notify } = useNotifications()
 
 const page = usePage();
 const user = computed(() => page.props.auth.user ?? { name: "", email: "", avatar_url: null });
@@ -241,7 +238,10 @@ const infoForm = useForm({
 });
 
 function submitInfo() {
-  infoForm.post(route("profile.info"), { preserveScroll: true });
+  infoForm.post(route("profile.info"), {
+    preserveScroll: true,
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+  });
 }
 
 // ── Panel 2: Password ──────────────────────────────────────────────────────
@@ -255,6 +255,7 @@ function submitPassword() {
   passwordForm.post(route("profile.password"), {
     preserveScroll: true,
     onSuccess: () => passwordForm.reset(),
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   });
 }
 
@@ -287,6 +288,7 @@ function submitAvatar() {
       avatarPreview.value = null;
       avatarForm.reset();
     },
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   });
 }
 

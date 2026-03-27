@@ -5,6 +5,8 @@ import { Head, router, useForm } from '@inertiajs/vue3'
 import { VueDraggable } from 'vue-draggable-plus'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import SelectBox from '@/Components/SelectBox.vue'
+import { useNotifications } from '@/composables/useNotifications.js'
+const { notify } = useNotifications()
 
 
 const props = defineProps({
@@ -63,6 +65,7 @@ function submit() {
       form.reset()
       addType.value = 'custom'
     },
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
     preserveScroll: true,
   })
 }
@@ -160,7 +163,6 @@ function deleteItem(id) {
               placeholder="Select a page…"
               @update:model-value="onPageSelect"
             />
-            <p v-if="form.errors.page_id" class="mt-1 text-xs text-destructive">{{ form.errors.page_id }}</p>
           </div>
 
           <!-- Label -->
@@ -172,7 +174,6 @@ function deleteItem(id) {
               placeholder="e.g. About"
               class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
-            <p v-if="form.errors.label" class="mt-1 text-xs text-destructive">{{ form.errors.label }}</p>
           </div>
 
           <!-- URL (custom only) -->
@@ -184,7 +185,6 @@ function deleteItem(id) {
               placeholder="e.g. /about or https://example.com"
               class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
-            <p v-if="form.errors.url" class="mt-1 text-xs text-destructive">{{ form.errors.url }}</p>
           </div>
 
           <button

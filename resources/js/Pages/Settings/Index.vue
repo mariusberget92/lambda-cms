@@ -48,7 +48,6 @@
                 class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 :class="{ 'border-destructive': siteForm.errors['site.name'] }"
               />
-              <p v-if="siteForm.errors['site.name']" class="text-xs text-destructive">{{ siteForm.errors['site.name'] }}</p>
             </div>
 
             <div class="space-y-1">
@@ -60,7 +59,6 @@
                 class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 :class="{ 'border-destructive': siteForm.errors['site.url'] }"
               />
-              <p v-if="siteForm.errors['site.url']" class="text-xs text-destructive">{{ siteForm.errors['site.url'] }}</p>
             </div>
 
             <div class="flex justify-end pt-1">
@@ -91,7 +89,6 @@
                 :data="timezoneOptions"
                 searchable
               />
-              <p v-if="localeForm.errors['locale.timezone']" class="text-xs text-destructive">{{ localeForm.errors['locale.timezone'] }}</p>
             </div>
 
             <div class="space-y-1">
@@ -105,7 +102,6 @@
                 :class="{ 'border-destructive': localeForm.errors['locale.date_format'] }"
               />
               <p class="text-xs text-muted-foreground">PHP date format string (e.g. Y-m-d, d/m/Y, m/d/Y)</p>
-              <p v-if="localeForm.errors['locale.date_format']" class="text-xs text-destructive">{{ localeForm.errors['locale.date_format'] }}</p>
             </div>
 
             <div class="flex justify-end pt-1">
@@ -144,7 +140,6 @@
                   { value: 'mailgun', label: 'Mailgun' },
                 ]"
               />
-              <p v-if="mailForm.errors['mail.driver']" class="text-xs text-destructive">{{ mailForm.errors['mail.driver'] }}</p>
             </div>
 
             <div class="space-y-1">
@@ -156,7 +151,6 @@
                 class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 :class="{ 'border-destructive': mailForm.errors['mail.host'] }"
               />
-              <p v-if="mailForm.errors['mail.host']" class="text-xs text-destructive">{{ mailForm.errors['mail.host'] }}</p>
             </div>
 
             <div class="space-y-1">
@@ -168,7 +162,6 @@
                 class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 :class="{ 'border-destructive': mailForm.errors['mail.port'] }"
               />
-              <p v-if="mailForm.errors['mail.port']" class="text-xs text-destructive">{{ mailForm.errors['mail.port'] }}</p>
             </div>
 
             <div class="space-y-1">
@@ -181,7 +174,6 @@
                 class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 :class="{ 'border-destructive': mailForm.errors['mail.username'] }"
               />
-              <p v-if="mailForm.errors['mail.username']" class="text-xs text-destructive">{{ mailForm.errors['mail.username'] }}</p>
             </div>
 
             <div class="space-y-1">
@@ -195,7 +187,6 @@
                 class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 :class="{ 'border-destructive': mailForm.errors['mail.password'] }"
               />
-              <p v-if="mailForm.errors['mail.password']" class="text-xs text-destructive">{{ mailForm.errors['mail.password'] }}</p>
             </div>
 
             <div class="space-y-1">
@@ -207,7 +198,6 @@
                 class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 :class="{ 'border-destructive': mailForm.errors['mail.from_address'] }"
               />
-              <p v-if="mailForm.errors['mail.from_address']" class="text-xs text-destructive">{{ mailForm.errors['mail.from_address'] }}</p>
             </div>
 
             <div class="space-y-1">
@@ -219,7 +209,6 @@
                 class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 :class="{ 'border-destructive': mailForm.errors['mail.from_name'] }"
               />
-              <p v-if="mailForm.errors['mail.from_name']" class="text-xs text-destructive">{{ mailForm.errors['mail.from_name'] }}</p>
             </div>
 
             <div class="space-y-1">
@@ -233,7 +222,6 @@
                   { value: '',    label: 'None' },
                 ]"
               />
-              <p v-if="mailForm.errors['mail.encryption']" class="text-xs text-destructive">{{ mailForm.errors['mail.encryption'] }}</p>
             </div>
 
             <div class="flex justify-end pt-1">
@@ -293,7 +281,6 @@
                 class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 :class="{ 'border-destructive': mediaForm.errors['media.max_upload_mb'] }"
               />
-              <p v-if="mediaForm.errors['media.max_upload_mb']" class="text-xs text-destructive">{{ mediaForm.errors['media.max_upload_mb'] }}</p>
             </div>
 
             <div class="space-y-1">
@@ -307,7 +294,6 @@
                 class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 :class="{ 'border-destructive': mediaForm.errors['media.resize_max_width'] }"
               />
-              <p v-if="mediaForm.errors['media.resize_max_width']" class="text-xs text-destructive">{{ mediaForm.errors['media.resize_max_width'] }}</p>
             </div>
 
             <div class="flex justify-end pt-1">
@@ -360,7 +346,6 @@
                 :class="{ 'border-destructive': commentsForm.errors['comments.per_page'] }"
               />
               <p class="text-xs text-muted-foreground">How many comments load initially and per "Load more" click (5–100).</p>
-              <p v-if="commentsForm.errors['comments.per_page']" class="text-xs text-destructive">{{ commentsForm.errors['comments.per_page'] }}</p>
             </div>
 
             <div class="flex justify-end pt-1">
@@ -529,7 +514,10 @@ const siteForm = useForm({
 });
 
 function submitSite() {
-  siteForm.put(route('settings.update', 'site'), { preserveScroll: true });
+  siteForm.put(route('settings.update', 'site'), {
+    preserveScroll: true,
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+  });
 }
 
 // ── Locale form ──────────────────────────────────────────────────────────────
@@ -539,7 +527,10 @@ const localeForm = useForm({
 });
 
 function submitLocale() {
-  localeForm.put(route('settings.update', 'locale'), { preserveScroll: true });
+  localeForm.put(route('settings.update', 'locale'), {
+    preserveScroll: true,
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+  });
 }
 
 // ── Media form ───────────────────────────────────────────────────────────────
@@ -549,7 +540,10 @@ const mediaForm = useForm({
 });
 
 function submitMedia() {
-  mediaForm.put(route('settings.update', 'media'), { preserveScroll: true });
+  mediaForm.put(route('settings.update', 'media'), {
+    preserveScroll: true,
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+  });
 }
 
 // ── Mail form ────────────────────────────────────────────────────────────────
@@ -565,7 +559,10 @@ const mailForm = useForm({
 });
 
 function submitMail() {
-  mailForm.put(route('settings.update', 'mail'), { preserveScroll: true });
+  mailForm.put(route('settings.update', 'mail'), {
+    preserveScroll: true,
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+  });
 }
 
 // ── Comments form ─────────────────────────────────────────────────────────────
@@ -580,7 +577,10 @@ function submitComments() {
       'comments.enabled':  data['comments.enabled'] ? '1' : '0',
       'comments.per_page': data['comments.per_page'],
     }))
-    .put(route('settings.update', 'comments'), { preserveScroll: true })
+    .put(route('settings.update', 'comments'), {
+      preserveScroll: true,
+      onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+    })
 }
 
 // ── SEO form ──────────────────────────────────────────────────────────────────
@@ -592,14 +592,20 @@ const seoForm = useForm({
 })
 
 function submitSeo() {
-  seoForm.put(route('settings.update', 'seo'), { preserveScroll: true })
+  seoForm.put(route('settings.update', 'seo'), {
+    preserveScroll: true,
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+  })
 }
 
 // ── Test email form ──────────────────────────────────────────────────────────
 const testMailForm = useForm({});
 
 function sendTestEmail() {
-  testMailForm.post(route('settings.test-email'), { preserveScroll: true });
+  testMailForm.post(route('settings.test-email'), {
+    preserveScroll: true,
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+  });
 }
 </script>
 
