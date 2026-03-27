@@ -45,6 +45,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\BootstrapSettings::class,
             \App\Http\Middleware\HandleInertiaRequests::class,
             \App\Http\Middleware\TrackLastSeen::class,
+            \App\Http\Middleware\EnsureUserIsNotBanned::class,
         ]);
 
         $middleware->alias([

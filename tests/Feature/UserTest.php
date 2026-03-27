@@ -214,4 +214,32 @@ class UserTest extends TestCase
         $user->refresh();
         $this->assertNotNull($user->banned_at);
     }
+
+    // ── Ban middleware ─────────────────────────────────────────────────────────────
+
+    public function test_banned_user_is_kicked_from_authenticated_routes(): void
+    {
+        $user = $this->makeUser();
+        $user->update(['banned_at' => now(), 'banned_until' => null, 'ban_reason' => 'Spamming']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertRedirect('/login');
+    }
+
+    public function test_user_with_expired_ban_can_access_authenticated_routes(): void
+    {
+        $user = $this->makeUser();
+        $user->update([
+            'banned_at'    => now()->subDay(),
+            'banned_until' => now()->subHour(),
+            'ban_reason'   => 'Old ban',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $user->refresh();
+        $this->assertNull($user->banned_at); // ban was auto-lifted
+    }
 }
