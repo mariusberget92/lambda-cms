@@ -96,8 +96,8 @@ class PostController extends Controller
             $name = trim($name);
             if ($name === '') continue;
             $tagIds[] = Tag::firstOrCreate(
-                ['slug' => Tag::generateSlug($name)],
-                ['name' => $name]
+                ['name' => $name],
+                ['slug' => Tag::generateSlug($name)]
             )->id;
         }
 
@@ -207,8 +207,8 @@ class PostController extends Controller
             $name = trim($name);
             if ($name === '') continue;
             $tagIds[] = Tag::firstOrCreate(
-                ['slug' => Tag::generateSlug($name)],
-                ['name' => $name]
+                ['name' => $name],
+                ['slug' => Tag::generateSlug($name)]
             )->id;
         }
 
