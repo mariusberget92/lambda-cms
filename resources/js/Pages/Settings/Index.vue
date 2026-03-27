@@ -155,12 +155,10 @@
 
             <div class="space-y-1">
               <label for="mail_port" class="text-sm font-medium">Port</label>
-              <input
+              <NumberInput
                 id="mail_port"
-                v-model.number="mailForm['mail.port']"
-                type="number"
-                class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                :class="{ 'border-destructive': mailForm.errors['mail.port'] }"
+                v-model="mailForm['mail.port']"
+                :error="!!mailForm.errors['mail.port']"
               />
             </div>
 
@@ -272,27 +270,23 @@
 
             <div class="space-y-1">
               <label for="media_max_upload_mb" class="text-sm font-medium">Max upload size (MB)</label>
-              <input
+              <NumberInput
                 id="media_max_upload_mb"
-                v-model.number="mediaForm['media.max_upload_mb']"
-                type="number"
-                min="1"
-                max="100"
-                class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                :class="{ 'border-destructive': mediaForm.errors['media.max_upload_mb'] }"
+                v-model="mediaForm['media.max_upload_mb']"
+                :min="1"
+                :max="100"
+                :error="!!mediaForm.errors['media.max_upload_mb']"
               />
             </div>
 
             <div class="space-y-1">
               <label for="media_resize_max_width" class="text-sm font-medium">Max resize width (px)</label>
-              <input
+              <NumberInput
                 id="media_resize_max_width"
-                v-model.number="mediaForm['media.resize_max_width']"
-                type="number"
-                min="320"
-                max="8000"
-                class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                :class="{ 'border-destructive': mediaForm.errors['media.resize_max_width'] }"
+                v-model="mediaForm['media.resize_max_width']"
+                :min="320"
+                :max="8000"
+                :error="!!mediaForm.errors['media.resize_max_width']"
               />
             </div>
 
@@ -336,14 +330,12 @@
 
             <div class="space-y-1">
               <label for="comments_per_page" class="text-sm font-medium">Comments per page</label>
-              <input
+              <NumberInput
                 id="comments_per_page"
-                v-model.number="commentsForm['comments.per_page']"
-                type="number"
-                min="5"
-                max="100"
-                class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                :class="{ 'border-destructive': commentsForm.errors['comments.per_page'] }"
+                v-model="commentsForm['comments.per_page']"
+                :min="5"
+                :max="100"
+                :error="!!commentsForm.errors['comments.per_page']"
               />
               <p class="text-xs text-muted-foreground">How many comments load initially and per "Load more" click (5–100).</p>
             </div>
@@ -444,6 +436,7 @@ import { Head, useForm, usePage } from "@inertiajs/vue3";
 import { useNotifications } from '@/composables/useNotifications.js'
 import AppLayout from "@/Layouts/AppLayout.vue";
 import SelectBox from '@/Components/SelectBox.vue'
+import NumberInput from '@/Components/NumberInput.vue'
 
 const props = defineProps({
   settings: {
