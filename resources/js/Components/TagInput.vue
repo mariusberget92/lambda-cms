@@ -101,7 +101,7 @@ function tagName(id) {
         class="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20"
       >
         {{ tagName(id) }}
-        <button type="button" class="hover:text-destructive transition-colors" @click.stop="removeExisting(id)">
+        <button type="button" :aria-label="`Remove ${tagName(id)}`" class="hover:text-destructive transition-colors" @click.stop="removeExisting(id)">
           <X class="w-3 h-3" />
         </button>
       </span>
@@ -113,7 +113,7 @@ function tagName(id) {
         class="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-accent/20 text-foreground border border-border"
       >
         +{{ name }}
-        <button type="button" class="hover:text-destructive transition-colors" @click.stop="removeNew(name)">
+        <button type="button" :aria-label="`Remove ${name}`" class="hover:text-destructive transition-colors" @click.stop="removeNew(name)">
           <X class="w-3 h-3" />
         </button>
       </span>
@@ -124,6 +124,10 @@ function tagName(id) {
         v-model="query"
         type="text"
         placeholder="Search or add tags..."
+        role="combobox"
+        aria-haspopup="listbox"
+        :aria-expanded="open"
+        aria-autocomplete="list"
         class="flex-1 min-w-[8rem] bg-transparent text-sm outline-none placeholder:text-muted-foreground"
         @focus="open = true"
         @keydown="onKeydown"
@@ -142,12 +146,15 @@ function tagName(id) {
     >
       <div
         v-if="open && (filteredTags.length > 0 || showCreate)"
-        class="absolute left-0 top-full z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-md border border-border bg-card shadow-lg"
+        role="listbox"
+        class="absolute left-0 top-full z-50 mt-1 w-full max-h-48 origin-top overflow-y-auto rounded-md border border-border bg-card shadow-lg"
       >
         <button
           v-for="tag in filteredTags"
           :key="tag.id"
           type="button"
+          role="option"
+          aria-selected="false"
           class="w-full text-left px-3 py-1.5 text-sm hover:bg-accent/20 transition-colors"
           @mousedown.prevent="selectExisting(tag)"
         >
