@@ -137,32 +137,11 @@
           <!-- Tags -->
           <div class="rounded-lg border bg-card p-4">
             <h3 class="text-sm font-medium mb-3">Tags</h3>
-            <div v-if="tags.length === 0" class="text-xs text-muted-foreground">
-              No tags yet.
-              <a :href="route('tags.create')" class="underline hover:text-foreground">Create one</a>
-            </div>
-            <div v-else class="flex flex-wrap gap-2">
-              <label
-                v-for="tag in tags"
-                :key="tag.id"
-                class="flex items-center gap-1.5 cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  :value="tag.id"
-                  v-model="form.tag_ids"
-                  class="accent-nord-green rounded"
-                />
-                <span
-                  class="text-xs px-2 py-0.5 rounded-full border transition-colors"
-                  :class="form.tag_ids.includes(tag.id)
-                    ? 'bg-primary text-primary-foreground border-primary'
-                    : 'text-muted-foreground border-border hover:border-foreground'"
-                >
-                  {{ tag.name }}
-                </span>
-              </label>
-            </div>
+            <TagInput
+              :tags="tags"
+              v-model="form.tag_ids"
+              v-model:new-tag-names="form.new_tag_names"
+            />
           </div>
 
           <!-- Featured Image -->
@@ -267,6 +246,7 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import TiptapEditor from "@/Components/TiptapEditor.vue";
 import MediaPicker from '@/Components/MediaPicker.vue'
 import DateTimePicker from '@/Components/DateTimePicker.vue'
+import TagInput from '@/Components/TagInput.vue'
 import { useNotifications } from '@/composables/useNotifications.js'
 const { notify } = useNotifications()
 
@@ -283,6 +263,7 @@ const form = useForm({
   published_at:      '',
   category_ids:      [],
   tag_ids:           [],
+  new_tag_names:     [],
   featured_image_id: null,
   comments_enabled:  true,
   meta_title:        null,
