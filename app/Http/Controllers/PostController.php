@@ -282,7 +282,7 @@ class PostController extends Controller
             'publish' => $posts->each(function (Post $post) {
                 $post->update([
                     'status'       => 'published',
-                    'published_at' => $post->published_at ?? Carbon::now(),
+                    'published_at' => Carbon::now(),
                 ]);
             }),
             'draft' => $posts->each(fn (Post $post) => $post->update([

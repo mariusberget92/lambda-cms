@@ -945,7 +945,7 @@ class PostTest extends TestCase
         $this->assertNotNull($post->fresh()->published_at);
     }
 
-    public function test_bulk_publish_preserves_existing_published_at(): void
+    public function test_bulk_publish_overwrites_existing_published_at(): void
     {
         $user     = $this->makeUser();
         $original = now()->subWeek()->startOfMinute();
@@ -959,7 +959,33 @@ class PostTest extends TestCase
             ->post("/posts/bulk", ["action" => "publish", "ids" => [$post->id]])
             ->assertRedirect();
 
-        $this->assertTrue($post->fresh()->published_at->equalTo($original));
+        $publishedAt = $post->fresh()->published_at;
+        $this->assertNotNull($publishedAt);
+        $this->assertFalse($publishedAt->equalTo($original), 'published_at must not be the stale original timestamp');
+        // published_at should be within the last 10 seconds
+        $this->assertTrue($publishedAt->greaterThanOrEqualTo(now()->subSeconds(10)), 'published_at must be approximately now()');
+    }
+
+    public function test_bulk_publish_of_scheduled_post_sets_published_at_to_now(): void
+    {
+        $user   = $this->makeUser();
+        $future = now()->addDay();
+        $post   = Post::factory()->create([
+            "user_id"      => $user->id,
+            "status"       => "scheduled",
+            "published_at" => $future,
+        ]);
+
+        $this->actingAs($user)
+            ->post("/posts/bulk", ["action" => "publish", "ids" => [$post->id]])
+            ->assertRedirect();
+
+        $publishedAt = $post->fresh()->published_at;
+        $this->assertEquals("published", $post->fresh()->status);
+        $this->assertFalse($publishedAt->equalTo($future), 'published_at must not keep the old scheduled timestamp');
+        // published_at should be within the last 10 seconds, not in the future
+        $this->assertTrue($publishedAt->greaterThanOrEqualTo(now()->subSeconds(10)), 'published_at must be approximately now()');
+        $this->assertTrue($publishedAt->lessThanOrEqualTo(now()->addSecond()), 'published_at must not be in the future');
     }
 
     public function test_bulk_draft_clears_published_at(): void
