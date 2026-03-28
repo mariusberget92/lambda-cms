@@ -223,10 +223,10 @@
           class="px-3 py-1.5 text-sm rounded-md border transition-colors"
           :class="link.active ? 'bg-primary text-primary-foreground border-primary' : 'bg-card text-muted-foreground hover:text-foreground hover:border-foreground'"
         >
-          {{ link.label.replace('&laquo;', '«').replace('&raquo;', '»') }}
+          {{ decodeHtmlEntities(link.label) }}
         </Link>
         <span v-else class="px-3 py-1.5 text-sm rounded-md border text-muted-foreground/40 cursor-not-allowed">
-          {{ link.label.replace('&laquo;', '«').replace('&raquo;', '»') }}
+          {{ decodeHtmlEntities(link.label) }}
         </span>
       </template>
     </div>
@@ -270,6 +270,7 @@ import axios from 'axios'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import SelectBox from '@/Components/SelectBox.vue'
+import { decodeHtmlEntities } from '@/lib/utils.js'
 
 const props = defineProps({
   media:   Object,

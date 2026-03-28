@@ -3,20 +3,6 @@
     <Head title="Dashboard" />
 
 
-    <!-- Error flash (e.g. unauthorised access redirect) -->
-    <Transition name="fade">
-      <div
-        v-if="$page.props.flash?.error"
-        class="flex items-center gap-2 rounded-md bg-status-error-bg border border-status-error-border px-4 py-3 text-sm text-status-error-fg mb-6"
-      >
-        <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-        </svg>
-        {{ $page.props.flash.error }}
-      </div>
-    </Transition>
-
-
     <!-- Welcome -->
     <div class="mb-6">
       <h2 class="text-lg font-semibold">Good to see you, {{ user.name }}</h2>
@@ -56,8 +42,8 @@
       <div class="rounded-lg border bg-card p-5">
         <div class="flex items-center justify-between mb-3">
           <p class="text-sm font-medium text-muted-foreground">Scheduled</p>
-          <div class="w-8 h-8 rounded-md bg-indigo-50 flex items-center justify-center">
-            <svg class="w-4 h-4 text-indigo-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <div class="w-8 h-8 rounded-md bg-status-info-bg flex items-center justify-center">
+            <svg class="w-4 h-4 text-status-info-fg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
             </svg>
           </div>
@@ -169,10 +155,11 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import StatusBadge from "@/Components/StatusBadge.vue";
+import { useNotifications } from '@/composables/useNotifications'
 
 defineProps({
   stats: {
@@ -191,6 +178,16 @@ defineProps({
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user ?? { name: "" });
+
+const { notify } = useNotifications()
+
+watch(
+  () => page.props.flash,
+  (flash) => {
+    if (flash?.status) notify(flash.status, 'success')
+    if (flash?.error)  notify(flash.error,  'error')
+  }
+)
 
 // Format an ISO 8601 date string as "14 Mar 2026, 09:00"
 function formatScheduled(isoString) {

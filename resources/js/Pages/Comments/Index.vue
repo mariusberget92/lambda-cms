@@ -194,6 +194,7 @@ import { Head, router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import StatusBadge from '@/Components/StatusBadge.vue'
 import { MessageSquare } from 'lucide-vue-next'
+import { decodeHtmlEntities } from '@/lib/utils.js'
 
 const props = defineProps({
   comments:     Object,
@@ -268,12 +269,6 @@ function initials(name) {
 function confirmDelete(id) {
   if (!window.confirm('Delete this comment? This cannot be undone.')) return
   router.delete(route('comments.destroy', id))
-}
-
-function decodeHtmlEntities(str) {
-  const txt = document.createElement('textarea')
-  txt.innerHTML = str
-  return txt.value
 }
 </script>
 

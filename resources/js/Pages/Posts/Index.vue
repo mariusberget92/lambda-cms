@@ -21,19 +21,6 @@
       </a>
     </div>
 
-    <!-- Flash message -->
-    <Transition name="fade">
-      <div
-        v-if="$page.props.flash?.status"
-        class="mb-4 flex items-center gap-2 rounded-md bg-status-success-bg border border-status-success-border px-4 py-3 text-sm text-status-success-fg"
-      >
-        <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-        {{ $page.props.flash.status }}
-      </div>
-    </Transition>
-
     <!-- Filters -->
     <div class="flex items-center gap-3 mb-4">
 
@@ -277,24 +264,30 @@
 
 <script setup>
 import { ref, computed, watch } from "vue";
-import { Head, router } from "@inertiajs/vue3";
+import { Head, router, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import StatusBadge from '@/Components/StatusBadge.vue'
 import SelectBox from '@/Components/SelectBox.vue'
+import { decodeHtmlEntities } from '@/lib/utils.js'
+import { useNotifications } from '@/composables/useNotifications'
 
 const props = defineProps({
   posts: Object,
   filters: Object,
 });
 
+const page = usePage()
+const { notify } = useNotifications()
+
+watch(
+  () => page.props.flash,
+  (flash) => {
+    if (flash?.status) notify(flash.status, 'success')
+  }
+)
+
 const search = ref(props.filters?.search ?? "");
 const statusFilter = ref(props.filters?.status ?? "");
-
-function decodeHtmlEntities(str) {
-  const txt = document.createElement('textarea');
-  txt.innerHTML = str;
-  return txt.value;
-}
 
 function onStatusChange(v) {
   statusFilter.value = v

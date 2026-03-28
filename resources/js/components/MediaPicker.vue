@@ -137,6 +137,9 @@ import { useDropZone } from '@vueuse/core'
 import axios from 'axios'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import SelectBox from '@/Components/SelectBox.vue'
+import { useNotifications } from '@/composables/useNotifications'
+
+const { notify } = useNotifications()
 
 const props = defineProps({
   modelValue:   { type: Boolean, default: false },
@@ -188,6 +191,7 @@ async function load(reset = true) {
     nextPageUrl.value = page.next_page_url ?? null
   } catch (err) {
     console.error('Failed to load media', err)
+    notify('Failed to load media. Please try again.', 'error')
   } finally {
     loading.value = false
   }

@@ -25,7 +25,7 @@
             :disabled="form.processing"
             class="rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-50"
           >
-            Save draft
+            {{ form.processing ? 'Saving...' : 'Save draft' }}
           </button>
           <button
             type="button"
@@ -107,7 +107,7 @@
             <div v-show="form.status === 'scheduled'" class="mt-3 pt-3 border-t border-border">
               <label class="text-xs font-medium text-muted-foreground mb-1 block">Publish on</label>
               <DateTimePicker v-model="form.published_at" />
-              <p v-if="daysUntilPublish" class="text-xs text-indigo-600 mt-1">
+              <p v-if="daysUntilPublish" class="text-xs text-status-info-fg mt-1">
                 ⏱ publishes in {{ daysUntilPublish }} day{{ daysUntilPublish === 1 ? '' : 's' }}
               </p>
             </div>

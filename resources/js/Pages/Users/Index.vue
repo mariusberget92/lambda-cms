@@ -243,6 +243,7 @@ import { Head, router, usePage, useForm } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import DataTable from '@/Components/DataTable.vue'
 import { useNotifications } from '@/composables/useNotifications'
+import { decodeHtmlEntities } from '@/lib/utils.js'
 
 const props = defineProps({
   users:      { type: Object, required: true },
@@ -290,12 +291,6 @@ function timeLeft(isoString) {
   if (days > 0)  return `${days}d left`
   if (hours > 0) return `${hours}h left`
   return `${mins}m left`
-}
-
-function decodeHtmlEntities(str) {
-  const txt = document.createElement('textarea');
-  txt.innerHTML = str;
-  return txt.value;
 }
 
 function initials(name) {

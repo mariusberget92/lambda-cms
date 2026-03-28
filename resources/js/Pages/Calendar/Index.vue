@@ -10,7 +10,8 @@
         <div class="flex items-center justify-between mb-4">
           <button
             @click="prevMonth"
-            class="p-1 rounded hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+            :disabled="loading"
+            class="p-1 rounded hover:bg-accent transition-colors text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:pointer-events-none"
             aria-label="Previous month"
           >
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -20,7 +21,8 @@
           <span class="text-sm font-semibold">{{ monthLabel }}</span>
           <button
             @click="nextMonth"
-            class="p-1 rounded hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+            :disabled="loading"
+            class="p-1 rounded hover:bg-accent transition-colors text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:pointer-events-none"
             aria-label="Next month"
           >
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -153,6 +155,7 @@ import { ref, computed } from 'vue'
 import { Head } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import StatusBadge from '@/Components/StatusBadge.vue'
+import { useNotifications } from '@/composables/useNotifications'
 
 const props = defineProps({
   month:              { type: String, required: true },
@@ -160,16 +163,20 @@ const props = defineProps({
   unscheduled_drafts: { type: Array,  default: () => [] },
 })
 
+const { notify } = useNotifications()
+
 // ── Reactive state ────────────────────────────────────────────────────────
 
 const currentMonth      = ref(props.month)
 const grouped           = ref(props.grouped)
 const unscheduledDrafts = ref(props.unscheduled_drafts)
 const selectedDay       = ref(null)
+const loading           = ref(false)
 
 // ── Month navigation ──────────────────────────────────────────────────────
 
 async function navigateToMonth(monthStr) {
+  loading.value = true
   try {
     const url = route('calendar.data') + '?month=' + monthStr
     const res  = await fetch(url, {
@@ -184,6 +191,9 @@ async function navigateToMonth(monthStr) {
     selectedDay.value       = null
   } catch (err) {
     console.error('Failed to load calendar data:', err)
+    notify('Failed to load calendar data. Please try again.', 'error')
+  } finally {
+    loading.value = false
   }
 }
 

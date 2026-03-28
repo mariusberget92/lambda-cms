@@ -5,6 +5,7 @@ import { Head, router } from '@inertiajs/vue3'
 import { ref }    from 'vue'
 import StatusBadge from '@/Components/StatusBadge.vue'
 import DataTable from '@/Components/DataTable.vue'
+import { decodeHtmlEntities } from '@/lib/utils.js'
 
 const props = defineProps({
   pages: Object, // paginated
@@ -23,11 +24,6 @@ function deletePage() {
   })
 }
 
-function decodeHtmlEntities(str) {
-  const txt = document.createElement('textarea')
-  txt.innerHTML = str
-  return txt.value
-}
 
 </script>
 
