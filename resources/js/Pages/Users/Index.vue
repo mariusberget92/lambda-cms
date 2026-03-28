@@ -20,7 +20,7 @@
     </div>
 
     <!-- Table -->
-    <DataTable :loading="false" :empty="users.data.length === 0">
+    <DataTable :empty="users.data.length === 0">
       <template #empty>No users found.</template>
       <template #headers>
         <th class="text-left">User</th>

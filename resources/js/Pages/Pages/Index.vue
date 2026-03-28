@@ -45,7 +45,7 @@ function deletePage() {
       </a>
     </div>
 
-    <DataTable :loading="false" :empty="!pages.data.length">
+    <DataTable :empty="!pages.data.length">
       <template #empty>
         No pages yet. <a :href="route('pages.create')" class="text-primary hover:underline">Create one.</a>
       </template>

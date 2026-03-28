@@ -19,7 +19,27 @@
       </a>
     </div>
 
-    <DataTable :loading="false" :empty="categories.length === 0">
+    <!-- Category bubble map -->
+    <div class="rounded-lg border bg-card p-6 mb-6">
+      <p class="text-xs font-medium text-muted-foreground mb-4">Category cloud</p>
+      <div v-if="categories.length === 0" class="text-sm text-muted-foreground text-center py-4">
+        No categories yet.
+      </div>
+      <div v-else class="flex flex-wrap gap-2 items-center justify-center">
+        <a
+          v-for="(cat, i) in categories"
+          :key="cat.id"
+          :href="route('categories.edit', cat.id)"
+          :title="`${cat.name} — ${cat.posts_count} post${cat.posts_count !== 1 ? 's' : ''}`"
+          :style="bubbleStyle(cat, i)"
+          class="rounded-full border font-medium transition-all duration-150 hover:scale-105 hover:opacity-90 cursor-pointer leading-none"
+        >
+          {{ cat.name }}
+        </a>
+      </div>
+    </div>
+
+    <DataTable :empty="categories.length === 0">
       <template #empty>
         <svg class="w-8 h-8 mx-auto mb-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
           <path stroke-linecap="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
@@ -77,24 +97,83 @@
       </template>
     </DataTable>
 
+    <Transition name="fade">
+      <div v-if="deleteTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="deleteTarget = null" />
+        <div class="relative bg-card border rounded-xl shadow-xl w-full max-w-sm p-6">
+          <h3 class="font-semibold text-base mb-2">Delete category?</h3>
+          <p class="text-sm text-muted-foreground mb-5">
+            "<span class="font-medium text-foreground">{{ deleteTarget.name }}</span>"
+            <span v-if="deleteTarget.posts_count > 0"> is used by {{ deleteTarget.posts_count }} post{{ deleteTarget.posts_count !== 1 ? 's' : '' }}. Posts will not be deleted.</span>
+            <span v-else> will be permanently deleted.</span>
+          </p>
+          <div class="flex gap-3 justify-end">
+            <button type="button" @click="deleteTarget = null"
+              class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent transition-colors">
+              Cancel
+            </button>
+            <button type="button" @click="confirmDelete"
+              class="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
   </AppLayout>
 </template>
 
 <script setup>
+import { ref, computed } from 'vue'
 import { Head, router } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import DataTable from '@/Components/DataTable.vue'
 
-defineProps({ categories: Array });
+const props = defineProps({ categories: Array })
+
+const maxCount = computed(() => Math.max(...props.categories.map(c => c.posts_count), 1))
+
+const CHART_COLORS = [
+  { bg: 'color-mix(in srgb, var(--color-chart-1) 15%, transparent)', border: 'color-mix(in srgb, var(--color-chart-1) 40%, transparent)', text: 'var(--color-chart-1)' },
+  { bg: 'color-mix(in srgb, var(--color-chart-2) 15%, transparent)', border: 'color-mix(in srgb, var(--color-chart-2) 40%, transparent)', text: 'var(--color-chart-2)' },
+  { bg: 'color-mix(in srgb, var(--color-chart-3) 15%, transparent)', border: 'color-mix(in srgb, var(--color-chart-3) 40%, transparent)', text: 'var(--color-chart-3)' },
+  { bg: 'color-mix(in srgb, var(--color-chart-4) 15%, transparent)', border: 'color-mix(in srgb, var(--color-chart-4) 40%, transparent)', text: 'var(--color-chart-4)' },
+  { bg: 'color-mix(in srgb, var(--color-chart-5) 15%, transparent)', border: 'color-mix(in srgb, var(--color-chart-5) 40%, transparent)', text: 'var(--color-chart-5)' },
+]
+
+function bubbleStyle(cat, index) {
+  const ratio = maxCount.value > 0 ? cat.posts_count / maxCount.value : 0
+  const px = 10 + ratio * 22
+  const py = 5 + ratio * 11
+  const fontSize = 11 + ratio * 8
+  const color = CHART_COLORS[index % CHART_COLORS.length]
+  return {
+    paddingLeft:     `${px}px`,
+    paddingRight:    `${px}px`,
+    paddingTop:      `${py}px`,
+    paddingBottom:   `${py}px`,
+    fontSize:        `${fontSize}px`,
+    backgroundColor: color.bg,
+    borderColor:     color.border,
+    color:           color.text,
+  }
+}
+
+// Delete modal
+const deleteTarget = ref(null)
 
 function deleteCategory(category) {
-  if (
-    category.posts_count > 0 &&
-    !window.confirm(
-      `"${category.name}" is used by ${category.posts_count} post${category.posts_count !== 1 ? 's' : ''}. Delete anyway? Posts will not be deleted.`
-    )
-  ) return
+  deleteTarget.value = category
+}
 
-  router.delete(route('categories.destroy', category.id))
+function confirmDelete() {
+  router.delete(route('categories.destroy', deleteTarget.value.id))
+  deleteTarget.value = null
 }
 </script>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+</style>

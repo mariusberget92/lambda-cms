@@ -39,7 +39,7 @@
       </div>
     </div>
 
-    <DataTable :loading="false" :empty="tags.length === 0">
+    <DataTable :empty="tags.length === 0">
       <template #empty>
         <svg class="w-8 h-8 mx-auto mb-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
           <path stroke-linecap="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
