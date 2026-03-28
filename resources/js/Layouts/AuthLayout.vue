@@ -31,7 +31,7 @@ onUnmounted(cleanup)
       </div>
 
       <!-- Right panel: auth form -->
-      <div class="w-full md:w-1/2 bg-background flex flex-col items-center justify-center p-8">
+      <div class="w-full md:w-1/2 bg-white dark:bg-card flex flex-col items-center justify-center p-8">
         <div class="w-full max-w-sm">
           <slot />
         </div>

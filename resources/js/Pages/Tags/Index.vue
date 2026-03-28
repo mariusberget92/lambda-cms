@@ -19,6 +19,26 @@
       </a>
     </div>
 
+    <!-- Tag bubble map -->
+    <div class="rounded-lg border bg-card p-6 mb-6">
+      <p class="text-xs font-medium text-muted-foreground mb-4">Tag cloud</p>
+      <div v-if="tags.length === 0" class="text-sm text-muted-foreground text-center py-4">
+        No tags yet.
+      </div>
+      <div v-else class="flex flex-wrap gap-2 items-center justify-center">
+        <a
+          v-for="(tag, i) in tags"
+          :key="tag.id"
+          :href="route('tags.edit', tag.id)"
+          :title="`${tag.name} — ${tag.posts_count} post${tag.posts_count !== 1 ? 's' : ''}`"
+          :style="bubbleStyle(tag, i)"
+          class="rounded-full border font-medium transition-all duration-150 hover:scale-105 hover:opacity-90 cursor-pointer leading-none"
+        >
+          {{ tag.name }}
+        </a>
+      </div>
+    </div>
+
     <DataTable :loading="false" :empty="tags.length === 0">
       <template #empty>
         <svg class="w-8 h-8 mx-auto mb-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -77,24 +97,83 @@
       </template>
     </DataTable>
 
+    <!-- Delete confirmation modal -->
+    <Transition name="fade">
+      <div v-if="deleteTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="deleteTarget = null" />
+        <div class="relative bg-card border rounded-xl shadow-xl w-full max-w-sm p-6">
+          <h3 class="font-semibold text-base mb-2">Delete tag?</h3>
+          <p class="text-sm text-muted-foreground mb-5">
+            "<span class="font-medium text-foreground">{{ deleteTarget.name }}</span>"
+            <span v-if="deleteTarget.posts_count > 0"> is used by {{ deleteTarget.posts_count }} post{{ deleteTarget.posts_count !== 1 ? 's' : '' }}. Posts will not be deleted.</span>
+            <span v-else> will be permanently deleted.</span>
+          </p>
+          <div class="flex gap-3 justify-end">
+            <button type="button" @click="deleteTarget = null"
+              class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent transition-colors">
+              Cancel
+            </button>
+            <button type="button" @click="confirmDelete"
+              class="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
   </AppLayout>
 </template>
 
 <script setup>
+import { computed, ref } from 'vue'
 import { Head, router } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import DataTable from '@/Components/DataTable.vue'
 
-defineProps({ tags: Array });
+const props = defineProps({ tags: Array });
+
+const maxCount = computed(() => Math.max(...props.tags.map(t => t.posts_count), 1))
+
+const CHART_COLORS = [
+  { bg: 'color-mix(in srgb, var(--color-chart-1) 15%, transparent)', border: 'color-mix(in srgb, var(--color-chart-1) 40%, transparent)', text: 'var(--color-chart-1)' },
+  { bg: 'color-mix(in srgb, var(--color-chart-2) 15%, transparent)', border: 'color-mix(in srgb, var(--color-chart-2) 40%, transparent)', text: 'var(--color-chart-2)' },
+  { bg: 'color-mix(in srgb, var(--color-chart-3) 15%, transparent)', border: 'color-mix(in srgb, var(--color-chart-3) 40%, transparent)', text: 'var(--color-chart-3)' },
+  { bg: 'color-mix(in srgb, var(--color-chart-4) 15%, transparent)', border: 'color-mix(in srgb, var(--color-chart-4) 40%, transparent)', text: 'var(--color-chart-4)' },
+  { bg: 'color-mix(in srgb, var(--color-chart-5) 15%, transparent)', border: 'color-mix(in srgb, var(--color-chart-5) 40%, transparent)', text: 'var(--color-chart-5)' },
+]
+
+function bubbleStyle(tag, index) {
+  const ratio = maxCount.value > 0 ? tag.posts_count / maxCount.value : 0
+  const px = 10 + ratio * 22   // 10px → 32px horizontal padding
+  const py = 5  + ratio * 11   // 5px  → 16px vertical padding
+  const fontSize = 11 + ratio * 8  // 11px → 19px
+  const color = CHART_COLORS[index % CHART_COLORS.length]
+  return {
+    paddingLeft:     `${px}px`,
+    paddingRight:    `${px}px`,
+    paddingTop:      `${py}px`,
+    paddingBottom:   `${py}px`,
+    fontSize:        `${fontSize}px`,
+    backgroundColor: color.bg,
+    borderColor:     color.border,
+    color:           color.text,
+  }
+}
+
+const deleteTarget = ref(null)
 
 function deleteTag(tag) {
-  if (
-    tag.posts_count > 0 &&
-    !window.confirm(
-      `"${tag.name}" is used by ${tag.posts_count} post${tag.posts_count !== 1 ? 's' : ''}. Delete anyway? Posts will not be deleted.`
-    )
-  ) return
+  deleteTarget.value = tag
+}
 
-  router.delete(route('tags.destroy', tag.id))
+function confirmDelete() {
+  router.delete(route('tags.destroy', deleteTarget.value.id))
+  deleteTarget.value = null
 }
 </script>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+</style>
