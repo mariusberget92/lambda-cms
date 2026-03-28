@@ -207,10 +207,9 @@ watch(() => props.selectedId, () => {
   settingsTab.value = DEFAULT_TAB[props.selectedBlock?.type] ?? 'content'
 })
 
-// Block types that have a Style tab
+// Block types that have a Style tab (only include types where style fields actually exist)
 const STYLE_BLOCKS = new Set([
-  'paragraph', 'heading', 'image', 'quote', 'gallery', 'video',
-  'cta', 'container', 'section', 'spacer', 'divider', 'loop',
+  'container', 'section', 'spacer', 'divider', 'loop',
   'component', 'post-featured-image', 'archive-loop',
 ])
 
