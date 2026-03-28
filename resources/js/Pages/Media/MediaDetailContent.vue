@@ -51,10 +51,11 @@
     <div class="flex flex-col gap-1">
       <label class="text-xs font-medium text-foreground">Alt text</label>
       <input
-        v-model="detailForm.alt"
+        :value="detailForm.alt"
         type="text"
         placeholder="Describe this image..."
         class="rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        @input="emit('update:alt', $event.target.value)"
       />
     </div>
 
@@ -62,10 +63,11 @@
     <div class="flex flex-col gap-1">
       <label class="text-xs font-medium text-foreground">Description</label>
       <textarea
-        v-model="detailForm.description"
+        :value="detailForm.description"
         rows="3"
         placeholder="Optional longer description..."
         class="rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+        @input="emit('update:description', $event.target.value)"
       />
       <p
         class="text-xs text-right"
@@ -135,11 +137,11 @@ import { formatDateTime } from '@/lib/utils.js'
 defineProps({
   activeItem:     { type: Object, required: true },
   detailForm:     { type: Object, required: true },
-  usedIn:         { type: Array,  default: null },
+  usedIn:         { type: [Array, null], default: null },
   usedInLoading:  { type: Boolean, default: false },
   copied:         { type: Boolean, default: false },
   saving:         { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['copy', 'save', 'delete', 'close', 'lightbox'])
+const emit = defineEmits(['copy', 'save', 'delete', 'close', 'lightbox', 'update:alt', 'update:description'])
 </script>

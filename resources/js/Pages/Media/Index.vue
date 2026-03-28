@@ -74,7 +74,7 @@
         </div>
 
         <!-- Upload guidance -->
-        <p class="text-xs text-muted-foreground mb-3">
+        <p v-show="!uploading" class="text-xs text-muted-foreground mb-3">
           Accepted: JPG, PNG, GIF, WebP, SVG, PDF, MP4, MP3 · Max {{ maxUploadMb }} MB
         </p>
 
@@ -162,6 +162,8 @@
           @delete="confirmSingleDelete"
           @close="closeDetail"
           @lightbox="openLightbox"
+          @update:alt="detailForm.alt = $event"
+          @update:description="detailForm.description = $event"
         />
       </div>
     </div>
@@ -178,7 +180,7 @@
           </div>
           <button
             type="button"
-            class="absolute top-3 right-4 text-muted-foreground hover:text-foreground"
+            class="absolute top-3 right-4 p-2 text-muted-foreground hover:text-foreground"
             @click="closeDetail"
             aria-label="Close"
           >
@@ -198,6 +200,8 @@
             @delete="confirmSingleDelete"
             @close="closeDetail"
             @lightbox="openLightbox"
+            @update:alt="detailForm.alt = $event"
+            @update:description="detailForm.description = $event"
           />
         </div>
       </Transition>
