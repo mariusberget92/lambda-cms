@@ -36,6 +36,35 @@
       @undo="undo"
       @redo="redo"
     />
+
+    <!-- Remove block confirmation modal -->
+    <Transition name="fade">
+      <div v-if="removeTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="cancelRemove" />
+        <div class="relative bg-card border rounded-xl shadow-xl w-full max-w-sm p-6">
+          <h3 class="font-semibold text-base mb-2">Remove block?</h3>
+          <p class="text-sm text-muted-foreground mb-5">
+            This block and its content will be permanently removed.
+          </p>
+          <div class="flex gap-3 justify-end">
+            <button
+              type="button"
+              @click="cancelRemove"
+              class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              @click="confirmRemove"
+              class="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -61,6 +90,7 @@ const CHILD_CAPABLE = new Set(['container', 'section', 'loop', 'archive-loop'])
 
 const localBlocks     = ref([...(props.modelValue ?? [])])
 const selectedBlockId = ref(null)
+const removeTarget    = ref(null)
 
 // ── Undo / Redo ───────────────────────────────────────────────────────────────
 const history      = ref([JSON.parse(JSON.stringify(props.modelValue ?? []))])
@@ -306,12 +336,29 @@ function removeBlock(id) {
       v !== null && v !== '' && !(Array.isArray(v) && v.length === 0)
     )
     const hasChildBlocks = (block.children?.length ?? 0) > 0
-    if ((hasContent || hasChildBlocks) && !confirm('Remove this block? Its content will be lost.')) return
+    if (hasContent || hasChildBlocks) {
+      removeTarget.value = id
+      return
+    }
   }
   localBlocks.value = removeFromList(localBlocks.value, id)
   if (selectedBlockId.value === id) selectedBlockId.value = null
   pushHistory()
   emit('update:modelValue', localBlocks.value)
+}
+
+function confirmRemove() {
+  const id = removeTarget.value
+  if (!id) return
+  localBlocks.value = removeFromList(localBlocks.value, id)
+  if (selectedBlockId.value === id) selectedBlockId.value = null
+  removeTarget.value = null
+  pushHistory()
+  emit('update:modelValue', localBlocks.value)
+}
+
+function cancelRemove() {
+  removeTarget.value = null
 }
 
 // data merges into block.data; remaining attrs (customId, fontFamily, children, etc.) go top-level
@@ -429,3 +476,8 @@ onUnmounted(() => {
   clearTimeout(_pushHistoryTimer)
 })
 </script>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+</style>

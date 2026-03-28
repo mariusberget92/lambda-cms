@@ -241,7 +241,7 @@ async function uploadFiles(files) {
       selectedId.value = data.id
     } catch (err) {
       console.error('Upload failed', err)
-      alert(err.response?.data?.message ?? 'Upload failed. Check file type and size.')
+      notify(err.response?.data?.message ?? 'Upload failed. Check file type and size.', 'error')
     } finally {
       uploading.value = false
     }

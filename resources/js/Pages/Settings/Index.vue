@@ -48,6 +48,7 @@
                 class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 :class="{ 'border-destructive': siteForm.errors['site.name'] }"
               />
+              <p v-if="siteForm.errors['site.name']" class="text-xs text-destructive mt-1">{{ siteForm.errors['site.name'] }}</p>
             </div>
 
             <div class="space-y-1">
@@ -59,6 +60,7 @@
                 class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 :class="{ 'border-destructive': siteForm.errors['site.url'] }"
               />
+              <p v-if="siteForm.errors['site.url']" class="text-xs text-destructive mt-1">{{ siteForm.errors['site.url'] }}</p>
             </div>
 
             <div class="flex justify-end pt-1">
@@ -101,6 +103,7 @@
                 class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 :class="{ 'border-destructive': localeForm.errors['locale.date_format'] }"
               />
+              <p v-if="localeForm.errors['locale.date_format']" class="text-xs text-destructive mt-1">{{ localeForm.errors['locale.date_format'] }}</p>
               <p class="text-xs text-muted-foreground">PHP date format string (e.g. Y-m-d, d/m/Y, m/d/Y)</p>
             </div>
 
@@ -151,6 +154,7 @@
                 class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 :class="{ 'border-destructive': mailForm.errors['mail.host'] }"
               />
+              <p v-if="mailForm.errors['mail.host']" class="text-xs text-destructive mt-1">{{ mailForm.errors['mail.host'] }}</p>
             </div>
 
             <div class="space-y-1">
@@ -160,6 +164,7 @@
                 v-model="mailForm['mail.port']"
                 :error="!!mailForm.errors['mail.port']"
               />
+              <p v-if="mailForm.errors['mail.port']" class="text-xs text-destructive mt-1">{{ mailForm.errors['mail.port'] }}</p>
             </div>
 
             <div class="space-y-1">
@@ -172,6 +177,7 @@
                 class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 :class="{ 'border-destructive': mailForm.errors['mail.username'] }"
               />
+              <p v-if="mailForm.errors['mail.username']" class="text-xs text-destructive mt-1">{{ mailForm.errors['mail.username'] }}</p>
             </div>
 
             <div class="space-y-1">
@@ -185,6 +191,7 @@
                 class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 :class="{ 'border-destructive': mailForm.errors['mail.password'] }"
               />
+              <p v-if="mailForm.errors['mail.password']" class="text-xs text-destructive mt-1">{{ mailForm.errors['mail.password'] }}</p>
             </div>
 
             <div class="space-y-1">
@@ -196,6 +203,7 @@
                 class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 :class="{ 'border-destructive': mailForm.errors['mail.from_address'] }"
               />
+              <p v-if="mailForm.errors['mail.from_address']" class="text-xs text-destructive mt-1">{{ mailForm.errors['mail.from_address'] }}</p>
             </div>
 
             <div class="space-y-1">
@@ -207,6 +215,7 @@
                 class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 :class="{ 'border-destructive': mailForm.errors['mail.from_name'] }"
               />
+              <p v-if="mailForm.errors['mail.from_name']" class="text-xs text-destructive mt-1">{{ mailForm.errors['mail.from_name'] }}</p>
             </div>
 
             <div class="space-y-1">
@@ -277,6 +286,7 @@
                 :max="100"
                 :error="!!mediaForm.errors['media.max_upload_mb']"
               />
+              <p v-if="mediaForm.errors['media.max_upload_mb']" class="text-xs text-destructive mt-1">{{ mediaForm.errors['media.max_upload_mb'] }}</p>
             </div>
 
             <div class="space-y-1">
@@ -288,6 +298,7 @@
                 :max="8000"
                 :error="!!mediaForm.errors['media.resize_max_width']"
               />
+              <p v-if="mediaForm.errors['media.resize_max_width']" class="text-xs text-destructive mt-1">{{ mediaForm.errors['media.resize_max_width'] }}</p>
             </div>
 
             <div class="flex justify-end pt-1">
@@ -337,6 +348,7 @@
                 :max="100"
                 :error="!!commentsForm.errors['comments.per_page']"
               />
+              <p v-if="commentsForm.errors['comments.per_page']" class="text-xs text-destructive mt-1">{{ commentsForm.errors['comments.per_page'] }}</p>
               <p class="text-xs text-muted-foreground">How many comments load initially and per "Load more" click (5–100).</p>
             </div>
 

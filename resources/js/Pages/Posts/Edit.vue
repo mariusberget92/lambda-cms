@@ -48,6 +48,7 @@
               class="w-full rounded-lg border bg-background px-4 py-3 text-xl font-semibold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring"
               :class="{ 'border-destructive': form.errors.title }"
             />
+            <p v-if="form.errors.title" class="text-xs text-destructive mt-1">{{ form.errors.title }}</p>
           </div>
 
           <!-- Excerpt -->
@@ -59,6 +60,7 @@
               class="w-full rounded-lg border bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring resize-none"
               :class="{ 'border-destructive': form.errors.excerpt }"
             />
+            <p v-if="form.errors.excerpt" class="text-xs text-destructive mt-1">{{ form.errors.excerpt }}</p>
             <div class="flex justify-between mt-1">
               <p class="text-xs text-muted-foreground ml-auto">{{ (form.excerpt ?? '').length }}/500</p>
             </div>
@@ -279,6 +281,35 @@
         </div>
       </div>
     </form>
+
+    <!-- Restore revision confirmation modal -->
+    <Transition name="fade">
+      <div v-if="restoreTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="restoreTarget = null" />
+        <div class="relative bg-card border rounded-xl shadow-xl w-full max-w-sm p-6">
+          <h3 class="font-semibold text-base mb-2">Restore version?</h3>
+          <p class="text-sm text-muted-foreground mb-5">
+            Your current unsaved changes will be replaced by this revision. This cannot be undone.
+          </p>
+          <div class="flex gap-3 justify-end">
+            <button
+              type="button"
+              @click="restoreTarget = null"
+              class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              @click="confirmRestore"
+              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-[var(--primary-hover)] transition-colors"
+            >
+              Restore
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </AppLayout>
 </template>
 
@@ -405,15 +436,25 @@ function toggleRevisions() {
   if (revisionsOpen.value) loadRevisions()
 }
 
-async function restoreRevision(revision) {
-  if (!window.confirm('Restore this version? Your current changes will be replaced.')) return
-  const res = await axios.get(route('revisions.restore', revision.id))
-  const payload = res.data
-  Object.keys(payload).forEach(key => {
-    if (key in form) form[key] = payload[key]
-  })
-  revisions.value = []
-  revisionsOpen.value = false
+const restoreTarget = ref(null)
+
+function restoreRevision(revision) {
+  restoreTarget.value = revision
+}
+
+async function confirmRestore() {
+  try {
+    const res = await axios.get(route('revisions.restore', restoreTarget.value.id))
+    const payload = res.data
+    Object.keys(payload).forEach(key => {
+      if (key in form) form[key] = payload[key]
+    })
+    revisions.value = []
+    revisionsOpen.value = false
+    restoreTarget.value = null
+  } catch {
+    notify('Failed to restore revision. Please try again.', 'error')
+  }
 }
 
 const daysUntilPublish = computed(() => {

@@ -4,7 +4,7 @@
     class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium"
     :class="classes"
   >
-    <span class="animate-pulse inline-flex rounded-full w-1.5 h-1.5 shrink-0" :class="dotClass"></span>
+    <span class="status-dot inline-flex rounded-full w-1.5 h-1.5 shrink-0" :class="dotClass"></span>
     <slot>{{ label }}</slot>
   </span>
 </template>

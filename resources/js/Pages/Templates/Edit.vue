@@ -112,6 +112,7 @@ const seoOpen          = ref(false)
 const revisionsOpen    = ref(false)
 const revisionsLoading = ref(false)
 const revisions        = ref([])
+const restoreTarget    = ref(null)
 
 async function loadRevisions() {
   if (revisions.value.length > 0) return
@@ -129,15 +130,24 @@ function toggleRevisions() {
   if (revisionsOpen.value) loadRevisions()
 }
 
-async function restoreRevision(revision) {
-  if (!window.confirm('Restore this version? Your current changes will be replaced.')) return
-  const res = await axios.get(route('revisions.restore', revision.id))
-  const payload = res.data
-  Object.keys(payload).forEach(key => {
-    if (key in form) form[key] = payload[key]
-  })
-  revisions.value = []
-  revisionsOpen.value = false
+function restoreRevision(revision) {
+  restoreTarget.value = revision
+}
+
+async function confirmRestore() {
+  try {
+    const res = await axios.get(route('revisions.restore', restoreTarget.value.id))
+    const payload = res.data
+    Object.keys(payload).forEach(key => {
+      if (key in form) form[key] = payload[key]
+    })
+    revisions.value = []
+    revisionsOpen.value = false
+    restoreTarget.value = null
+  } catch {
+    notify('Failed to restore revision. Please try again.', 'error')
+    restoreTarget.value = null
+  }
 }
 </script>
 
@@ -175,6 +185,7 @@ async function restoreRevision(revision) {
             class="w-full rounded-lg border bg-background px-4 py-3 text-xl font-semibold focus:outline-none focus:ring-2 focus:ring-ring"
             :class="{ 'border-destructive': form.errors.name }"
           />
+          <p v-if="form.errors.name" class="text-xs text-destructive mt-1">{{ form.errors.name }}</p>
         </div>
 
         <!-- Inline sub-fields: status · SEO · Revisions -->
@@ -262,5 +273,35 @@ async function restoreRevision(revision) {
       />
 
     </form>
+
+    <!-- Restore revision confirmation modal -->
+    <Transition
+      enter-active-class="transition ease-out duration-150"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition ease-in duration-100"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div v-if="restoreTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" @click.self="restoreTarget = null">
+        <div class="w-full max-w-sm rounded-lg border bg-card p-6 shadow-lg space-y-4">
+          <h3 class="text-base font-semibold">Restore version?</h3>
+          <p class="text-sm text-muted-foreground">Your current unsaved changes will be replaced with the selected revision. This cannot be undone.</p>
+          <div class="flex justify-end gap-2">
+            <button
+              type="button"
+              class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent transition-colors"
+              @click="restoreTarget = null"
+            >Cancel</button>
+            <button
+              type="button"
+              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-[var(--primary-hover)] transition-colors"
+              @click="confirmRestore"
+            >Restore</button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
   </AppLayout>
 </template>

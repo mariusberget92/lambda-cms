@@ -121,7 +121,7 @@
           >Reject</button>
           <button
             type="button"
-            @click="confirmDelete(comment.id)"
+            @click="confirmDelete(comment)"
             class="rounded-md bg-destructive/10 px-3 py-1 text-xs font-medium text-destructive hover:bg-destructive/20 transition-colors"
           >Delete</button>
 
@@ -185,6 +185,35 @@
           : page.url ? 'hover:bg-accent' : 'opacity-40 cursor-default pointer-events-none'"
       >{{ decodeHtmlEntities(page.label) }}</a>
     </div>
+
+    <!-- Delete confirmation modal -->
+    <Transition name="fade">
+      <div v-if="deleteTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="deleteTarget = null" />
+        <div class="relative bg-card border rounded-xl shadow-xl w-full max-w-sm p-6">
+          <h3 class="font-semibold text-base mb-2">Delete comment?</h3>
+          <p class="text-sm text-muted-foreground mb-5">
+            This comment will be permanently deleted.
+          </p>
+          <div class="flex gap-3 justify-end">
+            <button
+              type="button"
+              @click="deleteTarget = null"
+              class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              @click="doDelete"
+              class="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </AppLayout>
 </template>
 
@@ -247,6 +276,20 @@ function sendReply(commentId) {
   })
 }
 
+// Delete confirmation
+const deleteTarget = ref(null)
+
+function confirmDelete(comment) {
+  deleteTarget.value = comment
+}
+
+function doDelete() {
+  if (!deleteTarget.value) return
+  router.delete(route('comments.destroy', deleteTarget.value.id), {
+    onFinish: () => { deleteTarget.value = null },
+  })
+}
+
 // Avatar helpers — Nord accent color palette
 const AVATAR_COLORS = [
   '#5e81ac', '#88c0d0', '#a3be8c', '#ebcb8b', '#d08770', '#b48ead',
@@ -266,10 +309,6 @@ function initials(name) {
     .toUpperCase()
 }
 
-function confirmDelete(id) {
-  if (!window.confirm('Delete this comment? This cannot be undone.')) return
-  router.delete(route('comments.destroy', id))
-}
 </script>
 
 <style scoped>

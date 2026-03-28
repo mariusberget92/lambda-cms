@@ -30,6 +30,7 @@
             :class="{ 'border-destructive': form.errors.name }"
             autofocus
           />
+          <p v-if="form.errors.name" class="text-xs text-destructive mt-1">{{ form.errors.name }}</p>
         </div>
       </div>
 

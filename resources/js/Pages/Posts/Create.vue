@@ -50,6 +50,7 @@
               class="w-full rounded-lg border bg-background px-4 py-3 text-xl font-semibold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring"
               :class="{ 'border-destructive': form.errors.title }"
             />
+            <p v-if="form.errors.title" class="text-xs text-destructive mt-1">{{ form.errors.title }}</p>
           </div>
 
           <!-- Excerpt -->
@@ -61,6 +62,7 @@
               class="w-full rounded-lg border bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring resize-none"
               :class="{ 'border-destructive': form.errors.excerpt }"
             />
+            <p v-if="form.errors.excerpt" class="text-xs text-destructive mt-1">{{ form.errors.excerpt }}</p>
             <div class="flex justify-between mt-1">
               <p class="text-xs text-muted-foreground ml-auto">{{ (form.excerpt ?? '').length }}/500</p>
             </div>

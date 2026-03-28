@@ -225,6 +225,7 @@
               <option value="30d">30 days</option>
               <option value="permanent">Permanent</option>
             </select>
+            <p v-if="banForm.errors.duration" class="text-xs text-destructive mt-1">{{ banForm.errors.duration }}</p>
           </div>
 
           <div class="flex justify-end gap-2 pt-2">

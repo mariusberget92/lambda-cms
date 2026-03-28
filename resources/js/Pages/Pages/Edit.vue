@@ -106,6 +106,7 @@ const seoOpen          = ref(false)
 const revisionsOpen    = ref(false)
 const revisionsLoading = ref(false)
 const revisions        = ref([])
+const restoreTarget    = ref(null)
 
 async function loadRevisions() {
   if (revisions.value.length > 0) return
@@ -123,15 +124,24 @@ function toggleRevisions() {
   if (revisionsOpen.value) loadRevisions()
 }
 
-async function restoreRevision(revision) {
-  if (!window.confirm('Restore this version? Your current changes will be replaced.')) return
-  const res = await axios.get(route('revisions.restore', revision.id))
-  const payload = res.data
-  Object.keys(payload).forEach(key => {
-    if (key in form) form[key] = payload[key]
-  })
-  revisions.value = []
-  revisionsOpen.value = false
+function restoreRevision(revision) {
+  restoreTarget.value = revision
+}
+
+async function confirmRestore() {
+  try {
+    const res = await axios.get(route('revisions.restore', restoreTarget.value.id))
+    const payload = res.data
+    Object.keys(payload).forEach(key => {
+      if (key in form) form[key] = payload[key]
+    })
+    revisions.value = []
+    revisionsOpen.value = false
+    restoreTarget.value = null
+  } catch {
+    notify('Failed to restore revision. Please try again.', 'error')
+    restoreTarget.value = null
+  }
 }
 </script>
 
@@ -167,6 +177,7 @@ async function restoreRevision(revision) {
             class="w-full rounded-lg border bg-background px-4 py-3 text-xl font-semibold focus:outline-none focus:ring-2 focus:ring-ring"
             :class="{ 'border-destructive': form.errors.title }"
           />
+          <p v-if="form.errors.title" class="text-xs text-destructive mt-1">{{ form.errors.title }}</p>
         </div>
 
         <!-- Inline sub-fields: slug · status · SEO · Revisions -->
@@ -180,6 +191,7 @@ async function restoreRevision(revision) {
               class="w-44 rounded border bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               :class="{ 'border-destructive': form.errors.slug }"
             />
+            <p v-if="form.errors.slug" class="text-xs text-destructive mt-1">{{ form.errors.slug }}</p>
           </div>
           <div class="h-4 w-px bg-border hidden sm:block shrink-0" />
 
@@ -266,5 +278,34 @@ async function restoreRevision(revision) {
       />
 
     </form>
+
+    <!-- Restore revision confirmation modal -->
+    <Transition name="fade">
+      <div v-if="restoreTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="restoreTarget = null" />
+        <div class="relative bg-card border rounded-xl shadow-xl w-full max-w-sm p-6">
+          <h3 class="font-semibold text-base mb-2">Restore this version?</h3>
+          <p class="text-sm text-muted-foreground mb-5">
+            Your current changes will be replaced with the selected revision.
+          </p>
+          <div class="flex gap-3 justify-end">
+            <button
+              type="button"
+              @click="restoreTarget = null"
+              class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              @click="confirmRestore"
+              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-[var(--primary-hover)] transition-colors"
+            >
+              Restore
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </AppLayout>
 </template>

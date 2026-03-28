@@ -30,6 +30,7 @@
             :class="{ 'border-destructive': form.errors.name }"
             autofocus
           />
+          <p v-if="form.errors.name" class="text-xs text-destructive mt-1">{{ form.errors.name }}</p>
         </div>
 
         <div class="space-y-1">
@@ -42,6 +43,7 @@
             class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
             :class="{ 'border-destructive': form.errors.description }"
           />
+          <p v-if="form.errors.description" class="text-xs text-destructive mt-1">{{ form.errors.description }}</p>
           <div class="flex justify-between">
             <p class="text-xs text-muted-foreground ml-auto">{{ (form.description ?? '').length }}/500</p>
           </div>

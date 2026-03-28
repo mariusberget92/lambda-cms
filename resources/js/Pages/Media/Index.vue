@@ -271,6 +271,9 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import SelectBox from '@/Components/SelectBox.vue'
 import { decodeHtmlEntities } from '@/lib/utils.js'
+import { useNotifications } from '@/composables/useNotifications'
+
+const { notify } = useNotifications()
 
 const props = defineProps({
   media:   Object,
@@ -335,7 +338,7 @@ async function saveDetail() {
     if (idx !== -1) localItems.value[idx] = data
     activeItem.value = data
   } catch (err) {
-    alert(err.response?.data?.message ?? 'Save failed.')
+    notify(err.response?.data?.message ?? 'Save failed.', 'error')
   } finally {
     saving.value = false
   }
@@ -361,7 +364,7 @@ async function doSingleDelete() {
     closeDetail()
     showSingleConfirm.value = false
   } catch (err) {
-    alert('Delete failed.')
+    notify('Delete failed.', 'error')
   }
 }
 
@@ -393,7 +396,7 @@ async function uploadFiles(files) {
       })
       localItems.value.unshift(data)
     } catch (err) {
-      alert(err.response?.data?.message ?? 'Upload failed. Check file type and size.')
+      notify(err.response?.data?.message ?? 'Upload failed. Check file type and size.', 'error')
     } finally {
       uploading.value = false
     }
@@ -416,7 +419,7 @@ async function doBulkDelete() {
     selected.value = []
     showBulkConfirm.value = false
   } catch (err) {
-    alert('Bulk delete failed.')
+    notify('Bulk delete failed.', 'error')
   }
 }
 </script>

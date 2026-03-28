@@ -80,6 +80,7 @@ function submit() {
             class="w-full rounded-lg border bg-background px-4 py-3 text-xl font-semibold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring"
             :class="{ 'border-destructive': form.errors.title }"
           />
+          <p v-if="form.errors.title" class="text-xs text-destructive mt-1">{{ form.errors.title }}</p>
         </div>
 
         <!-- Inline sub-fields: slug · status · SEO -->
@@ -94,6 +95,7 @@ function submit() {
               class="w-44 rounded border bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               :class="{ 'border-destructive': form.errors.slug }"
             />
+            <p v-if="form.errors.slug" class="text-xs text-destructive mt-1">{{ form.errors.slug }}</p>
           </div>
           <div class="h-4 w-px bg-border hidden sm:block shrink-0" />
 

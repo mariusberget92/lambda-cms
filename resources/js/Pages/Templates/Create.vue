@@ -78,6 +78,7 @@ function submit() {
             class="w-full rounded-lg border bg-background px-4 py-3 text-xl font-semibold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring"
             :class="{ 'border-destructive': form.errors.name }"
           />
+          <p v-if="form.errors.name" class="text-xs text-destructive mt-1">{{ form.errors.name }}</p>
         </div>
 
         <!-- Inline sub-fields: status · SEO -->

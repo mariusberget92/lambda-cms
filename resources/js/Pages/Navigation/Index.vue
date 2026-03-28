@@ -71,9 +71,19 @@ function submit() {
   })
 }
 
-function deleteItem(id) {
-  if (!confirm('Remove this nav item?')) return
-  router.delete(route('navigation.destroy', id), { preserveScroll: true })
+// Delete confirmation
+const deleteTarget = ref(null)
+
+function deleteItem(item) {
+  deleteTarget.value = item
+}
+
+function confirmDelete() {
+  if (!deleteTarget.value) return
+  router.delete(route('navigation.destroy', deleteTarget.value.id), {
+    preserveScroll: true,
+    onFinish: () => { deleteTarget.value = null },
+  })
 }
 </script>
 
@@ -124,7 +134,7 @@ function deleteItem(id) {
             <button
               type="button"
               class="shrink-0 text-muted-foreground hover:text-destructive transition-colors text-base leading-none"
-              @click="deleteItem(item.id)"
+              @click="deleteItem(item)"
             >&times;</button>
           </div>
         </VueDraggable>
@@ -199,5 +209,39 @@ function deleteItem(id) {
 
     </div>
   </div>
+
+    <!-- Delete confirmation modal -->
+    <Transition name="fade">
+      <div v-if="deleteTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="deleteTarget = null" />
+        <div class="relative bg-card border rounded-xl shadow-xl w-full max-w-sm p-6">
+          <h3 class="font-semibold text-base mb-2">Remove nav item?</h3>
+          <p class="text-sm text-muted-foreground mb-5">
+            "<span class="font-medium text-foreground">{{ deleteTarget.label }}</span>" will be removed from the navigation.
+          </p>
+          <div class="flex gap-3 justify-end">
+            <button
+              type="button"
+              @click="deleteTarget = null"
+              class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              @click="confirmDelete"
+              class="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </AppLayout>
 </template>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+</style>
