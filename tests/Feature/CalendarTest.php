@@ -72,6 +72,19 @@ class CalendarTest extends TestCase
             ->assertStatus(422);
     }
 
+    public function test_data_endpoint_rejects_out_of_range_year(): void
+    {
+        $user = $this->makeUser();
+
+        $this->actingAs($user)
+            ->getJson('/calendar/data?month=9999-01')
+            ->assertStatus(422);
+
+        $this->actingAs($user)
+            ->getJson('/calendar/data?month=1999-01')
+            ->assertStatus(422);
+    }
+
     // ── Admin sees all posts ──────────────────────────────────────────────────
 
     public function test_admin_grouped_contains_all_statuses(): void

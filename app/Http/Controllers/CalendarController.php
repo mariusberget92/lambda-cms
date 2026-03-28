@@ -26,7 +26,17 @@ class CalendarController extends Controller
     public function data(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'month' => ['nullable', 'date_format:Y-m'],
+            'month' => [
+                'nullable',
+                'date_format:Y-m',
+                function ($attribute, $value, $fail) {
+                    if ($value === null) return;
+                    $year = (int) explode('-', $value)[0];
+                    if ($year < 2000 || $year > 2099) {
+                        $fail('The year must be between 2000 and 2099.');
+                    }
+                },
+            ],
         ]);
 
         $month = $validated['month'] ?? Carbon::now()->format('Y-m');
