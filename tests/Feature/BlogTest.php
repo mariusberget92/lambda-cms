@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class BlogTest extends TestCase
@@ -497,5 +498,18 @@ class BlogTest extends TestCase
         $this->get("/blog/tag/{$tag->slug}")->assertInertia(
             fn ($page) => $page->where('seo.canonical', url('/blog/tag/php'))
         );
+    }
+
+    // ── Null-safe author ──────────────────────────────────────────────────────
+
+    public function test_single_post_page_renders_when_author_is_deleted(): void
+    {
+        $post = \App\Models\Post::factory()->published()->create();
+        // Simulate deleted author by nullifying user_id directly
+        DB::table('posts')
+            ->where('id', $post->id)
+            ->update(['user_id' => null]);
+
+        $this->get("/blog/{$post->slug}")->assertOk();
     }
 }

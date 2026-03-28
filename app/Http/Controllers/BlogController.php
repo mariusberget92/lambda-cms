@@ -85,7 +85,7 @@ class BlogController extends Controller
                     'published_at'       => $post->published_at?->toDateString(),
                     'featured_image_url' => $post->featuredImage?->url,
                     'featured_image_alt' => $post->featuredImage?->alt,
-                    'author'             => ['name' => $post->author->name, 'avatar_url' => $post->author->avatar_url],
+                    'author'             => ['name' => $post->author?->name ?? 'Deleted User', 'avatar_url' => $post->author?->avatar_url],
                     'categories'         => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug])->values(),
                     'tags'               => $post->tags->map(fn ($t) => ['name' => $t->name, 'slug' => $t->slug]),
                 ],
@@ -112,8 +112,8 @@ class BlogController extends Controller
                 'featured_image_url'  => $post->featuredImage?->url,
                 'featured_image_alt'  => $post->featuredImage?->alt,
                 'author'              => [
-                    'name'       => $post->author->name,
-                    'avatar_url' => $post->author->avatar_url,
+                    'name'       => $post->author?->name ?? 'Deleted User',
+                    'avatar_url' => $post->author?->avatar_url,
                 ],
                 'categories'          => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug])->values(),
                 'tags'                => $post->tags->map(fn ($t) => [
@@ -317,8 +317,8 @@ class BlogController extends Controller
             'published_at'        => $post->published_at?->toDateString(),
             'featured_image_url'  => $post->featuredImage?->url,
             'author'              => [
-                'name'       => $post->author->name,
-                'avatar_url' => $post->author->avatar_url,
+                'name'       => $post->author?->name ?? 'Deleted User',
+                'avatar_url' => $post->author?->avatar_url,
             ],
             'categories' => $post->categories
                 ->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug])
