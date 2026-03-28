@@ -44,7 +44,7 @@ function stepDown() {
       :max="max"
       :step="step"
       :disabled="disabled"
-      class="w-full rounded-md border bg-background pl-3 pr-7 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring [appearance:textfield] disabled:opacity-50 disabled:cursor-not-allowed"
+      class="w-full rounded-md border bg-background pl-3 pr-7 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
       :class="error ? 'border-destructive' : 'border-border'"
       @input="onInput"
     />
