@@ -1,6 +1,7 @@
 <!-- resources/js/Components/BlockEditor/blocks/CodeSettings.vue -->
 <template>
-  <div class="space-y-3">
+  <!-- Content fields -->
+  <div v-show="!tab || tab === 'content'" class="space-y-3">
     <div>
       <label class="text-xs font-medium text-muted-foreground block mb-1">Language</label>
       <SelectBox
@@ -36,6 +37,9 @@
 <script setup>
 import SelectBox from '@/Components/SelectBox.vue'
 
-defineProps({ block: { type: Object, required: true } })
+defineProps({
+  block: { type: Object, required: true },
+  tab:   { type: String, default: null },
+})
 const emit = defineEmits(['update'])
 </script>

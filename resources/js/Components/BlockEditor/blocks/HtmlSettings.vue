@@ -4,7 +4,8 @@
   <div v-if="!isAdmin" class="rounded-md border border-dashed p-4 text-center">
     <p class="text-xs text-muted-foreground">HTML blocks are admin-only.</p>
   </div>
-  <div v-else class="space-y-2">
+  <!-- Content fields -->
+  <div v-else v-show="!tab || tab === 'content'" class="space-y-2">
     <DynamicField
       label="Raw HTML"
       field-name="content"
@@ -32,6 +33,7 @@ const props = defineProps({
   block:           { type: Object,  required: true },
   isAdmin:         { type: Boolean, default: false },
   availableFields: { type: Array,   default: () => [] },
+  tab:             { type: String,  default: null },
 })
 const emit = defineEmits(['update'])
 

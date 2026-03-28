@@ -1,6 +1,7 @@
 <!-- resources/js/Components/BlockEditor/blocks/GallerySettings.vue -->
 <template>
-  <div class="space-y-3">
+  <!-- Content fields -->
+  <div v-show="!tab || tab === 'content'" class="space-y-3">
     <!-- Existing items -->
     <div v-if="block.data.items?.length" class="grid grid-cols-3 gap-1">
       <div
@@ -34,7 +35,10 @@
 import { ref } from 'vue'
 import MediaPicker from '@/Components/MediaPicker.vue'
 
-const props = defineProps({ block: { type: Object, required: true } })
+const props = defineProps({
+  block: { type: Object, required: true },
+  tab:   { type: String, default: null },
+})
 const emit  = defineEmits(['update'])
 
 const showPicker = ref(false)

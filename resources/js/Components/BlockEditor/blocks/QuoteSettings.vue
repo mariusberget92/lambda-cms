@@ -1,6 +1,7 @@
 <!-- resources/js/Components/BlockEditor/blocks/QuoteSettings.vue -->
 <template>
-  <div class="space-y-3">
+  <!-- Content fields -->
+  <div v-show="!tab || tab === 'content'" class="space-y-3">
     <DynamicField
       label="Quote text"
       field-name="text"
@@ -43,6 +44,7 @@ import DynamicField from './DynamicField.vue'
 const props = defineProps({
   block:           { type: Object, required: true },
   availableFields: { type: Array,  default: () => [] },
+  tab:             { type: String, default: null },
 })
 const emit = defineEmits(['update'])
 

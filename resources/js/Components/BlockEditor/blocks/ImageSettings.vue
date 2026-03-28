@@ -1,6 +1,7 @@
 <!-- resources/js/Components/BlockEditor/blocks/ImageSettings.vue -->
 <template>
-  <div class="space-y-3">
+  <!-- Content fields -->
+  <div v-show="!tab || tab === 'content'" class="space-y-3">
     <!-- URL via DynamicField — media picker shown only in static mode -->
     <DynamicField
       label="Image URL"
@@ -61,8 +62,9 @@ import MediaPicker  from '@/Components/MediaPicker.vue'
 import DynamicField from './DynamicField.vue'
 
 const props = defineProps({
-  block:      { type: Object, required: true },
+  block:           { type: Object, required: true },
   availableFields: { type: Array,  default: () => [] },
+  tab:             { type: String, default: null },
 })
 const emit = defineEmits(['update'])
 
