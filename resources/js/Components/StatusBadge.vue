@@ -4,7 +4,7 @@
     class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium"
     :class="classes"
   >
-    <span class="relative flex w-1.5 h-1.5 shrink-0">
+    <span class="relative flex w-1.5 h-1.5 shrink-0 overflow-visible">
       <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" :class="dotClass" />
       <span class="relative inline-flex rounded-full w-1.5 h-1.5" :class="dotClass" />
     </span>
