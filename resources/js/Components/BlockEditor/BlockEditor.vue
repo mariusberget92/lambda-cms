@@ -29,6 +29,7 @@
       @remove="removeBlock"
       @update="updateBlock"
       @reorder="onReorder"
+      @update-children="onUpdateChildren"
       @duplicate="duplicateBlock"
       @copy="copyBlock"
       @paste="pasteBlock"

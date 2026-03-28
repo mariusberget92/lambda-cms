@@ -38,11 +38,10 @@
           tag="div"
           class="p-1.5 space-y-0.5"
           handle=".layer-handle"
+          :group="{ name: 'layers' }"
           :animation="150"
         >
-          <!-- Render from props.blocks (not draggableBlocks) so deep nested children
-               are always live — VueDraggable's internal model can lag on external updates -->
-          <div v-for="block in blocks" :key="block.id">
+          <div v-for="block in draggableBlocks" :key="block.id">
             <LayerItem
               :block="block"
               :selected-id="selectedId"
@@ -52,6 +51,7 @@
               @duplicate="$emit('duplicate', $event)"
               @copy="$emit('copy', $event)"
               @paste="$emit('paste', $event)"
+              @update-children="$emit('update-children', $event)"
             />
           </div>
         </VueDraggable>
@@ -146,7 +146,7 @@ const props = defineProps({
   canRedo:   { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['select', 'remove', 'update', 'reorder', 'duplicate', 'copy', 'paste', 'undo', 'redo'])
+const emit = defineEmits(['select', 'remove', 'update', 'reorder', 'update-children', 'duplicate', 'copy', 'paste', 'undo', 'redo'])
 
 // ── Drag-to-reorder ───────────────────────────────────────────────────────────
 // _list is kept in sync with props.blocks via a flush:'sync' watcher so it is
