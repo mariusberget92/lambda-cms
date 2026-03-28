@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Media;
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -194,6 +195,53 @@ class MediaTest extends TestCase
         $response = $this->actingAs($other)->delete(route('media.destroy', $media));
 
         $response->assertForbidden();
+    }
+
+    // ── Usage ─────────────────────────────────────────────────────────────────
+
+    public function test_usage_returns_posts_using_media(): void
+    {
+        $this->markAsInstalled();
+        $this->seedRolesAndPermissions();
+
+        $admin = User::factory()->create()->assignRole('administrator');
+
+        $media = Media::factory()->create(['user_id' => $admin->id]);
+        $post  = Post::factory()->create(['featured_image_id' => $media->id, 'user_id' => $admin->id]);
+
+        $this->actingAs($admin)
+            ->getJson(route('media.usage', $media))
+            ->assertOk()
+            ->assertJsonFragment(['id' => $post->id, 'title' => $post->title]);
+    }
+
+    public function test_usage_returns_empty_when_not_used(): void
+    {
+        $this->markAsInstalled();
+        $this->seedRolesAndPermissions();
+
+        $admin = User::factory()->create()->assignRole('administrator');
+        $media = Media::factory()->create(['user_id' => $admin->id]);
+
+        $this->actingAs($admin)
+            ->getJson(route('media.usage', $media))
+            ->assertOk()
+            ->assertJson(['posts' => []]);
+    }
+
+    public function test_usage_is_forbidden_for_non_owner(): void
+    {
+        $this->markAsInstalled();
+        $this->seedRolesAndPermissions();
+
+        $owner = User::factory()->create()->assignRole('administrator');
+        $other = User::factory()->create()->assignRole('user');
+
+        $media = Media::factory()->create(['user_id' => $owner->id]);
+
+        $this->actingAs($other)
+            ->getJson(route('media.usage', $media))
+            ->assertForbidden();
     }
 
     // ── Bulk Destroy ──────────────────────────────────────────────────────────

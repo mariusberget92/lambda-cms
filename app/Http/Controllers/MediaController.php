@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Media;
+use App\Models\Post;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -28,8 +29,9 @@ class MediaController extends Controller
         $media = $query->paginate(40)->withQueryString()->through(fn (Media $m) => $this->toArray($m));
 
         return Inertia::render('Media/Index', [
-            'media'   => $media,
-            'filters' => $request->only('type', 'search'),
+            'media'       => $media,
+            'filters'     => $request->only('type', 'search'),
+            'maxUploadMb' => (int) config('media.max_upload_mb', 10),
         ]);
     }
 
@@ -131,6 +133,19 @@ class MediaController extends Controller
         $media->delete();
 
         return response()->json(['deleted' => true]);
+    }
+
+    public function usage(Request $request, Media $media): JsonResponse
+    {
+        if ($media->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
+            abort(403);
+        }
+
+        $posts = Post::where('featured_image_id', $media->id)
+            ->select('id', 'title', 'slug')
+            ->get();
+
+        return response()->json(['posts' => $posts]);
     }
 
     public function bulkDestroy(Request $request): JsonResponse

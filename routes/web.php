@@ -118,11 +118,12 @@ Route::middleware('installed')->group(function () {
         Route::delete('/profile/avatar', [ProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
 
         // Media library
-        Route::get('/media',           [MediaController::class, 'index'])->name('media.index');
-        Route::post('/media',          [MediaController::class, 'store'])->name('media.store');
-        Route::patch('/media/{media}', [MediaController::class, 'update'])->name('media.update');
-        Route::delete('/media/bulk',   [MediaController::class, 'bulkDestroy'])->name('media.bulk-destroy');
-        Route::delete('/media/{media}', [MediaController::class, 'destroy'])->name('media.destroy');
+        Route::get('/media',                    [MediaController::class, 'index'])->name('media.index');
+        Route::post('/media',                   [MediaController::class, 'store'])->name('media.store');
+        Route::get('/media/{media}/usage',      [MediaController::class, 'usage'])->name('media.usage');
+        Route::patch('/media/{media}',          [MediaController::class, 'update'])->name('media.update');
+        Route::delete('/media/bulk',            [MediaController::class, 'bulkDestroy'])->name('media.bulk-destroy');
+        Route::delete('/media/{media}',         [MediaController::class, 'destroy'])->name('media.destroy');
     });
 
     // ── Auth + verified + administrator role ─────────────────────────────────
