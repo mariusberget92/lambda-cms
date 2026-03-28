@@ -89,6 +89,9 @@
   --color-error-bg: color-mix(in srgb, #bf616a 15%, transparent);
   --color-error-fg: #bf616a;
   --color-error-border: color-mix(in srgb, #bf616a 35%, transparent);
+  --color-info-bg:     color-mix(in srgb, #81a1c1 20%, transparent);
+  --color-info-fg:     #3d6080;
+  --color-info-border: color-mix(in srgb, #81a1c1 40%, transparent);
 }
 
 .dark {
@@ -145,6 +148,9 @@
   --color-error-bg: color-mix(in srgb, #bf616a 15%, transparent);
   --color-error-fg: #bf616a;
   --color-error-border: color-mix(in srgb, #bf616a 30%, transparent);
+  --color-info-bg:     color-mix(in srgb, #81a1c1 15%, transparent);
+  --color-info-fg:     #81a1c1;
+  --color-info-border: color-mix(in srgb, #81a1c1 30%, transparent);
 }
 
 @theme inline {
@@ -185,6 +191,9 @@
   --color-status-error-bg: var(--color-error-bg);
   --color-status-error-fg: var(--color-error-fg);
   --color-status-error-border: var(--color-error-border);
+  --color-status-info-bg:     var(--color-info-bg);
+  --color-status-info-fg:     var(--color-info-fg);
+  --color-status-info-border: var(--color-info-border);
   --color-role-admin-bg: var(--color-role-admin-bg);
   --color-role-admin-fg: var(--color-role-admin-fg);
   --color-role-user-bg: var(--color-role-user-bg);

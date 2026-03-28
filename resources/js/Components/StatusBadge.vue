@@ -31,8 +31,8 @@ const MAP = {
     label:    'Draft',
   },
   scheduled: {
-    classes:  'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300',
-    dotClass: 'bg-indigo-500 dark:bg-indigo-400',
+    classes:  'bg-status-info-bg text-status-info-fg',
+    dotClass: 'bg-status-info-fg',
     label:    'Scheduled',
   },
   pending: {

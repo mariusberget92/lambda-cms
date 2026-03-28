@@ -69,13 +69,13 @@
         <!-- Legend -->
         <div class="flex gap-3 mt-4 justify-center">
           <span class="flex items-center gap-1 text-[10px] text-muted-foreground">
-            <span class="w-2 h-2 rounded-full bg-green-500 inline-block"></span>Published
+            <span class="w-2 h-2 rounded-full bg-status-success-fg inline-block"></span>Published
           </span>
           <span class="flex items-center gap-1 text-[10px] text-muted-foreground">
-            <span class="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>Scheduled
+            <span class="w-2 h-2 rounded-full bg-status-info-fg inline-block"></span>Scheduled
           </span>
           <span class="flex items-center gap-1 text-[10px] text-muted-foreground">
-            <span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>Draft
+            <span class="w-2 h-2 rounded-full bg-status-warning-fg inline-block"></span>Draft
           </span>
         </div>
       </div>
@@ -116,7 +116,7 @@
                   class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium"
                   :class="{
                     'bg-status-success-bg text-status-success-fg': post.status === 'published',
-                    'bg-indigo-50 text-indigo-700':                 post.status === 'scheduled',
+                    'bg-status-info-bg text-status-info-fg':         post.status === 'scheduled',
                     'bg-status-warning-bg text-status-warning-fg': post.status === 'draft',
                   }"
                 >{{ post.status }}</span>
@@ -232,9 +232,9 @@ const dayCells = computed(() => {
 
 function dotColorForPosts(posts) {
   if (!posts || posts.length === 0) return null
-  if (posts.some(p => p.status === 'scheduled'))  return 'bg-blue-500'
-  if (posts.some(p => p.status === 'published'))  return 'bg-green-500'
-  return 'bg-amber-500'
+  if (posts.some(p => p.status === 'scheduled'))  return 'bg-status-info-fg'
+  if (posts.some(p => p.status === 'published'))  return 'bg-status-success-fg'
+  return 'bg-status-warning-fg'
 }
 
 // ── Day selection ─────────────────────────────────────────────────────────
