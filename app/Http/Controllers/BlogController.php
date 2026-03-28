@@ -142,36 +142,6 @@ class BlogController extends Controller
     }
 
     /**
-     * Public JSON endpoint — paginated approved comments for a post.
-     */
-    public function comments(Post $post): \Illuminate\Http\JsonResponse
-    {
-        abort_unless($post->isPublished(), 404);
-        abort_unless($post->commentsOpen(), 403);
-
-        $perPage = (int) Setting::get('comments.per_page', 10);
-        $page    = max(1, (int) request('page', 1));
-
-        $paginator = $post->comments()
-            ->approved()
-            ->oldest()
-            ->with('user:id,name,avatar')
-            ->paginate($perPage, ['*'], 'page', $page);
-
-        return response()->json([
-            'data'     => $paginator->map(fn (Comment $c) => [
-                'id'          => $c->id,
-                'author_name' => $c->author_name,
-                'avatar_url'  => $c->user?->avatar_url ?? null,
-                'body'        => $c->body,
-                'created_at'  => $c->created_at->diffForHumans(),
-            ]),
-            'has_more' => $paginator->hasMorePages(),
-            'total'    => $paginator->total(),
-        ]);
-    }
-
-    /**
      * Public category archive — paginated published posts for a given category.
      */
     public function category(Category $category): Response
@@ -270,6 +240,36 @@ class BlogController extends Controller
                 'slug'       => $tag->slug,
                 'postsCount' => $posts->total(),
             ],
+        ]);
+    }
+
+    /**
+     * Public JSON endpoint — paginated approved comments for a post.
+     */
+    public function comments(Post $post): \Illuminate\Http\JsonResponse
+    {
+        abort_unless($post->isPublished(), 404);
+        abort_unless($post->commentsOpen(), 403);
+
+        $perPage = (int) Setting::get('comments.per_page', 10);
+        $page    = max(1, (int) request('page', 1));
+
+        $paginator = $post->comments()
+            ->approved()
+            ->oldest()
+            ->with('user:id,name,avatar')
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        return response()->json([
+            'data'     => $paginator->map(fn (Comment $c) => [
+                'id'          => $c->id,
+                'author_name' => $c->author_name,
+                'avatar_url'  => $c->user?->avatar_url ?? null,
+                'body'        => $c->body,
+                'created_at'  => $c->created_at->diffForHumans(),
+            ]),
+            'has_more' => $paginator->hasMorePages(),
+            'total'    => $paginator->total(),
         ]);
     }
 

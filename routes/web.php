@@ -5,9 +5,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\BlogController;
-use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InstallController;
 use App\Http\Controllers\PostController;
@@ -48,12 +48,12 @@ Route::middleware('installed')->group(function () {
 
     // ── Public blog ──────────────────────────────────────────────────────────
     Route::get('/',             [BlogController::class, 'index'])->name('home');
-    Route::get('/blog/{slug}',  [BlogController::class, 'show'])->name('blog.show');
+    Route::get('/blog/{post:slug}/comments', [BlogController::class, 'comments'])->name('blog.comments');
     Route::get('/blog/category/{category:slug}', [BlogController::class, 'category'])->name('blog.category');
     Route::get('/blog/tag/{tag:slug}',           [BlogController::class, 'tag'])->name('blog.tag');
     Route::get('/feed',        FeedController::class)->name('feed');
     Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
-    Route::get('/blog/{post:slug}/comments', [BlogController::class, 'comments'])->name('blog.comments');
+    Route::get('/blog/{slug}',  [BlogController::class, 'show'])->name('blog.show');
 
     // Comment submission (public, rate-limited)
     Route::post('/blog/{post:slug}/comments', [CommentController::class, 'store'])
