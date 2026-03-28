@@ -145,7 +145,8 @@
             v-if="activeItem.type === 'image'"
             :src="activeItem.url"
             :alt="activeItem.alt ?? activeItem.original_filename"
-            class="w-full h-full object-contain"
+            class="w-full h-full object-contain cursor-zoom-in"
+            @click="openLightbox(activeItem)"
           />
           <svg v-else class="w-10 h-10 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -323,6 +324,7 @@
         </div>
       </DialogContent>
     </Dialog>
+    <MediaLightbox v-model="lightboxIndex" :images="lightboxImages" />
   </AppLayout>
 </template>
 
@@ -336,6 +338,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog'
 import SelectBox from '@/Components/SelectBox.vue'
 import { decodeHtmlEntities, formatDateTime } from '@/lib/utils.js'
 import { useNotifications } from '@/composables/useNotifications'
+import MediaLightbox from './MediaLightbox.vue'
 
 const { notify } = useNotifications()
 
@@ -374,6 +377,16 @@ const saving      = ref(false)
 const copied      = ref(false)
 const usedIn        = ref(null)   // null = not loaded, [] = empty, [...] = posts
 const usedInLoading = ref(false)
+const lightboxIndex = ref(null)
+
+const lightboxImages = computed(() =>
+  localItems.value.filter(i => i.type === 'image')
+)
+
+function openLightbox(item) {
+  const idx = lightboxImages.value.findIndex(i => i.id === item.id)
+  if (idx !== -1) lightboxIndex.value = idx
+}
 
 let usageFetchId = 0
 
