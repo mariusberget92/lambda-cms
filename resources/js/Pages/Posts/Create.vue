@@ -303,6 +303,10 @@ function toggleCategory(id) {
 }
 
 function submit() {
+  if (form.status === 'scheduled' && !form.published_at) {
+    notify('A scheduled date is required when status is "Scheduled".', 'error')
+    return
+  }
   form.post(route("posts.store"), {
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   });
