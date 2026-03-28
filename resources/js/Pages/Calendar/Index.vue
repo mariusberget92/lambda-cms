@@ -110,14 +110,7 @@
                     {{ formatTime(post.published_at) }} · {{ post.author_name }}
                   </p>
                 </div>
-                <span
-                  class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium"
-                  :class="{
-                    'bg-status-success-bg text-status-success-fg': post.status === 'published',
-                    'bg-status-info-bg text-status-info-fg':         post.status === 'scheduled',
-                    'bg-status-warning-bg text-status-warning-fg': post.status === 'draft',
-                  }"
-                >{{ post.status }}</span>
+                <StatusBadge :status="post.status" class="shrink-0" />
               </a>
             </li>
           </ul>
@@ -144,9 +137,7 @@
                   <p class="text-sm font-medium truncate group-hover:text-foreground">{{ post.title }}</p>
                   <p class="text-xs text-muted-foreground">{{ post.author_name }}</p>
                 </div>
-                <span class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium bg-status-warning-bg text-status-warning-fg">
-                  draft
-                </span>
+                <StatusBadge status="draft" class="shrink-0" />
               </a>
             </li>
           </ul>
@@ -161,6 +152,7 @@
 import { ref, computed } from 'vue'
 import { Head } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import StatusBadge from '@/Components/StatusBadge.vue'
 
 const props = defineProps({
   month:              { type: String, required: true },
