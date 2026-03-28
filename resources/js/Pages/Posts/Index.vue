@@ -99,15 +99,7 @@
               <span v-else class="text-muted-foreground/50">—</span>
             </td>
             <td class="px-4 py-3 hidden md:table-cell">
-              <span
-                class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium"
-                :class="post.status === 'published'
-                  ? 'bg-status-success-bg text-status-success-fg'
-                  : 'bg-status-warning-bg text-status-warning-fg'"
-              >
-                <span class="w-1.5 h-1.5 rounded-full" :class="post.status === 'published' ? 'bg-status-success-fg' : 'bg-status-warning-fg'"></span>
-                {{ post.status === 'published' ? 'Published' : 'Draft' }}
-              </span>
+              <StatusBadge :status="post.status" />
             </td>
             <td class="px-4 py-3 hidden lg:table-cell text-muted-foreground text-xs">
               {{ post.published_at ?? post.created_at }}
