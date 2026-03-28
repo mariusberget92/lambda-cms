@@ -25,6 +25,15 @@
           class="rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring w-48"
           @input="debouncedSearch"
         />
+
+        <button
+          v-if="localItems.length"
+          type="button"
+          class="rounded-md border px-3 py-2 text-sm text-muted-foreground hover:bg-accent transition-colors"
+          @click="toggleSelectAll"
+        >
+          {{ allSelected ? 'Deselect all' : 'Select all' }}
+        </button>
       </div>
 
       <div class="flex items-center gap-2">
@@ -84,6 +93,24 @@
             ]"
             @click="openDetail(item)"
           >
+            <!-- Selection checkbox -->
+            <div
+              class="absolute top-1.5 left-1.5 z-10 transition-opacity"
+              :class="selected.includes(item.id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'"
+              @click.stop="toggleSelect(item.id, $event)"
+            >
+              <div
+                class="w-5 h-5 rounded border-2 flex items-center justify-center transition-colors"
+                :class="selected.includes(item.id)
+                  ? 'bg-primary border-primary'
+                  : 'bg-background/80 border-foreground/40 backdrop-blur-sm'"
+              >
+                <svg v-if="selected.includes(item.id)" class="w-3 h-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+              </div>
+            </div>
+
             <img
               v-if="item.type === 'image'"
               :src="item.url"
@@ -263,7 +290,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { Head, Link, router } from '@inertiajs/vue3'
 import { useDropZone } from '@vueuse/core'
 import axios from 'axios'
@@ -282,6 +309,20 @@ const props = defineProps({
 
 const localItems      = ref([...props.media.data])
 const selected        = ref([])
+
+function toggleSelect(id, event) {
+  event.stopPropagation()
+  const idx = selected.value.indexOf(id)
+  if (idx === -1) selected.value.push(id)
+  else selected.value.splice(idx, 1)
+}
+
+const allSelected = computed(() => localItems.value.length > 0 && localItems.value.every(i => selected.value.includes(i.id)))
+
+function toggleSelectAll() {
+  if (allSelected.value) selected.value = []
+  else selected.value = localItems.value.map(i => i.id)
+}
 const uploading       = ref(false)
 const uploadProgress  = ref(0)
 const uploadingName   = ref('')
