@@ -67,6 +67,15 @@
       <table class="w-full text-sm">
         <thead class="bg-muted/50 text-muted-foreground">
           <tr>
+            <th class="px-4 py-3 w-10">
+              <input
+                type="checkbox"
+                :checked="isAllSelected"
+                :indeterminate="selectedIds.length > 0 && !isAllSelected"
+                @change="toggleAll"
+                class="rounded"
+              />
+            </th>
             <th class="text-left font-medium px-4 py-3">Title</th>
             <th class="text-left font-medium px-4 py-3 hidden sm:table-cell">Author</th>
             <th class="text-left font-medium px-4 py-3 hidden md:table-cell">Categories</th>
@@ -77,7 +86,7 @@
         </thead>
         <tbody class="divide-y divide-border">
           <tr v-if="posts.data.length === 0">
-            <td colspan="6" class="px-4 py-12 text-center text-muted-foreground">
+            <td colspan="7" class="px-4 py-12 text-center text-muted-foreground">
               <svg class="w-8 h-8 mx-auto mb-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
@@ -88,7 +97,16 @@
             v-for="post in posts.data"
             :key="post.id"
             class="hover:bg-muted/30 transition-colors group"
+            :class="{ 'bg-muted/20': selectedIds.includes(post.id) }"
           >
+            <td class="px-4 py-3 w-10">
+              <input
+                type="checkbox"
+                :checked="selectedIds.includes(post.id)"
+                @change="toggleRow(post.id)"
+                class="rounded"
+              />
+            </td>
             <td class="px-4 py-3">
               <div class="font-medium line-clamp-1">{{ post.title }}</div>
               <div v-if="post.excerpt" class="text-xs text-muted-foreground line-clamp-1 mt-0.5 hidden sm:block">{{ post.excerpt }}</div>
@@ -261,7 +279,6 @@
 import { ref, computed, watch } from "vue";
 import { Head, router } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
-import DataTable from '@/Components/DataTable.vue'
 import StatusBadge from '@/Components/StatusBadge.vue'
 import SelectBox from '@/Components/SelectBox.vue'
 
