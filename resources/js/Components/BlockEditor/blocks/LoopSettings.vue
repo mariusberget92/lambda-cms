@@ -15,7 +15,27 @@
     <!-- ── Filters ────────────────────────────────────────────────── -->
     <div>
       <div class="flex items-center justify-between mb-2">
-        <label class="text-xs font-medium text-muted-foreground">Filters</label>
+        <div class="flex items-center gap-1.5">
+          <label class="text-xs font-medium text-muted-foreground">Filters</label>
+          <template v-if="filters.length >= 2">
+            <button
+              type="button"
+              class="px-1.5 py-0.5 rounded border text-[10px] font-medium transition-colors"
+              :class="filterLogic === 'and'
+                ? 'border-primary text-primary bg-primary/10'
+                : 'border-border text-muted-foreground hover:border-primary'"
+              @click="emitData({ filter_logic: 'and' })"
+            >AND</button>
+            <button
+              type="button"
+              class="px-1.5 py-0.5 rounded border text-[10px] font-medium transition-colors"
+              :class="filterLogic === 'or'
+                ? 'border-primary text-primary bg-primary/10'
+                : 'border-border text-muted-foreground hover:border-primary'"
+              @click="emitData({ filter_logic: 'or' })"
+            >OR</button>
+          </template>
+        </div>
         <button
           type="button"
           class="text-xs text-primary hover:underline"
@@ -159,6 +179,7 @@ const emit  = defineEmits(['update'])
 
 const source = computed(() => props.block.data?.source ?? 'posts')
 const filters = computed(() => props.block.data?.filters ?? [])
+const filterLogic = computed(() => props.block.data?.filter_logic ?? 'and')
 
 const filterableFields = computed(() => SOURCE_FIELDS[source.value] ?? [])
 
