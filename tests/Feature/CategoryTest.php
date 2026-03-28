@@ -106,4 +106,19 @@ class CategoryTest extends TestCase
 
         $this->assertDatabaseMissing('categories', ['id' => $category->id]);
     }
+
+    public function test_category_with_posts_can_still_be_deleted(): void
+    {
+        $user     = $this->makeUser();
+        $category = \App\Models\Category::factory()->create();
+        $post     = \App\Models\Post::factory()->create();
+        $post->categories()->attach($category);
+
+        $this->actingAs($user)
+            ->delete("/categories/{$category->id}")
+            ->assertRedirect('/categories');
+
+        $this->assertDatabaseMissing('categories', ['id' => $category->id]);
+        $this->assertDatabaseHas('posts', ['id' => $post->id]);
+    }
 }

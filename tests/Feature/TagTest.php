@@ -95,4 +95,19 @@ class TagTest extends TestCase
 
         $this->assertDatabaseMissing('tags', ['id' => $tag->id]);
     }
+
+    public function test_tag_with_posts_can_still_be_deleted(): void
+    {
+        $user = $this->makeUser();
+        $tag  = \App\Models\Tag::factory()->create();
+        $post = \App\Models\Post::factory()->create();
+        $post->tags()->attach($tag);
+
+        $this->actingAs($user)
+            ->delete("/tags/{$tag->id}")
+            ->assertRedirect('/tags');
+
+        $this->assertDatabaseMissing('tags', ['id' => $tag->id]);
+        $this->assertDatabaseHas('posts', ['id' => $post->id]);
+    }
 }

@@ -63,7 +63,7 @@
               </a>
               <button
                 type="button"
-                @click="confirmDelete(tag)"
+                @click="deleteTag(tag)"
                 class="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
                 title="Delete"
               >
@@ -77,43 +77,24 @@
       </template>
     </DataTable>
 
-    <Transition name="fade">
-      <div v-if="deleteTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="deleteTarget = null" />
-        <div class="relative bg-card border rounded-xl shadow-xl w-full max-w-sm p-6">
-          <h3 class="font-semibold text-base mb-2">Delete tag?</h3>
-          <p class="text-sm text-muted-foreground mb-5">
-            "<span class="font-medium text-foreground">{{ deleteTarget.name }}</span>" will be permanently deleted and removed from all posts.
-          </p>
-          <div class="flex gap-3 justify-end">
-            <button type="button" @click="deleteTarget = null" class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent transition-colors">Cancel</button>
-            <button type="button" @click="deleteTag" class="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors">Delete</button>
-          </div>
-        </div>
-      </div>
-    </Transition>
   </AppLayout>
 </template>
 
 <script setup>
-import { ref } from "vue";
 import { Head, router } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import DataTable from '@/Components/DataTable.vue'
 
 defineProps({ tags: Array });
 
-const deleteTarget = ref(null);
-function confirmDelete(tag) { deleteTarget.value = tag; }
-function deleteTag() {
-  if (!deleteTarget.value) return;
-  router.delete(route("tags.destroy", deleteTarget.value.id), {
-    onFinish: () => { deleteTarget.value = null; },
-  });
+function deleteTag(tag) {
+  if (
+    tag.posts_count > 0 &&
+    !window.confirm(
+      `"${tag.name}" is used by ${tag.posts_count} post${tag.posts_count !== 1 ? 's' : ''}. Delete anyway? Posts will not be deleted.`
+    )
+  ) return
+
+  router.delete(route('tags.destroy', tag.id))
 }
 </script>
-
-<style scoped>
-.fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
-</style>
