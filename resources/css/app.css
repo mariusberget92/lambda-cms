@@ -127,6 +127,50 @@
   --color-info-border: color-mix(in srgb, #81a1c1 30%, transparent);
 }
 
+/* Block editor forced dark scope — overrides CSS tokens inside [data-theme="dark"] */
+[data-theme="dark"] {
+  --background: #2e3440;
+  --foreground: #d8dee9;
+  --card: #3b4252;
+  --card-foreground: #d8dee9;
+  --popover: #3b4252;
+  --popover-foreground: #d8dee9;
+  --primary: #88c0d0;
+  --primary-foreground: #2e3440;
+  --primary-hover: #72a4b4;
+  --secondary: #434c5e;
+  --secondary-foreground: #d8dee9;
+  --muted: #3b4252;
+  --muted-foreground: #7b8898;
+  --accent: #4c566a;
+  --accent-foreground: #eceff4;
+  --destructive: #bf616a;
+  --destructive-foreground: #eceff4;
+  --border: #434c5e;
+  --input: #434c5e;
+  --ring: #88c0d0;
+  --chart-1: #88c0d0;
+  --chart-2: #8fbcbb;
+  --chart-3: #a3be8c;
+  --chart-4: #ebcb8b;
+  --chart-5: #b48ead;
+  --sidebar: #2a2f3a;
+  --sidebar-foreground: #d8dee9;
+  --sidebar-primary: #88c0d0;
+  --sidebar-primary-foreground: #2e3440;
+  --sidebar-accent: #434c5e;
+  --sidebar-accent-foreground: #d8dee9;
+  --sidebar-border: #434c5e;
+  --sidebar-ring: #88c0d0;
+}
+
+/* Canvas dot-grid background for the block editor */
+.editor-canvas-bg {
+  background-color: #0f1117;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
