@@ -123,6 +123,12 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
               <span class="text-xs text-muted-foreground text-center leading-tight line-clamp-2">{{ item.original_filename }}</span>
+              <span
+                v-if="fileTypeBadge(item.mime_type)"
+                class="text-[9px] font-bold tracking-wide px-1.5 py-0.5 rounded bg-muted-foreground/15 text-muted-foreground uppercase"
+              >
+                {{ fileTypeBadge(item.mime_type) }}
+              </span>
             </div>
 
             <!-- Hover info -->
@@ -518,6 +524,26 @@ async function uploadFiles(files) {
 
 function confirmBulkDelete() {
   showBulkConfirm.value = true
+}
+
+function fileTypeBadge(mimeType) {
+  if (!mimeType) return null
+  const map = {
+    'application/pdf':                                                           'PDF',
+    'application/msword':                                                        'DOC',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document':  'DOCX',
+    'application/vnd.ms-excel':                                                  'XLS',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':        'XLSX',
+    'application/zip':                                                           'ZIP',
+    'video/mp4':   'MP4',
+    'video/webm':  'WEBM',
+    'video/ogg':   'OGV',
+    'audio/mpeg':  'MP3',
+    'audio/ogg':   'OGG',
+    'audio/wav':   'WAV',
+    'audio/webm':  'WEBA',
+  }
+  return map[mimeType] ?? null
 }
 
 async function doBulkDelete() {
