@@ -74,7 +74,7 @@
             <div class="flex items-center gap-2 flex-wrap">
               <span class="text-sm font-semibold">{{ comment.author_name }}</span>
               <span v-if="comment.author_email" class="text-xs text-muted-foreground">{{ comment.author_email }}</span>
-              <span class="text-xs text-muted-foreground">· {{ comment.created_at }}</span>
+              <span class="text-xs text-muted-foreground">· {{ formatDateTime(comment.created_at) }}</span>
             </div>
             <a
               :href="`/blog/${comment.post.slug}`"
@@ -141,7 +141,7 @@
           <div v-for="reply in comment.replies" :key="reply.id" class="px-4 py-3 bg-muted/20">
             <div class="flex items-center gap-2 mb-1">
               <span class="text-xs font-semibold">{{ reply.author_name }}</span>
-              <span class="text-xs text-muted-foreground">· {{ reply.created_at }}</span>
+              <span class="text-xs text-muted-foreground">· {{ formatDateTime(reply.created_at) }}</span>
               <span class="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium">Admin reply</span>
             </div>
             <p class="text-sm text-foreground whitespace-pre-wrap">{{ reply.body }}</p>
@@ -223,7 +223,7 @@ import { Head, router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import StatusBadge from '@/Components/StatusBadge.vue'
 import { MessageSquare } from 'lucide-vue-next'
-import { decodeHtmlEntities } from '@/lib/utils.js'
+import { decodeHtmlEntities, formatDateTime } from '@/lib/utils.js'
 
 const props = defineProps({
   comments:     Object,

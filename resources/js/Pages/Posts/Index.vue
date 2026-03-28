@@ -107,7 +107,7 @@
               <StatusBadge :status="post.status" />
             </td>
             <td class="px-4 py-3 hidden lg:table-cell text-muted-foreground text-xs">
-              {{ post.published_at ?? post.created_at }}
+              {{ formatDate(post.published_at ?? post.created_at) }}
             </td>
             <td class="px-4 py-3">
               <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -268,7 +268,7 @@ import { Head, router, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import StatusBadge from '@/Components/StatusBadge.vue'
 import SelectBox from '@/Components/SelectBox.vue'
-import { decodeHtmlEntities } from '@/lib/utils.js'
+import { decodeHtmlEntities, formatDate } from '@/lib/utils.js'
 import { useNotifications } from '@/composables/useNotifications'
 
 const props = defineProps({

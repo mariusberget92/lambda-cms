@@ -124,6 +124,7 @@ function submitComment() {
       <!-- Block editor content -->
       <BlockRenderer v-if="post.use_block_editor && post.blocks" :blocks="post.blocks" />
       <!-- Legacy Tiptap content — keep prose-sm to match the existing rendering -->
+      <!-- Content sanitized server-side via the post/page model before storage -->
       <div v-else class="prose prose-sm max-w-none dark:prose-invert" v-html="post.body" />
 
       <!-- Tags -->

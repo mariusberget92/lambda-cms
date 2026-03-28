@@ -133,7 +133,7 @@
               {{ activeItem.formatted_size }}
               <template v-if="activeItem.width && activeItem.height"> · {{ activeItem.width }}×{{ activeItem.height }}</template>
             </p>
-            <p class="text-xs text-muted-foreground">{{ activeItem.created_at }}</p>
+            <p class="text-xs text-muted-foreground">{{ formatDateTime(activeItem.created_at) }}</p>
             <p v-if="activeItem.uploader" class="text-xs text-muted-foreground">Uploaded by {{ activeItem.uploader }}</p>
           </div>
 
@@ -270,7 +270,7 @@ import axios from 'axios'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import SelectBox from '@/Components/SelectBox.vue'
-import { decodeHtmlEntities } from '@/lib/utils.js'
+import { decodeHtmlEntities, formatDateTime } from '@/lib/utils.js'
 import { useNotifications } from '@/composables/useNotifications'
 
 const { notify } = useNotifications()

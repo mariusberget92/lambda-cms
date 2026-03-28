@@ -190,7 +190,6 @@ async function navigateToMonth(monthStr) {
     unscheduledDrafts.value = data.unscheduled_drafts
     selectedDay.value       = null
   } catch (err) {
-    console.error('Failed to load calendar data:', err)
     notify('Failed to load calendar data. Please try again.', 'error')
   } finally {
     loading.value = false

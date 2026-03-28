@@ -1,7 +1,7 @@
 <!-- resources/js/Components/BlockEditor/EditorSectionBlock.vue -->
 <template>
-  <div class="border-2 border-dashed border-blue-400/50 rounded-lg p-2 relative min-h-[60px]">
-    <span class="absolute top-1 left-1 text-[10px] text-blue-400 font-semibold uppercase tracking-wider select-none">
+  <div class="border-2 border-dashed border-primary/50 rounded-lg p-2 relative min-h-[60px]">
+    <span class="absolute top-1 left-1 text-[10px] text-primary font-semibold uppercase tracking-wider select-none">
       {{ block.blockName || 'Section' }}
     </span>
 

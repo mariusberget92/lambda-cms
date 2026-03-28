@@ -190,7 +190,6 @@ async function load(reset = true) {
     items.value      = reset ? page.data : [...items.value, ...page.data]
     nextPageUrl.value = page.next_page_url ?? null
   } catch (err) {
-    console.error('Failed to load media', err)
     notify('Failed to load media. Please try again.', 'error')
   } finally {
     loading.value = false
@@ -240,7 +239,6 @@ async function uploadFiles(files) {
       items.value.unshift(data)
       selectedId.value = data.id
     } catch (err) {
-      console.error('Upload failed', err)
       notify(err.response?.data?.message ?? 'Upload failed. Check file type and size.', 'error')
     } finally {
       uploading.value = false

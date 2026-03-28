@@ -19,3 +19,26 @@ export function decodeHtmlEntities(str) {
   txt.innerHTML = str
   return txt.value
 }
+
+/**
+ * Format an ISO date string as a human-readable date.
+ * e.g. "Mar 28, 2026"
+ */
+export function formatDate(isoString) {
+  if (!isoString) return '—'
+  return new Date(isoString).toLocaleDateString('en-US', {
+    year: 'numeric', month: 'short', day: 'numeric',
+  })
+}
+
+/**
+ * Format an ISO date string as a human-readable date + time.
+ * e.g. "Mar 28, 2026, 14:05"
+ */
+export function formatDateTime(isoString) {
+  if (!isoString) return '—'
+  return new Date(isoString).toLocaleString('en-US', {
+    year: 'numeric', month: 'short', day: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  })
+}

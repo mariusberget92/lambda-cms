@@ -5,6 +5,7 @@ import { Head, router } from '@inertiajs/vue3'
 import { ref } from 'vue'
 import StatusBadge from '@/Components/StatusBadge.vue'
 import { LayoutTemplate, Plus, Pencil, Trash2 } from 'lucide-vue-next'
+import { formatDate } from '@/lib/utils.js'
 
 const props = defineProps({
   templates: Object, // grouped by type
@@ -87,7 +88,7 @@ function hasAny() {
                   <td class="px-4 py-3">
                     <StatusBadge :status="template.status" />
                   </td>
-                  <td class="px-4 py-3 text-muted-foreground">{{ template.updated_at }}</td>
+                  <td class="px-4 py-3 text-muted-foreground">{{ formatDate(template.updated_at) }}</td>
                   <td class="px-4 py-3">
                     <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <a

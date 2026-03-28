@@ -5,7 +5,7 @@ import { Head, router } from '@inertiajs/vue3'
 import { ref }    from 'vue'
 import StatusBadge from '@/Components/StatusBadge.vue'
 import DataTable from '@/Components/DataTable.vue'
-import { decodeHtmlEntities } from '@/lib/utils.js'
+import { decodeHtmlEntities, formatDate } from '@/lib/utils.js'
 
 const props = defineProps({
   pages: Object, // paginated
@@ -67,7 +67,7 @@ function deletePage() {
           <td class="hidden sm:table-cell">
             <StatusBadge :status="page.status" />
           </td>
-          <td class="hidden md:table-cell text-muted-foreground text-xs">{{ page.created_at }}</td>
+          <td class="hidden md:table-cell text-muted-foreground text-xs">{{ formatDate(page.created_at) }}</td>
           <td>
             <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <a

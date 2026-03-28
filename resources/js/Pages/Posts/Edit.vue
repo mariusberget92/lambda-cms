@@ -7,6 +7,8 @@
         <div class="flex items-center gap-3">
           <a
             :href="route('posts.index')"
+            title="Go back"
+            aria-label="Go back"
             class="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
           >
             <ArrowLeft class="w-4 h-4" />

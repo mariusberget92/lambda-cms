@@ -1,5 +1,5 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3'
+import { useForm, router } from '@inertiajs/vue3'
 import InstallLayout from '@/Layouts/InstallLayout.vue'
 import { useNotifications } from '@/composables/useNotifications.js'
 
@@ -53,9 +53,9 @@ function submit() {
       </div>
 
       <div class="flex items-center justify-between pt-2">
-        <a href="/install/database" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <button type="button" @click="router.visit('/install/database')" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
           ← Back
-        </a>
+        </button>
         <button
           type="submit"
           :disabled="form.processing"

@@ -1,7 +1,7 @@
 <!-- resources/js/Components/BlockEditor/EditorLoopBlock.vue -->
 <template>
-  <div class="border-2 border-dashed border-teal-400/60 rounded-lg p-2 relative min-h-[60px]">
-    <span class="absolute top-1 left-1 text-[10px] text-teal-500 font-semibold uppercase tracking-wider select-none">
+  <div class="border-2 border-dashed border-accent/60 rounded-lg p-2 relative min-h-[60px]">
+    <span class="absolute top-1 left-1 text-[10px] text-accent-foreground font-semibold uppercase tracking-wider select-none">
       {{ block.blockName || ('Loop — ' + (SOURCE_LABELS[block.data?.source] ?? block.data?.source ?? 'Posts')) }}
     </span>
 
