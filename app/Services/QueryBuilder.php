@@ -33,17 +33,18 @@ class QueryBuilder
      */
     public function resolve(array $data, array $urlParams = []): array
     {
-        $source  = $data['source'] ?? 'posts';
-        $filters = $this->applyUrlParams($data['filters'] ?? [], $urlParams);
-        $sort    = $data['sort']   ?? ['field' => 'created_at', 'direction' => 'desc'];
-        $limit   = min((int) ($data['limit']  ?? 12), 100);
-        $offset  = (int) ($data['offset'] ?? 0);
+        $source      = $data['source']       ?? 'posts';
+        $filters     = $this->applyUrlParams($data['filters'] ?? [], $urlParams);
+        $sort        = $data['sort']         ?? ['field' => 'created_at', 'direction' => 'desc'];
+        $limit       = min((int) ($data['limit']  ?? 12), 100);
+        $offset      = (int) ($data['offset'] ?? 0);
+        $filterLogic = ($data['filter_logic'] ?? 'and') === 'or' ? 'or' : 'and';
 
         return match ($source) {
-            'posts'      => $this->resolvePosts($filters, $sort, $limit, $offset),
-            'categories' => $this->resolveCategories($filters, $sort, $limit, $offset),
-            'tags'       => $this->resolveTags($filters, $sort, $limit, $offset),
-            'pages'      => $this->resolvePages($filters, $sort, $limit, $offset),
+            'posts'      => $this->resolvePosts($filters, $sort, $limit, $offset, $filterLogic),
+            'categories' => $this->resolveCategories($filters, $sort, $limit, $offset, $filterLogic),
+            'tags'       => $this->resolveTags($filters, $sort, $limit, $offset, $filterLogic),
+            'pages'      => $this->resolvePages($filters, $sort, $limit, $offset, $filterLogic),
             default      => ['items' => [], 'total' => 0],
         };
     }
@@ -61,16 +62,14 @@ class QueryBuilder
         }, $filters);
     }
 
-    private function resolvePosts(array $filters, array $sort, int $limit, int $offset): array
+    private function resolvePosts(array $filters, array $sort, int $limit, int $offset, string $filterLogic = 'and'): array
     {
         $query = Post::query()
             ->with(['author:id,name', 'featuredImage:id,path,disk'])
             ->where('status', 'published')
             ->where('published_at', '<=', now());
 
-        foreach ($filters as $filter) {
-            $this->applyFilter($query, $filter, 'posts');
-        }
+        $this->applyFilters($query, $filters, 'posts', $filterLogic);
 
         $field = in_array($sort['field'] ?? '', self::SORT_ALLOWED['posts'], true)
             ? $sort['field'] : 'published_at';
@@ -95,13 +94,11 @@ class QueryBuilder
         return ['items' => $items, 'total' => $total];
     }
 
-    private function resolveCategories(array $filters, array $sort, int $limit, int $offset): array
+    private function resolveCategories(array $filters, array $sort, int $limit, int $offset, string $filterLogic = 'and'): array
     {
         $query = Category::query()->withCount('posts');
 
-        foreach ($filters as $filter) {
-            $this->applyFilter($query, $filter, 'categories');
-        }
+        $this->applyFilters($query, $filters, 'categories', $filterLogic);
 
         $field = in_array($sort['field'] ?? '', self::SORT_ALLOWED['categories'], true)
             ? $sort['field'] : 'name';
@@ -122,13 +119,11 @@ class QueryBuilder
         return ['items' => $items, 'total' => $total];
     }
 
-    private function resolveTags(array $filters, array $sort, int $limit, int $offset): array
+    private function resolveTags(array $filters, array $sort, int $limit, int $offset, string $filterLogic = 'and'): array
     {
         $query = Tag::query()->withCount('posts');
 
-        foreach ($filters as $filter) {
-            $this->applyFilter($query, $filter, 'tags');
-        }
+        $this->applyFilters($query, $filters, 'tags', $filterLogic);
 
         $field = in_array($sort['field'] ?? '', self::SORT_ALLOWED['tags'], true)
             ? $sort['field'] : 'name';
@@ -148,13 +143,11 @@ class QueryBuilder
         return ['items' => $items, 'total' => $total];
     }
 
-    private function resolvePages(array $filters, array $sort, int $limit, int $offset): array
+    private function resolvePages(array $filters, array $sort, int $limit, int $offset, string $filterLogic = 'and'): array
     {
         $query = Page::published();
 
-        foreach ($filters as $filter) {
-            $this->applyFilter($query, $filter, 'pages');
-        }
+        $this->applyFilters($query, $filters, 'pages', $filterLogic);
 
         $field = in_array($sort['field'] ?? '', self::SORT_ALLOWED['pages'], true)
             ? $sort['field'] : 'title';
@@ -172,6 +165,25 @@ class QueryBuilder
         ])->all();
 
         return ['items' => $items, 'total' => $total];
+    }
+
+    private function applyFilters($query, array $filters, string $source, string $logic): void
+    {
+        if (empty($filters)) return;
+
+        if ($logic === 'or') {
+            $query->where(function ($q) use ($filters, $source) {
+                foreach ($filters as $filter) {
+                    $q->orWhere(function ($inner) use ($filter, $source) {
+                        $this->applyFilter($inner, $filter, $source);
+                    });
+                }
+            });
+        } else {
+            foreach ($filters as $filter) {
+                $this->applyFilter($query, $filter, $source);
+            }
+        }
     }
 
     private function applyFilter($query, array $filter, string $source): void
