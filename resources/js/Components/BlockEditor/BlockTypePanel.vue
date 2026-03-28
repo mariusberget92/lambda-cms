@@ -1,14 +1,16 @@
 <!-- resources/js/Components/BlockEditor/BlockTypePanel.vue -->
 <template>
-  <div class="w-48 shrink-0 border-r flex flex-col bg-sidebar">
-    <div class="px-3 py-2 border-b shrink-0">
+  <div class="w-48 shrink-0 border-r border-white/8 flex flex-col bg-sidebar">
+    <div class="px-3 py-2 border-b border-white/8 shrink-0 bg-black/20">
       <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Add Block</p>
     </div>
 
     <div class="flex-1 overflow-y-auto scrollbar-hidden">
       <template v-for="group in visibleGroups" :key="group.name">
-        <div class="px-3 pt-3 pb-1">
-          <p class="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">{{ group.name }}</p>
+        <div class="px-3 pt-3 pb-1 flex items-center">
+          <span class="inline-flex bg-white/5 rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-white/40">
+            {{ group.name }}
+          </span>
         </div>
         <VueDraggable
           :model-value="group.types"
@@ -22,10 +24,10 @@
           <div
             v-for="btype in group.types"
             :key="btype.type"
-            class="flex flex-col items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-1 py-3 cursor-grab active:cursor-grabbing hover:border-primary hover:text-primary transition-colors select-none"
+            class="flex flex-col items-center justify-center gap-1.5 rounded-lg border bg-white/5 border-white/10 px-1 py-4 cursor-grab active:cursor-grabbing hover:bg-white/10 hover:border-white/20 active:border-primary/60 active:bg-primary/10 transition-colors select-none"
           >
-            <component :is="btype.icon" class="w-4 h-4 shrink-0" />
-            <span class="text-[10px] leading-none text-center">{{ btype.label }}</span>
+            <component :is="btype.icon" class="w-5 h-5 shrink-0" :class="GROUP_COLORS[btype.group]" />
+            <span class="text-[11px] leading-none text-center text-muted-foreground">{{ btype.label }}</span>
           </div>
         </VueDraggable>
       </template>
@@ -98,6 +100,15 @@ const ALL_TYPES = [
   { type: 'archive-title', label: 'Title', icon: FolderOpen, group: 'Archive' },
   { type: 'archive-loop',  label: 'Loop',  icon: List,       group: 'Archive' },
 ]
+
+const GROUP_COLORS = {
+  'Content':     'text-[var(--chart-1)]',
+  'Layout':      'text-[var(--chart-2)]',
+  'Interactive': 'text-[var(--chart-3)]',
+  'Developer':   'text-[var(--chart-4)]',
+  'Post':        'text-[var(--chart-5)]',
+  'Archive':     'text-[var(--chart-1)]',
+}
 
 const GROUP_ORDER = ['Content', 'Layout', 'Interactive', 'Developer', 'Post', 'Archive']
 
