@@ -41,7 +41,7 @@ class TemplateController extends Controller
             'status'           => ['required', 'in:draft,published'],
             'blocks'           => ['nullable', 'array'],
             'meta_title'       => ['nullable', 'string', 'max:100'],
-            'meta_description' => ['nullable', 'string'],
+            'meta_description' => ['nullable', 'string', 'max:300'],
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
         ]);
 
@@ -94,7 +94,7 @@ class TemplateController extends Controller
             'status'           => ['required', 'in:draft,published'],
             'blocks'           => ['nullable', 'array'],
             'meta_title'       => ['nullable', 'string', 'max:100'],
-            'meta_description' => ['nullable', 'string'],
+            'meta_description' => ['nullable', 'string', 'max:300'],
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
         ]);
 

@@ -293,6 +293,35 @@ class PageTest extends TestCase
             );
     }
 
+    // ── meta_description max:300 ──────────────────────────────────────────────
+
+    public function test_meta_description_max_300_on_store(): void
+    {
+        $admin = $this->makeAdmin();
+        $this->actingAs($admin)
+            ->post('/pages', [
+                'title'            => 'Test',
+                'slug'             => 'test',
+                'status'           => 'draft',
+                'meta_description' => str_repeat('a', 301),
+            ])
+            ->assertSessionHasErrors('meta_description');
+    }
+
+    public function test_meta_description_max_300_on_update(): void
+    {
+        $admin = $this->makeAdmin();
+        $page  = \App\Models\Page::factory()->create();
+        $this->actingAs($admin)
+            ->put("/pages/{$page->id}", [
+                'title'            => 'Test',
+                'slug'             => 'test-slug',
+                'status'           => 'draft',
+                'meta_description' => str_repeat('a', 301),
+            ])
+            ->assertSessionHasErrors('meta_description');
+    }
+
     public function test_nested_component_block_inside_container_is_resolved(): void
     {
         $post = Post::factory()->create([

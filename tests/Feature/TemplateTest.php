@@ -363,6 +363,35 @@ class TemplateTest extends TestCase
         $this->assertDatabaseHas('templates', ['id' => $template->id]);
     }
 
+    // ── meta_description max:300 ──────────────────────────────────────────────
+
+    public function test_meta_description_max_300_on_store(): void
+    {
+        $admin = $this->makeAdmin();
+        $this->actingAs($admin)
+            ->post('/templates', [
+                'title'            => 'Test',
+                'type'             => 'blog-index',
+                'status'           => 'draft',
+                'meta_description' => str_repeat('a', 301),
+            ])
+            ->assertSessionHasErrors('meta_description');
+    }
+
+    public function test_meta_description_max_300_on_update(): void
+    {
+        $admin    = $this->makeAdmin();
+        $template = \App\Models\Template::factory()->create();
+        $this->actingAs($admin)
+            ->put("/templates/{$template->id}", [
+                'title'            => 'Test',
+                'type'             => 'blog-index',
+                'status'           => 'draft',
+                'meta_description' => str_repeat('a', 301),
+            ])
+            ->assertSessionHasErrors('meta_description');
+    }
+
     // ── TemplateResolver ──────────────────────────────────────────────────────
 
     public function test_template_resolver_returns_null_when_no_published_template(): void

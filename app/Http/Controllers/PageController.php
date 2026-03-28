@@ -45,7 +45,7 @@ class PageController extends Controller
             'status'           => ['required', 'in:published,draft'],
             'blocks'           => ['nullable', 'array'],
             'meta_title'       => ['nullable', 'string', 'max:100'],
-            'meta_description' => ['nullable', 'string'],
+            'meta_description' => ['nullable', 'string', 'max:300'],
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
         ]);
 
@@ -89,7 +89,7 @@ class PageController extends Controller
             'status'           => ['required', 'in:published,draft'],
             'blocks'           => ['nullable', 'array'],
             'meta_title'       => ['nullable', 'string', 'max:100'],
-            'meta_description' => ['nullable', 'string'],
+            'meta_description' => ['nullable', 'string', 'max:300'],
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
         ]);
 
