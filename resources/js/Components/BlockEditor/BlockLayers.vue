@@ -4,7 +4,7 @@
 
     <!-- Layers list -->
     <div class="flex flex-col shrink-0" style="max-height: 40%">
-      <div class="px-3 py-2 border-b shrink-0 flex items-center justify-between">
+      <div class="px-3 py-2 border-b border-white/8 shrink-0 flex items-center justify-between bg-black/20">
         <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Layers</p>
         <div class="flex items-center gap-1">
           <button
@@ -59,51 +59,85 @@
     </div>
 
     <!-- Settings panel -->
-    <div class="flex-1 flex flex-col border-t overflow-hidden">
-      <div class="px-3 py-2 border-b shrink-0">
-        <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          {{ selectedBlock ? blockLabel(selectedBlock.type) + ' Settings' : 'Settings' }}
-        </p>
+    <div class="flex-1 flex flex-col border-t border-white/8 overflow-hidden">
+
+      <div v-if="!selectedBlock" class="flex-1 flex items-center justify-center">
+        <p class="text-xs text-muted-foreground text-center">Select a block<br>to edit its settings</p>
       </div>
 
-      <div class="flex-1 overflow-y-auto scrollbar-hidden"><div class="p-3">
-        <div v-if="!selectedBlock" class="h-full flex items-center justify-center">
-          <p class="text-xs text-muted-foreground text-center">Select a block<br>to edit its settings</p>
-        </div>
-
-        <div v-else-if="selectedBlock.type === 'html' && !isAdmin" class="rounded-md border border-dashed p-4 text-center">
+      <div v-else-if="selectedBlock.type === 'html' && !isAdmin" class="p-4">
+        <div class="rounded-md border border-dashed p-4 text-center">
           <p class="text-xs text-muted-foreground">HTML blocks are admin-only and cannot be edited here.</p>
         </div>
+      </div>
 
-        <template v-else>
-          <component
-            :is="settingsComponent"
-            :block="selectedBlock"
-            :is-admin="isAdmin"
-            :meta="meta"
-            :loop-fields="loopFields"
-            :available-fields="availableFields"
-            @update="$emit('update', $event)"
-          />
-          <AdvancedSettings
-            :block="selectedBlock"
-            @update="$emit('update', $event)"
-          />
-          <!-- Condition settings — only shown when block is inside a Loop -->
-          <ConditionSettings
-            v-if="loopFields.length"
-            :block="selectedBlock"
-            :loop-fields="loopFields"
-            @update="$emit('update', $event)"
-          />
-        </template>
-      </div></div>
+      <template v-else>
+        <Tabs v-model="settingsTab" class="flex flex-col flex-1 overflow-hidden">
+          <TabsList class="shrink-0 w-full rounded-none border-b border-white/8 bg-black/20 px-2 h-9 gap-0 justify-start">
+            <TabsTrigger
+              value="content"
+              class="text-xs h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground px-3"
+            >
+              Content
+            </TabsTrigger>
+            <TabsTrigger
+              v-if="STYLE_BLOCKS.has(selectedBlock.type)"
+              value="style"
+              class="text-xs h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground px-3"
+            >
+              Style
+            </TabsTrigger>
+            <TabsTrigger
+              value="advanced"
+              class="text-xs h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground px-3"
+            >
+              Advanced
+            </TabsTrigger>
+          </TabsList>
+
+          <div class="flex-1 overflow-y-auto scrollbar-hidden">
+            <div class="p-3">
+
+              <!-- Content + Style tabs: delegate to block's settings component -->
+              <template v-if="settingsTab === 'content' || settingsTab === 'style'">
+                <component
+                  :is="settingsComponent"
+                  :block="selectedBlock"
+                  :tab="settingsTab"
+                  :is-admin="isAdmin"
+                  :meta="meta"
+                  :loop-fields="loopFields"
+                  :available-fields="availableFields"
+                  @update="$emit('update', $event)"
+                />
+              </template>
+
+              <!-- Advanced tab -->
+              <template v-else-if="settingsTab === 'advanced'">
+                <AdvancedSettings
+                  :block="selectedBlock"
+                  @update="$emit('update', $event)"
+                />
+                <ConditionSettings
+                  v-if="loopFields.length"
+                  :block="selectedBlock"
+                  :loop-fields="loopFields"
+                  @update="$emit('update', $event)"
+                />
+              </template>
+
+            </div>
+          </div>
+        </Tabs>
+      </template>
+
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { RotateCcw, RotateCw } from 'lucide-vue-next'
 import { VueDraggable } from 'vue-draggable-plus'
 import LayerItem from './LayerItem.vue'
@@ -165,6 +199,29 @@ const draggableBlocks = computed({
     emit('reorder', val)
   },
 })
+
+const settingsTab = ref('content')
+
+// Reset to appropriate default tab when selected block changes
+watch(() => props.selectedId, () => {
+  settingsTab.value = DEFAULT_TAB[props.selectedBlock?.type] ?? 'content'
+})
+
+// Block types that have a Style tab
+const STYLE_BLOCKS = new Set([
+  'paragraph', 'heading', 'image', 'quote', 'gallery', 'video',
+  'cta', 'container', 'section', 'spacer', 'divider', 'loop',
+  'component', 'post-featured-image', 'archive-loop',
+])
+
+// Block types where Style should be the default active tab
+const DEFAULT_TAB = {
+  divider:             'style',
+  spacer:              'style',
+  section:             'style',
+  'post-featured-image': 'style',
+  'archive-loop':       'style',
+}
 
 const LABELS = {
   paragraph: 'Paragraph', heading: 'Heading', image: 'Image',
