@@ -69,13 +69,13 @@
         <!-- Legend -->
         <div class="flex gap-3 mt-4 justify-center">
           <span class="flex items-center gap-1 text-[10px] text-muted-foreground">
-            <span class="w-2 h-2 rounded-full bg-status-success-fg inline-block"></span>Published
+            <span class="w-2 h-2 rounded-full bg-status-success-bg inline-block"></span>Published
           </span>
           <span class="flex items-center gap-1 text-[10px] text-muted-foreground">
-            <span class="w-2 h-2 rounded-full bg-status-info-fg inline-block"></span>Scheduled
+            <span class="w-2 h-2 rounded-full bg-status-info-bg inline-block"></span>Scheduled
           </span>
           <span class="flex items-center gap-1 text-[10px] text-muted-foreground">
-            <span class="w-2 h-2 rounded-full bg-status-warning-fg inline-block"></span>Draft
+            <span class="w-2 h-2 rounded-full bg-status-warning-bg inline-block"></span>Draft
           </span>
         </div>
       </div>
@@ -232,9 +232,9 @@ const dayCells = computed(() => {
 
 function dotColorForPosts(posts) {
   if (!posts || posts.length === 0) return null
-  if (posts.some(p => p.status === 'scheduled'))  return 'bg-status-info-fg'
-  if (posts.some(p => p.status === 'published'))  return 'bg-status-success-fg'
-  return 'bg-status-warning-fg'
+  if (posts.some(p => p.status === 'scheduled'))  return 'bg-status-info-bg'
+  if (posts.some(p => p.status === 'published'))  return 'bg-status-success-bg'
+  return 'bg-status-warning-bg'
 }
 
 // ── Day selection ─────────────────────────────────────────────────────────
