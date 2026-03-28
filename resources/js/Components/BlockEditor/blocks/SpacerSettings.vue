@@ -1,7 +1,10 @@
 <script setup>
 import DimensionInput from '../DimensionInput.vue'
 
-const props = defineProps({ block: { type: Object, required: true } })
+const props = defineProps({
+  block: { type: Object, required: true },
+  tab: { type: String, default: null },  // 'content' | 'style' | null (show all)
+})
 const emit   = defineEmits(['update'])
 
 function getBreakpoint(bp) {
@@ -24,19 +27,26 @@ function setBreakpoint(bp, value) {
 </script>
 
 <template>
-  <div class="space-y-2">
-    <label class="text-xs font-medium text-muted-foreground block">Height</label>
-    <div class="grid grid-cols-3 gap-1.5">
-      <div v-for="bp in ['default', 'sm', 'lg']" :key="bp">
-        <span class="text-[10px] text-muted-foreground block mb-1 text-center">
-          {{ bp === 'default' ? 'Mobile' : bp === 'sm' ? 'SM' : 'LG' }}
-        </span>
-        <DimensionInput
-          :model-value="getBreakpoint(bp)"
-          placeholder="–"
-          @update:model-value="v => setBreakpoint(bp, v)"
-        />
+  <div>
+
+    <!-- Style tab fields -->
+    <div v-show="!tab || tab === 'style'" class="space-y-3">
+      <div class="space-y-2">
+        <label class="text-xs font-medium text-muted-foreground block">Height</label>
+        <div class="grid grid-cols-3 gap-1.5">
+          <div v-for="bp in ['default', 'sm', 'lg']" :key="bp">
+            <span class="text-[10px] text-muted-foreground block mb-1 text-center">
+              {{ bp === 'default' ? 'Mobile' : bp === 'sm' ? 'SM' : 'LG' }}
+            </span>
+            <DimensionInput
+              :model-value="getBreakpoint(bp)"
+              placeholder="–"
+              @update:model-value="v => setBreakpoint(bp, v)"
+            />
+          </div>
+        </div>
       </div>
     </div>
+
   </div>
 </template>

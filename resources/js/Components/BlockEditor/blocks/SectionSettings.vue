@@ -3,7 +3,10 @@ import { computed } from 'vue'
 import SelectBox from '@/Components/SelectBox.vue'
 import SpacingControl from '../SpacingControl.vue'
 
-const props = defineProps({ block: { type: Object, required: true } })
+const props = defineProps({
+  block: { type: Object, required: true },
+  tab: { type: String, default: null },  // 'content' | 'style' | null (show all)
+})
 const emit   = defineEmits(['update'])
 
 const d = computed(() => props.block.data ?? {})
@@ -18,7 +21,10 @@ function updateNested(key, subKey, value) {
 </script>
 
 <template>
-  <div class="space-y-4">
+  <div>
+
+    <!-- Style tab fields -->
+    <div v-show="!tab || tab === 'style'" class="space-y-4">
 
     <!-- Background -->
     <div class="space-y-2">
@@ -148,6 +154,8 @@ function updateNested(key, subKey, value) {
         ]"
         @update:model-value="v => update('minHeight', v)"
       />
+    </div>
+
     </div>
 
   </div>
