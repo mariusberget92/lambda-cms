@@ -129,10 +129,10 @@
               </svg>
               <span class="text-xs text-muted-foreground text-center leading-tight line-clamp-2">{{ item.original_filename }}</span>
               <span
-                v-if="fileTypeBadge(item.mime_type)"
+                v-if="fileTypeBadge(item.mime_type, item.original_filename)"
                 class="text-[9px] font-bold tracking-wide px-1.5 py-0.5 rounded bg-muted-foreground/15 text-muted-foreground uppercase"
               >
-                {{ fileTypeBadge(item.mime_type) }}
+                {{ fileTypeBadge(item.mime_type, item.original_filename) }}
               </span>
             </div>
 
@@ -170,6 +170,12 @@
 
     <!-- Detail panel — bottom sheet on mobile -->
     <Teleport to="body">
+      <!-- Backdrop -->
+      <div
+        v-if="activeItem"
+        class="fixed inset-0 z-[39] bg-black/40 md:hidden"
+        @click="closeDetail"
+      />
       <Transition name="sheet">
         <div
           v-if="activeItem"
@@ -272,14 +278,14 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, computed } from 'vue'
 import { Head, Link, router } from '@inertiajs/vue3'
 import { useDropZone } from '@vueuse/core'
 import axios from 'axios'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import SelectBox from '@/Components/SelectBox.vue'
-import { decodeHtmlEntities, formatDateTime } from '@/lib/utils.js'
+import { decodeHtmlEntities } from '@/lib/utils.js'
 import { useNotifications } from '@/composables/useNotifications'
 import MediaLightbox from './MediaLightbox.vue'
 import MediaDetailContent from './MediaDetailContent.vue'
@@ -466,8 +472,7 @@ function confirmBulkDelete() {
   showBulkConfirm.value = true
 }
 
-function fileTypeBadge(mimeType) {
-  if (!mimeType) return null
+function fileTypeBadge(mimeType, filename) {
   const map = {
     'application/pdf':                                                           'PDF',
     'application/msword':                                                        'DOC',
@@ -483,7 +488,13 @@ function fileTypeBadge(mimeType) {
     'audio/wav':   'WAV',
     'audio/webm':  'WEBA',
   }
-  return map[mimeType] ?? null
+  if (mimeType && map[mimeType]) return map[mimeType]
+  // Fallback: derive from file extension
+  if (filename) {
+    const ext = filename.split('.').pop()
+    if (ext && ext !== filename) return ext.toUpperCase()
+  }
+  return null
 }
 
 async function doBulkDelete() {
