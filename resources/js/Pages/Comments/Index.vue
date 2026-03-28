@@ -87,14 +87,7 @@
           </div>
 
           <!-- Status badge -->
-          <span
-            class="shrink-0 text-[11px] font-semibold px-2 py-0.5 rounded-full"
-            :class="{
-              'bg-status-warning-bg text-status-warning-fg': comment.status === 'pending',
-              'bg-status-success-bg text-status-success-fg': comment.status === 'approved',
-              'bg-muted text-muted-foreground': comment.status === 'rejected',
-            }"
-          >{{ comment.status }}</span>
+          <StatusBadge :status="comment.status" class="shrink-0" />
         </div>
 
         <!-- Body -->
@@ -199,6 +192,7 @@
 import { ref, reactive } from 'vue'
 import { Head, router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import StatusBadge from '@/Components/StatusBadge.vue'
 import { MessageSquare } from 'lucide-vue-next'
 
 const props = defineProps({

@@ -28,6 +28,7 @@
               class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               :class="{ 'border-destructive': infoForm.errors.name }"
             />
+            <p v-if="infoForm.errors.name" class="text-xs text-destructive mt-1">{{ infoForm.errors.name }}</p>
           </div>
 
           <div class="space-y-1">
@@ -40,6 +41,7 @@
               class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               :class="{ 'border-destructive': infoForm.errors.email }"
             />
+            <p v-if="infoForm.errors.email" class="text-xs text-destructive mt-1">{{ infoForm.errors.email }}</p>
           </div>
 
           <div class="flex justify-end pt-1">
@@ -72,6 +74,7 @@
               class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               :class="{ 'border-destructive': passwordForm.errors.current_password }"
             />
+            <p v-if="passwordForm.errors.current_password" class="text-xs text-destructive mt-1">{{ passwordForm.errors.current_password }}</p>
           </div>
 
           <div class="space-y-1">
@@ -84,6 +87,7 @@
               class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               :class="{ 'border-destructive': passwordForm.errors.password }"
             />
+            <p v-if="passwordForm.errors.password" class="text-xs text-destructive mt-1">{{ passwordForm.errors.password }}</p>
           </div>
 
           <div class="space-y-1">
@@ -94,7 +98,9 @@
               type="password"
               autocomplete="new-password"
               class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              :class="{ 'border-destructive': passwordForm.errors.password_confirmation }"
             />
+            <p v-if="passwordForm.errors.password_confirmation" class="text-xs text-destructive mt-1">{{ passwordForm.errors.password_confirmation }}</p>
           </div>
 
           <div class="flex justify-end pt-1">

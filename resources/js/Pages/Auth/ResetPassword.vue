@@ -45,7 +45,9 @@
           autocomplete="new-password"
           required
           class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+          :class="{ 'border-destructive': form.errors.password_confirmation }"
         />
+        <p v-if="form.errors.password_confirmation" class="text-xs text-destructive mt-1">{{ form.errors.password_confirmation }}</p>
       </div>
 
       <button
