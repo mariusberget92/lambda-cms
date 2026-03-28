@@ -1,6 +1,10 @@
 <!-- resources/js/Components/BlockEditor/BlockEditor.vue -->
 <template>
-  <div class="flex border rounded-xl overflow-hidden bg-background" style="min-height: 500px; max-height: calc(100vh - 220px)">
+  <div
+    data-theme="dark"
+    class="flex border border-white/10 rounded-xl overflow-hidden bg-background"
+    style="min-height: 500px; max-height: calc(100vh - 220px)"
+  >
     <!-- Left: block type palette -->
     <BlockTypePanel :is-admin="isAdmin" />
 
@@ -41,7 +45,7 @@
     <Transition name="fade">
       <div v-if="removeTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="cancelRemove" />
-        <div class="relative bg-card border rounded-xl shadow-xl w-full max-w-sm p-6">
+        <div class="relative bg-card border border-white/10 rounded-xl shadow-xl w-full max-w-sm p-6">
           <h3 class="font-semibold text-base mb-2">Remove block?</h3>
           <p class="text-sm text-muted-foreground mb-5">
             This block and its content will be permanently removed.
