@@ -164,6 +164,28 @@
             <p v-if="activeItem.uploader" class="text-xs text-muted-foreground">Uploaded by {{ activeItem.uploader }}</p>
           </div>
 
+          <!-- Used in -->
+          <div class="flex flex-col gap-1">
+            <p class="text-xs font-medium text-foreground">Used in</p>
+            <div v-if="usedInLoading" class="space-y-1.5">
+              <div class="h-3 rounded bg-muted animate-pulse w-3/4" />
+              <div class="h-3 rounded bg-muted animate-pulse w-1/2" />
+            </div>
+            <p v-else-if="!usedIn?.length" class="text-xs text-muted-foreground">Not used anywhere</p>
+            <ul v-else class="space-y-1">
+              <li v-for="post in usedIn" :key="post.id">
+                <a
+                  :href="route('posts.edit', post.id)"
+                  target="_blank"
+                  rel="noopener"
+                  class="text-xs text-primary hover:underline underline-offset-2 line-clamp-1"
+                >
+                  {{ post.title }}
+                </a>
+              </li>
+            </ul>
+          </div>
+
           <!-- Alt text -->
           <div class="flex flex-col gap-1">
             <label class="text-xs font-medium text-foreground">Alt text</label>
@@ -278,10 +300,25 @@
         <div class="p-6">
           <h3 class="text-base font-semibold mb-2">Delete this file?</h3>
           <p class="text-sm text-muted-foreground mb-1 break-all">{{ activeItem?.original_filename }}</p>
-          <p class="text-sm text-muted-foreground mb-6">This action cannot be undone.</p>
+
+          <!-- Used-in warning -->
+          <div v-if="usedIn?.length" class="rounded-md border border-destructive/30 bg-destructive/5 p-3 mb-4 mt-3">
+            <p class="text-xs font-medium text-destructive mb-1.5">
+              This file is used as the featured image in {{ usedIn.length }} post{{ usedIn.length !== 1 ? 's' : '' }}:
+            </p>
+            <ul class="space-y-0.5">
+              <li v-for="post in usedIn" :key="post.id" class="text-xs text-muted-foreground truncate">
+                · {{ post.title }}
+              </li>
+            </ul>
+            <p class="text-xs text-muted-foreground mt-1.5">Deleting will remove the featured image from those posts.</p>
+          </div>
+
+          <p v-else class="text-sm text-muted-foreground mb-6">This action cannot be undone.</p>
+
           <div class="flex justify-end gap-2">
             <button type="button" class="rounded-md border px-4 py-2 text-sm hover:bg-accent" @click="showSingleConfirm = false">Cancel</button>
-            <button type="button" class="rounded-md bg-destructive px-4 py-2 text-sm text-destructive-foreground hover:bg-destructive/90" @click="doSingleDelete">Delete</button>
+            <button type="button" class="rounded-md bg-destructive px-4 py-2 text-sm text-destructive-foreground hover:bg-destructive/90" @click="doSingleDelete">Delete anyway</button>
           </div>
         </div>
       </DialogContent>
@@ -335,6 +372,26 @@ const activeItem  = ref(null)
 const detailForm  = ref({ alt: '', description: '' })
 const saving      = ref(false)
 const copied      = ref(false)
+const usedIn        = ref(null)   // null = not loaded, [] = empty, [...] = posts
+const usedInLoading = ref(false)
+
+let usageFetchId = 0
+
+async function fetchUsage(mediaId) {
+  const myId = ++usageFetchId
+  usedIn.value        = null
+  usedInLoading.value = true
+  try {
+    const { data } = await axios.get(route('media.usage', mediaId))
+    if (myId !== usageFetchId) return
+    usedIn.value = data.posts
+  } catch {
+    if (myId !== usageFetchId) return
+    usedIn.value = []
+  } finally {
+    if (myId === usageFetchId) usedInLoading.value = false
+  }
+}
 
 const filters = ref({
   type:   props.filters.type   ?? '',
@@ -364,10 +421,12 @@ function openDetail(item) {
   activeItem.value  = item
   detailForm.value  = { alt: item.alt ?? '', description: item.description ?? '' }
   copied.value      = false
+  fetchUsage(item.id)
 }
 
 function closeDetail() {
   activeItem.value = null
+  usedIn.value     = null
 }
 
 async function saveDetail() {
