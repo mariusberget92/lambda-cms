@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import axios from 'axios'
 import LoopItemProvider from './LoopItemProvider.vue'
@@ -80,6 +80,8 @@ async function fetchItems() {
     isLoading.value = false
   }
 }
+
+onMounted(() => fetchItems())
 
 // Watch for Inertia URL changes (client-side navigation / URL param changes)
 // Only set up the watcher when we actually have urlParam filters — avoids unnecessary overhead
