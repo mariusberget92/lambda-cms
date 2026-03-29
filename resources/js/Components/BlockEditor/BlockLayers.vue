@@ -210,7 +210,7 @@ watch(() => props.selectedId, () => {
 // Block types that have a Style tab (only include types where style fields actually exist)
 const STYLE_BLOCKS = new Set([
   'container', 'section', 'spacer', 'divider', 'loop',
-  'component', 'post-featured-image', 'archive-loop',
+  'post-featured-image', 'archive-loop',
 ])
 
 // Block types where Style should be the default active tab
