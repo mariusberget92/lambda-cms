@@ -122,7 +122,7 @@ const toggle = () => {
     <!-- Dropdown panel -->
     <div
       v-show="open"
-      class="absolute left-0 top-full z-50 mt-1 w-full rounded-md border bg-background shadow-md"
+      class="absolute left-0 top-full z-50 mt-1 w-full rounded-md border border-border bg-background text-foreground shadow-md"
     >
       <!-- Search input -->
       <div v-if="searchable" class="p-2 border-b">
@@ -148,7 +148,7 @@ const toggle = () => {
           :key="item.value"
           role="option"
           :aria-selected="isSelected(item.value)"
-          class="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer select-none"
+          class="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer select-none text-foreground"
           :class="isSelected(item.value) && !multiple
             ? 'bg-primary text-primary-foreground'
             : 'hover:bg-accent hover:text-accent-foreground'"
