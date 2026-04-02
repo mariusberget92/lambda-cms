@@ -166,6 +166,7 @@ import DividerSettings   from './blocks/DividerSettings.vue'
 import CtaSettings       from './blocks/CtaSettings.vue'
 import HtmlSettings      from './blocks/HtmlSettings.vue'
 import ComponentSettings from './blocks/ComponentSettings.vue'
+import LinkSettings      from './blocks/LinkSettings.vue'
 
 const props = defineProps({
   blocks:        { type: Array,   default: () => [] },
@@ -258,6 +259,7 @@ const COMPONENT_MAP = {
   'archive-title':       ArchiveTitleSettings,
   'archive-loop':        LoopSettings,
   search:                SearchSettings,
+  link:                  LinkSettings,
 }
 
 const settingsComponent = computed(() =>

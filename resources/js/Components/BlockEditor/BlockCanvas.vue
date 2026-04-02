@@ -116,6 +116,13 @@
                 @select="$emit('select', $event)"
                 @update-children="$emit('update-children', $event)"
               />
+              <EditorLinkBlock
+                v-else-if="block.type === 'link'"
+                :block="block"
+                :selected-id="selectedId"
+                @select="$emit('select', $event)"
+                @update-children="$emit('update-children', $event)"
+              />
 
               <!-- Spacer -->
               <div v-else-if="block.type === 'spacer'" class="flex flex-col">
@@ -170,6 +177,7 @@ import { GripVertical, Eye, ChevronRight, LayoutTemplate } from 'lucide-vue-next
 import EditorContainerBlock from './EditorContainerBlock.vue'
 import EditorSectionBlock   from './EditorSectionBlock.vue'
 import EditorLoopBlock      from './EditorLoopBlock.vue'
+import EditorLinkBlock      from './EditorLinkBlock.vue'
 import BlockRenderer from '@/components/BlockRenderer.vue'
 import ParagraphBlock from '@/Components/Blocks/ParagraphBlock.vue'
 import HeadingBlock   from '@/Components/Blocks/HeadingBlock.vue'
