@@ -62,6 +62,12 @@ import {
   FolderOpen,
   List,
   Search,
+  Link,
+  ChevronDown,
+  Layers,
+  LayoutPanelTop,
+  PlayCircle,
+  ChevronRight as ChevronRightIcon,
 } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -77,6 +83,11 @@ const ALL_TYPES = [
   { type: 'code',      label: 'Code',      icon: Code2,             group: 'Content' },
   { type: 'gallery',   label: 'Gallery',   icon: LayoutGrid,        group: 'Content' },
   { type: 'video',     label: 'Video',     icon: Video,             group: 'Content' },
+  { type: 'accordion',      label: 'Accordion', icon: Layers,          group: 'Content' },
+  { type: 'accordion-item', label: 'Acc. Item', icon: ChevronDown,     group: 'Content', hiddenFromPalette: true },
+  { type: 'tabs',           label: 'Tabs',      icon: LayoutPanelTop,  group: 'Content' },
+  { type: 'tab-item',       label: 'Tab',       icon: LayoutPanelTop,  group: 'Content', hiddenFromPalette: true },
+  { type: 'embed',          label: 'Embed',     icon: PlayCircle,      group: 'Content' },
   // ── Layout ───────────────────────────────────────────────────────────────
   { type: 'container', label: 'Container', icon: LayoutTemplate,    group: 'Layout' },
   { type: 'section',   label: 'Section',   icon: Rows2,             group: 'Layout' },
@@ -87,6 +98,8 @@ const ALL_TYPES = [
   { type: 'search',    label: 'Search',    icon: Search,            group: 'Interactive' },
   { type: 'loop',      label: 'Loop',      icon: Repeat2,           group: 'Interactive' },
   { type: 'component', label: 'Component', icon: Puzzle,            group: 'Interactive' },
+  { type: 'link',      label: 'Link',      icon: Link,              group: 'Interactive' },
+  { type: 'pagination',label: 'Pagination',icon: ChevronRightIcon,  group: 'Interactive' },
   { type: 'html',      label: 'HTML',      icon: FileCode,          group: 'Developer', adminOnly: true },
   // ── Post ─────────────────────────────────────────────────────────────────
   { type: 'post-title',          label: 'Post Title',  icon: Heading1,      group: 'Post' },
@@ -113,7 +126,7 @@ const GROUP_COLORS = {
 const GROUP_ORDER = ['Content', 'Layout', 'Interactive', 'Developer', 'Post', 'Archive']
 
 const visibleGroups = computed(() => {
-  const visible = ALL_TYPES.filter(t => !t.adminOnly || props.isAdmin)
+  const visible = ALL_TYPES.filter(t => (!t.adminOnly || props.isAdmin) && !t.hiddenFromPalette)
   return GROUP_ORDER
     .map(name => ({ name, types: visible.filter(t => t.group === name) }))
     .filter(g => g.types.length > 0)
@@ -169,13 +182,49 @@ const DEFAULT_DATA = {
   'archive-title':       { tag: 'h1' },
   'archive-loop':        { source: 'posts', limit: 12, columns: 3, gap: 6 },
   search:                { placeholder: 'Search…', buttonLabel: 'Search', scope: 'posts' },
+  link: {
+    url: '',
+    target: '_self',
+    rel: '',
+    icon: { name: '', position: 'left', size: 'md', color: 'inherit' },
+  },
+  accordion: {
+    defaultState: 'first-open',
+    borderStyle: 'bordered',
+  },
+  'accordion-item': {
+    title: 'Item title',
+  },
+  tabs: {
+    alignment: 'left',
+    tabStyle: 'underline',
+  },
+  'tab-item': {
+    label: 'Tab',
+  },
+  embed: {
+    url: '',
+    caption: '',
+    aspectRatio: '16/9',
+    maxWidth: '',
+  },
+  pagination: {
+    pageParam: 'page',
+    style: 'prev-next',
+    prevLabel: '← Previous',
+    nextLabel: 'Next →',
+    alignment: 'center',
+    buttonStyle: 'outline',
+  },
 }
 
 function cloneBlock(typeDef) {
-  const id = typeof crypto !== 'undefined' && crypto.randomUUID
+  const makeId = () => typeof crypto !== 'undefined' && crypto.randomUUID
     ? crypto.randomUUID()
     : Math.random().toString(36).slice(2) + Date.now().toString(36)
-  return {
+
+  const id = makeId()
+  const block = {
     id,
     type: typeDef.type,
     data: { ...(DEFAULT_DATA[typeDef.type] ?? {}) },
@@ -183,9 +232,33 @@ function cloneBlock(typeDef) {
     customClasses: '',
     customCss: '',
     fontFamily: '',
-    ...(['container', 'section', 'loop', 'archive-loop'].includes(typeDef.type)
+    ...(['container', 'section', 'loop', 'archive-loop', 'link', 'accordion', 'tabs', 'accordion-item', 'tab-item'].includes(typeDef.type)
       ? { children: [] }
       : {}),
   }
+
+  // Auto-populate accordion with 3 items
+  if (typeDef.type === 'accordion') {
+    block.children = [1, 2, 3].map(i => ({
+      id: makeId(),
+      type: 'accordion-item',
+      data: { title: `Item ${i}` },
+      customId: '', customClasses: '', customCss: '', fontFamily: '',
+      children: [],
+    }))
+  }
+
+  // Auto-populate tabs with 2 tab items
+  if (typeDef.type === 'tabs') {
+    block.children = [1, 2].map(i => ({
+      id: makeId(),
+      type: 'tab-item',
+      data: { label: `Tab ${i}` },
+      customId: '', customClasses: '', customCss: '', fontFamily: '',
+      children: [],
+    }))
+  }
+
+  return block
 }
 </script>
