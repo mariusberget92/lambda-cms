@@ -670,8 +670,9 @@ const appearanceForm = useForm({
 })
 
 function submitAppearance() {
-  appearanceForm.post(route('settings.update', 'appearance'), {
+  appearanceForm.put(route('settings.update', 'appearance'), {
     preserveScroll: true,
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   })
 }
 
