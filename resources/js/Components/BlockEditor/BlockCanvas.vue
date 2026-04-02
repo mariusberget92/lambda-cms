@@ -206,6 +206,8 @@ import DividerBlock   from '@/Components/Blocks/DividerBlock.vue'
 import CtaBlock       from '@/Components/Blocks/CtaBlock.vue'
 import HtmlBlock      from '@/Components/Blocks/HtmlBlock.vue'
 import PostListBlock  from '@/Components/Blocks/PostListBlock.vue'
+import EmbedBlock     from '@/components/Blocks/EmbedBlock.vue'
+import PaginationBlock from '@/components/Blocks/PaginationBlock.vue'
 
 const BLOCK_MAP = {
   paragraph: ParagraphBlock,
@@ -219,6 +221,8 @@ const BLOCK_MAP = {
   cta:       CtaBlock,
   html:      HtmlBlock,
   component: PostListBlock,
+  embed:      EmbedBlock,
+  pagination: PaginationBlock,
 }
 
 const LABELS = {
@@ -270,6 +274,7 @@ function isEmptyBlock(block) {
     case 'video':     return !d.url
     case 'cta':       return !d.headline && !d.text
     case 'html':      return !d.content
+    case 'embed':     return !d.url
     default:          return false
   }
 }

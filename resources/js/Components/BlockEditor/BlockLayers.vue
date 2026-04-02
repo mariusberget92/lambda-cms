@@ -171,6 +171,8 @@ import AccordionSettings      from './blocks/AccordionSettings.vue'
 import AccordionItemSettings  from './blocks/AccordionItemSettings.vue'
 import TabsSettings           from './blocks/TabsSettings.vue'
 import TabItemSettings        from './blocks/TabItemSettings.vue'
+import EmbedSettings          from './blocks/EmbedSettings.vue'
+import PaginationSettings     from './blocks/PaginationSettings.vue'
 
 const props = defineProps({
   blocks:        { type: Array,   default: () => [] },
@@ -268,6 +270,8 @@ const COMPONENT_MAP = {
   'accordion-item':      AccordionItemSettings,
   tabs:                  TabsSettings,
   'tab-item':            TabItemSettings,
+  embed:                 EmbedSettings,
+  pagination:            PaginationSettings,
 }
 
 const settingsComponent = computed(() =>
