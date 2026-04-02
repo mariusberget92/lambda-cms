@@ -9,6 +9,10 @@
     @routes
 @php
     $accentColor = \App\Models\Setting::get('site.accent_color');
+    // Re-validate: only emit if it is a valid 6-digit hex color
+    if (!preg_match('/^#[0-9a-fA-F]{6}$/', $accentColor ?? '')) {
+        $accentColor = null;
+    }
     $hoverMap = [
         '#5e81ac' => '#4a6d92',
         '#a3be8c' => '#8aaa70',
