@@ -202,6 +202,8 @@ const LABELS = {
   quote: 'Quote', code: 'Code', gallery: 'Gallery', video: 'Video',
   divider: 'Divider', cta: 'CTA', html: 'HTML', component: 'Component',
   container: 'Container', section: 'Section', spacer: 'Spacer', loop: 'Loop',
+  link: 'Link', accordion: 'Accordion', 'accordion-item': 'Acc. Item',
+  tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
 }
 
 const props = defineProps({

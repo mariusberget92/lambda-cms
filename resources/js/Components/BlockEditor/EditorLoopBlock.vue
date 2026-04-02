@@ -105,7 +105,7 @@ defineOptions({ name: 'EditorLoopBlock' })
 const EditorContainerBlock = defineAsyncComponent(() => import('./EditorContainerBlock.vue'))
 const EditorSectionBlock   = defineAsyncComponent(() => import('./EditorSectionBlock.vue'))
 
-const NESTABLE = ['container', 'section', 'loop', 'archive-loop']
+const NESTABLE = ['container', 'section', 'loop', 'archive-loop', 'link', 'accordion', 'tabs', 'accordion-item', 'tab-item']
 function isNestable(type) { return NESTABLE.includes(type) }
 
 const LABELS = {
@@ -114,6 +114,8 @@ const LABELS = {
   divider: 'Divider', cta: 'CTA', html: 'HTML', component: 'Component',
   container: 'Container', section: 'Section', spacer: 'Spacer', loop: 'Loop',
   'archive-loop': 'Archive Loop',
+  link: 'Link', accordion: 'Accordion', 'accordion-item': 'Acc. Item',
+  tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
 }
 
 const SOURCE_LABELS = {

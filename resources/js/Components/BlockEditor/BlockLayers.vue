@@ -211,6 +211,7 @@ watch(() => props.selectedId, () => {
 const STYLE_BLOCKS = new Set([
   'container', 'section', 'spacer', 'divider', 'loop',
   'post-featured-image', 'archive-loop',
+  'link', 'accordion', 'tabs', 'embed', 'pagination', 'heading',
 ])
 
 // Block types where Style should be the default active tab
@@ -237,6 +238,8 @@ const LABELS = {
   'archive-title': 'Archive Title',
   'archive-loop': 'Archive Loop',
   search: 'Search',
+  link: 'Link', accordion: 'Accordion', 'accordion-item': 'Accordion Item',
+  tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
 }
 
 const COMPONENT_MAP = {
