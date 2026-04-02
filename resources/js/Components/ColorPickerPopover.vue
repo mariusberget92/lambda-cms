@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
   modelValue: { type: String, default: null },
@@ -36,6 +36,16 @@ function toggle() {
   open.value = !open.value
   if (!open.value) showCustom.value = false
 }
+
+function onKeydown(e) {
+  if (e.key === 'Escape' && open.value) {
+    open.value = false
+    showCustom.value = false
+  }
+}
+
+onMounted(() => document.addEventListener('keydown', onKeydown))
+onUnmounted(() => document.removeEventListener('keydown', onKeydown))
 </script>
 
 <template>
@@ -44,6 +54,7 @@ function toggle() {
     <button
       type="button"
       @click="toggle"
+      :aria-expanded="open"
       class="flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-accent transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
     >
       <span
