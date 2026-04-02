@@ -1,6 +1,6 @@
 <!-- resources/js/Components/BlockEditor/blocks/HeadingSettings.vue -->
 <template>
-  <!-- Content fields -->
+  <!-- Content tab -->
   <div v-show="!tab || tab === 'content'" class="space-y-3">
     <div>
       <label class="text-xs font-medium text-muted-foreground block mb-1">Level</label>
@@ -28,11 +28,17 @@
       />
     </DynamicField>
   </div>
+
+  <!-- Style tab -->
+  <div v-show="!tab || tab === 'style'" class="space-y-3">
+    <IconSettings :block="block" @update="emit('update', $event)" />
+  </div>
 </template>
 
 <script setup>
-import SelectBox   from '@/Components/SelectBox.vue'
+import SelectBox    from '@/Components/SelectBox.vue'
 import DynamicField from './DynamicField.vue'
+import IconSettings from './IconSettings.vue'
 
 const props = defineProps({
   block:           { type: Object, required: true },
