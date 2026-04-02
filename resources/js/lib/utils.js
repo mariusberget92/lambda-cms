@@ -26,7 +26,11 @@ export function decodeHtmlEntities(str) {
  */
 export function formatDate(isoString) {
   if (!isoString) return '—'
-  return new Date(isoString).toLocaleDateString('en-US', {
+  // Normalize MySQL space-separated datetimes to ISO 8601
+  const normalized = String(isoString).replace(' ', 'T')
+  const d = new Date(normalized)
+  if (isNaN(d.getTime())) return '—'
+  return d.toLocaleDateString('en-US', {
     year: 'numeric', month: 'short', day: 'numeric',
   })
 }
@@ -37,7 +41,11 @@ export function formatDate(isoString) {
  */
 export function formatDateTime(isoString) {
   if (!isoString) return '—'
-  return new Date(isoString).toLocaleString('en-US', {
+  // Normalize MySQL space-separated datetimes to ISO 8601
+  const normalized = String(isoString).replace(' ', 'T')
+  const d = new Date(normalized)
+  if (isNaN(d.getTime())) return '—'
+  return d.toLocaleString('en-US', {
     year: 'numeric', month: 'short', day: 'numeric',
     hour: '2-digit', minute: '2-digit',
   })

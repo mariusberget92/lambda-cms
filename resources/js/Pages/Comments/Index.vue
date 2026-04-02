@@ -110,19 +110,19 @@
           <button
             v-if="comment.status !== 'approved'"
             type="button"
-            @click="router.patch(route('comments.approve', comment.id), {}, { onSuccess: () => notify('Comment approved.', 'success') })"
-            class="rounded-md bg-status-success-bg px-3 py-1 text-xs font-medium text-status-success-fg hover:opacity-80 transition-opacity"
+            @click="router.patch(route('comments.approve', comment.id))"
+            class="cursor-pointer rounded-md bg-status-success-bg px-3 py-1 text-xs font-medium text-status-success-fg hover:opacity-80 transition-opacity"
           >Approve</button>
           <button
             v-if="comment.status !== 'rejected'"
             type="button"
-            @click="router.patch(route('comments.reject', comment.id), {}, { onSuccess: () => notify('Comment rejected.', 'success') })"
-            class="rounded-md bg-status-warning-bg px-3 py-1 text-xs font-medium text-status-warning-fg hover:opacity-80 transition-opacity"
+            @click="router.patch(route('comments.reject', comment.id))"
+            class="cursor-pointer rounded-md bg-status-warning-bg px-3 py-1 text-xs font-medium text-status-warning-fg hover:opacity-80 transition-opacity"
           >Reject</button>
           <button
             type="button"
             @click="confirmDelete(comment)"
-            class="rounded-md bg-destructive/10 px-3 py-1 text-xs font-medium text-destructive hover:bg-destructive/20 transition-colors"
+            class="cursor-pointer rounded-md bg-destructive/10 px-3 py-1 text-xs font-medium text-destructive hover:bg-destructive/20 transition-colors"
           >Delete</button>
 
           <!-- Reply button -->
@@ -218,23 +218,12 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch } from 'vue'
-import { Head, router, usePage } from '@inertiajs/vue3'
+import { ref, reactive } from 'vue'
+import { Head, router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import StatusBadge from '@/Components/StatusBadge.vue'
 import { MessageSquare } from 'lucide-vue-next'
 import { decodeHtmlEntities, formatDateTime } from '@/lib/utils.js'
-import { useNotifications } from '@/composables/useNotifications'
-
-const page = usePage()
-const { notify } = useNotifications()
-
-watch(
-  () => page.props.flash,
-  (flash) => {
-    if (flash?.status) notify(flash.status, 'success')
-  }
-)
 
 const props = defineProps({
   comments:     Object,

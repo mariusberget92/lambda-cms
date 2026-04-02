@@ -5,6 +5,7 @@ import BlogLayout from '@/Layouts/BlogLayout.vue'
 import BlogSidebar from '@/Components/BlogSidebar.vue'
 import SeoHead from '@/Components/SeoHead.vue'
 import BlockRenderer from '@/Components/BlockRenderer.vue'
+import { formatDateTime } from '@/lib/utils.js'
 
 defineOptions({ layout: BlogLayout })
 
@@ -58,11 +59,20 @@ const form = useForm({
   website:      '', // honeypot
 })
 
+const submitSuccess = ref(false)
+const submitError   = ref('')
+
 function submitComment() {
+  submitSuccess.value = false
+  submitError.value   = ''
   form.post(route('comments.store', props.post.slug), {
     preserveScroll: true,
     onSuccess: () => {
       form.reset('body')
+      submitSuccess.value = true
+    },
+    onError: () => {
+      submitError.value = 'Please fix the errors below and try again.'
     },
   })
 }
@@ -158,7 +168,7 @@ function submitComment() {
             <div class="flex-1 min-w-0">
               <div class="flex items-baseline gap-2 mb-1">
                 <span class="text-sm font-semibold">{{ comment.author_name }}</span>
-                <span class="text-xs text-muted-foreground">{{ comment.created_at }}</span>
+                <span class="text-xs text-muted-foreground">{{ formatDateTime(comment.created_at) }}</span>
               </div>
               <p class="text-sm text-foreground/90 whitespace-pre-line">{{ comment.body }}</p>
             </div>
@@ -187,6 +197,19 @@ function submitComment() {
         <!-- Submission form OR disabled notice -->
         <div v-if="commentsEnabled" class="rounded-lg border bg-card p-6">
           <h3 class="text-base font-semibold mb-4">Leave a comment</h3>
+
+          <!-- Success banner -->
+          <div v-if="submitSuccess" class="mb-4 rounded-md bg-status-success-bg px-4 py-3 text-sm text-status-success-fg flex items-center gap-2">
+            <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            Your comment has been submitted and is awaiting moderation. Thank you!
+          </div>
+
+          <!-- Error banner -->
+          <div v-if="submitError" class="mb-4 rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive flex items-center gap-2">
+            <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            {{ submitError }}
+          </div>
+
           <form @submit.prevent="submitComment" class="space-y-4">
             <!-- Honeypot (hidden) -->
             <input v-model="form.website" type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />

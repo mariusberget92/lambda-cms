@@ -43,6 +43,7 @@
   --sidebar-accent-foreground: #2e3440;
   --sidebar-border: #d8dee9;
   --sidebar-ring: #81a1c1;
+  --input-bg: #ffffff;
 
   /* Role badge tokens */
   --color-role-admin-bg: color-mix(in srgb, #5e81ac 15%, transparent);
@@ -102,6 +103,7 @@
   --sidebar-accent-foreground: #d8dee9;
   --sidebar-border: #434c5e;
   --sidebar-ring: #88c0d0;
+  --input-bg: #3b4252;
 
   /* Role badge tokens */
   --color-role-admin-bg: color-mix(in srgb, #88c0d0 15%, transparent);
@@ -235,6 +237,18 @@
 /* Nord green checkbox accent */
 [type="checkbox"] {
   accent-color: var(--nord-green);
+}
+
+/* Input background — pure white in light mode, slightly lighter card in dark */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+textarea,
+select {
+  background-color: var(--input-bg);
+}
+
+/* Alternating table rows */
+table tbody tr:nth-child(odd) {
+  background-color: color-mix(in srgb, var(--muted) 25%, transparent);
 }
 
 *,

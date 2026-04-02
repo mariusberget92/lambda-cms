@@ -29,11 +29,14 @@
           </button>
           <button
             type="button"
-            @click="form.status = 'published'; submit()"
+            @click="submitPrimary()"
             :disabled="form.processing"
             class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)] disabled:opacity-50"
           >
-            {{ form.processing ? 'Saving...' : form.status === 'published' ? 'Update' : 'Publish' }}
+            <span v-if="form.processing">Saving...</span>
+            <span v-else-if="form.status === 'scheduled'">Schedule</span>
+            <span v-else-if="form.status === 'published'">Update</span>
+            <span v-else>Publish</span>
           </button>
         </div>
       </div>
@@ -488,6 +491,14 @@ function toggleCategory(id) {
   const idx = form.category_ids.indexOf(id)
   if (idx === -1) form.category_ids.push(id)
   else form.category_ids.splice(idx, 1)
+}
+
+// Primary action button — keeps 'scheduled' status if already set, else publishes
+function submitPrimary() {
+  if (form.status !== 'scheduled') {
+    form.status = 'published'
+  }
+  submit()
 }
 
 function submit() {

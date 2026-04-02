@@ -441,7 +441,14 @@ function onFileInput(event) {
 async function uploadFiles(files) {
   if (!files?.length) return
 
+  const maxBytes = props.maxUploadMb * 1024 * 1024
+
   for (const file of files) {
+    if (file.size > maxBytes) {
+      notify(`"${file.name}" exceeds the ${props.maxUploadMb} MB limit.`, 'error')
+      continue
+    }
+
     uploading.value      = true
     uploadProgress.value = 0
     uploadingName.value  = file.name

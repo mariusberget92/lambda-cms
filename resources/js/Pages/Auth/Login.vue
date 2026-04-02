@@ -60,8 +60,11 @@
 <script setup>
 import AuthLayout from '@/Layouts/AuthLayout.vue'
 import { useForm } from "@inertiajs/vue3";
+import { useNotifications } from '@/composables/useNotifications'
 
 defineOptions({ layout: AuthLayout });
+
+const { notify } = useNotifications()
 
 const form = useForm({
   email: "",
@@ -72,6 +75,7 @@ const form = useForm({
 function submit() {
   form.post(route("auth.login"), {
     onFinish: () => form.reset("password"),
+    onError: () => notify('Invalid credentials. Please try again.', 'error'),
   });
 }
 </script>
