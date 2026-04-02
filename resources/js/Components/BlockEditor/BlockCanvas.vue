@@ -123,6 +123,13 @@
                 @select="$emit('select', $event)"
                 @update-children="$emit('update-children', $event)"
               />
+              <EditorAccordionBlock
+                v-else-if="block.type === 'accordion'"
+                :block="block"
+                :selected-id="selectedId"
+                @select="$emit('select', $event)"
+                @update-children="$emit('update-children', $event)"
+              />
 
               <!-- Spacer -->
               <div v-else-if="block.type === 'spacer'" class="flex flex-col">
@@ -178,6 +185,7 @@ import EditorContainerBlock from './EditorContainerBlock.vue'
 import EditorSectionBlock   from './EditorSectionBlock.vue'
 import EditorLoopBlock      from './EditorLoopBlock.vue'
 import EditorLinkBlock      from './EditorLinkBlock.vue'
+import EditorAccordionBlock from './EditorAccordionBlock.vue'
 import BlockRenderer from '@/components/BlockRenderer.vue'
 import ParagraphBlock from '@/Components/Blocks/ParagraphBlock.vue'
 import HeadingBlock   from '@/Components/Blocks/HeadingBlock.vue'

@@ -166,7 +166,9 @@ import DividerSettings   from './blocks/DividerSettings.vue'
 import CtaSettings       from './blocks/CtaSettings.vue'
 import HtmlSettings      from './blocks/HtmlSettings.vue'
 import ComponentSettings from './blocks/ComponentSettings.vue'
-import LinkSettings      from './blocks/LinkSettings.vue'
+import LinkSettings           from './blocks/LinkSettings.vue'
+import AccordionSettings      from './blocks/AccordionSettings.vue'
+import AccordionItemSettings  from './blocks/AccordionItemSettings.vue'
 
 const props = defineProps({
   blocks:        { type: Array,   default: () => [] },
@@ -260,6 +262,8 @@ const COMPONENT_MAP = {
   'archive-loop':        LoopSettings,
   search:                SearchSettings,
   link:                  LinkSettings,
+  accordion:             AccordionSettings,
+  'accordion-item':      AccordionItemSettings,
 }
 
 const settingsComponent = computed(() =>
