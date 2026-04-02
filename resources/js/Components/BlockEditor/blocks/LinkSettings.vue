@@ -1,32 +1,49 @@
-<!-- resources/js/Components/BlockEditor/blocks/HeadingSettings.vue -->
+<!-- resources/js/Components/BlockEditor/blocks/LinkSettings.vue -->
 <template>
   <!-- Content tab -->
   <div v-show="!tab || tab === 'content'" class="space-y-3">
-    <div>
-      <label class="text-xs font-medium text-muted-foreground block mb-1">Level</label>
-      <SelectBox
-        :model-value="block.data.level"
-        :data="[1,2,3,4,5,6].map(n => ({ value: n, label: `H${n}` }))"
-        @update:model-value="v => emit('update', { id: block.id, data: { level: Number(v) } })"
-      />
-    </div>
-
     <DynamicField
-      label="Text"
-      field-name="text"
+      label="URL"
+      field-name="url"
       :block="block"
       :available-fields="availableFields"
       @bind="onBind"
       @unbind="onUnbind"
     >
       <input
-        :value="block.data.text"
-        type="text"
-        placeholder="Heading text..."
+        :value="block.data.url"
+        type="url"
+        placeholder="https://..."
         class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-        @input="emit('update', { id: block.id, data: { text: $event.target.value } })"
+        @input="emit('update', { id: block.id, data: { url: $event.target.value } })"
       />
     </DynamicField>
+
+    <div class="flex items-center gap-2">
+      <input
+        id="link-newtab"
+        type="checkbox"
+        :checked="block.data.target === '_blank'"
+        class="rounded border-border accent-primary"
+        @change="emit('update', { id: block.id, data: { target: $event.target.checked ? '_blank' : '_self' } })"
+      />
+      <label for="link-newtab" class="text-xs text-muted-foreground">Open in new tab</label>
+    </div>
+
+    <div>
+      <label class="text-xs font-medium text-muted-foreground block mb-1">Rel attribute</label>
+      <SelectBox
+        :model-value="block.data.rel || ''"
+        :data="[
+          { value: '',           label: 'None' },
+          { value: 'nofollow',   label: 'nofollow' },
+          { value: 'noopener',   label: 'noopener' },
+          { value: 'noreferrer', label: 'noreferrer' },
+          { value: 'sponsored',  label: 'sponsored' },
+        ]"
+        @update:model-value="v => emit('update', { id: block.id, data: { rel: v } })"
+      />
+    </div>
   </div>
 
   <!-- Style tab -->

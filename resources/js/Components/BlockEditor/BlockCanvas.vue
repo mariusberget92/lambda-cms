@@ -116,6 +116,27 @@
                 @select="$emit('select', $event)"
                 @update-children="$emit('update-children', $event)"
               />
+              <EditorLinkBlock
+                v-else-if="block.type === 'link'"
+                :block="block"
+                :selected-id="selectedId"
+                @select="$emit('select', $event)"
+                @update-children="$emit('update-children', $event)"
+              />
+              <EditorAccordionBlock
+                v-else-if="block.type === 'accordion'"
+                :block="block"
+                :selected-id="selectedId"
+                @select="$emit('select', $event)"
+                @update-children="$emit('update-children', $event)"
+              />
+              <EditorTabsBlock
+                v-else-if="block.type === 'tabs'"
+                :block="block"
+                :selected-id="selectedId"
+                @select="$emit('select', $event)"
+                @update-children="$emit('update-children', $event)"
+              />
 
               <!-- Spacer -->
               <div v-else-if="block.type === 'spacer'" class="flex flex-col">
@@ -170,6 +191,9 @@ import { GripVertical, Eye, ChevronRight, LayoutTemplate } from 'lucide-vue-next
 import EditorContainerBlock from './EditorContainerBlock.vue'
 import EditorSectionBlock   from './EditorSectionBlock.vue'
 import EditorLoopBlock      from './EditorLoopBlock.vue'
+import EditorLinkBlock      from './EditorLinkBlock.vue'
+import EditorAccordionBlock from './EditorAccordionBlock.vue'
+import EditorTabsBlock      from './EditorTabsBlock.vue'
 import BlockRenderer from '@/components/BlockRenderer.vue'
 import ParagraphBlock from '@/Components/Blocks/ParagraphBlock.vue'
 import HeadingBlock   from '@/Components/Blocks/HeadingBlock.vue'
@@ -182,6 +206,8 @@ import DividerBlock   from '@/Components/Blocks/DividerBlock.vue'
 import CtaBlock       from '@/Components/Blocks/CtaBlock.vue'
 import HtmlBlock      from '@/Components/Blocks/HtmlBlock.vue'
 import PostListBlock  from '@/Components/Blocks/PostListBlock.vue'
+import EmbedBlock     from '@/components/Blocks/EmbedBlock.vue'
+import PaginationBlock from '@/components/Blocks/PaginationBlock.vue'
 
 const BLOCK_MAP = {
   paragraph: ParagraphBlock,
@@ -195,6 +221,8 @@ const BLOCK_MAP = {
   cta:       CtaBlock,
   html:      HtmlBlock,
   component: PostListBlock,
+  embed:      EmbedBlock,
+  pagination: PaginationBlock,
 }
 
 const LABELS = {
@@ -202,6 +230,8 @@ const LABELS = {
   quote: 'Quote', code: 'Code', gallery: 'Gallery', video: 'Video',
   divider: 'Divider', cta: 'CTA', html: 'HTML', component: 'Component',
   container: 'Container', section: 'Section', spacer: 'Spacer', loop: 'Loop',
+  link: 'Link', accordion: 'Accordion', 'accordion-item': 'Acc. Item',
+  tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
 }
 
 const props = defineProps({
@@ -244,6 +274,7 @@ function isEmptyBlock(block) {
     case 'video':     return !d.url
     case 'cta':       return !d.headline && !d.text
     case 'html':      return !d.content
+    case 'embed':     return !d.url
     default:          return false
   }
 }

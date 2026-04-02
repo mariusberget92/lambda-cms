@@ -166,6 +166,13 @@ import DividerSettings   from './blocks/DividerSettings.vue'
 import CtaSettings       from './blocks/CtaSettings.vue'
 import HtmlSettings      from './blocks/HtmlSettings.vue'
 import ComponentSettings from './blocks/ComponentSettings.vue'
+import LinkSettings           from './blocks/LinkSettings.vue'
+import AccordionSettings      from './blocks/AccordionSettings.vue'
+import AccordionItemSettings  from './blocks/AccordionItemSettings.vue'
+import TabsSettings           from './blocks/TabsSettings.vue'
+import TabItemSettings        from './blocks/TabItemSettings.vue'
+import EmbedSettings          from './blocks/EmbedSettings.vue'
+import PaginationSettings     from './blocks/PaginationSettings.vue'
 
 const props = defineProps({
   blocks:        { type: Array,   default: () => [] },
@@ -211,6 +218,7 @@ watch(() => props.selectedId, () => {
 const STYLE_BLOCKS = new Set([
   'container', 'section', 'spacer', 'divider', 'loop',
   'post-featured-image', 'archive-loop',
+  'link', 'accordion', 'tabs', 'embed', 'pagination', 'heading',
 ])
 
 // Block types where Style should be the default active tab
@@ -237,6 +245,8 @@ const LABELS = {
   'archive-title': 'Archive Title',
   'archive-loop': 'Archive Loop',
   search: 'Search',
+  link: 'Link', accordion: 'Accordion', 'accordion-item': 'Accordion Item',
+  tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
 }
 
 const COMPONENT_MAP = {
@@ -255,6 +265,13 @@ const COMPONENT_MAP = {
   'archive-title':       ArchiveTitleSettings,
   'archive-loop':        LoopSettings,
   search:                SearchSettings,
+  link:                  LinkSettings,
+  accordion:             AccordionSettings,
+  'accordion-item':      AccordionItemSettings,
+  tabs:                  TabsSettings,
+  'tab-item':            TabItemSettings,
+  embed:                 EmbedSettings,
+  pagination:            PaginationSettings,
 }
 
 const settingsComponent = computed(() =>
