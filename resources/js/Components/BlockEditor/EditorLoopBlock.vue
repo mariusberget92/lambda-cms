@@ -59,6 +59,27 @@
             @select="$emit('select', $event)"
             @update-children="$emit('update-children', $event)"
           />
+          <EditorLinkBlock
+            v-else-if="child.type === 'link'"
+            :block="child"
+            :selected-id="selectedId"
+            @select="$emit('select', $event)"
+            @update-children="$emit('update-children', $event)"
+          />
+          <EditorAccordionBlock
+            v-else-if="child.type === 'accordion'"
+            :block="child"
+            :selected-id="selectedId"
+            @select="$emit('select', $event)"
+            @update-children="$emit('update-children', $event)"
+          />
+          <EditorTabsBlock
+            v-else-if="child.type === 'tabs'"
+            :block="child"
+            :selected-id="selectedId"
+            @select="$emit('select', $event)"
+            @update-children="$emit('update-children', $event)"
+          />
         </div>
 
         <!-- Leaf child: pill -->
@@ -104,6 +125,9 @@ defineOptions({ name: 'EditorLoopBlock' })
 
 const EditorContainerBlock = defineAsyncComponent(() => import('./EditorContainerBlock.vue'))
 const EditorSectionBlock   = defineAsyncComponent(() => import('./EditorSectionBlock.vue'))
+const EditorLinkBlock      = defineAsyncComponent(() => import('./EditorLinkBlock.vue'))
+const EditorAccordionBlock = defineAsyncComponent(() => import('./EditorAccordionBlock.vue'))
+const EditorTabsBlock      = defineAsyncComponent(() => import('./EditorTabsBlock.vue'))
 
 const NESTABLE = ['container', 'section', 'loop', 'archive-loop', 'link', 'accordion', 'tabs', 'accordion-item', 'tab-item']
 function isNestable(type) { return NESTABLE.includes(type) }
