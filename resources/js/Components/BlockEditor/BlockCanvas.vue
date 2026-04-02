@@ -130,6 +130,13 @@
                 @select="$emit('select', $event)"
                 @update-children="$emit('update-children', $event)"
               />
+              <EditorTabsBlock
+                v-else-if="block.type === 'tabs'"
+                :block="block"
+                :selected-id="selectedId"
+                @select="$emit('select', $event)"
+                @update-children="$emit('update-children', $event)"
+              />
 
               <!-- Spacer -->
               <div v-else-if="block.type === 'spacer'" class="flex flex-col">
@@ -186,6 +193,7 @@ import EditorSectionBlock   from './EditorSectionBlock.vue'
 import EditorLoopBlock      from './EditorLoopBlock.vue'
 import EditorLinkBlock      from './EditorLinkBlock.vue'
 import EditorAccordionBlock from './EditorAccordionBlock.vue'
+import EditorTabsBlock      from './EditorTabsBlock.vue'
 import BlockRenderer from '@/components/BlockRenderer.vue'
 import ParagraphBlock from '@/Components/Blocks/ParagraphBlock.vue'
 import HeadingBlock   from '@/Components/Blocks/HeadingBlock.vue'
