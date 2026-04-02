@@ -437,6 +437,57 @@
 
       </div>
 
+      <!-- Appearance -->
+      <div v-show="activeTab === 'appearance'">
+        <form @submit.prevent="submitAppearance">
+          <div class="rounded-lg border bg-card p-6 space-y-4">
+            <div>
+              <h3 class="text-sm font-semibold">Appearance</h3>
+              <p class="text-xs text-muted-foreground mt-0.5">Choose an accent color for the admin interface and public site.</p>
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-sm font-medium">Accent color</label>
+              <div class="flex flex-wrap gap-3 mt-2">
+                <button
+                  v-for="swatch in ACCENT_SWATCHES"
+                  :key="swatch.value"
+                  type="button"
+                  :title="swatch.label"
+                  @click="appearanceForm['site.accent_color'] = swatch.value"
+                  class="relative w-9 h-9 rounded-full border-2 transition-all focus:outline-none"
+                  :style="{ backgroundColor: swatch.value }"
+                  :class="appearanceForm['site.accent_color'] === swatch.value
+                    ? 'border-foreground scale-110 shadow-md'
+                    : 'border-transparent hover:scale-105'"
+                >
+                  <svg
+                    v-if="appearanceForm['site.accent_color'] === swatch.value"
+                    class="w-4 h-4 absolute inset-0 m-auto text-white drop-shadow"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </button>
+              </div>
+              <p class="text-xs text-muted-foreground mt-1">
+                Selected: <code class="font-mono">{{ appearanceForm['site.accent_color'] }}</code>
+              </p>
+            </div>
+
+            <div class="flex justify-end pt-1">
+              <button
+                type="submit"
+                :disabled="appearanceForm.processing"
+                class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)] disabled:opacity-50"
+              >
+                {{ appearanceForm.processing ? 'Saving...' : 'Save changes' }}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
     </div>
   </AppLayout>
 </template>
@@ -461,11 +512,12 @@ const props = defineProps({
 const activeTab = ref('general')
 
 const tabs = [
-  { key: 'general',  label: 'General'  },
-  { key: 'mail',     label: 'Mail'     },
-  { key: 'media',    label: 'Media'    },
-  { key: 'comments', label: 'Comments' },
-  { key: 'seo',      label: 'SEO'      },
+  { key: 'general',    label: 'General'    },
+  { key: 'mail',       label: 'Mail'       },
+  { key: 'media',      label: 'Media'      },
+  { key: 'comments',   label: 'Comments'   },
+  { key: 'seo',        label: 'SEO'        },
+  { key: 'appearance', label: 'Appearance' },
 ]
 
 // ── Auto-switch to mail tab when mail flash messages appear ───────────────────
@@ -600,6 +652,26 @@ function submitSeo() {
   seoForm.put(route('settings.update', 'seo'), {
     preserveScroll: true,
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+  })
+}
+
+// ── Appearance form ───────────────────────────────────────────────────────────
+const ACCENT_SWATCHES = [
+  { label: 'Frost Blue (default)', value: '#5e81ac', hover: '#4a6d92' },
+  { label: 'Nord Green',           value: '#a3be8c', hover: '#8aaa70' },
+  { label: 'Nord Yellow',          value: '#ebcb8b', hover: '#d4b06a' },
+  { label: 'Nord Orange',          value: '#d08770', hover: '#bb6f58' },
+  { label: 'Nord Red',             value: '#bf616a', hover: '#a84d56' },
+  { label: 'Nord Purple',          value: '#b48ead', hover: '#9d7596' },
+]
+
+const appearanceForm = useForm({
+  'site.accent_color': props.settings['site.accent_color'] ?? '#5e81ac',
+})
+
+function submitAppearance() {
+  appearanceForm.post(route('settings.update', 'appearance'), {
+    preserveScroll: true,
   })
 }
 
