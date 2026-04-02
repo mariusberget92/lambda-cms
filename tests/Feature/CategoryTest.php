@@ -121,4 +121,32 @@ class CategoryTest extends TestCase
         $this->assertDatabaseMissing('categories', ['id' => $category->id]);
         $this->assertDatabaseHas('posts', ['id' => $post->id]);
     }
+
+    // ── Color ─────────────────────────────────────────────────────────────────
+
+    public function test_user_can_create_category_with_color(): void
+    {
+        $this->actingAs($this->makeUser())
+            ->post('/categories', ['name' => 'Colorful', 'color' => '#a3be8c'])
+            ->assertRedirect('/categories');
+
+        $this->assertDatabaseHas('categories', ['name' => 'Colorful', 'color' => '#a3be8c']);
+    }
+
+    public function test_invalid_color_is_rejected(): void
+    {
+        $this->actingAs($this->makeUser())
+            ->post('/categories', ['name' => 'Bad Color', 'color' => 'notacolor'])
+            ->assertSessionHasErrors('color');
+    }
+
+    public function test_color_is_returned_in_edit_response(): void
+    {
+        $cat = Category::factory()->create(['color' => '#bf616a']);
+        $response = $this->actingAs($this->makeUser())
+            ->get("/categories/{$cat->id}/edit");
+        $response->assertInertia(fn ($page) =>
+            $page->where('category.color', '#bf616a')
+        );
+    }
 }

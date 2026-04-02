@@ -18,6 +18,7 @@ class CategoryController extends Controller
                 'name'        => $c->name,
                 'slug'        => $c->slug,
                 'description' => $c->description,
+                'color'       => $c->color,
                 'posts_count' => $c->posts_count,
             ]);
 
@@ -36,6 +37,7 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name'        => ['required', 'string', 'max:100'],
             'description' => ['nullable', 'string', 'max:500'],
+            'color'       => ['nullable', 'string', 'max:7', 'regex:/^#[0-9a-fA-F]{6}$/'],
         ]);
 
         $validated['slug'] = Category::generateSlug($validated['name']);
@@ -55,6 +57,7 @@ class CategoryController extends Controller
                 'name'        => $category->name,
                 'slug'        => $category->slug,
                 'description' => $category->description,
+                'color'       => $category->color,
             ],
         ]);
     }
@@ -64,6 +67,7 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name'        => ['required', 'string', 'max:100'],
             'description' => ['nullable', 'string', 'max:500'],
+            'color'       => ['nullable', 'string', 'max:7', 'regex:/^#[0-9a-fA-F]{6}$/'],
         ]);
 
         $validated['slug'] = Category::generateSlug($validated['name'], $category->id);

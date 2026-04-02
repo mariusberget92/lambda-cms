@@ -16,6 +16,7 @@ class CategoryFactory extends Factory
             'name'        => $name,
             'slug'        => Str::slug($name),
             'description' => fake()->optional(0.6)->sentence(),
+            'color'       => null,
         ];
     }
 }
