@@ -68,6 +68,9 @@ class SettingsController extends Controller
                 'seo\\.default_og_image_url' => ['nullable', 'url', 'max:500'],
                 'seo\\.default_keywords'     => ['nullable', 'string', 'max:255'],
             ]),
+            'appearance' => $request->validate([
+                'site\\.accent_color' => ['nullable', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            ]),
             default  => abort(404),
         };
 

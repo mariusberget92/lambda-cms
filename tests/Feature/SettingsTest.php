@@ -25,6 +25,7 @@ class SettingsTest extends TestCase
         $defaults = [
             ['group' => 'site',   'key' => 'site.name',              'value' => 'Lambda CMS',        'type' => 'string'],
             ['group' => 'site',   'key' => 'site.url',               'value' => 'http://localhost',  'type' => 'string'],
+            ['group' => 'site',   'key' => 'site.accent_color',      'value' => '',                  'type' => 'string'],
             ['group' => 'locale', 'key' => 'locale.timezone',        'value' => 'UTC',               'type' => 'string'],
             ['group' => 'locale', 'key' => 'locale.date_format',     'value' => 'Y-m-d',             'type' => 'string'],
             ['group' => 'media',  'key' => 'media.max_upload_mb',    'value' => '10',                'type' => 'integer'],
@@ -206,5 +207,29 @@ class SettingsTest extends TestCase
             'key'   => 'seo.default_keywords',
             'value' => 'laravel, cms',
         ]);
+    }
+
+    public function test_admin_can_save_accent_color(): void
+    {
+        $admin = $this->makeAdmin();
+        $this->actingAs($admin)
+            ->put('/settings/appearance', ['site.accent_color' => '#a3be8c'])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('settings', [
+            'key'   => 'site.accent_color',
+            'value' => '#a3be8c',
+        ]);
+    }
+
+    public function test_accent_color_is_shared_as_inertia_prop(): void
+    {
+        Setting::set('site.accent_color', '#a3be8c');
+
+        $admin = $this->makeAdmin();
+        $response = $this->actingAs($admin)->get('/dashboard');
+        $response->assertInertia(fn ($page) =>
+            $page->where('accentColor', '#a3be8c')
+        );
     }
 }
