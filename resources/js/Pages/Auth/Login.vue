@@ -15,10 +15,8 @@
           autocomplete="email"
           required
           class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
-          :class="{ 'border-destructive': form.errors.email }"
           placeholder="you@example.com"
         />
-        <p v-if="form.errors.email" class="text-xs text-destructive">{{ form.errors.email }}</p>
       </div>
 
       <div class="space-y-1">
@@ -35,9 +33,7 @@
           autocomplete="current-password"
           required
           class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
-          :class="{ 'border-destructive': form.errors.password }"
         />
-        <p v-if="form.errors.password" class="text-xs text-destructive">{{ form.errors.password }}</p>
       </div>
 
       <div class="flex items-center gap-2">

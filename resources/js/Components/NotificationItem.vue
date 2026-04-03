@@ -41,7 +41,7 @@ function handleAction(handler) {
 </script>
 
 <template>
-  <div class="relative w-80 rounded-md border shadow-md bg-background overflow-hidden"
+  <div class="relative w-80 rounded-md border shadow-lg bg-white text-gray-900 overflow-hidden"
        :style="{ borderLeftColor: accent, borderLeftWidth: '4px' }">
     <!-- Icon + message -->
     <div class="flex items-start gap-2 p-3 pr-8">

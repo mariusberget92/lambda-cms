@@ -91,7 +91,7 @@ function tagName(id) {
   <div ref="container" class="relative">
     <!-- Input area -->
     <div
-      class="flex flex-wrap gap-1 items-center rounded-md border border-border bg-background px-2 py-1.5 focus-within:ring-2 focus-within:ring-ring cursor-text min-h-[2.25rem]"
+      class="flex flex-wrap gap-1 items-center rounded-md border border-border bg-[var(--input-bg)] px-2 py-1.5 focus-within:ring-2 focus-within:ring-ring cursor-text min-h-[2.25rem]"
       @click="inputRef?.focus(); open = true"
     >
       <!-- Existing tag pills -->

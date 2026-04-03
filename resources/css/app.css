@@ -103,7 +103,7 @@
   --sidebar-accent-foreground: #d8dee9;
   --sidebar-border: #434c5e;
   --sidebar-ring: #88c0d0;
-  --input-bg: #3b4252;
+  --input-bg: #2e3440;
 
   /* Role badge tokens */
   --color-role-admin-bg: color-mix(in srgb, #88c0d0 15%, transparent);
