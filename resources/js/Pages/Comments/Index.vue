@@ -2,13 +2,7 @@
   <AppLayout title="Comments">
     <Head title="Comments" />
 
-    <!-- Page header -->
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h2 class="text-lg font-semibold">Comments</h2>
-        <p class="text-sm text-muted-foreground mt-0.5">Moderate reader comments</p>
-      </div>
-    </div>
+    <PageHeader title="Comments" description="Moderate reader comments" />
 
     <!-- Filter tabs -->
     <div class="flex gap-1 mb-4 border-b">
@@ -221,6 +215,7 @@
 import { ref, reactive } from 'vue'
 import { Head, router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import PageHeader from '@/Components/PageHeader.vue'
 import StatusBadge from '@/Components/StatusBadge.vue'
 import { MessageSquare } from 'lucide-vue-next'
 import { decodeHtmlEntities, formatDateTime } from '@/lib/utils.js'

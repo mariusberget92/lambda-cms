@@ -2,22 +2,19 @@
   <AppLayout title="Users">
     <Head title="Users" />
 
-    <div class="mb-4">
-      <h2 class="text-lg font-semibold">Users</h2>
-      <p class="text-sm text-muted-foreground mt-0.5">Manage who has access to Lambda CMS.</p>
-    </div>
-
-    <div class="flex items-center gap-3 mb-4">
-      <a
-        :href="route('users.create')"
-        class="shrink-0 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)]"
-      >
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-        </svg>
-        Invite user
-      </a>
-    </div>
+    <PageHeader title="Users" description="Manage admin users and roles">
+      <template #actions>
+        <a
+          :href="route('users.create')"
+          class="shrink-0 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)]"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+          </svg>
+          Invite user
+        </a>
+      </template>
+    </PageHeader>
 
     <!-- Table -->
     <DataTable :empty="users.data.length === 0">
@@ -242,6 +239,7 @@
 import { ref, computed } from "vue";
 import { Head, router, usePage, useForm } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import PageHeader from '@/Components/PageHeader.vue'
 import DataTable from '@/Components/DataTable.vue'
 import { useNotifications } from '@/composables/useNotifications'
 import { decodeHtmlEntities } from '@/lib/utils.js'
