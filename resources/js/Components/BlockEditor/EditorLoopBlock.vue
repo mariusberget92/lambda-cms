@@ -9,11 +9,12 @@
       v-model="localChildren"
       tag="div"
       class="pt-4 min-h-[40px] space-y-1.5"
-      :group="{ name: 'canvas' }"
+      :group="{ name: 'canvas', pull: true, put: true }"
       :animation="150"
       handle=".child-drag-handle"
       ghost-class="opacity-40"
       @add="onAdd"
+      @remove="onRemove"
     >
       <template v-for="child in localChildren" :key="child.id">
         <!-- Nestable child: render as full recursive editor -->
@@ -167,5 +168,11 @@ const localChildren = computed({
 function onAdd(evt) {
   const newChild = localChildren.value[evt.newIndex]
   if (newChild) emit('select', newChild.id)
+}
+
+function onRemove(evt) {
+  // VueDraggable has already mutated localChildren via v-model.
+  // Sync block.data.children so the parent state stays consistent.
+  emit('update-children', { id: props.block.id, children: localChildren.value })
 }
 </script>
