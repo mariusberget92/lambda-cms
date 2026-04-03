@@ -4,7 +4,7 @@
     style="box-shadow: var(--shadow-sm)"
   >
     <div v-if="title || $slots.actions" class="flex items-center justify-between px-6 py-4 border-b border-border">
-      <div>
+      <div v-if="title">
         <h3 class="text-sm font-semibold text-foreground">{{ title }}</h3>
         <p v-if="description" class="text-xs text-muted-foreground mt-0.5">{{ description }}</p>
       </div>

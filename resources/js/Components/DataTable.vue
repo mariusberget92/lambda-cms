@@ -7,7 +7,7 @@ defineProps({
 
 <template>
   <div class="rounded-xl border bg-card overflow-hidden" style="box-shadow: var(--shadow-sm)">
-    <table class="w-full text-sm">
+    <table class="w-full text-sm" :aria-busy="loading">
       <thead>
         <tr class="border-b border-border bg-muted/40">
           <slot name="headers" />

@@ -23,7 +23,7 @@
 defineProps({
   label: { type: String, required: true },
   value: { type: [String, Number], required: true },
-  color: { type: String, default: 'blue' },
+  color: { type: String, default: 'blue', validator: (v) => ['blue','green','cyan','yellow','red','purple'].includes(v) },
   href:  { type: String, default: '' },
 })
 
