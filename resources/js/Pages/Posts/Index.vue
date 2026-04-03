@@ -2,24 +2,19 @@
   <AppLayout title="Posts">
     <Head title="Posts" />
 
-    <!-- Page header -->
-    <div class="mb-4">
-      <h2 class="text-lg font-semibold">Posts</h2>
-      <p class="text-sm text-muted-foreground mt-0.5">Manage your blog articles</p>
-    </div>
-
-    <!-- Filters + actions -->
-    <div class="flex items-center gap-3 mb-4">
-      <a
-        :href="route('posts.create')"
-        class="shrink-0 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)]"
-      >
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-        </svg>
-        New post
-      </a>
-    </div>
+    <PageHeader title="Posts" description="Manage your blog posts">
+      <template #actions>
+        <a
+          :href="route('posts.create')"
+          class="shrink-0 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)]"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+          </svg>
+          New post
+        </a>
+      </template>
+    </PageHeader>
 
     <!-- Filters -->
     <div class="flex items-center gap-3 mb-4">
@@ -266,6 +261,7 @@
 import { ref, computed, watch } from "vue";
 import { Head, router, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import PageHeader from '@/Components/PageHeader.vue'
 import StatusBadge from '@/Components/StatusBadge.vue'
 import SelectBox from '@/Components/SelectBox.vue'
 import { decodeHtmlEntities, formatDate } from '@/lib/utils.js'

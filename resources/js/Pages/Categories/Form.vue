@@ -2,21 +2,9 @@
   <AppLayout :title="isEditing ? 'Edit Category' : 'New Category'">
     <Head :title="isEditing ? 'Edit Category' : 'New Category'" />
 
+    <PageHeader :title="isEditing ? 'Edit category' : 'New category'" />
+
     <form @submit.prevent="submit" class="max-w-xl">
-      <div class="flex items-center gap-3 mb-6">
-        <a
-          :href="route('categories.index')"
-          class="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-        >
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-          </svg>
-        </a>
-        <div>
-          <h2 class="text-lg font-semibold">{{ isEditing ? 'Edit category' : 'New category' }}</h2>
-          <p class="text-sm text-muted-foreground mt-0.5">{{ isEditing ? category.name : 'Add a new content category' }}</p>
-        </div>
-      </div>
 
       <div class="rounded-lg border bg-card p-6 space-y-4">
         <div class="space-y-1">
@@ -74,6 +62,7 @@
 import { computed } from "vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import PageHeader from '@/Components/PageHeader.vue'
 import { useNotifications } from '@/composables/useNotifications.js'
 import ColorPickerPopover from '@/Components/ColorPickerPopover.vue'
 

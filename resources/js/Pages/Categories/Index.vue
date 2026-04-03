@@ -2,22 +2,19 @@
   <AppLayout title="Categories">
     <Head title="Categories" />
 
-    <div class="mb-4">
-      <h2 class="text-lg font-semibold">Categories</h2>
-      <p class="text-sm text-muted-foreground mt-0.5">Organise your posts by topic</p>
-    </div>
-
-    <div class="flex items-center gap-3 mb-4">
-      <a
-        :href="route('categories.create')"
-        class="shrink-0 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)]"
-      >
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-        </svg>
-        New category
-      </a>
-    </div>
+    <PageHeader title="Categories" description="Organise posts by category">
+      <template #actions>
+        <a
+          :href="route('categories.create')"
+          class="shrink-0 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)]"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+          </svg>
+          New category
+        </a>
+      </template>
+    </PageHeader>
 
     <!-- Category bubble map -->
     <div class="rounded-lg border bg-card p-6 mb-6">
@@ -135,6 +132,7 @@
 import { ref, computed } from 'vue'
 import { Head, router } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import PageHeader from '@/Components/PageHeader.vue'
 import DataTable from '@/Components/DataTable.vue'
 
 const props = defineProps({ categories: Array })

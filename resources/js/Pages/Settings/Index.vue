@@ -2,13 +2,9 @@
   <AppLayout title="Settings">
     <Head title="Settings" />
 
-    <div class="max-w-2xl space-y-6">
+    <PageHeader title="Settings" description="Configure your site." />
 
-      <!-- Page header -->
-      <div>
-        <h2 class="text-lg font-semibold">Settings</h2>
-        <p class="text-sm text-muted-foreground mt-0.5">Manage site, locale, media, and mail configuration.</p>
-      </div>
+    <div class="max-w-2xl space-y-6">
 
       <!-- Tab bar -->
       <div class="flex border-b border-border">
@@ -33,37 +29,37 @@
 
         <!-- ── Site panel ──────────────────────────────────────────────────── -->
         <form @submit.prevent="submitSite">
-          <div class="rounded-lg border bg-card p-6 space-y-4">
-            <div>
-              <h3 class="text-sm font-semibold">Site</h3>
-              <p class="text-xs text-muted-foreground mt-0.5">Basic site identity settings.</p>
+          <ContentCard
+            title="Site"
+            description="Basic site identity settings."
+          >
+            <div class="space-y-4">
+              <div class="space-y-1">
+                <label for="site_name" class="text-sm font-medium">Site name</label>
+                <input
+                  id="site_name"
+                  v-model="siteForm['site.name']"
+                  type="text"
+                  class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  :class="{ 'border-destructive': siteForm.errors['site.name'] }"
+                />
+                <p v-if="siteForm.errors['site.name']" class="text-xs text-destructive mt-1">{{ siteForm.errors['site.name'] }}</p>
+              </div>
+
+              <div class="space-y-1">
+                <label for="site_url" class="text-sm font-medium">Site URL</label>
+                <input
+                  id="site_url"
+                  v-model="siteForm['site.url']"
+                  type="url"
+                  class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  :class="{ 'border-destructive': siteForm.errors['site.url'] }"
+                />
+                <p v-if="siteForm.errors['site.url']" class="text-xs text-destructive mt-1">{{ siteForm.errors['site.url'] }}</p>
+              </div>
             </div>
 
-            <div class="space-y-1">
-              <label for="site_name" class="text-sm font-medium">Site name</label>
-              <input
-                id="site_name"
-                v-model="siteForm['site.name']"
-                type="text"
-                class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                :class="{ 'border-destructive': siteForm.errors['site.name'] }"
-              />
-              <p v-if="siteForm.errors['site.name']" class="text-xs text-destructive mt-1">{{ siteForm.errors['site.name'] }}</p>
-            </div>
-
-            <div class="space-y-1">
-              <label for="site_url" class="text-sm font-medium">Site URL</label>
-              <input
-                id="site_url"
-                v-model="siteForm['site.url']"
-                type="url"
-                class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                :class="{ 'border-destructive': siteForm.errors['site.url'] }"
-              />
-              <p v-if="siteForm.errors['site.url']" class="text-xs text-destructive mt-1">{{ siteForm.errors['site.url'] }}</p>
-            </div>
-
-            <div class="flex justify-end pt-1">
+            <template #footer>
               <button
                 type="submit"
                 :disabled="siteForm.processing"
@@ -71,43 +67,43 @@
               >
                 {{ siteForm.processing ? 'Saving...' : 'Save changes' }}
               </button>
-            </div>
-          </div>
+            </template>
+          </ContentCard>
         </form>
 
         <!-- ── Locale panel ────────────────────────────────────────────────── -->
         <form @submit.prevent="submitLocale">
-          <div class="rounded-lg border bg-card p-6 space-y-4">
-            <div>
-              <h3 class="text-sm font-semibold">Locale</h3>
-              <p class="text-xs text-muted-foreground mt-0.5">Timezone and date formatting preferences.</p>
+          <ContentCard
+            title="Locale"
+            description="Timezone and date formatting preferences."
+          >
+            <div class="space-y-4">
+              <div class="space-y-1">
+                <label for="locale_timezone" class="text-sm font-medium">Timezone</label>
+                <SelectBox
+                  id="locale_timezone"
+                  v-model="localeForm['locale.timezone']"
+                  :data="timezoneOptions"
+                  searchable
+                />
+              </div>
+
+              <div class="space-y-1">
+                <label for="locale_date_format" class="text-sm font-medium">Date format</label>
+                <input
+                  id="locale_date_format"
+                  v-model="localeForm['locale.date_format']"
+                  type="text"
+                  placeholder="Y-m-d"
+                  class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  :class="{ 'border-destructive': localeForm.errors['locale.date_format'] }"
+                />
+                <p v-if="localeForm.errors['locale.date_format']" class="text-xs text-destructive mt-1">{{ localeForm.errors['locale.date_format'] }}</p>
+                <p class="text-xs text-muted-foreground">PHP date format string (e.g. Y-m-d, d/m/Y, m/d/Y)</p>
+              </div>
             </div>
 
-            <div class="space-y-1">
-              <label for="locale_timezone" class="text-sm font-medium">Timezone</label>
-              <SelectBox
-                id="locale_timezone"
-                v-model="localeForm['locale.timezone']"
-                :data="timezoneOptions"
-                searchable
-              />
-            </div>
-
-            <div class="space-y-1">
-              <label for="locale_date_format" class="text-sm font-medium">Date format</label>
-              <input
-                id="locale_date_format"
-                v-model="localeForm['locale.date_format']"
-                type="text"
-                placeholder="Y-m-d"
-                class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                :class="{ 'border-destructive': localeForm.errors['locale.date_format'] }"
-              />
-              <p v-if="localeForm.errors['locale.date_format']" class="text-xs text-destructive mt-1">{{ localeForm.errors['locale.date_format'] }}</p>
-              <p class="text-xs text-muted-foreground">PHP date format string (e.g. Y-m-d, d/m/Y, m/d/Y)</p>
-            </div>
-
-            <div class="flex justify-end pt-1">
+            <template #footer>
               <button
                 type="submit"
                 :disabled="localeForm.processing"
@@ -115,8 +111,8 @@
               >
                 {{ localeForm.processing ? 'Saving...' : 'Save changes' }}
               </button>
-            </div>
-          </div>
+            </template>
+          </ContentCard>
         </form>
 
       </div>
@@ -126,112 +122,112 @@
 
         <!-- ── Mail panel ──────────────────────────────────────────────────── -->
         <form @submit.prevent="submitMail">
-          <div class="rounded-lg border bg-card p-6 space-y-4">
-            <div>
-              <h3 class="text-sm font-semibold">Mail</h3>
-              <p class="text-xs text-muted-foreground mt-0.5">Outgoing email driver and SMTP configuration.</p>
+          <ContentCard
+            title="Mail"
+            description="Outgoing email driver and SMTP configuration."
+          >
+            <div class="space-y-4">
+              <div class="space-y-1">
+                <label for="mail_driver" class="text-sm font-medium">Driver</label>
+                <SelectBox
+                  id="mail_driver"
+                  v-model="mailForm['mail.driver']"
+                  :data="[
+                    { value: 'smtp',    label: 'SMTP' },
+                    { value: 'log',     label: 'Log (development)' },
+                    { value: 'mailgun', label: 'Mailgun' },
+                  ]"
+                />
+              </div>
+
+              <div class="space-y-1">
+                <label for="mail_host" class="text-sm font-medium">Host</label>
+                <input
+                  id="mail_host"
+                  v-model="mailForm['mail.host']"
+                  type="text"
+                  class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  :class="{ 'border-destructive': mailForm.errors['mail.host'] }"
+                />
+                <p v-if="mailForm.errors['mail.host']" class="text-xs text-destructive mt-1">{{ mailForm.errors['mail.host'] }}</p>
+              </div>
+
+              <div class="space-y-1">
+                <label for="mail_port" class="text-sm font-medium">Port</label>
+                <NumberInput
+                  id="mail_port"
+                  v-model="mailForm['mail.port']"
+                  :error="!!mailForm.errors['mail.port']"
+                />
+                <p v-if="mailForm.errors['mail.port']" class="text-xs text-destructive mt-1">{{ mailForm.errors['mail.port'] }}</p>
+              </div>
+
+              <div class="space-y-1">
+                <label for="mail_username" class="text-sm font-medium">Username</label>
+                <input
+                  id="mail_username"
+                  v-model="mailForm['mail.username']"
+                  type="text"
+                  autocomplete="off"
+                  class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  :class="{ 'border-destructive': mailForm.errors['mail.username'] }"
+                />
+                <p v-if="mailForm.errors['mail.username']" class="text-xs text-destructive mt-1">{{ mailForm.errors['mail.username'] }}</p>
+              </div>
+
+              <div class="space-y-1">
+                <label for="mail_password" class="text-sm font-medium">Password</label>
+                <input
+                  id="mail_password"
+                  v-model="mailForm['mail.password']"
+                  type="password"
+                  autocomplete="new-password"
+                  placeholder="Leave blank to keep current"
+                  class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  :class="{ 'border-destructive': mailForm.errors['mail.password'] }"
+                />
+                <p v-if="mailForm.errors['mail.password']" class="text-xs text-destructive mt-1">{{ mailForm.errors['mail.password'] }}</p>
+              </div>
+
+              <div class="space-y-1">
+                <label for="mail_from_address" class="text-sm font-medium">From address</label>
+                <input
+                  id="mail_from_address"
+                  v-model="mailForm['mail.from_address']"
+                  type="email"
+                  class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  :class="{ 'border-destructive': mailForm.errors['mail.from_address'] }"
+                />
+                <p v-if="mailForm.errors['mail.from_address']" class="text-xs text-destructive mt-1">{{ mailForm.errors['mail.from_address'] }}</p>
+              </div>
+
+              <div class="space-y-1">
+                <label for="mail_from_name" class="text-sm font-medium">From name</label>
+                <input
+                  id="mail_from_name"
+                  v-model="mailForm['mail.from_name']"
+                  type="text"
+                  class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  :class="{ 'border-destructive': mailForm.errors['mail.from_name'] }"
+                />
+                <p v-if="mailForm.errors['mail.from_name']" class="text-xs text-destructive mt-1">{{ mailForm.errors['mail.from_name'] }}</p>
+              </div>
+
+              <div class="space-y-1">
+                <label for="mail_encryption" class="text-sm font-medium">Encryption</label>
+                <SelectBox
+                  id="mail_encryption"
+                  v-model="mailForm['mail.encryption']"
+                  :data="[
+                    { value: 'tls', label: 'TLS' },
+                    { value: 'ssl', label: 'SSL' },
+                    { value: '',    label: 'None' },
+                  ]"
+                />
+              </div>
             </div>
 
-            <div class="space-y-1">
-              <label for="mail_driver" class="text-sm font-medium">Driver</label>
-              <SelectBox
-                id="mail_driver"
-                v-model="mailForm['mail.driver']"
-                :data="[
-                  { value: 'smtp',    label: 'SMTP' },
-                  { value: 'log',     label: 'Log (development)' },
-                  { value: 'mailgun', label: 'Mailgun' },
-                ]"
-              />
-            </div>
-
-            <div class="space-y-1">
-              <label for="mail_host" class="text-sm font-medium">Host</label>
-              <input
-                id="mail_host"
-                v-model="mailForm['mail.host']"
-                type="text"
-                class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                :class="{ 'border-destructive': mailForm.errors['mail.host'] }"
-              />
-              <p v-if="mailForm.errors['mail.host']" class="text-xs text-destructive mt-1">{{ mailForm.errors['mail.host'] }}</p>
-            </div>
-
-            <div class="space-y-1">
-              <label for="mail_port" class="text-sm font-medium">Port</label>
-              <NumberInput
-                id="mail_port"
-                v-model="mailForm['mail.port']"
-                :error="!!mailForm.errors['mail.port']"
-              />
-              <p v-if="mailForm.errors['mail.port']" class="text-xs text-destructive mt-1">{{ mailForm.errors['mail.port'] }}</p>
-            </div>
-
-            <div class="space-y-1">
-              <label for="mail_username" class="text-sm font-medium">Username</label>
-              <input
-                id="mail_username"
-                v-model="mailForm['mail.username']"
-                type="text"
-                autocomplete="off"
-                class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                :class="{ 'border-destructive': mailForm.errors['mail.username'] }"
-              />
-              <p v-if="mailForm.errors['mail.username']" class="text-xs text-destructive mt-1">{{ mailForm.errors['mail.username'] }}</p>
-            </div>
-
-            <div class="space-y-1">
-              <label for="mail_password" class="text-sm font-medium">Password</label>
-              <input
-                id="mail_password"
-                v-model="mailForm['mail.password']"
-                type="password"
-                autocomplete="new-password"
-                placeholder="Leave blank to keep current"
-                class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                :class="{ 'border-destructive': mailForm.errors['mail.password'] }"
-              />
-              <p v-if="mailForm.errors['mail.password']" class="text-xs text-destructive mt-1">{{ mailForm.errors['mail.password'] }}</p>
-            </div>
-
-            <div class="space-y-1">
-              <label for="mail_from_address" class="text-sm font-medium">From address</label>
-              <input
-                id="mail_from_address"
-                v-model="mailForm['mail.from_address']"
-                type="email"
-                class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                :class="{ 'border-destructive': mailForm.errors['mail.from_address'] }"
-              />
-              <p v-if="mailForm.errors['mail.from_address']" class="text-xs text-destructive mt-1">{{ mailForm.errors['mail.from_address'] }}</p>
-            </div>
-
-            <div class="space-y-1">
-              <label for="mail_from_name" class="text-sm font-medium">From name</label>
-              <input
-                id="mail_from_name"
-                v-model="mailForm['mail.from_name']"
-                type="text"
-                class="w-full rounded-md border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                :class="{ 'border-destructive': mailForm.errors['mail.from_name'] }"
-              />
-              <p v-if="mailForm.errors['mail.from_name']" class="text-xs text-destructive mt-1">{{ mailForm.errors['mail.from_name'] }}</p>
-            </div>
-
-            <div class="space-y-1">
-              <label for="mail_encryption" class="text-sm font-medium">Encryption</label>
-              <SelectBox
-                id="mail_encryption"
-                v-model="mailForm['mail.encryption']"
-                :data="[
-                  { value: 'tls', label: 'TLS' },
-                  { value: 'ssl', label: 'SSL' },
-                  { value: '',    label: 'None' },
-                ]"
-              />
-            </div>
-
-            <div class="flex justify-end pt-1">
+            <template #footer>
               <button
                 type="submit"
                 :disabled="mailForm.processing"
@@ -239,19 +235,17 @@
               >
                 {{ mailForm.processing ? 'Saving...' : 'Save changes' }}
               </button>
-            </div>
-          </div>
+            </template>
+          </ContentCard>
         </form>
 
         <!-- ── Test email panel ────────────────────────────────────────────── -->
         <form @submit.prevent="sendTestEmail">
-          <div class="rounded-lg border bg-card p-6 space-y-4">
-            <div>
-              <h3 class="text-sm font-semibold">Send test email</h3>
-              <p class="text-xs text-muted-foreground mt-0.5">Send a test email using the current mail configuration to your account address.</p>
-            </div>
-
-            <div class="flex justify-end pt-1">
+          <ContentCard
+            title="Send test email"
+            description="Send a test email using the current mail configuration to your account address."
+          >
+            <template #footer>
               <button
                 type="submit"
                 :disabled="testMailForm.processing"
@@ -260,8 +254,8 @@
                 <Loader2 v-if="testMailForm.processing" class="w-4 h-4 animate-spin" />
                 {{ testMailForm.processing ? 'Sending...' : 'Send test email' }}
               </button>
-            </div>
-          </div>
+            </template>
+          </ContentCard>
         </form>
 
       </div>
@@ -271,84 +265,84 @@
 
         <!-- ── Media panel ─────────────────────────────────────────────────── -->
         <form @submit.prevent="submitMedia">
-          <div class="rounded-lg border bg-card p-6 space-y-4">
-            <div>
-              <h3 class="text-sm font-semibold">Media</h3>
-              <p class="text-xs text-muted-foreground mt-0.5">Upload limits and image processing settings.</p>
-            </div>
-
-            <div class="space-y-1">
-              <label for="media_max_upload_mb" class="text-sm font-medium">Max upload size (MB)</label>
-              <NumberInput
-                id="media_max_upload_mb"
-                v-model="mediaForm['media.max_upload_mb']"
-                :min="1"
-                :max="100"
-                :error="!!mediaForm.errors['media.max_upload_mb']"
-              />
-              <p v-if="mediaForm.errors['media.max_upload_mb']" class="text-xs text-destructive mt-1">{{ mediaForm.errors['media.max_upload_mb'] }}</p>
-            </div>
-
-            <div class="space-y-1">
-              <label for="media_resize_max_width" class="text-sm font-medium">Max resize width (px)</label>
-              <NumberInput
-                id="media_resize_max_width"
-                v-model="mediaForm['media.resize_max_width']"
-                :min="320"
-                :max="8000"
-                :error="!!mediaForm.errors['media.resize_max_width']"
-              />
-              <p v-if="mediaForm.errors['media.resize_max_width']" class="text-xs text-destructive mt-1">{{ mediaForm.errors['media.resize_max_width'] }}</p>
-            </div>
-
-            <!-- Allowed file type categories -->
-            <div class="space-y-2">
-              <label class="text-sm font-medium">Allowed file types</label>
-              <div class="grid grid-cols-2 gap-2">
-                <label v-for="cat in [
-                  { key: 'image', label: 'Images' },
-                  { key: 'document', label: 'Documents' },
-                  { key: 'video', label: 'Video' },
-                  { key: 'audio', label: 'Audio' },
-                ]" :key="cat.key" class="flex items-center gap-2 text-sm cursor-pointer">
-                  <input
-                    type="checkbox"
-                    :value="cat.key"
-                    v-model="mediaForm.media_allowed_categories"
-                    class="rounded border-border"
-                  />
-                  {{ cat.label }}
-                </label>
-              </div>
-            </div>
-
-            <!-- Custom MIME types tag input -->
-            <div class="space-y-2">
-              <label class="text-sm font-medium">Custom MIME types</label>
-              <div class="flex flex-wrap gap-1.5 mb-1.5">
-                <span
-                  v-for="mime in mediaForm.media_custom_mimes"
-                  :key="mime"
-                  class="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium"
-                >
-                  {{ mime }}
-                  <button type="button" @click="removeCustomMime(mime)" class="hover:text-destructive transition-colors">&times;</button>
-                </span>
-              </div>
-              <div class="flex gap-2">
-                <input
-                  v-model="customMimeInput"
-                  type="text"
-                  placeholder="e.g. application/json"
-                  class="flex-1 rounded-md border bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                  @keydown.enter.prevent="addCustomMime"
+          <ContentCard
+            title="Media"
+            description="Upload limits and image processing settings."
+          >
+            <div class="space-y-4">
+              <div class="space-y-1">
+                <label for="media_max_upload_mb" class="text-sm font-medium">Max upload size (MB)</label>
+                <NumberInput
+                  id="media_max_upload_mb"
+                  v-model="mediaForm['media.max_upload_mb']"
+                  :min="1"
+                  :max="100"
+                  :error="!!mediaForm.errors['media.max_upload_mb']"
                 />
-                <button type="button" @click="addCustomMime" class="rounded-md border px-3 py-1.5 text-sm hover:bg-accent transition-colors">Add</button>
+                <p v-if="mediaForm.errors['media.max_upload_mb']" class="text-xs text-destructive mt-1">{{ mediaForm.errors['media.max_upload_mb'] }}</p>
               </div>
-              <p class="text-xs text-muted-foreground">Press Enter or click Add. Example: <code>image/tiff</code></p>
+
+              <div class="space-y-1">
+                <label for="media_resize_max_width" class="text-sm font-medium">Max resize width (px)</label>
+                <NumberInput
+                  id="media_resize_max_width"
+                  v-model="mediaForm['media.resize_max_width']"
+                  :min="320"
+                  :max="8000"
+                  :error="!!mediaForm.errors['media.resize_max_width']"
+                />
+                <p v-if="mediaForm.errors['media.resize_max_width']" class="text-xs text-destructive mt-1">{{ mediaForm.errors['media.resize_max_width'] }}</p>
+              </div>
+
+              <!-- Allowed file type categories -->
+              <div class="space-y-2">
+                <label class="text-sm font-medium">Allowed file types</label>
+                <div class="grid grid-cols-2 gap-2">
+                  <label v-for="cat in [
+                    { key: 'image', label: 'Images' },
+                    { key: 'document', label: 'Documents' },
+                    { key: 'video', label: 'Video' },
+                    { key: 'audio', label: 'Audio' },
+                  ]" :key="cat.key" class="flex items-center gap-2 text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      :value="cat.key"
+                      v-model="mediaForm.media_allowed_categories"
+                      class="rounded border-border"
+                    />
+                    {{ cat.label }}
+                  </label>
+                </div>
+              </div>
+
+              <!-- Custom MIME types tag input -->
+              <div class="space-y-2">
+                <label class="text-sm font-medium">Custom MIME types</label>
+                <div class="flex flex-wrap gap-1.5 mb-1.5">
+                  <span
+                    v-for="mime in mediaForm.media_custom_mimes"
+                    :key="mime"
+                    class="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium"
+                  >
+                    {{ mime }}
+                    <button type="button" @click="removeCustomMime(mime)" class="hover:text-destructive transition-colors">&times;</button>
+                  </span>
+                </div>
+                <div class="flex gap-2">
+                  <input
+                    v-model="customMimeInput"
+                    type="text"
+                    placeholder="e.g. application/json"
+                    class="flex-1 rounded-md border bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    @keydown.enter.prevent="addCustomMime"
+                  />
+                  <button type="button" @click="addCustomMime" class="rounded-md border px-3 py-1.5 text-sm hover:bg-accent transition-colors">Add</button>
+                </div>
+                <p class="text-xs text-muted-foreground">Press Enter or click Add. Example: <code>image/tiff</code></p>
+              </div>
             </div>
 
-            <div class="flex justify-end pt-1">
+            <template #footer>
               <button
                 type="submit"
                 :disabled="mediaForm.processing"
@@ -356,8 +350,8 @@
               >
                 {{ mediaForm.processing ? 'Saving...' : 'Save changes' }}
               </button>
-            </div>
-          </div>
+            </template>
+          </ContentCard>
         </form>
 
       </div>
@@ -367,39 +361,39 @@
 
         <!-- ── Comments panel ────────────────────────────────────────────── -->
         <form @submit.prevent="submitComments">
-          <div class="rounded-lg border bg-card p-6 space-y-4">
-            <div>
-              <h3 class="text-sm font-semibold">Comments</h3>
-              <p class="text-xs text-muted-foreground mt-0.5">Control comment visibility and loading behaviour.</p>
-            </div>
-
-            <div class="flex items-center justify-between">
-              <div>
-                <label for="comments_enabled" class="text-sm font-medium">Enable comments</label>
-                <p class="text-xs text-muted-foreground mt-0.5">When disabled, existing comments remain visible but new submissions are blocked.</p>
+          <ContentCard
+            title="Comments"
+            description="Control comment visibility and loading behaviour."
+          >
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <label for="comments_enabled" class="text-sm font-medium">Enable comments</label>
+                  <p class="text-xs text-muted-foreground mt-0.5">When disabled, existing comments remain visible but new submissions are blocked.</p>
+                </div>
+                <input
+                  id="comments_enabled"
+                  v-model="commentsForm['comments.enabled']"
+                  type="checkbox"
+                  class="w-4 h-4 rounded border-border accent-nord-green"
+                />
               </div>
-              <input
-                id="comments_enabled"
-                v-model="commentsForm['comments.enabled']"
-                type="checkbox"
-                class="w-4 h-4 rounded border-border accent-nord-green"
-              />
+
+              <div class="space-y-1">
+                <label for="comments_per_page" class="text-sm font-medium">Comments per page</label>
+                <NumberInput
+                  id="comments_per_page"
+                  v-model="commentsForm['comments.per_page']"
+                  :min="5"
+                  :max="100"
+                  :error="!!commentsForm.errors['comments.per_page']"
+                />
+                <p v-if="commentsForm.errors['comments.per_page']" class="text-xs text-destructive mt-1">{{ commentsForm.errors['comments.per_page'] }}</p>
+                <p class="text-xs text-muted-foreground">How many comments load initially and per "Load more" click (5–100).</p>
+              </div>
             </div>
 
-            <div class="space-y-1">
-              <label for="comments_per_page" class="text-sm font-medium">Comments per page</label>
-              <NumberInput
-                id="comments_per_page"
-                v-model="commentsForm['comments.per_page']"
-                :min="5"
-                :max="100"
-                :error="!!commentsForm.errors['comments.per_page']"
-              />
-              <p v-if="commentsForm.errors['comments.per_page']" class="text-xs text-destructive mt-1">{{ commentsForm.errors['comments.per_page'] }}</p>
-              <p class="text-xs text-muted-foreground">How many comments load initially and per "Load more" click (5–100).</p>
-            </div>
-
-            <div class="flex justify-end pt-1">
+            <template #footer>
               <button
                 type="submit"
                 :disabled="commentsForm.processing"
@@ -407,8 +401,8 @@
               >
                 {{ commentsForm.processing ? 'Saving...' : 'Save changes' }}
               </button>
-            </div>
-          </div>
+            </template>
+          </ContentCard>
         </form>
 
       </div>
@@ -418,59 +412,59 @@
 
         <!-- ── SEO panel ──────────────────────────────────────────────────────────────────── -->
         <form @submit.prevent="submitSeo">
-          <div class="rounded-lg border bg-card p-6 space-y-4">
-            <div>
-              <h3 class="text-sm font-semibold">SEO</h3>
-              <p class="text-xs text-muted-foreground mt-0.5">Default meta tags for public blog pages.</p>
+          <ContentCard
+            title="SEO"
+            description="Default meta tags for public blog pages."
+          >
+            <div class="space-y-4">
+              <div class="space-y-1">
+                <label for="seo_title_separator" class="text-sm font-medium">Title separator</label>
+                <input
+                  id="seo_title_separator"
+                  v-model="seoForm['seo.title_separator']"
+                  type="text"
+                  class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+                <p class="text-xs text-muted-foreground">Characters between post title and site name, e.g. " | ".</p>
+              </div>
+
+              <div class="space-y-1">
+                <label for="seo_default_description" class="text-sm font-medium">Default meta description</label>
+                <textarea
+                  id="seo_default_description"
+                  v-model="seoForm['seo.default_description']"
+                  rows="3"
+                  class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                  placeholder="Used when a post has no excerpt or custom meta description"
+                />
+              </div>
+
+              <div class="space-y-1">
+                <label for="seo_og_image_url" class="text-sm font-medium">Default OG image URL</label>
+                <input
+                  id="seo_og_image_url"
+                  v-model="seoForm['seo.default_og_image_url']"
+                  type="url"
+                  class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder="https://example.com/og-default.jpg"
+                />
+                <p class="text-xs text-muted-foreground">Used on pages with no featured image.</p>
+              </div>
+
+              <div class="space-y-1">
+                <label for="seo_default_keywords" class="text-sm font-medium">Default keywords</label>
+                <input
+                  id="seo_default_keywords"
+                  v-model="seoForm['seo.default_keywords']"
+                  type="text"
+                  class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder="e.g. laravel, cms, blog"
+                />
+                <p class="text-xs text-muted-foreground">Comma-separated. Used on pages with no post-specific keywords.</p>
+              </div>
             </div>
 
-            <div class="space-y-1">
-              <label for="seo_title_separator" class="text-sm font-medium">Title separator</label>
-              <input
-                id="seo_title_separator"
-                v-model="seoForm['seo.title_separator']"
-                type="text"
-                class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              />
-              <p class="text-xs text-muted-foreground">Characters between post title and site name, e.g. " | ".</p>
-            </div>
-
-            <div class="space-y-1">
-              <label for="seo_default_description" class="text-sm font-medium">Default meta description</label>
-              <textarea
-                id="seo_default_description"
-                v-model="seoForm['seo.default_description']"
-                rows="3"
-                class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
-                placeholder="Used when a post has no excerpt or custom meta description"
-              />
-            </div>
-
-            <div class="space-y-1">
-              <label for="seo_og_image_url" class="text-sm font-medium">Default OG image URL</label>
-              <input
-                id="seo_og_image_url"
-                v-model="seoForm['seo.default_og_image_url']"
-                type="url"
-                class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                placeholder="https://example.com/og-default.jpg"
-              />
-              <p class="text-xs text-muted-foreground">Used on pages with no featured image.</p>
-            </div>
-
-            <div class="space-y-1">
-              <label for="seo_default_keywords" class="text-sm font-medium">Default keywords</label>
-              <input
-                id="seo_default_keywords"
-                v-model="seoForm['seo.default_keywords']"
-                type="text"
-                class="w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                placeholder="e.g. laravel, cms, blog"
-              />
-              <p class="text-xs text-muted-foreground">Comma-separated. Used on pages with no post-specific keywords.</p>
-            </div>
-
-            <div class="flex justify-end pt-1">
+            <template #footer>
               <button
                 type="submit"
                 :disabled="seoForm.processing"
@@ -478,8 +472,8 @@
               >
                 {{ seoForm.processing ? 'Saving...' : 'Save changes' }}
               </button>
-            </div>
-          </div>
+            </template>
+          </ContentCard>
         </form>
 
       </div>
@@ -487,39 +481,39 @@
       <!-- Appearance -->
       <div v-show="activeTab === 'appearance'">
         <form @submit.prevent="submitAppearance">
-          <div class="rounded-lg border bg-card p-6 space-y-4">
-            <div>
-              <h3 class="text-sm font-semibold">Appearance</h3>
-              <p class="text-xs text-muted-foreground mt-0.5">Choose an accent color for the admin interface and public site.</p>
-            </div>
-
-            <div class="space-y-2">
-              <label class="text-sm font-medium">Accent color</label>
-              <div class="flex flex-wrap gap-3 mt-2">
-                <button
-                  v-for="swatch in ACCENT_SWATCHES"
-                  :key="swatch.value"
-                  type="button"
-                  :title="swatch.label"
-                  @click="appearanceForm['site.accent_color'] = swatch.value"
-                  class="relative w-9 h-9 rounded-full border-2 transition-all focus:outline-none"
-                  :style="{ backgroundColor: swatch.value }"
-                  :class="appearanceForm['site.accent_color'] === swatch.value
-                    ? 'border-foreground scale-110 shadow-md'
-                    : 'border-transparent hover:scale-105'"
-                >
-                  <svg
-                    v-if="appearanceForm['site.accent_color'] === swatch.value"
-                    class="w-4 h-4 absolute inset-0 m-auto text-white drop-shadow"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"
+          <ContentCard
+            title="Appearance"
+            description="Choose an accent color for the admin interface and public site."
+          >
+            <div class="space-y-4">
+              <div class="space-y-2">
+                <label class="text-sm font-medium">Accent color</label>
+                <div class="flex flex-wrap gap-3 mt-2">
+                  <button
+                    v-for="swatch in ACCENT_SWATCHES"
+                    :key="swatch.value"
+                    type="button"
+                    :title="swatch.label"
+                    @click="appearanceForm['site.accent_color'] = swatch.value"
+                    class="relative w-9 h-9 rounded-full border-2 transition-all focus:outline-none"
+                    :style="{ backgroundColor: swatch.value }"
+                    :class="appearanceForm['site.accent_color'] === swatch.value
+                      ? 'border-foreground scale-110 shadow-md'
+                      : 'border-transparent hover:scale-105'"
                   >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                </button>
+                    <svg
+                      v-if="appearanceForm['site.accent_color'] === swatch.value"
+                      class="w-4 h-4 absolute inset-0 m-auto text-white drop-shadow"
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"
+                    >
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
 
-            <div class="flex justify-end pt-1">
+            <template #footer>
               <button
                 type="submit"
                 :disabled="appearanceForm.processing"
@@ -527,8 +521,8 @@
               >
                 {{ appearanceForm.processing ? 'Saving...' : 'Save changes' }}
               </button>
-            </div>
-          </div>
+            </template>
+          </ContentCard>
         </form>
       </div>
 
@@ -542,6 +536,8 @@ import { Loader2 } from 'lucide-vue-next'
 import { Head, useForm, usePage } from "@inertiajs/vue3";
 import { useNotifications } from '@/composables/useNotifications.js'
 import AppLayout from "@/Layouts/AppLayout.vue";
+import PageHeader from '@/Components/PageHeader.vue'
+import ContentCard from '@/Components/ContentCard.vue'
 import SelectBox from '@/Components/SelectBox.vue'
 import NumberInput from '@/Components/NumberInput.vue'
 
