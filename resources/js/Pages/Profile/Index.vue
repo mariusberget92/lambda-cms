@@ -5,10 +5,7 @@
     <div class="max-w-2xl space-y-6">
 
       <!-- Page header -->
-      <div>
-        <h2 class="text-lg font-semibold">Profile settings</h2>
-        <p class="text-sm text-muted-foreground mt-0.5">Manage your account information and security.</p>
-      </div>
+      <PageHeader title="Profile" description="Update your account details" />
 
       <!-- Panel 1: Profile information -->
       <form @submit.prevent="submitInfo">
@@ -231,6 +228,7 @@
 import { ref, computed } from "vue";
 import { Head, useForm, usePage, router } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
+import PageHeader from '@/Components/PageHeader.vue'
 import { useNotifications } from '@/composables/useNotifications.js'
 const { notify } = useNotifications()
 
