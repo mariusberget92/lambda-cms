@@ -59,7 +59,14 @@
           class="hover:bg-muted/30 transition-colors group"
         >
           <td>
-            <div class="font-medium">{{ cat.name }}</div>
+            <div class="font-medium flex items-center gap-1.5">
+              <span
+                v-if="cat.color"
+                class="inline-block w-2.5 h-2.5 rounded-full shrink-0"
+                :style="{ backgroundColor: cat.color }"
+              />
+              {{ cat.name }}
+            </div>
             <div class="text-xs text-muted-foreground font-mono mt-0.5">{{ cat.slug }}</div>
           </td>
           <td class="hidden md:table-cell text-muted-foreground text-sm">

@@ -26,6 +26,13 @@ function formatDate(date) {
   return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
+function categoryStyle(cat) {
+  return cat.color ? { backgroundColor: cat.color + '20', color: cat.color } : {}
+}
+function categoryClass(cat) {
+  return cat.color ? '' : 'bg-primary/10 text-primary'
+}
+
 // ── Comment list state ────────────────────────────────────────────────────────
 const commentList = ref([...props.comments])
 const hasMore     = ref(props.commentsHasMore)
@@ -96,7 +103,8 @@ function submitComment() {
         <span
           v-for="cat in post.categories"
           :key="cat.slug"
-          class="inline-block text-xs font-medium bg-primary/10 text-primary px-2 py-0.5 rounded-full"
+          :class="['inline-block text-xs font-medium px-2 py-0.5 rounded-full', categoryClass(cat)]"
+          :style="categoryStyle(cat)"
         >
           {{ cat.name }}
         </span>

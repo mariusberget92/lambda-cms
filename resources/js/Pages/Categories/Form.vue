@@ -48,6 +48,12 @@
             <p class="text-xs text-muted-foreground ml-auto">{{ (form.description ?? '').length }}/500</p>
           </div>
         </div>
+
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium">Color</label>
+          <ColorPickerPopover v-model="form.color" />
+          <p class="text-xs text-muted-foreground">Optional accent color for this category.</p>
+        </div>
       </div>
 
       <div class="flex gap-3 mt-4 justify-end">
@@ -69,6 +75,7 @@ import { computed } from "vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import { useNotifications } from '@/composables/useNotifications.js'
+import ColorPickerPopover from '@/Components/ColorPickerPopover.vue'
 
 const { notify } = useNotifications()
 
@@ -81,6 +88,7 @@ const isEditing = computed(() => !!props.category);
 const form = useForm({
   name:        props.category?.name        ?? "",
   description: props.category?.description ?? "",
+  color:       props.category?.color       ?? null,
 });
 
 function submit() {
