@@ -28,10 +28,28 @@ class MediaController extends Controller
 
         $media = $query->paginate(40)->withQueryString()->through(fn (Media $m) => $this->toArray($m));
 
+        $mimeToExt = [
+            'image/jpeg'       => 'jpg',
+            'image/png'        => 'png',
+            'image/gif'        => 'gif',
+            'image/webp'       => 'webp',
+            'image/svg+xml'    => 'svg',
+            'application/pdf'  => 'pdf',
+            'application/msword' => 'doc',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx',
+            'video/mp4'        => 'mp4',
+            'video/webm'       => 'webm',
+            'audio/mpeg'       => 'mp3',
+            'audio/wav'        => 'wav',
+        ];
+        $allowedMimes      = config('media.allowed_mimes', []);
+        $allowedExtensions = implode(', ', array_unique(array_filter(array_map(fn ($m) => $mimeToExt[$m] ?? null, $allowedMimes))));
+
         return Inertia::render('Media/Index', [
-            'media'       => $media,
-            'filters'     => $request->only('type', 'search'),
-            'maxUploadMb' => (int) config('media.max_upload_mb', 10),
+            'media'             => $media,
+            'filters'           => $request->only('type', 'search'),
+            'maxUploadMb'       => (int) config('media.max_upload_mb', 10),
+            'allowedExtensions' => $allowedExtensions,
         ]);
     }
 

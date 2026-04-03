@@ -44,10 +44,20 @@ class SettingsController extends Controller
                 'locale\\.timezone'    => ['required', 'string', Rule::in(\DateTimeZone::listIdentifiers())],
                 'locale\\.date_format' => ['required', 'string', 'max:20'],
             ]),
-            'media'  => $request->validate([
-                'media\\.max_upload_mb'    => ['required', 'integer', 'min:1', 'max:100'],
-                'media\\.resize_max_width' => ['required', 'integer', 'min:320', 'max:8000'],
-            ]),
+            'media'  => (function () use ($request): array {
+                $validated = $request->validate([
+                    'media\\.max_upload_mb'       => ['required', 'integer', 'min:1', 'max:500'],
+                    'media\\.resize_max_width'    => ['required', 'integer', 'min:100', 'max:5000'],
+                    'media\\.allowed_categories'  => ['array'],
+                    'media\\.allowed_categories.*' => ['in:image,document,video,audio'],
+                    'media\\.custom_mimes'        => ['array'],
+                    'media\\.custom_mimes.*'      => ['string', 'max:100'],
+                ]);
+                // Encode array fields as JSON before the generic save loop
+                $validated['media\\.allowed_categories'] = json_encode($validated['media\\.allowed_categories'] ?? []);
+                $validated['media\\.custom_mimes']       = json_encode($validated['media\\.custom_mimes'] ?? []);
+                return $validated;
+            })(),
             'mail'   => $request->validate([
                 'mail\\.driver'       => ['required', 'string', Rule::in(['smtp', 'log', 'mailgun'])],
                 'mail\\.host'         => ['nullable', 'string', 'max:255'],

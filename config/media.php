@@ -23,14 +23,33 @@ return [
     'max_upload_mb' => $settingGet('media.max_upload_mb', env('MEDIA_MAX_UPLOAD_MB', 10)),
 
     /*
-     * Allowed MIME types grouped by category.
+     * Allowed MIME types — resolved dynamically from DB-backed settings.
+     * Categories enabled via 'media.allowed_categories'; extra types via 'media.custom_mimes'.
      */
-    'allowed_mimes' => [
-        'image'    => ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
-        'document' => ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-        'video'    => ['video/mp4', 'video/webm'],
-        'audio'    => ['audio/mpeg', 'audio/wav'],
-    ],
+    'allowed_mimes' => (function () use ($settingGet): array {
+        $groups = [
+            'image'    => ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
+            'document' => ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+            'video'    => ['video/mp4', 'video/webm'],
+            'audio'    => ['audio/mpeg', 'audio/wav'],
+        ];
+
+        $enabledCategories = json_decode($settingGet('media.allowed_categories', json_encode(array_keys($groups))), true);
+        if (empty($enabledCategories)) {
+            $enabledCategories = array_keys($groups);
+        }
+
+        $customMimes = json_decode($settingGet('media.custom_mimes', '[]'), true) ?? [];
+
+        $allowed = [];
+        foreach ($enabledCategories as $cat) {
+            if (isset($groups[$cat])) {
+                $allowed = array_merge($allowed, $groups[$cat]);
+            }
+        }
+
+        return array_values(array_unique(array_merge($allowed, (array) $customMimes)));
+    })(),
 
     /*
      * Image resize width in pixels applied on upload.

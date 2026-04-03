@@ -20,8 +20,10 @@ class SettingsSeeder extends Seeder
             ['group' => 'locale', 'key' => 'locale.date_format', 'value' => 'Y-m-d',  'type' => 'string'],
 
             // Media
-            ['group' => 'media', 'key' => 'media.max_upload_mb',    'value' => '10',   'type' => 'integer'],
-            ['group' => 'media', 'key' => 'media.resize_max_width', 'value' => '1920', 'type' => 'integer'],
+            ['group' => 'media', 'key' => 'media.max_upload_mb',       'value' => '10',   'type' => 'integer'],
+            ['group' => 'media', 'key' => 'media.resize_max_width',    'value' => '1920', 'type' => 'integer'],
+            ['group' => 'media', 'key' => 'media.allowed_categories',  'value' => json_encode(['image', 'document', 'video', 'audio']), 'type' => 'string'],
+            ['group' => 'media', 'key' => 'media.custom_mimes',        'value' => json_encode([]), 'type' => 'string'],
 
             // Mail
             ['group' => 'mail', 'key' => 'mail.driver',       'value' => 'smtp', 'type' => 'string'],
