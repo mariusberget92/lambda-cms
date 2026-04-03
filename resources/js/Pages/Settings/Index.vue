@@ -517,9 +517,6 @@
                   </svg>
                 </button>
               </div>
-              <p class="text-xs text-muted-foreground mt-1">
-                Selected: <code class="font-mono">{{ appearanceForm['site.accent_color'] }}</code>
-              </p>
             </div>
 
             <div class="flex justify-end pt-1">
