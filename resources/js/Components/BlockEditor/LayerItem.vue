@@ -28,7 +28,25 @@
         <GripVertical class="w-3 h-3" />
       </span>
 
-      <span class="flex-1 truncate">{{ block.blockName || LABELS[block.type] || block.type }}</span>
+      <template v-if="editingId === block.id">
+        <input
+          :id="`rename-${block.id}`"
+          v-model="editingName"
+          type="text"
+          class="flex-1 bg-transparent text-xs font-semibold uppercase tracking-wider outline-none border-b border-primary min-w-0"
+          @blur="commitRename(block)"
+          @keydown.enter.prevent="commitRename(block)"
+          @keydown.escape="editingId = null"
+          @click.stop
+          @mousedown.stop
+        />
+      </template>
+      <template v-else>
+        <span
+          class="flex-1 truncate text-xs font-semibold uppercase tracking-wider cursor-default"
+          @dblclick.stop="startRename(block)"
+        >{{ block.blockName || LABELS[block.type] || block.type }}</span>
+      </template>
 
       <!-- Duplicate -->
       <button
@@ -103,6 +121,7 @@
             @copy="$emit('copy', $event)"
             @paste="$emit('paste', $event)"
             @update-children="$emit('update-children', $event)"
+            @update="$emit('update', $event)"
           />
         </div>
         <div
@@ -117,7 +136,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, nextTick } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
 import { GripVertical, X, CopyPlus, Copy, Clipboard } from 'lucide-vue-next'
 
@@ -142,7 +161,30 @@ const props = defineProps({
   isChild:    { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['select', 'remove', 'duplicate', 'copy', 'paste', 'update-children'])
+const emit = defineEmits(['select', 'remove', 'duplicate', 'copy', 'paste', 'update-children', 'update'])
+
+// ── Inline rename ─────────────────────────────────────────────────────────────
+const editingId = ref(null)
+const editingName = ref('')
+
+function startRename(block) {
+  editingId.value = block.id
+  editingName.value = block.blockName || LABELS[block.type] || block.type
+  nextTick(() => {
+    document.getElementById(`rename-${block.id}`)?.select()
+  })
+}
+
+function commitRename(block) {
+  const trimmed = editingName.value.trim()
+  const defaultLabel = LABELS[block.type] || block.type
+  if (trimmed && trimmed !== defaultLabel) {
+    emit('update', { id: block.id, blockName: trimmed })
+  } else if (!trimmed || trimmed === defaultLabel) {
+    emit('update', { id: block.id, blockName: '' })
+  }
+  editingId.value = null
+}
 
 // ── Nested children drag-to-reorder / drag-to-nest ────────────────────────────
 // Local ref pattern: keeps the getter synchronously in sync with the setter so

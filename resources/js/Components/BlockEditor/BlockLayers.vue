@@ -52,6 +52,7 @@
               @copy="$emit('copy', $event)"
               @paste="$emit('paste', $event)"
               @update-children="$emit('update-children', $event)"
+            @update="$emit('update', $event)"
             />
           </div>
         </VueDraggable>
