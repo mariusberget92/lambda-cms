@@ -35,7 +35,6 @@ import VideoBlock     from '@/Components/Blocks/VideoBlock.vue'
 import DividerBlock   from '@/Components/Blocks/DividerBlock.vue'
 import CtaBlock       from '@/Components/Blocks/CtaBlock.vue'
 import HtmlBlock      from '@/Components/Blocks/HtmlBlock.vue'
-import PostListBlock  from '@/Components/Blocks/PostListBlock.vue'
 import ContainerBlock from '@/Components/Blocks/ContainerBlock.vue'
 import SectionBlock  from '@/Components/Blocks/SectionBlock.vue'
 import SpacerBlock   from '@/Components/Blocks/SpacerBlock.vue'
@@ -100,7 +99,6 @@ const BLOCK_MAP = {
   divider:   DividerBlock,
   cta:       CtaBlock,
   html:      HtmlBlock,
-  component: PostListBlock,
   container: ContainerBlock,
   section:   SectionBlock,
   spacer:    SpacerBlock,

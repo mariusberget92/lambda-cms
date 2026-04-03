@@ -49,7 +49,6 @@ import {
   Minus,
   MousePointerClick,
   FileCode,
-  Puzzle,
   LayoutTemplate,
   Rows2,
   ArrowUpDown,
@@ -99,7 +98,6 @@ const ALL_TYPES = [
   { type: 'cta',       label: 'CTA',       icon: MousePointerClick, group: 'Interactive' },
   { type: 'search',    label: 'Search',    icon: Search,            group: 'Interactive' },
   { type: 'loop',      label: 'Loop',      icon: Repeat2,           group: 'Interactive' },
-  { type: 'component', label: 'Component', icon: Puzzle,            group: 'Interactive' },
   { type: 'link',      label: 'Link',      icon: Link,              group: 'Interactive' },
   { type: 'pagination',label: 'Pagination',icon: ChevronRightIcon,  group: 'Interactive' },
   { type: 'html',      label: 'HTML',      icon: FileCode,          group: 'Developer', adminOnly: true },
@@ -145,7 +143,6 @@ const DEFAULT_DATA = {
   divider:   { style: 'line' },
   cta:       { headline: '', text: '', button_label: '', button_url: '' },
   html:      { content: '' },
-  component: { component: 'post-list', limit: 6, offset: 0, order: 'latest', featured_only: false, category_ids: [], tag_ids: [] },
   container: {
     direction: 'row', wrap: true,
     gap: '1rem',

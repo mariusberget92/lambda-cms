@@ -205,7 +205,6 @@ import VideoBlock     from '@/Components/Blocks/VideoBlock.vue'
 import DividerBlock   from '@/Components/Blocks/DividerBlock.vue'
 import CtaBlock       from '@/Components/Blocks/CtaBlock.vue'
 import HtmlBlock      from '@/Components/Blocks/HtmlBlock.vue'
-import PostListBlock  from '@/Components/Blocks/PostListBlock.vue'
 import EmbedBlock       from '@/components/Blocks/EmbedBlock.vue'
 import PaginationBlock  from '@/components/Blocks/PaginationBlock.vue'
 import NavigationBlock  from '@/components/Blocks/NavigationBlock.vue'
@@ -222,7 +221,6 @@ const BLOCK_MAP = {
   divider:   DividerBlock,
   cta:       CtaBlock,
   html:      HtmlBlock,
-  component: PostListBlock,
   embed:      EmbedBlock,
   pagination: PaginationBlock,
   navigation: EditorNavigationBlock,
@@ -231,7 +229,7 @@ const BLOCK_MAP = {
 const LABELS = {
   paragraph: 'Paragraph', heading: 'Heading', image: 'Image',
   quote: 'Quote', code: 'Code', gallery: 'Gallery', video: 'Video',
-  divider: 'Divider', cta: 'CTA', html: 'HTML', component: 'Component',
+  divider: 'Divider', cta: 'CTA', html: 'HTML',
   container: 'Container', section: 'Section', spacer: 'Spacer', loop: 'Loop',
   link: 'Link', accordion: 'Accordion', 'accordion-item': 'Acc. Item',
   tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
