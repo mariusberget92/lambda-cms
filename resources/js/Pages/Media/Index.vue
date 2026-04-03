@@ -75,7 +75,7 @@
 
         <!-- Upload guidance -->
         <p v-show="!uploading" class="text-xs text-muted-foreground mb-3">
-          Accepted: JPG, PNG, GIF, WebP, SVG, PDF, MP4, MP3 · Max {{ maxUploadMb }} MB
+          Accepted: {{ allowedExtensions }} · Max {{ maxUploadMb }} MB
         </p>
 
         <!-- Empty state -->
@@ -293,9 +293,10 @@ import MediaDetailContent from './MediaDetailContent.vue'
 const { notify } = useNotifications()
 
 const props = defineProps({
-  media:        Object,
-  filters:      { type: Object, default: () => ({}) },
-  maxUploadMb:  { type: Number, default: 10 },
+  media:             Object,
+  filters:           { type: Object, default: () => ({}) },
+  maxUploadMb:       { type: Number, default: 10 },
+  allowedExtensions: { type: String, default: 'jpg, png, gif, webp, svg, pdf' },
 })
 
 const localItems      = ref([...props.media.data])

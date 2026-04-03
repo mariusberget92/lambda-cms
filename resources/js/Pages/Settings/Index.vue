@@ -301,6 +301,53 @@
               <p v-if="mediaForm.errors['media.resize_max_width']" class="text-xs text-destructive mt-1">{{ mediaForm.errors['media.resize_max_width'] }}</p>
             </div>
 
+            <!-- Allowed file type categories -->
+            <div class="space-y-2">
+              <label class="text-sm font-medium">Allowed file types</label>
+              <div class="grid grid-cols-2 gap-2">
+                <label v-for="cat in [
+                  { key: 'image', label: 'Images' },
+                  { key: 'document', label: 'Documents' },
+                  { key: 'video', label: 'Video' },
+                  { key: 'audio', label: 'Audio' },
+                ]" :key="cat.key" class="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    :value="cat.key"
+                    v-model="mediaForm.media_allowed_categories"
+                    class="rounded border-border"
+                  />
+                  {{ cat.label }}
+                </label>
+              </div>
+            </div>
+
+            <!-- Custom MIME types tag input -->
+            <div class="space-y-2">
+              <label class="text-sm font-medium">Custom MIME types</label>
+              <div class="flex flex-wrap gap-1.5 mb-1.5">
+                <span
+                  v-for="mime in mediaForm.media_custom_mimes"
+                  :key="mime"
+                  class="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium"
+                >
+                  {{ mime }}
+                  <button type="button" @click="removeCustomMime(mime)" class="hover:text-destructive transition-colors">&times;</button>
+                </span>
+              </div>
+              <div class="flex gap-2">
+                <input
+                  v-model="customMimeInput"
+                  type="text"
+                  placeholder="e.g. application/json"
+                  class="flex-1 rounded-md border bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  @keydown.enter.prevent="addCustomMime"
+                />
+                <button type="button" @click="addCustomMime" class="rounded-md border px-3 py-1.5 text-sm hover:bg-accent transition-colors">Add</button>
+              </div>
+              <p class="text-xs text-muted-foreground">Press Enter or click Add. Example: <code>image/tiff</code></p>
+            </div>
+
             <div class="flex justify-end pt-1">
               <button
                 type="submit"
@@ -594,7 +641,27 @@ function submitLocale() {
 const mediaForm = useForm({
   'media.max_upload_mb':    Number(props.settings['media.max_upload_mb']    ?? 10),
   'media.resize_max_width': Number(props.settings['media.resize_max_width'] ?? 2048),
-});
+  media_allowed_categories: props.settings?.['media.allowed_categories']
+    ? JSON.parse(props.settings['media.allowed_categories'])
+    : ['image', 'document', 'video', 'audio'],
+  media_custom_mimes: props.settings?.['media.custom_mimes']
+    ? JSON.parse(props.settings['media.custom_mimes'])
+    : [],
+})
+
+const customMimeInput = ref('')
+
+function addCustomMime() {
+  const mime = customMimeInput.value.trim()
+  if (mime && !mediaForm.media_custom_mimes.includes(mime)) {
+    mediaForm.media_custom_mimes.push(mime)
+  }
+  customMimeInput.value = ''
+}
+
+function removeCustomMime(mime) {
+  mediaForm.media_custom_mimes = mediaForm.media_custom_mimes.filter(m => m !== mime)
+}
 
 function submitMedia() {
   mediaForm.put(route('settings.update', 'media'), {
