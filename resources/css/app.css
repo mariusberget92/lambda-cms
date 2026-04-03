@@ -8,9 +8,9 @@
 .scrollbar-hidden::-webkit-scrollbar { display: none; }
 
 :root {
-  --background: #eceff4;
+  --background: #f7f8fa;
   --foreground: #2e3440;
-  --card: #e5e9f0;
+  --card: #ffffff;
   --card-foreground: #2e3440;
   --popover: #eceff4;
   --popover-foreground: #2e3440;
@@ -26,7 +26,9 @@
   --accent-foreground: #2e3440;
   --destructive: #bf616a;
   --destructive-foreground: #eceff4;
-  --border: #d8dee9;
+  --border: #e4e7ec;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
   --input: #d8dee9;
   --ring: #81a1c1;
   --chart-1: #5e81ac;
@@ -192,6 +194,8 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-sidebar: var(--sidebar);
