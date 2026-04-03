@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Models\Comment;
-use App\Models\NavItem;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -41,18 +40,6 @@ class HandleInertiaRequests extends Middleware
                 ? Comment::pending()->count()
                 : null,
             'accentColor' => fn () => Setting::get('site.accent_color') ?: null,
-            'navItems' => fn () => NavItem::with('page')
-                ->orderBy('sort_order')
-                ->get()
-                ->filter(fn ($item) =>
-                    $item->type === 'custom' ||
-                    ($item->page && $item->page->status === 'published')
-                )
-                ->map(fn ($item) => [
-                    'label' => $item->label,
-                    'url'   => $item->resolvedUrl,
-                ])
-                ->values(),
         ]);
     }
 }
