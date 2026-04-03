@@ -188,7 +188,7 @@
     <!-- Main area -->
     <div class="flex flex-col flex-1 overflow-hidden">
       <!-- Topbar -->
-      <header class="flex items-center justify-between h-16 px-6 border-b border-border bg-background shrink-0">
+      <header class="flex items-center justify-between h-16 px-6 border-b border-border bg-background shrink-0" style="box-shadow: var(--shadow-sm)">
         <h1 class="text-sm font-semibold">{{ title }}</h1>
         <button
           @click="toggleTheme"
