@@ -15,7 +15,7 @@ const maxCount = (items) => Math.max(...items.map((i) => i.posts_count), 1)
   <aside class="space-y-8">
     <!-- Categories -->
     <div v-if="sidebar.categories?.length">
-      <h3 class="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">Categories</h3>
+      <h3 class="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3"><span class="inline-block w-1 h-4 bg-primary rounded-full mr-2 align-middle"></span>Categories</h3>
       <ul class="space-y-1.5">
         <li
           v-for="cat in sidebar.categories"
@@ -37,7 +37,7 @@ const maxCount = (items) => Math.max(...items.map((i) => i.posts_count), 1)
 
     <!-- Tags cloud -->
     <div v-if="sidebar.tags?.length">
-      <h3 class="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">Tags</h3>
+      <h3 class="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3"><span class="inline-block w-1 h-4 bg-primary rounded-full mr-2 align-middle"></span>Tags</h3>
       <div class="flex flex-wrap gap-1.5">
         <Link
           v-for="tag in sidebar.tags"
@@ -53,7 +53,7 @@ const maxCount = (items) => Math.max(...items.map((i) => i.posts_count), 1)
 
     <!-- Recent posts -->
     <div v-if="sidebar.recentPosts?.length">
-      <h3 class="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">Recent Posts</h3>
+      <h3 class="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3"><span class="inline-block w-1 h-4 bg-primary rounded-full mr-2 align-middle"></span>Recent Posts</h3>
       <ul class="space-y-2">
         <li v-for="post in sidebar.recentPosts" :key="post.slug">
           <Link

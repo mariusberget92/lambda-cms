@@ -49,6 +49,7 @@ import PostTaxonomyBlock      from '@/Components/Blocks/PostTaxonomyBlock.vue'
 import PostCommentsBlock      from '@/Components/Blocks/PostCommentsBlock.vue'
 import ArchiveTitleBlock      from '@/Components/Blocks/ArchiveTitleBlock.vue'
 import SearchBlock            from '@/Components/Blocks/SearchBlock.vue'
+import NavigationBlock        from '@/components/Blocks/NavigationBlock.vue'
 
 const props = defineProps({
   blocks:       { type: Array,  default: () => [] },
@@ -114,6 +115,7 @@ const BLOCK_MAP = {
   'archive-title':       ArchiveTitleBlock,
   'archive-loop':        LoopBlock,
   search:                SearchBlock,
+  navigation:            NavigationBlock,
 }
 
 // Injected by LoopItemProvider when this renderer is inside a loop iteration

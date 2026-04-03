@@ -206,8 +206,10 @@ import DividerBlock   from '@/Components/Blocks/DividerBlock.vue'
 import CtaBlock       from '@/Components/Blocks/CtaBlock.vue'
 import HtmlBlock      from '@/Components/Blocks/HtmlBlock.vue'
 import PostListBlock  from '@/Components/Blocks/PostListBlock.vue'
-import EmbedBlock     from '@/components/Blocks/EmbedBlock.vue'
-import PaginationBlock from '@/components/Blocks/PaginationBlock.vue'
+import EmbedBlock       from '@/components/Blocks/EmbedBlock.vue'
+import PaginationBlock  from '@/components/Blocks/PaginationBlock.vue'
+import NavigationBlock  from '@/components/Blocks/NavigationBlock.vue'
+import EditorNavigationBlock from './EditorNavigationBlock.vue'
 
 const BLOCK_MAP = {
   paragraph: ParagraphBlock,
@@ -223,6 +225,7 @@ const BLOCK_MAP = {
   component: PostListBlock,
   embed:      EmbedBlock,
   pagination: PaginationBlock,
+  navigation: EditorNavigationBlock,
 }
 
 const LABELS = {
@@ -232,6 +235,7 @@ const LABELS = {
   container: 'Container', section: 'Section', spacer: 'Spacer', loop: 'Loop',
   link: 'Link', accordion: 'Accordion', 'accordion-item': 'Acc. Item',
   tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
+  navigation: 'Navigation',
 }
 
 const props = defineProps({

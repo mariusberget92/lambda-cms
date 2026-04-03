@@ -64,9 +64,9 @@ class Media extends Model
 
     public static function typeFromMime(string $mime): string
     {
-        $allowed = config('media.allowed_mimes', []);
+        $groups = config('media.mime_groups', []);
 
-        foreach ($allowed as $type => $mimes) {
+        foreach ($groups as $type => $mimes) {
             if (in_array($mime, $mimes, true)) {
                 return $type;
             }

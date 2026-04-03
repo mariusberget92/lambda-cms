@@ -26,6 +26,17 @@ return [
      * Allowed MIME types — resolved dynamically from DB-backed settings.
      * Categories enabled via 'media.allowed_categories'; extra types via 'media.custom_mimes'.
      */
+    /*
+     * Grouped MIME types by category — used by Media::typeFromMime() to determine
+     * a file's type label ('image', 'document', 'video', 'audio') from its MIME type.
+     */
+    'mime_groups' => [
+        'image'    => ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
+        'document' => ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+        'video'    => ['video/mp4', 'video/webm'],
+        'audio'    => ['audio/mpeg', 'audio/wav'],
+    ],
+
     'allowed_mimes' => (function () use ($settingGet): array {
         $groups = [
             'image'    => ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],

@@ -173,6 +173,7 @@ import TabsSettings           from './blocks/TabsSettings.vue'
 import TabItemSettings        from './blocks/TabItemSettings.vue'
 import EmbedSettings          from './blocks/EmbedSettings.vue'
 import PaginationSettings     from './blocks/PaginationSettings.vue'
+import NavigationSettings     from './blocks/NavigationSettings.vue'
 
 const props = defineProps({
   blocks:        { type: Array,   default: () => [] },
@@ -247,6 +248,7 @@ const LABELS = {
   search: 'Search',
   link: 'Link', accordion: 'Accordion', 'accordion-item': 'Accordion Item',
   tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
+  navigation: 'Navigation',
 }
 
 const COMPONENT_MAP = {
@@ -272,6 +274,7 @@ const COMPONENT_MAP = {
   'tab-item':            TabItemSettings,
   embed:                 EmbedSettings,
   pagination:            PaginationSettings,
+  navigation:            NavigationSettings,
 }
 
 const settingsComponent = computed(() =>

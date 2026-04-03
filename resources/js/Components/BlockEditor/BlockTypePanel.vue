@@ -68,6 +68,7 @@ import {
   LayoutPanelTop,
   PlayCircle,
   ChevronRight as ChevronRightIcon,
+  Navigation2,
 } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -92,7 +93,8 @@ const ALL_TYPES = [
   { type: 'container', label: 'Container', icon: LayoutTemplate,    group: 'Layout' },
   { type: 'section',   label: 'Section',   icon: Rows2,             group: 'Layout' },
   { type: 'divider',   label: 'Divider',   icon: Minus,             group: 'Layout' },
-  { type: 'spacer',    label: 'Spacer',    icon: ArrowUpDown,       group: 'Layout' },
+  { type: 'spacer',      label: 'Spacer',     icon: ArrowUpDown,       group: 'Layout' },
+  { type: 'navigation', label: 'Navigation', icon: Navigation2,       group: 'Layout' },
   // ── Interactive ──────────────────────────────────────────────────────────
   { type: 'cta',       label: 'CTA',       icon: MousePointerClick, group: 'Interactive' },
   { type: 'search',    label: 'Search',    icon: Search,            group: 'Interactive' },
@@ -163,6 +165,7 @@ const DEFAULT_DATA = {
   spacer: {
     height: { default: '2rem', sm: '1rem' },
   },
+  navigation: { links: [], style: 'horizontal', alignment: 'left' },
   loop: {
     source:  'posts',
     filters: [],

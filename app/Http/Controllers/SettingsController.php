@@ -54,8 +54,8 @@ class SettingsController extends Controller
                     'media\\.custom_mimes.*'      => ['string', 'max:100'],
                 ]);
                 // Encode array fields as JSON before the generic save loop
-                $validated['media\\.allowed_categories'] = json_encode($validated['media\\.allowed_categories'] ?? []);
-                $validated['media\\.custom_mimes']       = json_encode($validated['media\\.custom_mimes'] ?? []);
+                $validated['media.allowed_categories'] = json_encode($validated['media.allowed_categories'] ?? []);
+                $validated['media.custom_mimes']       = json_encode($validated['media.custom_mimes'] ?? []);
                 return $validated;
             })(),
             'mail'   => $request->validate([
