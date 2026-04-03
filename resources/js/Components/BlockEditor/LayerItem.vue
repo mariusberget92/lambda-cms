@@ -149,6 +149,19 @@ const LABELS = {
   quote: 'Quote', code: 'Code', gallery: 'Gallery', video: 'Video',
   divider: 'Divider', cta: 'CTA', html: 'HTML', component: 'Component',
   container: 'Container', section: 'Section', spacer: 'Spacer', loop: 'Loop',
+  'post-title': 'Post Title',
+  'post-body': 'Post Body',
+  'post-featured-image': 'Featured Image',
+  'post-meta': 'Post Meta',
+  'post-author': 'Author',
+  'post-taxonomy': 'Categories & Tags',
+  'post-comments': 'Comments',
+  'archive-title': 'Archive Title',
+  'archive-loop': 'Archive Loop',
+  search: 'Search',
+  link: 'Link', accordion: 'Accordion', 'accordion-item': 'Accordion Item',
+  tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
+  navigation: 'Navigation',
 }
 
 const props = defineProps({
