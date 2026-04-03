@@ -29,24 +29,24 @@ const year = new Date().getFullYear()
               :href="item.url"
               target="_blank"
               rel="noopener noreferrer"
-              class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              class="text-sm text-muted-foreground hover:text-foreground hover:border-b-2 hover:border-primary transition-colors"
             >{{ item.label }}</a>
             <Link
               v-else
               :href="item.url"
-              class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              class="text-sm text-muted-foreground hover:text-foreground hover:border-b-2 hover:border-primary transition-colors"
             >{{ item.label }}</Link>
           </template>
 
           <Link
             v-if="authUser"
             :href="route('dashboard')"
-            class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            class="text-sm text-muted-foreground hover:text-foreground hover:border-b-2 hover:border-primary transition-colors"
           >Dashboard</Link>
           <Link
             v-else
             :href="route('login')"
-            class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            class="text-sm text-muted-foreground hover:text-foreground hover:border-b-2 hover:border-primary transition-colors"
           >Sign in</Link>
         </nav>
       </div>
@@ -55,8 +55,10 @@ const year = new Date().getFullYear()
     <!-- Hero strip -->
     <div class="bg-primary/5 border-b">
       <div class="max-w-5xl mx-auto px-4 py-10">
-        <h1 class="text-3xl font-bold tracking-tight">{{ appName }}</h1>
-        <p class="mt-1 text-muted-foreground text-base">A simple, clean blog powered by Lambda CMS.</p>
+        <div class="border-l-[3px] border-primary pl-4">
+          <h1 class="text-3xl font-bold tracking-tight">{{ appName }}</h1>
+          <p class="mt-1 text-base text-muted-foreground">A simple, clean blog powered by Lambda CMS.</p>
+        </div>
       </div>
     </div>
 

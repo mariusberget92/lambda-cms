@@ -1,8 +1,15 @@
 <script setup>
 import { Link } from '@inertiajs/vue3'
+import { computed } from 'vue'
 
-defineProps({
+const props = defineProps({
   post: { type: Object, required: true },
+})
+
+const readingTime = computed(() => {
+  const text = props.post?.excerpt || props.post?.body || ''
+  const words = text.trim().split(/\s+/).length
+  return Math.ceil(words / 200)
 })
 
 function formatDate(date) {
@@ -19,13 +26,13 @@ function categoryClass(cat) {
 </script>
 
 <template>
-  <article class="border rounded-xl overflow-hidden bg-card hover:shadow-sm transition-shadow">
+  <article class="border rounded-xl overflow-hidden bg-card hover:shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-200">
     <!-- Featured image -->
-    <div v-if="post.featured_image_url" class="w-full h-48 overflow-hidden">
+    <div v-if="post.featured_image_url" class="w-full h-48 overflow-hidden group">
       <img
         :src="post.featured_image_url"
         :alt="post.title"
-        class="w-full h-full object-cover"
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         loading="lazy"
       />
     </div>
@@ -73,6 +80,8 @@ function categoryClass(cat) {
           <span class="text-xs text-muted-foreground">{{ post.author.name }}</span>
           <span class="text-xs text-muted-foreground">·</span>
           <span class="text-xs text-muted-foreground">{{ formatDate(post.published_at) }}</span>
+          <span class="text-xs text-muted-foreground">·</span>
+          <span class="text-xs text-muted-foreground">{{ readingTime }} min read</span>
         </div>
 
         <Link
