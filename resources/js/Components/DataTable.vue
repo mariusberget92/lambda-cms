@@ -6,10 +6,10 @@ defineProps({
 </script>
 
 <template>
-  <div class="rounded-lg border overflow-hidden">
+  <div class="rounded-xl border bg-card overflow-hidden" style="box-shadow: var(--shadow-sm)">
     <table class="w-full text-sm">
-      <thead class="bg-muted/50 border-b border-border">
-        <tr>
+      <thead>
+        <tr class="border-b border-border bg-muted/40">
           <slot name="headers" />
         </tr>
       </thead>
@@ -23,8 +23,10 @@ defineProps({
         </template>
         <template v-else-if="empty">
           <tr>
-            <td colspan="100" class="px-4 py-12 text-center text-sm text-muted-foreground">
-              <slot name="empty">No results found.</slot>
+            <td colspan="100" class="px-4 py-16 text-center">
+              <slot name="empty">
+                <p class="text-sm text-muted-foreground">No results found.</p>
+              </slot>
             </td>
           </tr>
         </template>
@@ -33,18 +35,28 @@ defineProps({
         </template>
       </tbody>
     </table>
+    <div v-if="$slots.footer" class="border-t border-border px-4 py-3 bg-muted/20">
+      <slot name="footer" />
+    </div>
   </div>
 </template>
 
 <style scoped>
 :deep(thead th) {
-  padding: 0.75rem 1rem;
-  font-size: 0.75rem;
-  line-height: 1rem;
-  font-weight: 500;
+  padding: 0.625rem 1rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   color: var(--muted-foreground);
 }
 :deep(tbody td) {
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1rem;
+}
+:deep(tbody tr) {
+  transition: background-color 0.15s;
+}
+:deep(tbody tr:hover) {
+  background-color: color-mix(in srgb, var(--muted) 30%, transparent);
 }
 </style>
