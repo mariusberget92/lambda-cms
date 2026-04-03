@@ -32,6 +32,11 @@ function setBreakpoint(field, bp, value) {
 function update(key, value) {
   emit('update', { id: props.block.id, data: { [key]: value } })
 }
+
+function updateNested(key, subKey, value) {
+  const current = props.block.data[key]
+  emit('update', { id: props.block.id, data: { [key]: { ...(current ?? {}), [subKey]: value } } })
+}
 </script>
 
 <template>
@@ -59,6 +64,93 @@ function update(key, value) {
 
     <!-- Style tab fields -->
     <div v-show="!tab || tab === 'style'" class="space-y-3">
+
+      <!-- Background -->
+      <div class="space-y-2">
+        <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block">Background</label>
+
+        <div class="flex gap-1 flex-wrap">
+          <button type="button" v-for="opt in ['none','color','image','gradient']" :key="opt"
+            class="px-2 py-1 text-xs rounded border transition-colors"
+            :class="block.data.bgType === opt ? 'bg-primary text-primary-foreground border-primary' : 'bg-background border-border'"
+            @click="update('bgType', opt)">
+            {{ opt.charAt(0).toUpperCase() + opt.slice(1) }}
+          </button>
+        </div>
+
+        <!-- Color picker -->
+        <div v-if="block.data.bgType === 'color'" class="flex items-center gap-2">
+          <input type="color" :value="block.data.bgColor ?? '#ffffff'"
+            @input="update('bgColor', $event.target.value)"
+            class="h-8 w-16 cursor-pointer rounded border border-border" />
+          <span class="text-xs text-muted-foreground">{{ block.data.bgColor ?? '#ffffff' }}</span>
+        </div>
+
+        <!-- Image picker -->
+        <div v-if="block.data.bgType === 'image'" class="space-y-2">
+          <input type="url" :value="block.data.bgImage?.url ?? ''"
+            @input="updateNested('bgImage', 'url', $event.target.value)"
+            placeholder="https://..."
+            class="w-full rounded border border-border bg-background px-2 py-1 text-xs" />
+          <SelectBox
+            :model-value="block.data.bgImage?.position ?? 'center'"
+            :data="[
+              { value: 'center',       label: 'Center' },
+              { value: 'top',          label: 'Top' },
+              { value: 'bottom',       label: 'Bottom' },
+              { value: 'left center',  label: 'Left' },
+              { value: 'right center', label: 'Right' },
+            ]"
+            @update:model-value="v => updateNested('bgImage', 'position', v)"
+          />
+          <SelectBox
+            :model-value="block.data.bgImage?.size ?? 'cover'"
+            :data="[
+              { value: 'cover',   label: 'Cover' },
+              { value: 'contain', label: 'Contain' },
+              { value: 'auto',    label: 'Auto' },
+            ]"
+            @update:model-value="v => updateNested('bgImage', 'size', v)"
+          />
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="container-parallax"
+              :checked="block.data.bgImage?.parallax"
+              @change="updateNested('bgImage', 'parallax', $event.target.checked)"
+              class="rounded border-border accent-nord-green" />
+            <label for="container-parallax" class="text-xs text-muted-foreground">Parallax (fixed attachment)</label>
+          </div>
+        </div>
+
+        <!-- Gradient picker -->
+        <div v-if="block.data.bgType === 'gradient'" class="space-y-2">
+          <div class="flex gap-2 items-center">
+            <div>
+              <label class="text-[10px] text-muted-foreground">From</label>
+              <input type="color" :value="block.data.bgGradient?.from ?? '#3b4252'"
+                @input="updateNested('bgGradient', 'from', $event.target.value)"
+                class="block h-8 w-12 cursor-pointer rounded border border-border" />
+            </div>
+            <div>
+              <label class="text-[10px] text-muted-foreground">To</label>
+              <input type="color" :value="block.data.bgGradient?.to ?? '#4c566a'"
+                @input="updateNested('bgGradient', 'to', $event.target.value)"
+                class="block h-8 w-12 cursor-pointer rounded border border-border" />
+            </div>
+          </div>
+          <SelectBox
+            :model-value="block.data.bgGradient?.direction ?? 'to-r'"
+            :data="[
+              { value: 'to-r',  label: 'Left to right' },
+              { value: 'to-l',  label: 'Right to left' },
+              { value: 'to-b',  label: 'Top to bottom' },
+              { value: 'to-t',  label: 'Bottom to top' },
+              { value: 'to-br', label: 'Top-left to bottom-right' },
+              { value: 'to-bl', label: 'Top-right to bottom-left' },
+            ]"
+            @update:model-value="v => updateNested('bgGradient', 'direction', v)"
+          />
+        </div>
+      </div>
 
       <!-- Flex-only controls -->
       <template v-if="mode === 'flex'">

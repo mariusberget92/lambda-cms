@@ -26,6 +26,7 @@ const outerStyle = computed(() => {
     styles.backgroundPosition = d.bgImage.position ?? 'center'
     styles.backgroundSize     = d.bgImage.size ?? 'cover'
     styles.backgroundRepeat   = 'no-repeat'
+    if (d.bgImage.parallax) styles.backgroundAttachment = 'fixed'
   } else if (d.bgType === 'gradient' && d.bgGradient) {
     const { from, to, direction } = d.bgGradient
     const dir = {

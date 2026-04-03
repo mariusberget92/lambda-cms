@@ -73,6 +73,13 @@ function updateNested(key, subKey, value) {
             ]"
             @update:model-value="v => updateNested('bgImage', 'size', v)"
           />
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="section-parallax"
+              :checked="d.bgImage?.parallax"
+              @change="updateNested('bgImage', 'parallax', $event.target.checked)"
+              class="rounded border-border accent-nord-green" />
+            <label for="section-parallax" class="text-xs text-muted-foreground">Parallax (fixed attachment)</label>
+          </div>
         </div>
 
         <!-- Gradient picker -->
