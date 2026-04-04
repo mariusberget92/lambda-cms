@@ -222,7 +222,7 @@ defineExpose({ insertImage })
   background: transparent; color: var(--muted-foreground);
   cursor: pointer; transition: background 0.1s, color 0.1s;
 }
-:deep(.toolbar-btn:hover:not(:disabled)) { background: var(--accent); color: var(--accent-foreground); }
+:deep(.toolbar-btn:hover:not(:disabled)) { background: color-mix(in srgb, var(--primary) 12%, transparent); color: var(--primary); }
 :deep(.toolbar-btn.is-active) { background: var(--primary); color: var(--primary-foreground); }
 :deep(.toolbar-btn:disabled) { opacity: 0.35; cursor: not-allowed; }
 

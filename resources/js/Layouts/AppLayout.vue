@@ -261,6 +261,8 @@ watchEffect(() => {
     document.documentElement.style.setProperty('--primary', color)
     document.documentElement.style.setProperty('--primary-hover', accentHoverMap[color] ?? color)
     document.documentElement.style.setProperty('--primary-foreground', '#ffffff')
+    document.documentElement.style.setProperty('--sidebar-primary', color)
+    document.documentElement.style.setProperty('--sidebar-primary-foreground', '#eceff4')
   }
 })
 </script>

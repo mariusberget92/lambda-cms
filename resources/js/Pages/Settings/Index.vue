@@ -746,6 +746,8 @@ function submitAppearance() {
         document.documentElement.style.setProperty('--primary', color)
         document.documentElement.style.setProperty('--primary-hover', swatch.hover)
         document.documentElement.style.setProperty('--primary-foreground', '#ffffff')
+        document.documentElement.style.setProperty('--sidebar-primary', color)
+        document.documentElement.style.setProperty('--sidebar-primary-foreground', '#eceff4')
       }
     },
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
