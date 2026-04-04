@@ -613,6 +613,7 @@ const siteForm = useForm({
 function submitSite() {
   siteForm.put(route('settings.update', 'site'), {
     preserveScroll: true,
+    onSuccess: () => notify('Settings saved.', 'success'),
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   });
 }
@@ -626,6 +627,7 @@ const localeForm = useForm({
 function submitLocale() {
   localeForm.put(route('settings.update', 'locale'), {
     preserveScroll: true,
+    onSuccess: () => notify('Settings saved.', 'success'),
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   });
 }
@@ -659,6 +661,7 @@ function removeCustomMime(mime) {
 function submitMedia() {
   mediaForm.put(route('settings.update', 'media'), {
     preserveScroll: true,
+    onSuccess: () => notify('Settings saved.', 'success'),
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   });
 }
@@ -678,6 +681,7 @@ const mailForm = useForm({
 function submitMail() {
   mailForm.put(route('settings.update', 'mail'), {
     preserveScroll: true,
+    onSuccess: () => notify('Settings saved.', 'success'),
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   });
 }
@@ -696,6 +700,7 @@ function submitComments() {
     }))
     .put(route('settings.update', 'comments'), {
       preserveScroll: true,
+      onSuccess: () => notify('Settings saved.', 'success'),
       onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
     })
 }
@@ -711,6 +716,7 @@ const seoForm = useForm({
 function submitSeo() {
   seoForm.put(route('settings.update', 'seo'), {
     preserveScroll: true,
+    onSuccess: () => notify('Settings saved.', 'success'),
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   })
 }
@@ -726,12 +732,22 @@ const ACCENT_SWATCHES = [
 ]
 
 const appearanceForm = useForm({
-  'site.accent_color': props.settings['site.accent_color'] ?? '#5e81ac',
+  'site.accent_color': props.settings['site.accent_color'] || '#5e81ac',
 })
 
 function submitAppearance() {
+  const color = appearanceForm['site.accent_color']
+  const swatch = ACCENT_SWATCHES.find(s => s.value === color)
   appearanceForm.put(route('settings.update', 'appearance'), {
     preserveScroll: true,
+    onSuccess: () => {
+      notify('Settings saved.', 'success')
+      if (color && swatch) {
+        document.documentElement.style.setProperty('--primary', color)
+        document.documentElement.style.setProperty('--primary-hover', swatch.hover)
+        document.documentElement.style.setProperty('--primary-foreground', '#ffffff')
+      }
+    },
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   })
 }
