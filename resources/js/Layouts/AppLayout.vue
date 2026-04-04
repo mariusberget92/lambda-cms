@@ -210,7 +210,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue";
+import { computed, onMounted, watchEffect } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
 import { Sun, Moon, Calendar, ExternalLink, LayoutTemplate } from "lucide-vue-next";
 import SidebarLink from "@/Components/SidebarLink.vue";
@@ -244,5 +244,23 @@ const { isDark, initTheme, toggleTheme } = useTheme()
 
 onMounted(() => {
   initTheme()
+})
+
+// Reactively apply the accent color CSS variable whenever it changes (e.g. after saving Settings).
+const accentHoverMap = {
+  '#5e81ac': '#4a6d92',
+  '#a3be8c': '#8aaa70',
+  '#ebcb8b': '#d4b06a',
+  '#d08770': '#bb6f58',
+  '#bf616a': '#a84d56',
+  '#b48ead': '#9d7596',
+}
+watchEffect(() => {
+  const color = page.props.accentColor
+  if (color && /^#[0-9a-fA-F]{6}$/.test(color)) {
+    document.documentElement.style.setProperty('--primary', color)
+    document.documentElement.style.setProperty('--primary-hover', accentHoverMap[color] ?? color)
+    document.documentElement.style.setProperty('--primary-foreground', '#ffffff')
+  }
 })
 </script>
