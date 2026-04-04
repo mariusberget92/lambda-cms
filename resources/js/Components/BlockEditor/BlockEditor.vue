@@ -2,8 +2,11 @@
 <template>
   <div
     data-theme="dark"
-    class="flex border border-white/10 rounded-xl overflow-hidden bg-background"
-    style="min-height: 500px; max-height: calc(100vh - 220px)"
+    class="flex overflow-hidden bg-background"
+    :class="fullscreen
+      ? 'h-full w-full'
+      : 'border border-white/10 rounded-xl'"
+    :style="fullscreen ? {} : { minHeight: '500px', maxHeight: 'calc(100vh - 220px)' }"
   >
     <!-- Left: block type palette -->
     <BlockTypePanel :is-admin="isAdmin" />
@@ -83,6 +86,7 @@ const props = defineProps({
   modelValue:    { type: Array,   default: () => [] },
   isAdmin:       { type: Boolean, default: false },
   meta:          { type: Object,  default: () => ({}) },
+  fullscreen:    { type: Boolean, default: false },
   contextFields: { type: Array,   default: () => [] },
 })
 
