@@ -184,11 +184,10 @@ async function load(reset = true) {
     const url = reset ? '/media' : nextPageUrl.value
     const { data } = await axios.get(url, {
       params: reset ? params : {},
-      headers: { 'X-Inertia': 'true', 'X-Inertia-Version': '1' },
+      headers: { 'Accept': 'application/json' },
     })
-    const page = data?.props?.media ?? data
-    items.value      = reset ? page.data : [...items.value, ...page.data]
-    nextPageUrl.value = page.next_page_url ?? null
+    items.value      = reset ? data.data : [...items.value, ...data.data]
+    nextPageUrl.value = data.next_page_url ?? null
   } catch (err) {
     notify('Failed to load media. Please try again.', 'error')
   } finally {
@@ -229,7 +228,6 @@ async function uploadFiles(files) {
     try {
       const { data } = await axios.post('/media', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
           'Accept': 'application/json',
         },
         onUploadProgress: (e) => {

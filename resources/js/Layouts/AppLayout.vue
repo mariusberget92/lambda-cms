@@ -192,7 +192,7 @@
         <h1 class="text-sm font-semibold">{{ title }}</h1>
         <button
           @click="toggleTheme"
-          class="inline-flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+          class="inline-flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
           :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
           :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
         >
@@ -263,6 +263,8 @@ watchEffect(() => {
     document.documentElement.style.setProperty('--primary-foreground', '#ffffff')
     document.documentElement.style.setProperty('--sidebar-primary', color)
     document.documentElement.style.setProperty('--sidebar-primary-foreground', '#eceff4')
+    document.documentElement.style.setProperty('--ring', color)
+    document.documentElement.style.setProperty('--sidebar-ring', color)
   }
 })
 </script>

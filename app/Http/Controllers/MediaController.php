@@ -15,7 +15,7 @@ use Intervention\Image\Drivers\Gd\Driver;
 
 class MediaController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request): Response|JsonResponse
     {
         $query = Media::with('uploader:id,name')
             ->when($request->input('type'), fn ($q, $type) => $q->where('type', $type))
@@ -27,6 +27,10 @@ class MediaController extends Controller
         }
 
         $media = $query->paginate(40)->withQueryString()->through(fn (Media $m) => $this->toArray($m));
+
+        if ($request->wantsJson() && ! $request->header('X-Inertia')) {
+            return response()->json($media);
+        }
 
         $mimeToExt = [
             'image/jpeg'       => 'jpg',

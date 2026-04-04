@@ -151,7 +151,7 @@ const toggle = () => {
           class="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer select-none text-foreground"
           :class="isSelected(item.value) && !multiple
             ? 'bg-primary text-primary-foreground'
-            : 'hover:bg-accent hover:text-accent-foreground'"
+            : 'hover:bg-primary/10 hover:text-primary'"
           @click="select(item.value)"
         >
           <input

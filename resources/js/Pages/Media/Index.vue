@@ -466,7 +466,6 @@ async function uploadFiles(files) {
     try {
       const { data } = await axios.post(route('media.store'), formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
           'Accept': 'application/json',
         },
         onUploadProgress: (e) => {

@@ -748,6 +748,8 @@ function submitAppearance() {
         document.documentElement.style.setProperty('--primary-foreground', '#ffffff')
         document.documentElement.style.setProperty('--sidebar-primary', color)
         document.documentElement.style.setProperty('--sidebar-primary-foreground', '#eceff4')
+        document.documentElement.style.setProperty('--ring', color)
+        document.documentElement.style.setProperty('--sidebar-ring', color)
       }
     },
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
