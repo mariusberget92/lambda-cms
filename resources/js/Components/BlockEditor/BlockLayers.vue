@@ -221,6 +221,8 @@ const STYLE_BLOCKS = new Set([
   'container', 'section', 'spacer', 'divider', 'loop',
   'post-featured-image', 'archive-loop',
   'link', 'accordion', 'tabs', 'embed', 'pagination', 'heading',
+  // Content blocks with style tabs
+  'paragraph', 'image', 'gallery', 'video', 'quote', 'cta', 'code',
 ])
 
 // Block types where Style should be the default active tab
