@@ -90,12 +90,59 @@
     </div>
 
   </div>
+
+  <!-- Style fields -->
+  <div v-show="!tab || tab === 'style'" class="space-y-4">
+
+    <!-- Max width + alignment -->
+    <div class="space-y-2">
+      <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block">Layout</label>
+      <div>
+        <label class="text-xs font-medium text-muted-foreground block mb-1">Max width</label>
+        <DimensionInput
+          :model-value="block.data.maxWidth ?? ''"
+          placeholder="100%"
+          :allow-auto="true"
+          @update:model-value="v => emit('update', { id: block.id, data: { maxWidth: v || null } })"
+        />
+      </div>
+      <div>
+        <label class="text-xs font-medium text-muted-foreground block mb-1">Alignment</label>
+        <div class="flex rounded-md border overflow-hidden text-xs">
+          <button
+            v-for="align in ['left', 'center', 'right']"
+            :key="align"
+            type="button"
+            class="flex-1 py-1.5 transition-colors capitalize"
+            :class="block.data.alignment === align
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-background text-foreground'"
+            @click="emit('update', { id: block.id, data: { alignment: block.data.alignment === align ? null : align } })"
+          >{{ align.charAt(0).toUpperCase() + align.slice(1) }}</button>
+        </div>
+      </div>
+    </div>
+
+    <BorderControl
+      :model-value="block.data.border ?? {}"
+      @update:model-value="v => emit('update', { id: block.id, data: { border: v } })"
+    />
+
+    <ShadowControl
+      :model-value="block.data.shadow ?? ''"
+      @update:model-value="v => emit('update', { id: block.id, data: { shadow: v } })"
+    />
+
+  </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import MediaPicker  from '@/Components/MediaPicker.vue'
-import DynamicField from './DynamicField.vue'
+import MediaPicker    from '@/Components/MediaPicker.vue'
+import DynamicField   from './DynamicField.vue'
+import DimensionInput from '../DimensionInput.vue'
+import BorderControl  from '../BorderControl.vue'
+import ShadowControl  from '../ShadowControl.vue'
 
 const props = defineProps({
   block:           { type: Object, required: true },
@@ -110,10 +157,8 @@ const mode = computed(() => props.block.data.media_id ? 'library' : 'url')
 
 function switchMode(newMode) {
   if (newMode === 'library') {
-    // Open the picker — don't clear url yet, user may cancel
     showPicker.value = true
   } else {
-    // Clear media_id, keep any existing url so the preview stays
     emit('update', { id: props.block.id, data: { media_id: null } })
   }
 }
