@@ -73,11 +73,73 @@
 
     <MediaPicker v-model="showPicker" :dark="true" @select="onMediaSelect" />
   </div>
+
+  <!-- Style fields -->
+  <div v-show="!tab || tab === 'style'" class="space-y-4">
+
+    <!-- Columns (responsive) -->
+    <div>
+      <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block mb-2">Columns</label>
+      <div class="grid grid-cols-3 gap-1">
+        <div v-for="bp in ['default', 'sm', 'lg']" :key="bp">
+          <span class="text-[10px] text-muted-foreground block mb-0.5 text-center">
+            {{ bp === 'default' ? 'Mobile' : bp === 'sm' ? 'SM' : 'LG' }}
+          </span>
+          <NumberInput
+            :model-value="getColumns(bp)"
+            :min="1"
+            :max="6"
+            @update:model-value="v => setColumns(bp, v || null)"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Gap -->
+    <div>
+      <label class="text-xs font-medium text-muted-foreground block mb-1">Gap</label>
+      <DimensionInput
+        :model-value="block.data.gap ?? ''"
+        placeholder="0"
+        @update:model-value="v => emit('update', { id: block.id, data: { gap: v || null } })"
+      />
+    </div>
+
+    <!-- Image aspect ratio -->
+    <div>
+      <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block mb-2">Image aspect ratio</label>
+      <div class="flex gap-1 flex-wrap">
+        <button
+          v-for="ratio in ['auto', 'square', 'landscape', 'portrait']"
+          :key="ratio"
+          type="button"
+          class="px-2 py-1 text-xs rounded border transition-colors capitalize"
+          :class="(block.data.imageAspect ?? 'auto') === ratio
+            ? 'bg-primary text-primary-foreground border-primary'
+            : 'bg-background border-border'"
+          @click="emit('update', { id: block.id, data: { imageAspect: ratio } })"
+        >{{ ratio }}</button>
+      </div>
+    </div>
+
+    <!-- Border radius -->
+    <div>
+      <label class="text-xs font-medium text-muted-foreground block mb-1">Image radius</label>
+      <DimensionInput
+        :model-value="block.data.borderRadius ?? ''"
+        placeholder="0"
+        @update:model-value="v => emit('update', { id: block.id, data: { borderRadius: v || null } })"
+      />
+    </div>
+
+  </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import MediaPicker from '@/Components/MediaPicker.vue'
+import MediaPicker    from '@/Components/MediaPicker.vue'
+import NumberInput    from '@/Components/NumberInput.vue'
+import DimensionInput from '../DimensionInput.vue'
 
 const props = defineProps({
   block: { type: Object, required: true },
@@ -89,6 +151,19 @@ const showPicker = ref(false)
 const addMode    = ref('library')
 const urlInput   = ref('')
 const altInput   = ref('')
+
+function getColumns(bp) {
+  const val = props.block.data.columns
+  if (typeof val === 'object' && val !== null) return val[bp] ?? null
+  if (bp === 'default') return val
+  return null
+}
+
+function setColumns(bp, value) {
+  const current = props.block.data.columns
+  const base = (typeof current === 'object' && current !== null) ? { ...current } : { default: current }
+  emit('update', { id: props.block.id, data: { columns: { ...base, [bp]: value } } })
+}
 
 function onMediaSelect(media) {
   showPicker.value = false
