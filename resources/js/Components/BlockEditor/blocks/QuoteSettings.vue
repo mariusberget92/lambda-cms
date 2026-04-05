@@ -58,14 +58,13 @@
         @update:model-value="v => updateNested('accentBar', 'style', v)"
       />
       <template v-if="(block.data.accentBar?.style ?? 'left') !== 'none'">
-        <div class="flex items-center gap-2">
-          <input
-            type="color"
-            :value="block.data.accentBar?.color ?? '#5e81ac'"
-            class="h-8 w-14 cursor-pointer rounded border border-border"
-            @input="updateNested('accentBar', 'color', $event.target.value)"
+        <div>
+          <label class="text-xs font-medium text-muted-foreground block mb-1">Color</label>
+          <ColorPicker
+            :model-value="block.data.accentBar?.color ?? '#5e81ac'"
+            default="#5e81ac"
+            @update:model-value="v => updateNested('accentBar', 'color', v)"
           />
-          <span class="text-xs text-muted-foreground">Color</span>
         </div>
         <DimensionInput
           :model-value="block.data.accentBar?.width ?? '4px'"
@@ -78,21 +77,12 @@
     <!-- Background color -->
     <div>
       <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block mb-2">Background</label>
-      <div class="flex items-center gap-2">
-        <input
-          type="color"
-          :value="block.data.bgColor ?? '#ffffff'"
-          class="h-8 w-14 cursor-pointer rounded border border-border"
-          @input="emit('update', { id: block.id, data: { bgColor: $event.target.value } })"
-        />
-        <span class="text-xs text-muted-foreground flex-1">{{ block.data.bgColor ?? 'None' }}</span>
-        <button
-          v-if="block.data.bgColor"
-          type="button"
-          class="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          @click="emit('update', { id: block.id, data: { bgColor: null } })"
-        >Remove</button>
-      </div>
+      <ColorPicker
+        :model-value="block.data.bgColor"
+        default="#ffffff"
+        :show-reset="true"
+        @update:model-value="v => emit('update', { id: block.id, data: { bgColor: v } })"
+      />
     </div>
 
   </div>
@@ -103,6 +93,7 @@ import DynamicField    from './DynamicField.vue'
 import TypographyControl from '../TypographyControl.vue'
 import DimensionInput  from '../DimensionInput.vue'
 import SelectBox       from '@/Components/SelectBox.vue'
+import ColorPicker     from '../ColorPicker.vue'
 
 const props = defineProps({
   block:           { type: Object, required: true },

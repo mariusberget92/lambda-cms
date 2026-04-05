@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import SelectBox   from '@/Components/SelectBox.vue'
 import SpacingControl from '../SpacingControl.vue'
 import MediaPicker from '@/Components/MediaPicker.vue'
+import ColorPicker from '../ColorPicker.vue'
 
 const props = defineProps({
   block: { type: Object, required: true },
@@ -49,11 +50,12 @@ function onBgMediaSelect(media) {
         </div>
 
         <!-- Color picker -->
-        <div v-if="d.bgType === 'color'" class="flex items-center gap-2">
-          <input type="color" :value="d.bgColor ?? '#ffffff'"
-            @input="update('bgColor', $event.target.value)"
-            class="h-8 w-16 cursor-pointer rounded border border-border" />
-          <span class="text-xs text-muted-foreground">{{ d.bgColor ?? '#ffffff' }}</span>
+        <div v-if="d.bgType === 'color'">
+          <ColorPicker
+            :model-value="d.bgColor ?? '#ffffff'"
+            default="#ffffff"
+            @update:model-value="v => update('bgColor', v)"
+          />
         </div>
 
         <!-- Image picker -->
@@ -120,18 +122,24 @@ function onBgMediaSelect(media) {
 
         <!-- Gradient picker -->
         <div v-if="d.bgType === 'gradient'" class="space-y-2">
-          <div class="flex gap-2 items-center">
+          <div class="flex gap-4 items-start">
             <div>
-              <label class="text-[10px] text-muted-foreground">From</label>
-              <input type="color" :value="d.bgGradient?.from ?? '#3b4252'"
-                @input="updateNested('bgGradient', 'from', $event.target.value)"
-                class="block h-8 w-12 cursor-pointer rounded border border-border" />
+              <label class="text-[10px] text-muted-foreground block mb-1">From</label>
+              <ColorPicker
+                :model-value="d.bgGradient?.from ?? '#3b4252'"
+                default="#3b4252"
+                :show-value="false"
+                @update:model-value="v => updateNested('bgGradient', 'from', v)"
+              />
             </div>
             <div>
-              <label class="text-[10px] text-muted-foreground">To</label>
-              <input type="color" :value="d.bgGradient?.to ?? '#4c566a'"
-                @input="updateNested('bgGradient', 'to', $event.target.value)"
-                class="block h-8 w-12 cursor-pointer rounded border border-border" />
+              <label class="text-[10px] text-muted-foreground block mb-1">To</label>
+              <ColorPicker
+                :model-value="d.bgGradient?.to ?? '#4c566a'"
+                default="#4c566a"
+                :show-value="false"
+                @update:model-value="v => updateNested('bgGradient', 'to', v)"
+              />
             </div>
           </div>
           <SelectBox

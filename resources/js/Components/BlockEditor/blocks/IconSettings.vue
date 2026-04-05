@@ -56,11 +56,12 @@
               : 'bg-background border-border'"
             @click="update('color', 'inherit')"
           >Inherit</button>
-          <input
-            type="color"
-            :value="icon.color === 'inherit' ? '#000000' : icon.color"
-            class="h-7 w-12 cursor-pointer rounded border border-border"
-            @input="update('color', $event.target.value)"
+          <ColorPicker
+            v-if="icon.color !== 'inherit'"
+            :model-value="icon.color"
+            default="#000000"
+            :show-value="false"
+            @update:model-value="v => update('color', v)"
           />
         </div>
       </div>
@@ -71,6 +72,7 @@
 <script setup>
 import { computed } from 'vue'
 import SelectBox from '@/Components/SelectBox.vue'
+import ColorPicker from '../ColorPicker.vue'
 
 const props = defineProps({
   block: { type: Object, required: true },

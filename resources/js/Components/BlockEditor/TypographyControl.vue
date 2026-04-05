@@ -23,21 +23,12 @@
     <!-- Color -->
     <div>
       <label class="text-xs font-medium text-muted-foreground block mb-1">Color</label>
-      <div class="flex items-center gap-2">
-        <input
-          type="color"
-          :value="modelValue.color ?? '#ffffff'"
-          class="h-8 w-14 cursor-pointer rounded border border-border"
-          @input="update('color', $event.target.value)"
-        />
-        <span class="text-xs text-muted-foreground flex-1">{{ modelValue.color ?? 'Inherit' }}</span>
-        <button
-          v-if="modelValue.color"
-          type="button"
-          class="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          @click="update('color', null)"
-        >Reset</button>
-      </div>
+      <ColorPicker
+        :model-value="modelValue.color"
+        default="#ffffff"
+        :show-reset="true"
+        @update:model-value="v => update('color', v)"
+      />
     </div>
 
     <!-- Font size -->
@@ -84,6 +75,7 @@
 <script setup>
 import SelectBox    from '@/Components/SelectBox.vue'
 import DimensionInput from './DimensionInput.vue'
+import ColorPicker  from './ColorPicker.vue'
 
 const props = defineProps({
   modelValue: { type: Object, default: () => ({}) },

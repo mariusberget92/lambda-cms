@@ -42,11 +42,12 @@
         </button>
       </div>
 
-      <div v-if="block.data.bgType === 'color'" class="flex items-center gap-2">
-        <input type="color" :value="block.data.bgColor ?? '#ffffff'"
-          @input="update('bgColor', $event.target.value)"
-          class="h-8 w-14 cursor-pointer rounded border border-border" />
-        <span class="text-xs text-muted-foreground">{{ block.data.bgColor ?? '#ffffff' }}</span>
+      <div v-if="block.data.bgType === 'color'">
+        <ColorPicker
+          :model-value="block.data.bgColor ?? '#ffffff'"
+          default="#ffffff"
+          @update:model-value="v => update('bgColor', v)"
+        />
       </div>
 
       <div v-if="block.data.bgType === 'image'" class="space-y-2">
@@ -82,18 +83,24 @@
       </div>
 
       <div v-if="block.data.bgType === 'gradient'" class="space-y-2">
-        <div class="flex gap-2 items-center">
+        <div class="flex gap-4 items-start">
           <div>
-            <label class="text-[10px] text-muted-foreground">From</label>
-            <input type="color" :value="block.data.bgGradient?.from ?? '#3b4252'"
-              @input="updateNested('bgGradient','from',$event.target.value)"
-              class="block h-8 w-12 cursor-pointer rounded border border-border" />
+            <label class="text-[10px] text-muted-foreground block mb-1">From</label>
+            <ColorPicker
+              :model-value="block.data.bgGradient?.from ?? '#3b4252'"
+              default="#3b4252"
+              :show-value="false"
+              @update:model-value="v => updateNested('bgGradient', 'from', v)"
+            />
           </div>
           <div>
-            <label class="text-[10px] text-muted-foreground">To</label>
-            <input type="color" :value="block.data.bgGradient?.to ?? '#4c566a'"
-              @input="updateNested('bgGradient','to',$event.target.value)"
-              class="block h-8 w-12 cursor-pointer rounded border border-border" />
+            <label class="text-[10px] text-muted-foreground block mb-1">To</label>
+            <ColorPicker
+              :model-value="block.data.bgGradient?.to ?? '#4c566a'"
+              default="#4c566a"
+              :show-value="false"
+              @update:model-value="v => updateNested('bgGradient', 'to', v)"
+            />
           </div>
         </div>
         <SelectBox :model-value="block.data.bgGradient?.direction ?? 'to-r'"
@@ -118,29 +125,23 @@
     <!-- Headline color -->
     <div>
       <label class="text-xs font-medium text-muted-foreground block mb-1">Headline color</label>
-      <div class="flex items-center gap-2">
-        <input type="color" :value="block.data.headlineColor ?? '#ffffff'"
-          @input="update('headlineColor', $event.target.value)"
-          class="h-8 w-14 cursor-pointer rounded border border-border" />
-        <span class="text-xs text-muted-foreground flex-1">{{ block.data.headlineColor ?? 'Inherit' }}</span>
-        <button v-if="block.data.headlineColor" type="button"
-          class="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          @click="update('headlineColor', null)">Reset</button>
-      </div>
+      <ColorPicker
+        :model-value="block.data.headlineColor"
+        default="#ffffff"
+        :show-reset="true"
+        @update:model-value="v => update('headlineColor', v)"
+      />
     </div>
 
     <!-- Body text color -->
     <div>
       <label class="text-xs font-medium text-muted-foreground block mb-1">Body text color</label>
-      <div class="flex items-center gap-2">
-        <input type="color" :value="block.data.textColor ?? '#ffffff'"
-          @input="update('textColor', $event.target.value)"
-          class="h-8 w-14 cursor-pointer rounded border border-border" />
-        <span class="text-xs text-muted-foreground flex-1">{{ block.data.textColor ?? 'Inherit' }}</span>
-        <button v-if="block.data.textColor" type="button"
-          class="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          @click="update('textColor', null)">Reset</button>
-      </div>
+      <ColorPicker
+        :model-value="block.data.textColor"
+        default="#ffffff"
+        :show-reset="true"
+        @update:model-value="v => update('textColor', v)"
+      />
     </div>
 
     <!-- Button style -->
@@ -154,18 +155,24 @@
           {{ variant.charAt(0).toUpperCase() + variant.slice(1) }}
         </button>
       </div>
-      <div class="flex gap-2">
-        <div class="flex-1">
+      <div class="flex gap-4">
+        <div>
           <label class="text-[10px] text-muted-foreground block mb-1">Bg color</label>
-          <input type="color" :value="block.data.button?.bgColor ?? '#5e81ac'"
-            @input="updateNested('button', 'bgColor', $event.target.value)"
-            class="h-7 w-full cursor-pointer rounded border border-border" />
+          <ColorPicker
+            :model-value="block.data.button?.bgColor ?? '#5e81ac'"
+            default="#5e81ac"
+            :show-value="false"
+            @update:model-value="v => updateNested('button', 'bgColor', v)"
+          />
         </div>
-        <div class="flex-1">
+        <div>
           <label class="text-[10px] text-muted-foreground block mb-1">Text color</label>
-          <input type="color" :value="block.data.button?.textColor ?? '#eceff4'"
-            @input="updateNested('button', 'textColor', $event.target.value)"
-            class="h-7 w-full cursor-pointer rounded border border-border" />
+          <ColorPicker
+            :model-value="block.data.button?.textColor ?? '#eceff4'"
+            default="#eceff4"
+            :show-value="false"
+            @update:model-value="v => updateNested('button', 'textColor', v)"
+          />
         </div>
       </div>
       <div>
@@ -195,6 +202,7 @@ import SelectBox     from '@/Components/SelectBox.vue'
 import DimensionInput from '../DimensionInput.vue'
 import SpacingControl from '../SpacingControl.vue'
 import MediaPicker   from '@/Components/MediaPicker.vue'
+import ColorPicker   from '../ColorPicker.vue'
 
 const props = defineProps({
   block:           { type: Object, required: true },

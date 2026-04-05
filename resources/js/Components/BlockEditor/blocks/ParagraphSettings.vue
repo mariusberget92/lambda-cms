@@ -28,21 +28,12 @@
 
     <div>
       <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block mb-2">Background</label>
-      <div class="flex items-center gap-2">
-        <input
-          type="color"
-          :value="block.data.bgColor ?? '#ffffff'"
-          class="h-8 w-14 cursor-pointer rounded border border-border"
-          @input="emit('update', { id: block.id, data: { bgColor: $event.target.value } })"
-        />
-        <span class="text-xs text-muted-foreground flex-1">{{ block.data.bgColor ?? 'None' }}</span>
-        <button
-          v-if="block.data.bgColor"
-          type="button"
-          class="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          @click="emit('update', { id: block.id, data: { bgColor: null } })"
-        >Remove</button>
-      </div>
+      <ColorPicker
+        :model-value="block.data.bgColor"
+        default="#ffffff"
+        :show-reset="true"
+        @update:model-value="v => emit('update', { id: block.id, data: { bgColor: v } })"
+      />
     </div>
 
   </div>
@@ -52,6 +43,7 @@
 import TiptapEditor    from '@/Components/TiptapEditor.vue'
 import DynamicField    from './DynamicField.vue'
 import TypographyControl from '../TypographyControl.vue'
+import ColorPicker     from '../ColorPicker.vue'
 
 const props = defineProps({
   block:           { type: Object, required: true },
