@@ -46,11 +46,70 @@
       />
     </div>
   </div>
+
+  <!-- Style fields -->
+  <div v-show="!tab || tab === 'style'" class="space-y-4">
+
+    <div class="space-y-2">
+      <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block">Layout</label>
+      <div>
+        <label class="text-xs font-medium text-muted-foreground block mb-1">Max width</label>
+        <DimensionInput
+          :model-value="block.data.maxWidth ?? ''"
+          placeholder="100%"
+          :allow-auto="true"
+          @update:model-value="v => emit('update', { id: block.id, data: { maxWidth: v || null } })"
+        />
+      </div>
+      <div>
+        <label class="text-xs font-medium text-muted-foreground block mb-1">Alignment</label>
+        <div class="flex rounded-md border overflow-hidden text-xs">
+          <button
+            v-for="align in ['left', 'center', 'right']"
+            :key="align"
+            type="button"
+            class="flex-1 py-1.5 transition-colors"
+            :class="block.data.alignment === align
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-background text-foreground'"
+            @click="emit('update', { id: block.id, data: { alignment: block.data.alignment === align ? null : align } })"
+          >{{ align.charAt(0).toUpperCase() + align.slice(1) }}</button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block mb-2">Aspect ratio</label>
+      <div class="flex gap-1 flex-wrap">
+        <button
+          v-for="ratio in ['16/9', '4/3', '1/1', '9/16']"
+          :key="ratio"
+          type="button"
+          class="px-2 py-1 text-xs rounded border transition-colors"
+          :class="block.data.aspectRatio === ratio
+            ? 'bg-primary text-primary-foreground border-primary'
+            : 'bg-background border-border'"
+          @click="emit('update', { id: block.id, data: { aspectRatio: block.data.aspectRatio === ratio ? null : ratio } })"
+        >{{ ratio }}</button>
+      </div>
+    </div>
+
+    <div>
+      <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block mb-2">Border radius</label>
+      <DimensionInput
+        :model-value="block.data.borderRadius ?? ''"
+        placeholder="0"
+        @update:model-value="v => emit('update', { id: block.id, data: { borderRadius: v || null } })"
+      />
+    </div>
+
+  </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import DynamicField from './DynamicField.vue'
+import DynamicField   from './DynamicField.vue'
+import DimensionInput from '../DimensionInput.vue'
 
 const props = defineProps({
   block:           { type: Object, required: true },
