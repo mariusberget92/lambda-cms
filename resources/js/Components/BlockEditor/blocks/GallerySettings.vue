@@ -53,13 +53,13 @@
           v-model="urlInput"
           type="text"
           placeholder="https://example.com/image.jpg"
-          class="w-full rounded-md border bg-background px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+          class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
         />
         <input
           v-model="altInput"
           type="text"
           placeholder="Alt text (optional)"
-          class="w-full rounded-md border bg-background px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+          class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
         />
         <button
           type="button"
