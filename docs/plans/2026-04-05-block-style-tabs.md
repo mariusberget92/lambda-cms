@@ -13,12 +13,12 @@
 ## Task 1: Create `TypographyControl.vue`
 
 **Files:**
-- Create: `resources/js/components/BlockEditor/TypographyControl.vue`
+- Create: `resources/js/Components/BlockEditor/TypographyControl.vue`
 
 **Step 1: Create the file**
 
 ```vue
-<!-- resources/js/components/BlockEditor/TypographyControl.vue -->
+<!-- resources/js/Components/BlockEditor/TypographyControl.vue -->
 <template>
   <div class="space-y-3">
     <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block">Typography</label>
@@ -132,12 +132,12 @@ git commit -m "feat: add TypographyControl shared block editor component"
 ## Task 2: Create `BorderControl.vue`
 
 **Files:**
-- Create: `resources/js/components/BlockEditor/BorderControl.vue`
+- Create: `resources/js/Components/BlockEditor/BorderControl.vue`
 
 **Step 1: Create the file**
 
 ```vue
-<!-- resources/js/components/BlockEditor/BorderControl.vue -->
+<!-- resources/js/Components/BlockEditor/BorderControl.vue -->
 <template>
   <div class="space-y-3">
     <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block">Border</label>
@@ -224,12 +224,12 @@ git commit -m "feat: add BorderControl shared block editor component"
 ## Task 3: Create `ShadowControl.vue`
 
 **Files:**
-- Create: `resources/js/components/BlockEditor/ShadowControl.vue`
+- Create: `resources/js/Components/BlockEditor/ShadowControl.vue`
 
 **Step 1: Create the file**
 
 ```vue
-<!-- resources/js/components/BlockEditor/ShadowControl.vue -->
+<!-- resources/js/Components/BlockEditor/ShadowControl.vue -->
 <template>
   <div class="space-y-2">
     <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block">Shadow</label>

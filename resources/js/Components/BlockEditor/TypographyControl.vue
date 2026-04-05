@@ -1,4 +1,4 @@
-<!-- resources/js/components/BlockEditor/TypographyControl.vue -->
+<!-- resources/js/Components/BlockEditor/TypographyControl.vue -->
 <template>
   <div class="space-y-3">
     <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block">Typography</label>
