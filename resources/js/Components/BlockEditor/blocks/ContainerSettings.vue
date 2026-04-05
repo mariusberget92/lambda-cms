@@ -1,9 +1,10 @@
 <script setup>
-import { computed } from 'vue'
-import SelectBox from '@/Components/SelectBox.vue'
-import NumberInput from '@/Components/NumberInput.vue'
+import { computed, ref } from 'vue'
+import SelectBox     from '@/Components/SelectBox.vue'
+import NumberInput   from '@/Components/NumberInput.vue'
 import DimensionInput from '../DimensionInput.vue'
 import SpacingControl from '../SpacingControl.vue'
+import MediaPicker   from '@/Components/MediaPicker.vue'
 
 const props = defineProps({
   block: { type: Object, required: true },
@@ -36,6 +37,14 @@ function update(key, value) {
 function updateNested(key, subKey, value) {
   const current = props.block.data[key]
   emit('update', { id: props.block.id, data: { [key]: { ...(current ?? {}), [subKey]: value } } })
+}
+
+const bgImageMode  = ref('library')
+const showBgPicker = ref(false)
+
+function onBgMediaSelect(media) {
+  showBgPicker.value = false
+  updateNested('bgImage', 'url', media.url)
 }
 </script>
 
@@ -88,7 +97,34 @@ function updateNested(key, subKey, value) {
 
         <!-- Image picker -->
         <div v-if="block.data.bgType === 'image'" class="space-y-2">
-          <input type="url" :value="block.data.bgImage?.url ?? ''"
+
+          <!-- Source toggle -->
+          <div class="flex gap-1 p-0.5 rounded-md bg-muted w-fit">
+            <button type="button"
+              class="px-2.5 py-1 rounded text-xs font-medium transition-colors"
+              :class="bgImageMode === 'library' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+              @click="bgImageMode = 'library'">Library</button>
+            <button type="button"
+              class="px-2.5 py-1 rounded text-xs font-medium transition-colors"
+              :class="bgImageMode === 'url' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+              @click="bgImageMode = 'url'">URL</button>
+          </div>
+
+          <!-- Library mode -->
+          <div v-if="bgImageMode === 'library'">
+            <div v-if="block.data.bgImage?.url" class="rounded overflow-hidden border mb-2 max-h-24">
+              <img :src="block.data.bgImage.url" class="w-full h-full object-cover" />
+            </div>
+            <button type="button"
+              class="w-full rounded border border-dashed px-3 py-2 text-xs text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+              @click="showBgPicker = true">
+              {{ block.data.bgImage?.url ? 'Change image' : 'Select image' }}
+            </button>
+            <MediaPicker v-model="showBgPicker" :dark="true" @select="onBgMediaSelect" />
+          </div>
+
+          <!-- URL mode -->
+          <input v-else type="url" :value="block.data.bgImage?.url ?? ''"
             @input="updateNested('bgImage', 'url', $event.target.value)"
             placeholder="https://..."
             class="w-full rounded border border-border bg-background px-2 py-1 text-xs" />

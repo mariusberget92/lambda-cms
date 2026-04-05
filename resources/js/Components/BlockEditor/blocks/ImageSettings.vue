@@ -40,7 +40,7 @@
         >
           {{ block.data.url ? 'Change image' : 'Select image' }}
         </button>
-        <MediaPicker v-model="showPicker" @select="onMediaSelect" />
+        <MediaPicker v-model="showPicker" :dark="true" @select="onMediaSelect" />
       </div>
     </DynamicField>
 

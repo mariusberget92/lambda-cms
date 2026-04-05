@@ -100,6 +100,7 @@
     <MediaPicker
       v-model="pickerOpen"
       confirm-label="Insert image"
+      :dark="dark"
       @select="(m) => insertImage(m.url, m.alt)"
     />
 
@@ -134,8 +135,9 @@ import {
 } from "lucide-vue-next";
 
 const props = defineProps({
-  modelValue: { type: String, default: "" },
-  placeholder: { type: String, default: "Start writing your post..." },
+  modelValue:  { type: String,  default: "" },
+  placeholder: { type: String,  default: "Start writing your post..." },
+  dark:        { type: Boolean, default: false },
 });
 const emit = defineEmits(["update:modelValue"]);
 

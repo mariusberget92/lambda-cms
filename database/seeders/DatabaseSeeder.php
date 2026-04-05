@@ -30,6 +30,11 @@ class DatabaseSeeder extends Seeder
 
         // ── Admin user (roles must exist first) ──────────────────────────────
         $this->call(AdminSeeder::class);
+
+        // ── Dev fixtures (test users, posts, categories, tags) ───────────────
+        if (app()->environment('local')) {
+            $this->call(DevSeeder::class);
+        }
     }
 
     /**

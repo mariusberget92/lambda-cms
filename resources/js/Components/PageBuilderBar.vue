@@ -18,7 +18,7 @@
       :value="title"
       type="text"
       placeholder="Page title…"
-      class="flex-1 min-w-0 bg-transparent text-sm font-medium text-white placeholder:text-white/30 focus:outline-none"
+      class="flex-1 min-w-0 bg-transparent rounded px-2 py-1 text-sm font-medium text-white placeholder:text-white/30 focus:outline-none"
       @input="$emit('update:title', $event.target.value)"
     />
 

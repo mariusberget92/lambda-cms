@@ -1,6 +1,6 @@
 <template>
   <Dialog v-model:open="isOpen">
-    <DialogContent class="max-w-4xl max-h-[85vh] flex flex-col gap-0 p-0">
+    <DialogContent :data-theme="dark ? 'dark' : undefined" class="max-w-4xl max-h-[85vh] flex flex-col gap-0 p-0">
       <!-- Header -->
       <div class="flex items-center justify-between px-6 py-4 border-b">
         <h2 class="text-base font-semibold">Media Library</h2>
@@ -144,6 +144,7 @@ const { notify } = useNotifications()
 const props = defineProps({
   modelValue:   { type: Boolean, default: false },
   confirmLabel: { type: String,  default: 'Select' },
+  dark:         { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['update:modelValue', 'select'])

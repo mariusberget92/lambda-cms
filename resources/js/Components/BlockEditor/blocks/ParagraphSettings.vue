@@ -12,6 +12,7 @@
     >
       <TiptapEditor
         :model-value="block.data.content"
+        :dark="true"
         @update:model-value="emit('update', { id: block.id, data: { content: $event } })"
       />
     </DynamicField>

@@ -6,8 +6,9 @@
       <slot />
     </div>
   </div>
+  <Notifications />
 </template>
 
 <script setup>
-// No logic needed — purely structural.
+import Notifications from '@/Components/Notifications.vue'
 </script>

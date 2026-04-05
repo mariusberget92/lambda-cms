@@ -101,14 +101,14 @@ const ALL_TYPES = [
   { type: 'link',      label: 'Link',      icon: Link,              group: 'Interactive' },
   { type: 'pagination',label: 'Pagination',icon: ChevronRightIcon,  group: 'Interactive' },
   { type: 'html',      label: 'HTML',      icon: FileCode,          group: 'Developer', adminOnly: true },
-  // ── Post ─────────────────────────────────────────────────────────────────
-  { type: 'post-title',          label: 'Post Title',  icon: Heading1,      group: 'Post' },
-  { type: 'post-body',           label: 'Post Body',   icon: AlignLeft,     group: 'Post' },
-  { type: 'post-featured-image', label: 'Feat. Image', icon: ImageIcon,     group: 'Post' },
-  { type: 'post-meta',           label: 'Post Meta',   icon: Info,          group: 'Post' },
-  { type: 'post-author',         label: 'Author',      icon: User,          group: 'Post' },
-  { type: 'post-taxonomy',       label: 'Taxonomy',    icon: Tag,           group: 'Post' },
-  { type: 'post-comments',       label: 'Comments',    icon: MessageCircle, group: 'Post' },
+  // ── Post (hidden from palette — only used inside loop blocks) ───────────
+  { type: 'post-title',          label: 'Post Title',  icon: Heading1,      group: 'Post', hiddenFromPalette: true },
+  { type: 'post-body',           label: 'Post Body',   icon: AlignLeft,     group: 'Post', hiddenFromPalette: true },
+  { type: 'post-featured-image', label: 'Feat. Image', icon: ImageIcon,     group: 'Post', hiddenFromPalette: true },
+  { type: 'post-meta',           label: 'Post Meta',   icon: Info,          group: 'Post', hiddenFromPalette: true },
+  { type: 'post-author',         label: 'Author',      icon: User,          group: 'Post', hiddenFromPalette: true },
+  { type: 'post-taxonomy',       label: 'Taxonomy',    icon: Tag,           group: 'Post', hiddenFromPalette: true },
+  { type: 'post-comments',       label: 'Comments',    icon: MessageCircle, group: 'Post', hiddenFromPalette: true },
   // ── Archive ──────────────────────────────────────────────────────────────
   { type: 'archive-title', label: 'Title', icon: FolderOpen, group: 'Archive' },
   { type: 'archive-loop',  label: 'Loop',  icon: List,       group: 'Archive' },
