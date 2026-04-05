@@ -36,10 +36,73 @@
       />
     </DynamicField>
   </div>
+
+  <!-- Style fields -->
+  <div v-show="!tab || tab === 'style'" class="space-y-4">
+
+    <TypographyControl
+      :model-value="block.data.typography ?? {}"
+      @update:model-value="v => emit('update', { id: block.id, data: { typography: v } })"
+    />
+
+    <!-- Accent bar -->
+    <div class="space-y-2">
+      <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block">Accent bar</label>
+      <SelectBox
+        :model-value="block.data.accentBar?.style ?? 'left'"
+        :data="[
+          { value: 'none',  label: 'None' },
+          { value: 'left',  label: 'Left border' },
+          { value: 'top',   label: 'Top border' },
+        ]"
+        @update:model-value="v => updateNested('accentBar', 'style', v)"
+      />
+      <template v-if="(block.data.accentBar?.style ?? 'left') !== 'none'">
+        <div class="flex items-center gap-2">
+          <input
+            type="color"
+            :value="block.data.accentBar?.color ?? '#5e81ac'"
+            class="h-8 w-14 cursor-pointer rounded border border-border"
+            @input="updateNested('accentBar', 'color', $event.target.value)"
+          />
+          <span class="text-xs text-muted-foreground">Color</span>
+        </div>
+        <DimensionInput
+          :model-value="block.data.accentBar?.width ?? '4px'"
+          placeholder="4px"
+          @update:model-value="v => updateNested('accentBar', 'width', v || '4px')"
+        />
+      </template>
+    </div>
+
+    <!-- Background color -->
+    <div>
+      <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block mb-2">Background</label>
+      <div class="flex items-center gap-2">
+        <input
+          type="color"
+          :value="block.data.bgColor ?? '#ffffff'"
+          class="h-8 w-14 cursor-pointer rounded border border-border"
+          @input="emit('update', { id: block.id, data: { bgColor: $event.target.value } })"
+        />
+        <span class="text-xs text-muted-foreground flex-1">{{ block.data.bgColor ?? 'None' }}</span>
+        <button
+          v-if="block.data.bgColor"
+          type="button"
+          class="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          @click="emit('update', { id: block.id, data: { bgColor: null } })"
+        >Remove</button>
+      </div>
+    </div>
+
+  </div>
 </template>
 
 <script setup>
-import DynamicField from './DynamicField.vue'
+import DynamicField    from './DynamicField.vue'
+import TypographyControl from '../TypographyControl.vue'
+import DimensionInput  from '../DimensionInput.vue'
+import SelectBox       from '@/Components/SelectBox.vue'
 
 const props = defineProps({
   block:           { type: Object, required: true },
@@ -48,6 +111,10 @@ const props = defineProps({
 })
 const emit = defineEmits(['update'])
 
+function updateNested(key, subKey, value) {
+  const current = props.block.data[key] ?? {}
+  emit('update', { id: props.block.id, data: { [key]: { ...current, [subKey]: value } } })
+}
 function onBind(fieldName, value) {
   emit('update', { id: props.block.id, bindings: { ...props.block.bindings, [fieldName]: value } })
 }
