@@ -35,7 +35,7 @@
         <DimensionInput
           :model-value="modelValue.width ?? '1px'"
           placeholder="1px"
-          @update:model-value="v => update('width', v || '1px')"
+          @update:model-value="v => update('width', v || null)"
         />
       </div>
 
@@ -49,7 +49,13 @@
             class="h-8 w-14 cursor-pointer rounded border border-border"
             @input="update('color', $event.target.value)"
           />
-          <span class="text-xs text-muted-foreground">{{ modelValue.color ?? '#000000' }}</span>
+          <span class="text-xs text-muted-foreground flex-1">{{ modelValue.color ?? '#000000' }}</span>
+          <button
+            v-if="modelValue.color"
+            type="button"
+            class="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            @click="update('color', null)"
+          >Reset</button>
         </div>
       </div>
     </template>
