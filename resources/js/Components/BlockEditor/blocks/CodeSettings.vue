@@ -32,10 +32,34 @@
       />
     </div>
   </div>
+
+  <!-- Style fields -->
+  <div v-show="!tab || tab === 'style'" class="space-y-3">
+
+    <div>
+      <label class="text-xs font-medium text-muted-foreground block mb-1">Max height (scroll beyond)</label>
+      <DimensionInput
+        :model-value="block.data.maxHeight ?? ''"
+        placeholder="None"
+        @update:model-value="v => emit('update', { id: block.id, data: { maxHeight: v || null } })"
+      />
+    </div>
+
+    <div>
+      <label class="text-xs font-medium text-muted-foreground block mb-1">Border radius</label>
+      <DimensionInput
+        :model-value="block.data.borderRadius ?? ''"
+        placeholder="0"
+        @update:model-value="v => emit('update', { id: block.id, data: { borderRadius: v || null } })"
+      />
+    </div>
+
+  </div>
 </template>
 
 <script setup>
-import SelectBox from '@/Components/SelectBox.vue'
+import SelectBox    from '@/Components/SelectBox.vue'
+import DimensionInput from '../DimensionInput.vue'
 
 defineProps({
   block: { type: Object, required: true },
