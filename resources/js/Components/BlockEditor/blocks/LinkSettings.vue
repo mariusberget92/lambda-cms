@@ -3,6 +3,23 @@
   <!-- Content tab -->
   <div v-show="!tab || tab === 'content'" class="space-y-3">
     <DynamicField
+      label="Label"
+      field-name="label"
+      :block="block"
+      :available-fields="availableFields"
+      @bind="onBind"
+      @unbind="onUnbind"
+    >
+      <input
+        :value="block.data.label"
+        type="text"
+        placeholder="Link text (optional)"
+        class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        @input="emit('update', { id: block.id, data: { label: $event.target.value } })"
+      />
+    </DynamicField>
+
+    <DynamicField
       label="URL"
       field-name="url"
       :block="block"

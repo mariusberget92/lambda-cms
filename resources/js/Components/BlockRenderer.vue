@@ -49,6 +49,7 @@ import PostCommentsBlock      from '@/Components/Blocks/PostCommentsBlock.vue'
 import ArchiveTitleBlock      from '@/Components/Blocks/ArchiveTitleBlock.vue'
 import SearchBlock            from '@/Components/Blocks/SearchBlock.vue'
 import NavigationBlock        from '@/components/Blocks/NavigationBlock.vue'
+import LinkBlock              from '@/components/Blocks/LinkBlock.vue'
 
 const props = defineProps({
   blocks:       { type: Array,  default: () => [] },
@@ -114,6 +115,7 @@ const BLOCK_MAP = {
   'archive-loop':        LoopBlock,
   search:                SearchBlock,
   navigation:            NavigationBlock,
+  link:                  LinkBlock,
 }
 
 // Injected by LoopItemProvider when this renderer is inside a loop iteration
@@ -148,7 +150,7 @@ function loadFont(family) {
 function loadFontsFromBlocks(blocks) {
   for (const block of blocks) {
     if (block.fontFamily) loadFont(block.fontFamily)
-    if (['container', 'section', 'loop', 'archive-loop'].includes(block.type) && block.children?.length) {
+    if (['container', 'section', 'loop', 'archive-loop', 'link'].includes(block.type) && block.children?.length) {
       loadFontsFromBlocks(block.children)
     }
   }

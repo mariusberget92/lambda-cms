@@ -1,16 +1,19 @@
 <!-- resources/js/Components/Blocks/LinkBlock.vue -->
 <script setup>
 import { computed } from 'vue'
-import BlockRenderer from '@/Components/BlockRenderer.vue'
+import BlockRenderer      from '@/Components/BlockRenderer.vue'
+import { useFieldBinding } from '@/composables/useLoopBinding.js'
 
 const props = defineProps({ block: { type: Object, required: true } })
 
-const d = computed(() => props.block.data ?? {})
+const resolvedLabel = useFieldBinding(() => props.block, 'label')
+const resolvedUrl   = useFieldBinding(() => props.block, 'url')
+
 const hasChildren = computed(() => props.block.children?.length > 0)
 
-const href   = computed(() => d.value.url   || '#')
-const target = computed(() => d.value.target || '_self')
-const rel    = computed(() => d.value.rel    || undefined)
+const href   = computed(() => resolvedUrl.value   || '#')
+const target = computed(() => props.block.data?.target || '_self')
+const rel    = computed(() => props.block.data?.rel    || undefined)
 </script>
 
 <template>
@@ -22,7 +25,7 @@ const rel    = computed(() => d.value.rel    || undefined)
   >
     <!-- Label-only link (no children dragged in) -->
     <template v-if="!hasChildren">
-      {{ d.label || d.url || 'Link' }}
+      {{ resolvedLabel || resolvedUrl || href }}
     </template>
 
     <!-- Container-style link: child blocks wrapped in the anchor -->
