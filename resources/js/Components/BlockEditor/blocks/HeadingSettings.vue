@@ -30,15 +30,23 @@
   </div>
 
   <!-- Style tab -->
-  <div v-show="!tab || tab === 'style'" class="space-y-3">
+  <div v-show="!tab || tab === 'style'" class="space-y-4">
+
+    <TypographyControl
+      :model-value="block.data.typography ?? {}"
+      @update:model-value="v => emit('update', { id: block.id, data: { typography: v } })"
+    />
+
     <IconSettings :block="block" @update="emit('update', $event)" />
+
   </div>
 </template>
 
 <script setup>
-import SelectBox    from '@/Components/SelectBox.vue'
-import DynamicField from './DynamicField.vue'
-import IconSettings from './IconSettings.vue'
+import SelectBox       from '@/Components/SelectBox.vue'
+import DynamicField    from './DynamicField.vue'
+import IconSettings    from './IconSettings.vue'
+import TypographyControl from '../TypographyControl.vue'
 
 const props = defineProps({
   block:           { type: Object, required: true },
