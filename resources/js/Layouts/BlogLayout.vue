@@ -1,7 +1,7 @@
 <script setup>
 import { Head, usePage, Link, router } from '@inertiajs/vue3'
-import { computed, ref } from 'vue'
-import { Search } from 'lucide-vue-next'
+import { computed, nextTick, ref } from 'vue'
+import { Search, X } from 'lucide-vue-next'
 
 defineOptions({ layout: null })
 
@@ -12,20 +12,20 @@ const year = new Date().getFullYear()
 
 const searchOpen = ref(false)
 const headerQuery = ref('')
+const headerSearchInput = ref(null)
 
 function submitHeaderSearch() {
   const q = headerQuery.value.trim()
   if (!q) return
   closeSearch()
-  router.get('/search', { q })
+  router.get(route('search'), { q })
 }
 
 function openSearch() {
   searchOpen.value = true
-  // focus the input on next tick
-  setTimeout(() => {
-    document.getElementById('header-search-input')?.focus()
-  }, 50)
+  nextTick(() => {
+    headerSearchInput.value?.focus()
+  })
 }
 
 function closeSearch() {
@@ -70,7 +70,7 @@ function closeSearch() {
               class="flex items-center gap-1"
             >
               <input
-                id="header-search-input"
+                ref="headerSearchInput"
                 v-model="headerQuery"
                 type="search"
                 placeholder="Search…"
@@ -80,7 +80,9 @@ function closeSearch() {
               <button type="submit" class="text-muted-foreground hover:text-foreground transition-colors p-1">
                 <Search class="w-4 h-4" />
               </button>
-              <button type="button" @click="closeSearch" class="text-muted-foreground hover:text-foreground transition-colors p-1 text-xs">✕</button>
+              <button type="button" @click="closeSearch" class="text-muted-foreground hover:text-foreground transition-colors p-1" aria-label="Close search">
+                <X class="w-3.5 h-3.5" />
+              </button>
             </form>
             <button
               v-else
