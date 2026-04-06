@@ -128,6 +128,7 @@ async function confirmRestore() {
     <template #bar>
       <PageBuilderBar
         :back-href="route('pages.index')"
+        :preview-href="props.page.preview_token ? route('preview.page', props.page.preview_token) : null"
         :title="form.title"
         :slug="form.slug"
         :status="form.status"

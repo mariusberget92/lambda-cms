@@ -25,6 +25,8 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\BanController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PreviewController;
+use App\Http\Controllers\WebhookController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -58,6 +60,10 @@ Route::middleware('installed')->group(function () {
     Route::post('/blog/{post:slug}/comments', [CommentController::class, 'store'])
         ->middleware('throttle:comments')
         ->name('comments.store');
+
+    // ── Preview (public, token-based) ────────────────────────────────────────
+    Route::get('/preview/posts/{token}', [PreviewController::class, 'post'])->name('preview.post');
+    Route::get('/preview/pages/{token}', [PreviewController::class, 'page'])->name('preview.page');
 
     // ── Guest-only ───────────────────────────────────────────────────────────
     Route::middleware('guest')->group(function () {
@@ -152,6 +158,11 @@ Route::middleware('installed')->group(function () {
         Route::get('/settings',             [SettingsController::class, 'index'])->name('settings.index');
         Route::put('/settings/{group}',     [SettingsController::class, 'update'])->name('settings.update');
         Route::post('/settings/test-email', [SettingsController::class, 'testEmail'])->name('settings.test-email');
+
+        Route::get('/webhooks',                    [WebhookController::class, 'index'])->name('webhooks.index');
+        Route::post('/webhooks',                   [WebhookController::class, 'store'])->name('webhooks.store');
+        Route::put('/webhooks/{webhook}',          [WebhookController::class, 'update'])->name('webhooks.update');
+        Route::delete('/webhooks/{webhook}',       [WebhookController::class, 'destroy'])->name('webhooks.destroy');
 
     });
     Route::get('/search', [SearchController::class, 'index'])->name('search');

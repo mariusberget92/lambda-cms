@@ -157,6 +157,7 @@ class PostController extends Controller
                 'meta_keywords'     => $post->meta_keywords,
                 'use_block_editor'  => (bool) $post->use_block_editor,
                 'blocks'            => $post->blocks,
+                'preview_token'     => $post->preview_token,
             ],
             'categories' => Category::orderBy('name')->get(['id', 'name']),
             'tags'       => Tag::orderBy('name')->get(['id', 'name']),

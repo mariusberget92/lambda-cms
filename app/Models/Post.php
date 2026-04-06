@@ -17,6 +17,17 @@ class Post extends Model
     use HasFactory;
     use HasRevisions;
 
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (self $post) {
+            if (empty($post->preview_token)) {
+                $post->preview_token = Str::random(64);
+            }
+        });
+    }
+
     protected $fillable = [
         "user_id",
         "featured_image_id",
@@ -33,6 +44,7 @@ class Post extends Model
         "meta_title",
         "meta_description",
         "meta_keywords",
+        "preview_token",
     ];
 
     protected $casts = [
