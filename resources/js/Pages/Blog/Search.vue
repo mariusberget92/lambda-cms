@@ -4,6 +4,7 @@ import BlogLayout from '@/Layouts/BlogLayout.vue'
 import BlogSidebar from '@/Components/BlogSidebar.vue'
 import PostCard from '@/Components/PostCard.vue'
 import SeoHead from '@/Components/SeoHead.vue'
+import { decodeHtmlEntities } from '@/lib/utils.js'
 
 defineOptions({ layout: BlogLayout })
 
@@ -53,13 +54,13 @@ defineProps({
               ? 'bg-primary text-primary-foreground border-primary'
               : 'bg-card text-muted-foreground hover:text-foreground hover:border-foreground'"
           >
-            {{ link.label.replace('&laquo;', '«').replace('&raquo;', '»') }}
+            {{ decodeHtmlEntities(link.label) }}
           </Link>
           <span
             v-else
             class="px-3 py-1.5 text-sm rounded-md border text-muted-foreground/40 cursor-not-allowed"
           >
-            {{ link.label.replace('&laquo;', '«').replace('&raquo;', '»') }}
+            {{ decodeHtmlEntities(link.label) }}
           </span>
         </template>
       </div>
