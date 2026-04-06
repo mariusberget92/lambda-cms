@@ -8,7 +8,6 @@ use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
@@ -46,7 +45,7 @@ class DevSeeder extends Seeder
         // ── Tags ──────────────────────────────────────────────────────────────
         $tags = Tag::factory()->count(20)->create();
 
-        // ── Seed media (featured images) ──────────────────────────────────────
+        // ── Seed media (featured images, generated locally via GD) ───────────
         $seedImages = $this->seedFeaturedImages($users);
 
         // ── Posts ─────────────────────────────────────────────────────────────
@@ -87,51 +86,75 @@ class DevSeeder extends Seeder
     }
 
     /**
-     * Download placeholder images from picsum.photos and create Media records.
-     * Returns a collection of Media models. Gracefully returns an empty collection
-     * if the network is unavailable.
+     * Generate 10 placeholder JPEG images using PHP GD (no network required)
+     * and create corresponding Media records.
      */
     private function seedFeaturedImages(\Illuminate\Support\Collection $users): \Illuminate\Support\Collection
     {
         $admin  = User::where('email', 'admin@example.com')->first() ?? $users->first();
         $images = collect();
-
-        // 10 deterministic placeholder images (800×500, unique seeds)
-        $seeds = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
         $folder = 'media/' . now()->format('Y/m');
+        $width  = 1200;
+        $height = 630;
 
-        foreach ($seeds as $seed) {
-            try {
-                $response = Http::timeout(10)->get("https://picsum.photos/seed/{$seed}/1200/630");
+        // 10 visually distinct background colours (Nord-ish palette)
+        $palettes = [
+            [46,  52,  64],   // dark navy
+            [59,  66,  82],   // slate
+            [67,  76,  94],   // steel
+            [76,  86, 106],   // indigo-grey
+            [136, 192, 208],  // frost blue
+            [129, 161, 193],  // muted blue
+            [163, 190, 140],  // sage green
+            [235, 203, 139],  // warm gold
+            [191,  97,  106], // rose
+            [180, 142, 173],  // lavender
+        ];
 
-                if (! $response->successful()) {
-                    continue;
-                }
+        foreach ($palettes as $i => [$r, $g, $b]) {
+            $img = imagecreatetruecolor($width, $height);
 
-                $uuid     = Str::uuid()->toString();
-                $filename = "{$uuid}.jpg";
-                $path     = "{$folder}/{$filename}";
+            // Background
+            $bg = imagecolorallocate($img, $r, $g, $b);
+            imagefill($img, 0, 0, $bg);
 
-                Storage::disk('public')->put($path, $response->body());
+            // Subtle darker band across the lower third (like a horizon)
+            $band = imagecolorallocate($img, max(0, $r - 20), max(0, $g - 20), max(0, $b - 20));
+            imagefilledrectangle($img, 0, (int) ($height * 0.65), $width, $height, $band);
 
-                $media = Media::create([
-                    'user_id'           => $admin->id,
-                    'filename'          => $filename,
-                    'original_filename' => "placeholder-{$seed}.jpg",
-                    'disk'              => 'public',
-                    'path'              => $path,
-                    'mime_type'         => 'image/jpeg',
-                    'type'              => 'image',
-                    'size'              => Storage::disk('public')->size($path),
-                    'width'             => 1200,
-                    'height'            => 630,
-                    'alt'               => "Placeholder image {$seed}",
-                ]);
+            // Simple label so images are visually distinct in the media library
+            $white = imagecolorallocate($img, 236, 239, 244);
+            $label = "Seed image #" . ($i + 1);
+            imagestring($img, 5, 24, 24, $label, $white);
 
-                $images->push($media);
-            } catch (\Throwable) {
-                // Network unavailable — skip silently, posts just won't have featured images
-            }
+            // Write PNG to a temp file, read back, then clean up
+            $tmp = tempnam(sys_get_temp_dir(), 'seed_img_');
+            imagepng($img, $tmp, 6);
+            imagedestroy($img);
+            $png = file_get_contents($tmp);
+            unlink($tmp);
+
+            $uuid     = Str::uuid()->toString();
+            $filename = "{$uuid}.png";
+            $path     = "{$folder}/{$filename}";
+
+            Storage::disk('public')->put($path, $png);
+
+            $media = Media::create([
+                'user_id'           => $admin->id,
+                'filename'          => $filename,
+                'original_filename' => "placeholder-" . ($i + 1) . ".png",
+                'disk'              => 'public',
+                'path'              => $path,
+                'mime_type'         => 'image/png',
+                'type'              => 'image',
+                'size'              => strlen($png),
+                'width'             => $width,
+                'height'            => $height,
+                'alt'               => "Placeholder image " . ($i + 1),
+            ]);
+
+            $images->push($media);
         }
 
         return $images;
