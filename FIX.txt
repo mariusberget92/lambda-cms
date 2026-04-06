@@ -1,0 +1,15 @@
+1. Comments: Comments when posted does not display sucess/error message.
+2. Auth: Login errors are not displayed in a toast, only as a red text under the input. Should match our error notification system in the back.
+3. Comments: Comment moderation in admin panel: the approve/reject/delete buttons should have a cursor hand display, same as with links. It also displays "Invalid Date" after the comment name. 
+4. Comments: When approving/rejecting/deleting comments, it fires 3 notifications with the same message. Should only fire 1. 
+5. Block editor: link block should be added. Can reference dynamic data too as the URL. 
+6. Block editor: navigation block should be added. 
+7. Visual fix: Overhaul of the default front page. Modernize the design. More colors from the NORD palette maybe?
+8. Categories: Option to colorize categories. User can choose color, or random is generated. Add premade options for the user to pick from that resembles the NORD palette. User can though select a custom color from a picker. This needs to be a own vue component and be designed modern. 
+9. Block editor: parallax effect (should this be a option? if so, how do we handle background images?)
+10. Cannot seem to upload anything. It says 10MB. Trying to upload even a 5MB file gives error: "The file failed to upload."
+11. Settings: media extensions. User can enter extensions (just like how tags works in posts). Uploader should display the allowed extensions correctly based on the settings.
+12. Theming: User should be able to set the accent theme color (like now its defaulted to be a nord blue color, see button background on "New post" forexample. User can select from the Nord aurora palette.
+13. Visual fix: Input element in forexample Post page needs #fff as background color. This probably goes for more elements. Check this up. 
+14. Visual fix: The datatables we use for posts, categories and so on, needs to be more stylish and smooth. Every other row, different background.
+15. Post scheduling: Somehow i cannot set a schedule time on posts. Once clicked "Publish" or "Save as draft", the option changes from scheduled to either other one.
