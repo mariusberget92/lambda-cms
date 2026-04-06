@@ -26,18 +26,23 @@ function categoryClass(cat) {
 </script>
 
 <template>
-  <article class="border rounded-xl overflow-hidden bg-card hover:shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-200">
+  <article class="relative group border rounded-xl overflow-hidden bg-card transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:border-primary/30">
+    <!-- Left accent bar (appears on hover) -->
+    <div class="absolute left-0 inset-y-0 w-[3px] bg-primary z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
     <!-- Featured image -->
-    <div v-if="post.featured_image_url" class="w-full h-48 overflow-hidden group">
+    <div v-if="post.featured_image_url" class="relative w-full h-56 overflow-hidden">
       <img
         :src="post.featured_image_url"
         :alt="post.title"
-        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
         loading="lazy"
       />
+      <!-- Gradient overlay — blends image into card body below -->
+      <div class="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-card/80 to-transparent pointer-events-none" />
     </div>
 
-    <div class="p-6">
+    <div :class="['p-6 transition-colors duration-300', post.featured_image_url ? '' : 'bg-gradient-to-br from-primary/5 to-accent/5']">
       <!-- Category badges -->
       <div v-if="post.categories?.length" class="mb-2 flex flex-wrap gap-1">
         <span
@@ -51,14 +56,14 @@ function categoryClass(cat) {
       </div>
 
       <!-- Title -->
-      <h2 class="text-xl font-semibold leading-tight mb-2">
+      <h2 class="text-2xl font-bold leading-tight mb-2">
         <Link :href="`/blog/${post.slug}`" class="hover:text-primary transition-colors">
           {{ post.title }}
         </Link>
       </h2>
 
       <!-- Excerpt -->
-      <p v-if="post.excerpt" class="text-sm text-muted-foreground mb-4 line-clamp-3">
+      <p v-if="post.excerpt" class="text-sm text-muted-foreground mb-4 line-clamp-3 leading-relaxed">
         {{ post.excerpt }}
       </p>
 
@@ -86,7 +91,7 @@ function categoryClass(cat) {
 
         <Link
           :href="`/blog/${post.slug}`"
-          class="text-xs font-medium text-primary hover:underline"
+          class="text-xs font-medium border border-primary text-primary rounded-full px-3 py-1 transition-colors duration-200 hover:bg-primary hover:text-primary-foreground"
         >
           Read more →
         </Link>
