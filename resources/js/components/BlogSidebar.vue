@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
 
 const props = defineProps({
@@ -14,6 +14,7 @@ const props = defineProps({
 })
 
 const searchQuery = ref(props.query)
+watch(() => props.query, (v) => { searchQuery.value = v })
 
 const maxCount = (items) => Math.max(...items.map((i) => i.posts_count), 1)
 
