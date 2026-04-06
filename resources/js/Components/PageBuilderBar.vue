@@ -148,6 +148,19 @@
 
     <div class="w-px h-5 bg-white/10 shrink-0" />
 
+    <!-- Preview -->
+    <a
+      v-if="previewHref"
+      :href="previewHref"
+      target="_blank"
+      rel="noopener"
+      class="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded text-xs text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+      title="Preview page"
+    >
+      <ExternalLink class="w-3.5 h-3.5" />
+      Preview
+    </a>
+
     <!-- Save -->
     <button
       type="button"
@@ -163,10 +176,11 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { ArrowLeft, ChevronDown } from 'lucide-vue-next'
+import { ArrowLeft, ChevronDown, ExternalLink } from 'lucide-vue-next'
 
 const props = defineProps({
   backHref:         { type: String,  required: true },
+  previewHref:      { type: String,  default: null },
   title:            { type: String,  default: '' },
   slug:             { type: String,  default: '' },
   status:           { type: String,  default: 'draft' },

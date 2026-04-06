@@ -13,6 +13,17 @@ class Page extends Model
     use HasFactory;
     use HasRevisions;
 
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (self $page) {
+            if (empty($page->preview_token)) {
+                $page->preview_token = Str::random(64);
+            }
+        });
+    }
+
     protected $fillable = [
         'user_id',
         'title',
@@ -22,6 +33,7 @@ class Page extends Model
         'meta_title',
         'meta_description',
         'meta_keywords',
+        'preview_token',
     ];
 
     protected $casts = [

@@ -70,6 +70,7 @@ class PageController extends Controller
                 'meta_title'       => $page->meta_title,
                 'meta_description' => $page->meta_description,
                 'meta_keywords'    => $page->meta_keywords,
+                'preview_token'    => $page->preview_token,
             ],
             'categories' => Category::orderBy('name')->get(['id', 'name']),
             'tags'       => Tag::orderBy('name')->get(['id', 'name']),
