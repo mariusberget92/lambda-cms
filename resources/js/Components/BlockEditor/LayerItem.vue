@@ -33,7 +33,7 @@
           :id="`rename-${block.id}`"
           v-model="editingName"
           type="text"
-          class="flex-1 bg-transparent text-xs font-semibold uppercase tracking-wider outline-none border-b border-primary min-w-0"
+          class="flex-1 bg-transparent text-foreground text-xs font-semibold uppercase tracking-wider outline-none border-b border-primary min-w-0"
           @blur="commitRename(block)"
           @keydown.enter.prevent="commitRename(block)"
           @keydown.escape="editingId = null"
