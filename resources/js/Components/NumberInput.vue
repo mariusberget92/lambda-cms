@@ -11,6 +11,7 @@ const props = defineProps({
   step:     { type: Number, default: 1 },
   disabled: { type: Boolean, default: false },
   error:    { type: Boolean, default: false },
+  size:     { type: String,  default: 'md' },  // 'md' | 'sm'
 })
 const emit = defineEmits(['update:modelValue'])
 
@@ -44,8 +45,8 @@ function stepDown() {
       :max="max"
       :step="step"
       :disabled="disabled"
-      class="w-full rounded-md border bg-background pl-3 pr-7 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
-      :class="error ? 'border-destructive' : 'border-border'"
+      :class="[size === 'sm' ? 'py-1 text-xs pl-2 pr-6' : 'py-1.5 text-sm pl-3 pr-7', error ? 'border-destructive' : 'border-border']"
+      class="w-full rounded-md border bg-background focus:outline-none focus:ring-2 focus:ring-ring [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
       @input="onInput"
     />
     <div class="absolute right-0 inset-y-0 flex flex-col border-l border-border rounded-r-md overflow-hidden">
