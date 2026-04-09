@@ -142,7 +142,7 @@ import { GripVertical, X, CopyPlus, Copy, Clipboard } from 'lucide-vue-next'
 
 defineOptions({ name: 'LayerItem' })
 
-const CHILD_CAPABLE = new Set(['container', 'section', 'loop', 'archive-loop'])
+const CHILD_CAPABLE = new Set(['container', 'section', 'loop', 'archive-loop', 'accordion', 'accordion-item', 'tabs', 'tab-item'])
 
 const LABELS = {
   paragraph: 'Paragraph', heading: 'Heading', image: 'Image',

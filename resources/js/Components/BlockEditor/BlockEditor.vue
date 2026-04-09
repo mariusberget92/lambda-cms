@@ -92,7 +92,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
-const CHILD_CAPABLE = new Set(['container', 'section', 'loop', 'archive-loop'])
+const CHILD_CAPABLE = new Set(['container', 'section', 'loop', 'archive-loop', 'accordion', 'accordion-item', 'tabs', 'tab-item'])
 
 // ── Internal state ────────────────────────────────────────────────────────────
 
@@ -147,7 +147,7 @@ const clipboard = ref(null)
 // ── Recursive helpers ─────────────────────────────────────────────────────────
 
 function hasChildren(block) {
-  return block.type === 'container' || block.type === 'section' || block.type === 'loop' || block.type === 'archive-loop'
+  return CHILD_CAPABLE.has(block.type)
 }
 
 function findBlock(blocks, id) {
