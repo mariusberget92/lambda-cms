@@ -12,7 +12,8 @@ const props = defineProps({
   searchable:  { type: Boolean, default: false },
   placeholder: { type: String,  default: 'Select...' },
   disabled:    { type: Boolean, default: false },
-  size:        { type: String,  default: 'md' },  // 'md' | 'sm'
+  size:        { type: String,   default: 'md' },  // 'md' | 'sm'
+  itemStyle:   { type: Function, default: null },  // (item) => style object
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -48,6 +49,12 @@ const triggerLabel = computed(() => {
     return count === 0 ? null : `${count} selected`
   }
   return props.data.find(item => item.value === props.modelValue)?.label ?? null
+})
+
+const triggerStyle = computed(() => {
+  if (!props.itemStyle) return undefined
+  const item = props.data.find(i => i.value === props.modelValue)
+  return item ? props.itemStyle(item) : undefined
 })
 
 const hasSelection = computed(() => {
@@ -99,9 +106,10 @@ const toggle = () => {
         class="flex-1 flex items-center text-left focus:outline-none disabled:cursor-not-allowed"
         @click="toggle"
       >
-        <span :class="triggerLabel ? 'text-foreground' : 'text-muted-foreground'">
-          {{ triggerLabel ?? placeholder }}
-        </span>
+        <span
+          :class="triggerLabel ? 'text-foreground' : 'text-muted-foreground'"
+          :style="triggerStyle"
+        >{{ triggerLabel ?? placeholder }}</span>
       </button>
 
       <!-- Icon buttons — clear and chevron, siblings of the label button -->
@@ -158,6 +166,7 @@ const toggle = () => {
               : 'hover:bg-primary/10 hover:text-primary',
           ]"
           class="flex items-center gap-2 cursor-pointer select-none text-foreground"
+          :style="itemStyle ? itemStyle(item) : undefined"
           @click="select(item.value)"
         >
           <input
