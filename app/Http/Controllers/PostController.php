@@ -79,7 +79,8 @@ class PostController extends Controller
             'new_tag_names'    => ['nullable', 'array', 'distinct'],
             'new_tag_names.*'  => ['string', 'min:1', 'max:50'],
             'featured_image_id' => ['nullable', 'exists:media,id'],
-            'comments_enabled' => ['nullable', 'boolean'],
+            'comments_enabled'  => ['nullable', 'boolean'],
+            'featured'          => ['nullable', 'boolean'],
             'meta_title'       => ['nullable', 'string', 'max:100'],
             'meta_description' => ['nullable', 'string', 'max:300'],
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
@@ -102,6 +103,7 @@ class PostController extends Controller
         }
 
         $validated['comments_enabled'] = $validated['comments_enabled'] ?? true;
+        $validated['featured']         = $validated['featured'] ?? false;
         $validated['meta_title']       = $validated['meta_title']       ?? null;
         $validated['meta_description'] = $validated['meta_description'] ?? null;
         $validated['meta_keywords']    = $validated['meta_keywords']    ?? null;
@@ -152,6 +154,7 @@ class PostController extends Controller
                     'alt' => $post->featuredImage->alt,
                 ] : null,
                 'comments_enabled'  => $post->comments_enabled,
+                'featured'          => (bool) $post->featured,
                 'meta_title'        => $post->meta_title,
                 'meta_description'  => $post->meta_description,
                 'meta_keywords'     => $post->meta_keywords,
@@ -192,6 +195,7 @@ class PostController extends Controller
             'new_tag_names.*'   => ['string', 'min:1', 'max:50'],
             'featured_image_id' => ['nullable', 'exists:media,id'],
             'comments_enabled'  => ['nullable', 'boolean'],
+            'featured'          => ['nullable', 'boolean'],
             'meta_title'       => ['nullable', 'string', 'max:100'],
             'meta_description' => ['nullable', 'string', 'max:300'],
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
@@ -214,6 +218,7 @@ class PostController extends Controller
         }
 
         $validated['comments_enabled'] = $validated['comments_enabled'] ?? $post->comments_enabled;
+        $validated['featured']         = $validated['featured'] ?? $post->featured;
         $validated['meta_title']       = $validated['meta_title']       ?? $post->meta_title;
         $validated['meta_description'] = $validated['meta_description'] ?? $post->meta_description;
         $validated['meta_keywords']    = $validated['meta_keywords']    ?? $post->meta_keywords;
