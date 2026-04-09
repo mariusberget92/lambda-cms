@@ -196,6 +196,22 @@
             </label>
           </div>
 
+          <!-- Featured -->
+          <div class="rounded-lg border bg-card p-4">
+            <h3 class="text-sm font-medium mb-3">Featured</h3>
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                v-model="form.featured"
+                class="w-4 h-4 rounded border-border accent-nord-green"
+              />
+              <div>
+                <span class="text-sm font-medium">Featured post</span>
+                <p class="text-xs text-muted-foreground">Highlight this post in featured loops</p>
+              </div>
+            </label>
+          </div>
+
           <!-- SEO -->
           <div class="rounded-lg border bg-card p-4">
             <h3 class="text-sm font-medium mb-3">SEO</h3>
@@ -350,6 +366,7 @@ const form = useForm({
   tag_ids:           props.post.tag_ids ?? [],
   new_tag_names:     [],
   featured_image_id: props.post.featured_image_id ?? null,
+  featured:          props.post.featured ?? false,
   comments_enabled:  props.post.comments_enabled ?? true,
   meta_title:        props.post.meta_title ?? null,
   meta_description:  props.post.meta_description ?? null,
