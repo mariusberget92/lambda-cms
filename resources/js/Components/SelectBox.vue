@@ -12,6 +12,7 @@ const props = defineProps({
   searchable:  { type: Boolean, default: false },
   placeholder: { type: String,  default: 'Select...' },
   disabled:    { type: Boolean, default: false },
+  size:        { type: String,  default: 'md' },  // 'md' | 'sm'
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -80,8 +81,9 @@ const toggle = () => {
   <div ref="root" class="relative" @keydown.escape="open = false">
     <!-- Trigger row — outer div wraps label button + icon buttons as siblings -->
     <div
-      class="w-full flex items-center rounded-md border bg-background text-sm focus-within:ring-2 focus-within:ring-ring"
+      class="w-full flex items-center rounded-md border bg-card focus-within:ring-2 focus-within:ring-ring"
       :class="[
+        size === 'sm' ? 'text-xs' : 'text-sm',
         open ? 'ring-2 ring-ring border-ring' : '',
         disabled ? 'opacity-50 cursor-not-allowed' : '',
       ]"
@@ -93,7 +95,8 @@ const toggle = () => {
         aria-haspopup="listbox"
         :aria-expanded="open"
         v-bind="$attrs"
-        class="flex-1 flex items-center px-3 py-2 text-left focus:outline-none disabled:cursor-not-allowed"
+        :class="size === 'sm' ? 'px-2 py-1' : 'px-3 py-2'"
+        class="flex-1 flex items-center text-left focus:outline-none disabled:cursor-not-allowed"
         @click="toggle"
       >
         <span :class="triggerLabel ? 'text-foreground' : 'text-muted-foreground'">
@@ -148,10 +151,13 @@ const toggle = () => {
           :key="item.value"
           role="option"
           :aria-selected="isSelected(item.value)"
-          class="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer select-none text-foreground"
-          :class="isSelected(item.value) && !multiple
-            ? 'bg-primary text-primary-foreground'
-            : 'hover:bg-primary/10 hover:text-primary'"
+          :class="[
+            size === 'sm' ? 'text-xs py-1.5 px-2' : 'text-sm py-2 px-3',
+            isSelected(item.value) && !multiple
+              ? 'bg-primary text-primary-foreground'
+              : 'hover:bg-primary/10 hover:text-primary',
+          ]"
+          class="flex items-center gap-2 cursor-pointer select-none text-foreground"
           @click="select(item.value)"
         >
           <input
