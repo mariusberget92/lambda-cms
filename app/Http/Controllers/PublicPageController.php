@@ -55,6 +55,13 @@ class PublicPageController extends Controller
                 return $block;
             }
 
+            // Resolve dynamic table block
+            if (($block['type'] ?? '') === 'table' && ($block['data']['mode'] ?? '') === 'dynamic') {
+                $result = $this->queryBuilder->resolve($block['data'] ?? [], $urlParams);
+                $block['data']['resolved'] = $result;
+                return $block;
+            }
+
             // Legacy component block
             if (($block['type'] ?? '') !== 'component') {
                 return $block;

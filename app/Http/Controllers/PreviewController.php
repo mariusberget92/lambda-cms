@@ -122,6 +122,12 @@ class PreviewController extends Controller
                 return $block;
             }
 
+            if (($block['type'] ?? '') === 'table' && ($block['data']['mode'] ?? '') === 'dynamic') {
+                $result = $this->queryBuilder->resolve($block['data'] ?? [], $urlParams);
+                $block['data']['resolved'] = $result;
+                return $block;
+            }
+
             return $block;
         }, $blocks);
     }
