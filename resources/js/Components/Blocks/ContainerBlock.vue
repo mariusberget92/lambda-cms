@@ -57,35 +57,12 @@ const containerClasses = computed(() => {
   ].filter(Boolean).join(' ')
 })
 
-const bgStyle = computed(() => {
-  const d = props.block.data ?? {}
-  const style = {}
-  if (d.bgType === 'color' && d.bgColor) {
-    style.backgroundColor = d.bgColor
-  } else if (d.bgType === 'image' && d.bgImage?.url) {
-    style.backgroundImage    = `url('${d.bgImage.url}')`
-    style.backgroundPosition = d.bgImage.position ?? 'center'
-    style.backgroundSize     = d.bgImage.size ?? 'cover'
-    style.backgroundRepeat   = 'no-repeat'
-    if (d.bgImage.parallax) style.backgroundAttachment = 'fixed'
-  } else if (d.bgType === 'gradient' && d.bgGradient) {
-    const { from, to, direction } = d.bgGradient
-    const dir = {
-      'to-r': 'to right', 'to-l': 'to left',
-      'to-b': 'to bottom', 'to-t': 'to top',
-      'to-br': 'to bottom right', 'to-bl': 'to bottom left',
-    }[direction] ?? 'to right'
-    style.backgroundImage = `linear-gradient(${dir}, ${from ?? '#3b4252'}, ${to ?? '#4c566a'})`
-  }
-  return style
-})
-
 const containerStyle = computed(() => {
   const d = props.block.data ?? {}
   const style = {}
   if (gapIsString.value && d.gap)     style.gap     = d.gap
   if (paddingIsObject.value)          Object.assign(style, paddingToStyle(d.padding))
-  return { ...bgStyle.value, ...style }
+  return style
 })
 
 // When this container is flex or grid, the BlockRenderer wrapper must be layout-transparent

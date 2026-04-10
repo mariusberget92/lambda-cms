@@ -1,6 +1,6 @@
 <!-- resources/js/Components/Blocks/CtaBlock.vue -->
 <template>
-  <div class="my-4 rounded-lg border bg-card p-6 text-center">
+  <div class="my-4 rounded-lg border p-6 text-center">
     <h3 v-if="resolvedHeadline" class="text-xl font-bold mb-2">{{ resolvedHeadline }}</h3>
     <p v-if="resolvedText" class="text-muted-foreground mb-4">{{ resolvedText }}</p>
     <a

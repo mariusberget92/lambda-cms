@@ -15,29 +15,7 @@ const MIN_HEIGHT_MAP = {
 }
 
 const outerStyle = computed(() => {
-  const padding = outerPaddingStyle.value
-  const d = props.block.data ?? {}
-  const styles = {}
-
-  if (d.bgType === 'color' && d.bgColor) {
-    styles.backgroundColor = d.bgColor
-  } else if (d.bgType === 'image' && d.bgImage?.url) {
-    styles.backgroundImage    = `url('${d.bgImage.url}')`
-    styles.backgroundPosition = d.bgImage.position ?? 'center'
-    styles.backgroundSize     = d.bgImage.size ?? 'cover'
-    styles.backgroundRepeat   = 'no-repeat'
-    if (d.bgImage.parallax) styles.backgroundAttachment = 'fixed'
-  } else if (d.bgType === 'gradient' && d.bgGradient) {
-    const { from, to, direction } = d.bgGradient
-    const dir = {
-      'to-r': 'to right', 'to-l': 'to left',
-      'to-b': 'to bottom', 'to-t': 'to top',
-      'to-br': 'to bottom right', 'to-bl': 'to bottom left',
-    }[direction] ?? 'to right'
-    styles.backgroundImage = `linear-gradient(${dir}, ${from ?? '#3b4252'}, ${to ?? '#4c566a'})`
-  }
-
-  return { ...styles, ...padding }
+  return outerPaddingStyle.value
 })
 
 // New format: d.padding = { top, right, bottom, left } with CSS strings
