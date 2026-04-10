@@ -48,7 +48,7 @@
     <!-- Accent bar -->
     <div class="space-y-2">
       <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block">Accent bar</label>
-      <SelectBox
+      <SelectBox size="sm"
         :model-value="block.data.accentBar?.style ?? 'left'"
         :data="[
           { value: 'none',  label: 'None' },
@@ -72,17 +72,6 @@
           @update:model-value="v => updateNested('accentBar', 'width', v || '4px')"
         />
       </template>
-    </div>
-
-    <!-- Background color -->
-    <div>
-      <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block mb-2">Background</label>
-      <ColorPicker
-        :model-value="block.data.bgColor"
-        default="#ffffff"
-        :show-reset="true"
-        @update:model-value="v => emit('update', { id: block.id, data: { bgColor: v } })"
-      />
     </div>
 
   </div>

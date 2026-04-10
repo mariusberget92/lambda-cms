@@ -26,16 +26,6 @@
       @update:model-value="v => emit('update', { id: block.id, data: { typography: v } })"
     />
 
-    <div>
-      <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block mb-2">Background</label>
-      <ColorPicker
-        :model-value="block.data.bgColor"
-        default="#ffffff"
-        :show-reset="true"
-        @update:model-value="v => emit('update', { id: block.id, data: { bgColor: v } })"
-      />
-    </div>
-
   </div>
 </template>
 
@@ -43,7 +33,6 @@
 import TiptapEditor    from '@/Components/TiptapEditor.vue'
 import DynamicField    from './DynamicField.vue'
 import TypographyControl from '../TypographyControl.vue'
-import ColorPicker     from '../ColorPicker.vue'
 
 const props = defineProps({
   block:           { type: Object, required: true },
