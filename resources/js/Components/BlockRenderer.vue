@@ -50,6 +50,7 @@ import ArchiveTitleBlock      from '@/Components/Blocks/ArchiveTitleBlock.vue'
 import SearchBlock            from '@/Components/Blocks/SearchBlock.vue'
 import NavigationBlock        from '@/components/Blocks/NavigationBlock.vue'
 import LinkBlock              from '@/components/Blocks/LinkBlock.vue'
+import TableBlock             from '@/Components/Blocks/TableBlock.vue'
 
 const props = defineProps({
   blocks:       { type: Array,  default: () => [] },
@@ -80,6 +81,14 @@ function blockWrapperStyle(block) {
   if (block.data?.margin) Object.assign(style, spacingStyle(block.data.margin, 'margin'))
   if (block.data?.padding && !SELF_PADDED_TYPES.has(block.type)) {
     Object.assign(style, spacingStyle(block.data.padding, 'padding'))
+  }
+  const bgType = block.data?.advBgType
+  if (bgType === 'color' && block.data?.advBgColor) {
+    style.backgroundColor = block.data.advBgColor
+  } else if (bgType === 'gradient' && block.data?.advBgGradient) {
+    const g = block.data.advBgGradient
+    const dir = { 'to-r': 'to right', 'to-l': 'to left', 'to-b': 'to bottom', 'to-t': 'to top', 'to-br': 'to bottom right', 'to-bl': 'to bottom left' }[g.direction ?? 'to-r'] ?? 'to right'
+    style.backgroundImage = `linear-gradient(${dir}, ${g.from ?? '#3b4252'}, ${g.to ?? '#4c566a'})`
   }
   return Object.keys(style).length ? style : undefined
 }
@@ -116,6 +125,7 @@ const BLOCK_MAP = {
   search:                SearchBlock,
   navigation:            NavigationBlock,
   link:                  LinkBlock,
+  table:                 TableBlock,
 }
 
 // Injected by LoopItemProvider when this renderer is inside a loop iteration

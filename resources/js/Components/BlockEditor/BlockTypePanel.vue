@@ -68,6 +68,7 @@ import {
   PlayCircle,
   ChevronRight as ChevronRightIcon,
   Navigation2,
+  Table2,
 } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -100,6 +101,7 @@ const ALL_TYPES = [
   { type: 'loop',      label: 'Loop',      icon: Repeat2,           group: 'Interactive' },
   { type: 'link',      label: 'Link',      icon: Link,              group: 'Interactive' },
   { type: 'pagination',label: 'Pagination',icon: ChevronRightIcon,  group: 'Interactive' },
+  { type: 'table',     label: 'Table',     icon: Table2,            group: 'Interactive' },
   { type: 'html',      label: 'HTML',      icon: FileCode,          group: 'Developer', adminOnly: true },
   // ── Post (hidden from palette — only used inside loop blocks) ───────────
   { type: 'post-title',          label: 'Post Title',  icon: Heading1,      group: 'Post', hiddenFromPalette: true },
@@ -215,6 +217,24 @@ const DEFAULT_DATA = {
     nextLabel: 'Next →',
     alignment: 'center',
     buttonStyle: 'outline',
+  },
+  table: {
+    mode: 'static',
+    columns: [
+      { id: 'col-1', label: 'Column 1', field: '', prefix: '', suffix: '', align: 'left' },
+      { id: 'col-2', label: 'Column 2', field: '', prefix: '', suffix: '', align: 'left' },
+    ],
+    rows: [ { 'col-1': '', 'col-2': '' }, { 'col-1': '', 'col-2': '' } ],
+    source: 'posts',
+    filters: [],
+    filter_logic: 'and',
+    sort: { field: 'published_at', direction: 'desc' },
+    limit: 10,
+    offset: 0,
+    striped: true,
+    borderStyle: 'full',
+    headerStyle: true,
+    responsive: 'scroll',
   },
 }
 

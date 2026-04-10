@@ -175,6 +175,7 @@ import TabItemSettings        from './blocks/TabItemSettings.vue'
 import EmbedSettings          from './blocks/EmbedSettings.vue'
 import PaginationSettings     from './blocks/PaginationSettings.vue'
 import NavigationSettings     from './blocks/NavigationSettings.vue'
+import TableSettings         from './blocks/TableSettings.vue'
 
 const props = defineProps({
   blocks:        { type: Array,   default: () => [] },
@@ -223,6 +224,7 @@ const STYLE_BLOCKS = new Set([
   'link', 'accordion', 'tabs', 'embed', 'pagination', 'heading',
   // Content blocks with style tabs
   'paragraph', 'image', 'gallery', 'video', 'quote', 'cta', 'code',
+  'table',
 ])
 
 // Block types where Style should be the default active tab
@@ -251,7 +253,7 @@ const LABELS = {
   search: 'Search',
   link: 'Link', accordion: 'Accordion', 'accordion-item': 'Accordion Item',
   tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
-  navigation: 'Navigation',
+  navigation: 'Navigation', table: 'Table',
 }
 
 const COMPONENT_MAP = {
@@ -278,6 +280,7 @@ const COMPONENT_MAP = {
   embed:                 EmbedSettings,
   pagination:            PaginationSettings,
   navigation:            NavigationSettings,
+  table:                 TableSettings,
 }
 
 const settingsComponent = computed(() =>

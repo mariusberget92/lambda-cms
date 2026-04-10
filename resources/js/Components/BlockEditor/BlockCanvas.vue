@@ -137,6 +137,13 @@
                 @select="$emit('select', $event)"
                 @update-children="$emit('update-children', $event)"
               />
+              <EditorTableBlock
+                v-else-if="block.type === 'table'"
+                :block="block"
+                :selected-id="selectedId"
+                @select="$emit('select', $event)"
+                @update="$emit('update', $event)"
+              />
 
               <!-- Spacer -->
               <div v-else-if="block.type === 'spacer'" class="flex flex-col">
@@ -194,6 +201,7 @@ import EditorLoopBlock      from './EditorLoopBlock.vue'
 import EditorLinkBlock      from './EditorLinkBlock.vue'
 import EditorAccordionBlock from './EditorAccordionBlock.vue'
 import EditorTabsBlock      from './EditorTabsBlock.vue'
+import EditorTableBlock     from './EditorTableBlock.vue'
 import BlockRenderer from '@/components/BlockRenderer.vue'
 import ParagraphBlock from '@/Components/Blocks/ParagraphBlock.vue'
 import HeadingBlock   from '@/Components/Blocks/HeadingBlock.vue'
@@ -208,6 +216,7 @@ import HtmlBlock      from '@/Components/Blocks/HtmlBlock.vue'
 import EmbedBlock       from '@/components/Blocks/EmbedBlock.vue'
 import PaginationBlock  from '@/components/Blocks/PaginationBlock.vue'
 import NavigationBlock  from '@/components/Blocks/NavigationBlock.vue'
+import TableBlock       from '@/Components/Blocks/TableBlock.vue'
 import EditorNavigationBlock from './EditorNavigationBlock.vue'
 
 const BLOCK_MAP = {
@@ -224,6 +233,7 @@ const BLOCK_MAP = {
   embed:      EmbedBlock,
   pagination: PaginationBlock,
   navigation: EditorNavigationBlock,
+  table:      TableBlock,
 }
 
 const LABELS = {
@@ -233,7 +243,7 @@ const LABELS = {
   container: 'Container', section: 'Section', spacer: 'Spacer', loop: 'Loop',
   link: 'Link', accordion: 'Accordion', 'accordion-item': 'Acc. Item',
   tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
-  navigation: 'Navigation',
+  navigation: 'Navigation', table: 'Table',
 }
 
 const props = defineProps({
@@ -241,7 +251,7 @@ const props = defineProps({
   selectedId: { type: String, default: null },
 })
 
-const emit = defineEmits(['select', 'reorder', 'update-children'])
+const emit = defineEmits(['select', 'reorder', 'update-children', 'update'])
 
 // Local ref pattern: keeps draggable in sync without stale reverts
 const _list = ref([...(props.blocks ?? [])])

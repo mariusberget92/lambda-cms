@@ -18,6 +18,7 @@
       @select="selectBlock"
       @reorder="onReorder"
       @update-children="onUpdateChildren"
+      @update="updateBlock"
     />
 
     <!-- Right: layers list + settings -->
