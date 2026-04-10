@@ -124,10 +124,10 @@
           />
           <span class="text-xs text-muted-foreground">Parallax (fixed)</span>
         </label>
+
+        <MediaPicker v-model="showImagePicker" :dark="true" @select="onBgImageSelect" />
       </div>
     </div>
-
-    <MediaPicker v-model="showImagePicker" :dark="true" @select="onBgImageSelect" />
 
     <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground pt-1 border-t">Advanced</p>
 
@@ -181,7 +181,7 @@ import SelectBox from '@/Components/SelectBox.vue'
 import SpacingControl from '../SpacingControl.vue'
 import ColorPicker from '../ColorPicker.vue'
 import CssEditor from '../CssEditor.vue'
-import MediaPicker from '@/components/MediaPicker.vue'
+import MediaPicker from '@/Components/MediaPicker.vue'
 
 const FONTS = [
   'Inter', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Poppins', 'Raleway', 'Nunito',
