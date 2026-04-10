@@ -1,11 +1,9 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import SelectBox     from '@/Components/SelectBox.vue'
 import NumberInput   from '@/Components/NumberInput.vue'
 import DimensionInput from '../DimensionInput.vue'
 import SpacingControl from '../SpacingControl.vue'
-import MediaPicker   from '@/Components/MediaPicker.vue'
-import ColorPicker   from '../ColorPicker.vue'
 
 const props = defineProps({
   block: { type: Object, required: true },
@@ -35,18 +33,7 @@ function update(key, value) {
   emit('update', { id: props.block.id, data: { [key]: value } })
 }
 
-function updateNested(key, subKey, value) {
-  const current = props.block.data[key]
-  emit('update', { id: props.block.id, data: { [key]: { ...(current ?? {}), [subKey]: value } } })
-}
 
-const bgImageMode  = ref('library')
-const showBgPicker = ref(false)
-
-function onBgMediaSelect(media) {
-  showBgPicker.value = false
-  updateNested('bgImage', 'url', media.url)
-}
 </script>
 
 <template>
@@ -75,127 +62,6 @@ function onBgMediaSelect(media) {
     <!-- Style tab fields -->
     <div v-show="!tab || tab === 'style'" class="space-y-3">
 
-      <!-- Background -->
-      <div class="space-y-2">
-        <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block">Background</label>
-
-        <div class="flex gap-1 flex-wrap">
-          <button type="button" v-for="opt in ['none','color','image','gradient']" :key="opt"
-            class="px-2 py-1 text-xs rounded border transition-colors"
-            :class="block.data.bgType === opt ? 'bg-primary text-primary-foreground border-primary' : 'bg-background border-border'"
-            @click="update('bgType', opt)">
-            {{ opt.charAt(0).toUpperCase() + opt.slice(1) }}
-          </button>
-        </div>
-
-        <!-- Color picker -->
-        <div v-if="block.data.bgType === 'color'">
-          <ColorPicker
-            :model-value="block.data.bgColor ?? '#ffffff'"
-            default="#ffffff"
-            @update:model-value="v => update('bgColor', v)"
-          />
-        </div>
-
-        <!-- Image picker -->
-        <div v-if="block.data.bgType === 'image'" class="space-y-2">
-
-          <!-- Source toggle -->
-          <div class="flex gap-1 p-0.5 rounded-md bg-muted w-fit">
-            <button type="button"
-              class="px-2.5 py-1 rounded text-xs font-medium transition-colors"
-              :class="bgImageMode === 'library' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
-              @click="bgImageMode = 'library'">Library</button>
-            <button type="button"
-              class="px-2.5 py-1 rounded text-xs font-medium transition-colors"
-              :class="bgImageMode === 'url' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
-              @click="bgImageMode = 'url'">URL</button>
-          </div>
-
-          <!-- Library mode -->
-          <div v-if="bgImageMode === 'library'">
-            <div v-if="block.data.bgImage?.url" class="rounded overflow-hidden border mb-2 max-h-24">
-              <img :src="block.data.bgImage.url" class="w-full h-full object-cover" />
-            </div>
-            <button type="button"
-              class="w-full rounded border border-dashed px-3 py-2 text-xs text-muted-foreground hover:border-primary hover:text-primary transition-colors"
-              @click="showBgPicker = true">
-              {{ block.data.bgImage?.url ? 'Change image' : 'Select image' }}
-            </button>
-            <MediaPicker v-model="showBgPicker" :dark="true" @select="onBgMediaSelect" />
-          </div>
-
-          <!-- URL mode -->
-          <input v-else type="url" :value="block.data.bgImage?.url ?? ''"
-            @input="updateNested('bgImage', 'url', $event.target.value)"
-            placeholder="https://..."
-            class="w-full rounded border border-border bg-background px-2 py-1 text-xs" />
-          <SelectBox
-            :model-value="block.data.bgImage?.position ?? 'center'"
-            :data="[
-              { value: 'center',       label: 'Center' },
-              { value: 'top',          label: 'Top' },
-              { value: 'bottom',       label: 'Bottom' },
-              { value: 'left center',  label: 'Left' },
-              { value: 'right center', label: 'Right' },
-            ]"
-            @update:model-value="v => updateNested('bgImage', 'position', v)"
-          />
-          <SelectBox
-            :model-value="block.data.bgImage?.size ?? 'cover'"
-            :data="[
-              { value: 'cover',   label: 'Cover' },
-              { value: 'contain', label: 'Contain' },
-              { value: 'auto',    label: 'Auto' },
-            ]"
-            @update:model-value="v => updateNested('bgImage', 'size', v)"
-          />
-          <div class="flex items-center gap-2">
-            <input type="checkbox" id="container-parallax"
-              :checked="block.data.bgImage?.parallax"
-              @change="updateNested('bgImage', 'parallax', $event.target.checked)"
-              class="rounded border-border accent-nord-green" />
-            <label for="container-parallax" class="text-xs text-muted-foreground">Parallax (fixed attachment)</label>
-          </div>
-        </div>
-
-        <!-- Gradient picker -->
-        <div v-if="block.data.bgType === 'gradient'" class="space-y-2">
-          <div class="flex gap-4 items-start">
-            <div>
-              <label class="text-[10px] text-muted-foreground block mb-1">From</label>
-              <ColorPicker
-                :model-value="block.data.bgGradient?.from ?? '#3b4252'"
-                default="#3b4252"
-                :show-value="false"
-                @update:model-value="v => updateNested('bgGradient', 'from', v)"
-              />
-            </div>
-            <div>
-              <label class="text-[10px] text-muted-foreground block mb-1">To</label>
-              <ColorPicker
-                :model-value="block.data.bgGradient?.to ?? '#4c566a'"
-                default="#4c566a"
-                :show-value="false"
-                @update:model-value="v => updateNested('bgGradient', 'to', v)"
-              />
-            </div>
-          </div>
-          <SelectBox
-            :model-value="block.data.bgGradient?.direction ?? 'to-r'"
-            :data="[
-              { value: 'to-r',  label: 'Left to right' },
-              { value: 'to-l',  label: 'Right to left' },
-              { value: 'to-b',  label: 'Top to bottom' },
-              { value: 'to-t',  label: 'Bottom to top' },
-              { value: 'to-br', label: 'Top-left to bottom-right' },
-              { value: 'to-bl', label: 'Top-right to bottom-left' },
-            ]"
-            @update:model-value="v => updateNested('bgGradient', 'direction', v)"
-          />
-        </div>
-      </div>
-
       <!-- Flex-only controls -->
       <template v-if="mode === 'flex'">
         <div>
@@ -205,7 +71,7 @@ function onBgMediaSelect(media) {
               <span class="text-[10px] text-muted-foreground block mb-0.5 text-center">
                 {{ bp === 'default' ? 'Mobile' : bp === 'sm' ? 'SM' : 'LG' }}
               </span>
-              <SelectBox
+              <SelectBox size="sm"
                 :model-value="getBreakpoint('direction', bp)"
                 :data="[{ value: 'row', label: 'Row' }, { value: 'column', label: 'Col' }]"
                 @update:model-value="v => setBreakpoint('direction', bp, v)"
@@ -224,7 +90,7 @@ function onBgMediaSelect(media) {
 
         <div>
           <label class="text-xs font-medium text-muted-foreground block mb-1">Justify content</label>
-          <SelectBox
+          <SelectBox size="sm"
             :model-value="block.data.justify"
             :data="[
               { value: 'start',   label: 'Start' },
@@ -239,7 +105,7 @@ function onBgMediaSelect(media) {
 
         <div>
           <label class="text-xs font-medium text-muted-foreground block mb-1">Align items</label>
-          <SelectBox
+          <SelectBox size="sm"
             :model-value="block.data.align"
             :data="[
               { value: 'start',   label: 'Start' },
@@ -261,7 +127,7 @@ function onBgMediaSelect(media) {
               <span class="text-[10px] text-muted-foreground block mb-0.5 text-center">
                 {{ bp === 'default' ? 'Mobile' : bp === 'sm' ? 'SM' : 'LG' }}
               </span>
-              <NumberInput
+              <NumberInput size="sm"
                 :model-value="getBreakpoint('columns', bp) ?? ''"
                 :min="1"
                 :max="12"
@@ -284,7 +150,7 @@ function onBgMediaSelect(media) {
 
       <div>
         <label class="text-xs font-medium text-muted-foreground block mb-1">Max width</label>
-        <SelectBox
+        <SelectBox size="sm"
           :model-value="block.data.maxWidth"
           :data="[
             { value: 'full',  label: 'Full' },
