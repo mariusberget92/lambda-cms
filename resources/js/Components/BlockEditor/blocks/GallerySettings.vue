@@ -85,7 +85,7 @@
           <span class="text-[10px] text-muted-foreground block mb-0.5 text-center">
             {{ bp === 'default' ? 'Mobile' : bp === 'sm' ? 'SM' : 'LG' }}
           </span>
-          <NumberInput
+          <NumberInput size="sm"
             :model-value="getColumns(bp)"
             :min="1"
             :max="6"

@@ -8,7 +8,7 @@
       <!-- ── Data Source ─────────────────────────────────────────────── -->
       <div>
         <label class="text-xs font-medium text-muted-foreground block mb-1">Data Source</label>
-        <SelectBox
+        <SelectBox size="sm"
           :model-value="block.data.source"
           :data="SOURCES"
           @update:model-value="onSourceChange"
@@ -52,7 +52,7 @@
           class="mb-2 p-2 rounded-md border bg-muted/30 space-y-1.5"
         >
           <!-- Field -->
-          <SelectBox
+          <SelectBox size="sm"
             :model-value="filter.field"
             :data="filterableFields"
             placeholder="Field..."
@@ -60,7 +60,7 @@
           />
 
           <!-- Operator -->
-          <SelectBox
+          <SelectBox size="sm"
             :model-value="filter.op"
             :data="FILTER_OPS"
             @update:model-value="v => updateFilter(i, { op: v })"
@@ -108,13 +108,13 @@
       <div>
         <label class="text-xs font-medium text-muted-foreground block mb-1">Sort By</label>
         <div class="flex gap-2">
-          <SelectBox
+          <SelectBox size="sm"
             :model-value="block.data.sort?.field"
             :data="sortFieldOptions"
             class="flex-1"
             @update:model-value="v => emitData({ sort: { ...block.data.sort, field: v } })"
           />
-          <SelectBox
+          <SelectBox size="sm"
             :model-value="block.data.sort?.direction ?? 'desc'"
             :data="[{ value: 'desc', label: 'Desc' }, { value: 'asc', label: 'Asc' }]"
             class="w-[4.5rem]"
@@ -127,7 +127,7 @@
       <div class="flex gap-2">
         <div class="flex-1">
           <label class="text-xs font-medium text-muted-foreground block mb-1">Limit</label>
-          <NumberInput
+          <NumberInput size="sm"
             :model-value="block.data.limit ?? 12"
             :min="1"
             :max="100"
@@ -136,7 +136,7 @@
         </div>
         <div class="flex-1">
           <label class="text-xs font-medium text-muted-foreground block mb-1">Offset</label>
-          <NumberInput
+          <NumberInput size="sm"
             :model-value="block.data.offset ?? 0"
             :min="0"
             @update:model-value="emitData({ offset: $event || 0 })"
@@ -152,7 +152,7 @@
       <!-- ── Appearance ─────────────────────────────────────────────── -->
       <div>
         <label class="text-xs font-medium text-muted-foreground block mb-1">Columns per row</label>
-        <SelectBox
+        <SelectBox size="sm"
           :model-value="block.data.columns ?? 1"
           :data="[1, 2, 3, 4].map(n => ({ value: n, label: `${n} col${n > 1 ? 's' : ''}` }))"
           @update:model-value="v => emitData({ columns: Number(v) })"
@@ -161,7 +161,7 @@
 
       <div>
         <label class="text-xs font-medium text-muted-foreground block mb-1">Gap</label>
-        <SelectBox
+        <SelectBox size="sm"
           :model-value="block.data.gap ?? 'md'"
           :data="[
             { value: 'sm', label: 'Small' },

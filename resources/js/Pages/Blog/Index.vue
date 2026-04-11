@@ -41,7 +41,7 @@ defineProps({
             :href="link.url"
             class="px-3 py-1.5 text-sm rounded-md border transition-colors"
             :class="link.active
-              ? 'bg-gradient-to-r from-primary to-accent text-primary-foreground border-primary shadow-sm'
+              ? 'bg-gradient-to-b from-primary to-accent text-primary-foreground border-primary shadow-sm'
               : 'bg-card text-muted-foreground hover:bg-muted hover:text-foreground hover:border-foreground'"
           >
             {{ decodeHtmlEntities(link.label) }}

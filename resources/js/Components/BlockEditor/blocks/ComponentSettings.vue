@@ -6,7 +6,7 @@
       <!-- Sub-type selector -->
       <div>
         <label class="text-xs font-medium text-muted-foreground block mb-1">Component type</label>
-        <SelectBox
+        <SelectBox size="sm"
           :model-value="block.data.component"
           :data="[{ value: 'post-list', label: 'Post List' }]"
           @update:model-value="v => update('component', v)"
@@ -17,7 +17,7 @@
         <!-- Order -->
         <div>
           <label class="text-xs font-medium text-muted-foreground block mb-1">Order</label>
-          <SelectBox
+          <SelectBox size="sm"
             :model-value="block.data.order"
             :data="[
               { value: 'latest', label: 'Latest first' },
@@ -32,7 +32,7 @@
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="text-xs font-medium text-muted-foreground block mb-1">Limit</label>
-            <NumberInput
+            <NumberInput size="sm"
               :model-value="block.data.limit"
               :min="1"
               :max="100"
@@ -41,7 +41,7 @@
           </div>
           <div>
             <label class="text-xs font-medium text-muted-foreground block mb-1">Offset</label>
-            <NumberInput
+            <NumberInput size="sm"
               :model-value="block.data.offset"
               :min="0"
               @update:model-value="update('offset', $event || 0)"

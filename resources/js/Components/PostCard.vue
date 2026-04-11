@@ -38,8 +38,6 @@ function categoryClass(cat) {
         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
         loading="lazy"
       />
-      <!-- Gradient overlay — blends image into card body below -->
-      <div class="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-card/80 to-transparent pointer-events-none" />
     </div>
 
     <div :class="['p-6 transition-colors duration-300', post.featured_image_url ? '' : 'bg-gradient-to-br from-primary/5 to-accent/5']">

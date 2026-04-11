@@ -30,7 +30,7 @@
   <div v-show="!tab || tab === 'style'" class="space-y-3">
     <div>
       <label class="text-xs font-medium text-muted-foreground block mb-1">Aspect ratio</label>
-      <SelectBox
+      <SelectBox size="sm"
         :model-value="block.data.aspectRatio ?? '16/9'"
         :data="[
           { value: '16/9',  label: '16:9 (Widescreen)' },

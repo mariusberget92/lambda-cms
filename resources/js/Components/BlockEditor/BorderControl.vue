@@ -16,7 +16,7 @@
     <!-- Border style -->
     <div v-if="showBorder">
       <label class="text-xs font-medium text-muted-foreground block mb-1">Border style</label>
-      <SelectBox
+      <SelectBox size="sm"
         :model-value="modelValue.style ?? 'none'"
         :data="[
           { value: 'none',   label: 'None' },

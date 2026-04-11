@@ -3,7 +3,7 @@
   <div v-show="!tab || tab === 'style'" class="space-y-3">
     <div>
       <label class="text-xs font-medium text-muted-foreground block mb-1">Tab style</label>
-      <SelectBox
+      <SelectBox size="sm"
         :model-value="block.data.tabStyle ?? 'underline'"
         :data="[
           { value: 'underline', label: 'Underline' },

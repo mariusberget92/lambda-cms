@@ -14,13 +14,13 @@
     </label>
 
     <template v-if="hasCondition">
-      <SelectBox
+      <SelectBox size="sm"
         :model-value="condition.field"
         :data="fieldOptions"
         placeholder="Field..."
         @update:model-value="v => update({ field: v })"
       />
-      <SelectBox
+      <SelectBox size="sm"
         :model-value="condition.op"
         :data="OPS"
         @update:model-value="v => update({ op: v })"

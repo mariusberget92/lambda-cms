@@ -49,7 +49,7 @@
 
     <div>
       <label class="text-xs font-medium text-muted-foreground block mb-1">Rel attribute</label>
-      <SelectBox
+      <SelectBox size="sm"
         :model-value="block.data.rel || ''"
         :data="[
           { value: '',           label: 'None' },

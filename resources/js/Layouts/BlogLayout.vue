@@ -63,32 +63,31 @@ function closeSearch() {
           </template>
 
           <!-- Search -->
-          <div class="flex items-center">
-            <form
-              v-if="searchOpen"
-              @submit.prevent="submitHeaderSearch"
-              class="flex items-center gap-1"
+          <div class="flex items-center gap-1">
+            <!-- Animated input container — expands/collapses on toggle -->
+            <div
+              class="overflow-hidden transition-all duration-300 ease-out flex items-center"
+              :class="searchOpen ? 'max-w-[180px] opacity-100' : 'max-w-0 opacity-0 pointer-events-none'"
             >
-              <input
-                ref="headerSearchInput"
-                v-model="headerQuery"
-                type="search"
-                placeholder="Search…"
-                @keydown.escape="closeSearch"
-                class="h-7 w-40 rounded-md border bg-background px-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-              <button type="submit" class="text-muted-foreground hover:text-foreground transition-colors p-1">
-                <Search class="w-4 h-4" />
-              </button>
-              <button type="button" @click="closeSearch" class="text-muted-foreground hover:text-foreground transition-colors p-1" aria-label="Close search">
-                <X class="w-3.5 h-3.5" />
-              </button>
-            </form>
+              <form @submit.prevent="submitHeaderSearch" class="flex items-center gap-1 pl-0.5">
+                <input
+                  ref="headerSearchInput"
+                  v-model="headerQuery"
+                  type="search"
+                  placeholder="Search…"
+                  @keydown.escape="closeSearch"
+                  class="h-7 w-36 rounded-md border bg-background px-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+                <button type="button" @click="closeSearch" class="text-muted-foreground hover:text-foreground transition-colors p-1 flex-shrink-0" aria-label="Close search">
+                  <X class="w-3.5 h-3.5" />
+                </button>
+              </form>
+            </div>
+            <!-- Search icon — opens when closed, submits when open -->
             <button
-              v-else
               type="button"
-              @click="openSearch"
-              class="text-muted-foreground hover:text-foreground transition-colors p-1"
+              @click="searchOpen ? submitHeaderSearch() : openSearch()"
+              class="text-muted-foreground hover:text-foreground transition-colors p-1 flex-shrink-0"
               aria-label="Search"
             >
               <Search class="w-4 h-4" />
@@ -110,15 +109,9 @@ function closeSearch() {
     </header>
 
     <!-- Hero strip -->
-    <div class="relative overflow-hidden bg-gradient-to-br from-[#2e3440] to-[#3b4252]">
-      <!-- Radial glow blob -->
-      <div class="absolute inset-0 pointer-events-none"
-           style="background: radial-gradient(ellipse 60% 80% at 70% 50%, rgba(94,129,172,0.28) 0%, transparent 70%)" />
-      <!-- Bottom fade into page -->
-      <div class="absolute bottom-0 left-0 right-0 h-10 pointer-events-none bg-gradient-to-b from-transparent to-background" />
-      <div class="relative max-w-5xl mx-auto px-4 py-14">
-        <div class="border-l-4 border-primary pl-5"
-             style="box-shadow: -3px 0 18px rgba(94,129,172,0.4)">
+    <div class="bg-[#2e3440]">
+      <div class="max-w-5xl mx-auto px-4 py-14">
+        <div class="border-l-4 border-primary pl-5">
           <h1 class="text-4xl font-bold tracking-tight text-white">{{ appName }}</h1>
           <p class="mt-2 text-base" style="color: rgba(216,222,233,0.72)">
             A simple, clean blog powered by Lambda CMS.

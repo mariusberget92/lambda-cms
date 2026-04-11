@@ -44,7 +44,7 @@
     <!-- Font weight -->
     <div>
       <label class="text-xs font-medium text-muted-foreground block mb-1">Font weight</label>
-      <SelectBox
+      <SelectBox size="sm"
         :model-value="modelValue.fontWeight ?? ''"
         :data="[
           { value: '',    label: 'Inherit' },

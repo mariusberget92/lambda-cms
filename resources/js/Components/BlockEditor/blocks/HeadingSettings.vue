@@ -4,7 +4,7 @@
   <div v-show="!tab || tab === 'content'" class="space-y-3">
     <div>
       <label class="text-xs font-medium text-muted-foreground block mb-1">Level</label>
-      <SelectBox
+      <SelectBox size="sm"
         :model-value="block.data.level"
         :data="[1,2,3,4,5,6].map(n => ({ value: n, label: `H${n}` }))"
         @update:model-value="v => emit('update', { id: block.id, data: { level: Number(v) } })"

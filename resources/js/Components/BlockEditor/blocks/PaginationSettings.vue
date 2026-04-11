@@ -16,7 +16,7 @@
 
     <div>
       <label class="text-xs font-medium text-muted-foreground block mb-1">Style</label>
-      <SelectBox
+      <SelectBox size="sm"
         :model-value="block.data.style ?? 'prev-next'"
         :data="[
           { value: 'prev-next', label: 'Prev / Next only' },
@@ -67,7 +67,7 @@
 
     <div>
       <label class="text-xs font-medium text-muted-foreground block mb-1">Button style</label>
-      <SelectBox
+      <SelectBox size="sm"
         :model-value="block.data.buttonStyle ?? 'outline'"
         :data="[
           { value: 'outline', label: 'Outline' },

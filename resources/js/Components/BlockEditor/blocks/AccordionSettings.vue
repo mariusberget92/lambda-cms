@@ -3,7 +3,7 @@
   <div v-show="!tab || tab === 'style'" class="space-y-3">
     <div>
       <label class="text-xs font-medium text-muted-foreground block mb-1">Default state</label>
-      <SelectBox
+      <SelectBox size="sm"
         :model-value="block.data.defaultState ?? 'first-open'"
         :data="[
           { value: 'first-open',   label: 'First item open' },
@@ -16,7 +16,7 @@
 
     <div>
       <label class="text-xs font-medium text-muted-foreground block mb-1">Border style</label>
-      <SelectBox
+      <SelectBox size="sm"
         :model-value="block.data.borderStyle ?? 'bordered'"
         :data="[
           { value: 'bordered',   label: 'Bordered (dividers)' },
