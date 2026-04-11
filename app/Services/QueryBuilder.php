@@ -210,6 +210,11 @@ class QueryBuilder
             case 'empty':
                 $query->where(fn ($q) => $q->whereNull($field)->orWhere($field, ''));
                 break;
+            case 'contains':
+                if ($value !== null && $value !== '') {
+                    $query->where($field, 'LIKE', "%{$value}%");
+                }
+                break;
         }
     }
 }

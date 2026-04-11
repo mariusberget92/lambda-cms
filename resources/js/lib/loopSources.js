@@ -67,6 +67,7 @@ export const SORT_FIELDS = {
 export const FILTER_OPS = [
   { value: '=',         label: 'Equals' },
   { value: '!=',        label: 'Not equals' },
+  { value: 'contains',  label: 'Contains' },
   { value: 'not_empty', label: 'Is not empty' },
   { value: 'empty',     label: 'Is empty' },
 ]
