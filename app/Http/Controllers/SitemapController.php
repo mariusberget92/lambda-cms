@@ -31,6 +31,13 @@ class SitemapController extends Controller
         $xml  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
 
+        // Blog homepage
+        $xml .= '  <url>' . "\n";
+        $xml .= '    <loc>' . htmlspecialchars(url('/'), ENT_XML1 | ENT_COMPAT, 'UTF-8') . '</loc>' . "\n";
+        $xml .= '    <changefreq>daily</changefreq>' . "\n";
+        $xml .= '    <priority>1.0</priority>' . "\n";
+        $xml .= '  </url>' . "\n";
+
         foreach ($posts as $post) {
             $xml .= '  <url>' . "\n";
             $xml .= '    <loc>' . htmlspecialchars(url("/blog/{$post->slug}"), ENT_XML1 | ENT_COMPAT, 'UTF-8') . '</loc>' . "\n";

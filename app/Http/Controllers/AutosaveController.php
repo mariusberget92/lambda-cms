@@ -60,7 +60,7 @@ class AutosaveController extends Controller
         Autosave::where([
             'autosaveable_type' => Post::class,
             'autosaveable_id'   => $post->id,
-            'user_id'           => $post->user_id,
+            'user_id'           => $request->user()->id,
         ])->delete();
 
         return response()->json(['ok' => true]);
@@ -75,7 +75,7 @@ class AutosaveController extends Controller
         Autosave::where([
             'autosaveable_type' => Page::class,
             'autosaveable_id'   => $page->id,
-            'user_id'           => $page->user_id,
+            'user_id'           => $request->user()->id,
         ])->delete();
 
         return response()->json(['ok' => true]);
@@ -110,7 +110,7 @@ class AutosaveController extends Controller
         Autosave::where([
             'autosaveable_type' => Template::class,
             'autosaveable_id'   => $template->id,
-            'user_id'           => $template->user_id,
+            'user_id'           => $request->user()->id,
         ])->delete();
 
         return response()->json(['ok' => true]);

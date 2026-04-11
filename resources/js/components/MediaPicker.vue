@@ -4,7 +4,7 @@
       <!-- Header -->
       <div class="flex items-center justify-between px-6 py-4 border-b">
         <h2 class="text-base font-semibold">Media Library</h2>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 pr-8">
           <SelectBox
             v-model="filters.type"
             :data="[

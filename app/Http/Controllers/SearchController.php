@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Post;
 use App\Models\Setting;
+use App\Models\Tag;
 use App\Services\TemplateResolver;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -56,7 +58,39 @@ class SearchController extends Controller
         return Inertia::render('Blog/Search', [
             'query'   => $q,
             'results' => $results,
+            'sidebar' => $this->sidebarData(),
             'seo'     => $seo,
         ]);
+    }
+
+    private function sidebarData(): array
+    {
+        return [
+            'categories'  => Category::withCount(['posts' => fn ($q) => $q->published()])
+                ->orderByDesc('posts_count')
+                ->get(['id', 'name', 'slug'])
+                ->map(fn ($c) => [
+                    'name'        => $c->name,
+                    'slug'        => $c->slug,
+                    'posts_count' => $c->posts_count,
+                ]),
+            'tags'        => Tag::withCount(['posts' => fn ($q) => $q->published()])
+                ->orderByDesc('posts_count')
+                ->get(['id', 'name', 'slug'])
+                ->map(fn ($t) => [
+                    'name'        => $t->name,
+                    'slug'        => $t->slug,
+                    'posts_count' => $t->posts_count,
+                ]),
+            'recentPosts' => Post::published()
+                ->orderByDesc('published_at')
+                ->limit(5)
+                ->get(['title', 'slug', 'published_at'])
+                ->map(fn ($p) => [
+                    'title'        => $p->title,
+                    'slug'         => $p->slug,
+                    'published_at' => $p->published_at?->toDateString(),
+                ]),
+        ];
     }
 }

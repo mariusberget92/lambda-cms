@@ -283,7 +283,7 @@ class BlogController extends Controller
             'title'       => $siteName,
             'description' => Setting::get('seo.default_description', ''),
             'image'       => Setting::get('seo.default_og_image_url', ''),
-            'canonical'   => url('/blog'),
+            'canonical'   => url('/'),
             'type'        => 'website',
             'keywords'    => Setting::get('seo.default_keywords', ''),
         ];

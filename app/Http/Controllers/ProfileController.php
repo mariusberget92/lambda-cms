@@ -37,9 +37,13 @@ class ProfileController extends Controller
             $user->sendEmailVerificationNotification();
         }
 
+        $message = $emailChanged
+            ? 'Profile updated. Please check your inbox to verify your new email address.'
+            : 'Profile updated.';
+
         return redirect()
             ->route('profile')
-            ->with('status', 'Profile updated. Please verify your new email address.');
+            ->with('status', $message);
     }
 
     public function updatePassword(Request $request)
