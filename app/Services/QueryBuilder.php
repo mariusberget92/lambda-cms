@@ -114,6 +114,7 @@ class QueryBuilder
             'description' => $cat->description,
             'posts_count' => $cat->posts_count,
             'url'         => url("/categories/{$cat->slug}"),
+            'filter_url'  => '/?category=' . $cat->slug,
         ])->all();
 
         return ['items' => $items, 'total' => $total];
@@ -138,6 +139,7 @@ class QueryBuilder
             'slug'        => $tag->slug,
             'posts_count' => $tag->posts_count,
             'url'         => url("/tags/{$tag->slug}"),
+            'filter_url'  => '/?tag=' . $tag->slug,
         ])->all();
 
         return ['items' => $items, 'total' => $total];
@@ -193,6 +195,18 @@ class QueryBuilder
         $value = $filter['value'] ?? null;
 
         if (!$field) return;
+
+        // Relationship filters (posts only) — handled before whitelist
+        if ($source === 'posts') {
+            if ($field === 'category_slug' && $op === '=' && $value !== null && $value !== '') {
+                $query->whereHas('categories', fn ($q) => $q->where('slug', $value));
+                return;
+            }
+            if ($field === 'tag_slug' && $op === '=' && $value !== null && $value !== '') {
+                $query->whereHas('tags', fn ($q) => $q->where('slug', $value));
+                return;
+            }
+        }
 
         // Security: only allow whitelisted filter fields
         if (!in_array($field, self::FILTERABLE[$source] ?? [], true)) return;
