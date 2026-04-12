@@ -50,6 +50,7 @@ import ArchiveTitleBlock      from '@/Components/Blocks/ArchiveTitleBlock.vue'
 import SearchBlock            from '@/Components/Blocks/SearchBlock.vue'
 import NavigationBlock        from '@/components/Blocks/NavigationBlock.vue'
 import LinkBlock              from '@/components/Blocks/LinkBlock.vue'
+import FilterLinkBlock        from '@/Components/Blocks/FilterLinkBlock.vue'
 import TableBlock             from '@/Components/Blocks/TableBlock.vue'
 
 const props = defineProps({
@@ -132,6 +133,7 @@ const BLOCK_MAP = {
   search:                SearchBlock,
   navigation:            NavigationBlock,
   link:                  LinkBlock,
+  'filter-link':         FilterLinkBlock,
   table:                 TableBlock,
 }
 

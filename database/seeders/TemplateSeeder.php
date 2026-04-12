@@ -39,16 +39,88 @@ class TemplateSeeder extends Seeder
     private function blogIndexBlocks(): array
     {
         return [
-            $this->section(1, ['paddingY' => ['default' => 16], 'paddingX' => ['default' => 8], 'fullWidth' => true, 'minHeight' => 'auto'], [
-                $this->block(2, 'heading', ['level' => 2, 'text' => 'Latest Posts']),
-                $this->block(3, 'loop', [
-                    'source'  => 'posts',
-                    'filters' => [],
-                    'sort'    => ['field' => 'published_at', 'direction' => 'desc'],
-                    'limit'   => 9,
-                    'columns' => 3,
-                    'gap'     => 'md',
-                ], [$this->postCard(10)]),
+            $this->section(1, [
+                'paddingY'  => ['default' => 16],
+                'paddingX'  => ['default' => 8],
+                'fullWidth' => true,
+                'minHeight' => 'auto',
+            ], [
+                // Outer flex-row container — splits into main + sidebar
+                $this->block(2, 'container', [
+                    'mode'      => 'flex',
+                    'direction' => 'row',
+                    'wrap'      => false,
+                    'gap'       => '2rem',
+                    'padding'   => 0,
+                    'align'     => 'start',
+                    'maxWidth'  => 'full',
+                ], [
+                    // ── Main column (flex: 3) ────────────────────────────
+                    $this->block(3, 'container', [
+                        'mode'      => 'flex',
+                        'direction' => 'column',
+                        'gap'       => '1.5rem',
+                        'padding'   => 0,
+                        'maxWidth'  => 'full',
+                    ], [
+                        $this->block(4, 'heading', ['level' => 2, 'text' => 'Latest Posts']),
+                        $this->block(5, 'loop', [
+                            'source'       => 'posts',
+                            'filters'      => [
+                                ['field' => 'category_slug', 'op' => '=', 'urlParam' => 'category'],
+                                ['field' => 'tag_slug',      'op' => '=', 'urlParam' => 'tag'],
+                            ],
+                            'filter_logic' => 'and',
+                            'sort'         => ['field' => 'published_at', 'direction' => 'desc'],
+                            'limit'        => 9,
+                            'columns'      => 3,
+                            'gap'          => 'md',
+                        ], [$this->postCard(10)]),
+                    ], [], '', 'flex:3;min-width:0'),
+
+                    // ── Sidebar column (flex: 1) ─────────────────────────
+                    $this->block(20, 'container', [
+                        'mode'      => 'flex',
+                        'direction' => 'column',
+                        'gap'       => '1rem',
+                        'padding'   => 0,
+                        'maxWidth'  => 'full',
+                    ], [
+                        $this->block(21, 'search', [
+                            'placeholder' => 'Search posts…',
+                            'buttonLabel' => 'Search',
+                            'scope'       => 'posts',
+                        ]),
+                        $this->block(22, 'heading', ['level' => 3, 'text' => 'Categories']),
+                        $this->block(23, 'loop', [
+                            'source'  => 'categories',
+                            'filters' => [],
+                            'sort'    => ['field' => 'posts_count', 'direction' => 'desc'],
+                            'limit'   => 20,
+                            'columns' => 1,
+                            'gap'     => 'sm',
+                        ], [
+                            $this->block(30, 'filter-link',
+                                ['paramName' => 'category', 'label' => ''],
+                                [], ['label' => 'loop:name']
+                            ),
+                        ]),
+                        $this->block(24, 'heading', ['level' => 3, 'text' => 'Tags']),
+                        $this->block(25, 'loop', [
+                            'source'  => 'tags',
+                            'filters' => [],
+                            'sort'    => ['field' => 'posts_count', 'direction' => 'desc'],
+                            'limit'   => 30,
+                            'columns' => 1,
+                            'gap'     => 'sm',
+                        ], [
+                            $this->block(31, 'filter-link',
+                                ['paramName' => 'tag', 'label' => ''],
+                                [], ['label' => 'loop:name']
+                            ),
+                        ]),
+                    ], [], '', 'flex:1;min-width:0'),
+                ]),
             ]),
         ];
     }
@@ -146,16 +218,18 @@ class TemplateSeeder extends Seeder
      * @param  int     $id
      * @param  string  $type
      * @param  array   $data
-     * @param  array   $children    nested blocks (container/section/loop only)
-     * @param  array   $bindings    dynamic field bindings (e.g. ['text' => 'loop:title'])
+     * @param  array   $children       nested blocks (container/section/loop only)
+     * @param  array   $bindings       dynamic field bindings (e.g. ['text' => 'loop:title'])
      * @param  string  $customClasses  Tailwind classes applied to the BlockRenderer wrapper div
+     * @param  string  $customCss      Inline CSS applied via <style>#block-{id} { … }</style>
      */
-    private function block(int $id, string $type, array $data, array $children = [], array $bindings = [], string $customClasses = ''): array
+    private function block(int $id, string $type, array $data, array $children = [], array $bindings = [], string $customClasses = '', string $customCss = ''): array
     {
         $b = ['id' => $id, 'type' => $type, 'data' => $data];
         if (!empty($children))     $b['children']     = $children;
         if (!empty($bindings))     $b['bindings']      = $bindings;
         if ($customClasses !== '') $b['customClasses'] = $customClasses;
+        if ($customCss     !== '') $b['customCss']     = $customCss;
         return $b;
     }
 }
