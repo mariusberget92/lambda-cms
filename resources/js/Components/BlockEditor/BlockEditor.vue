@@ -9,7 +9,7 @@
     :style="fullscreen ? {} : { minHeight: '500px', maxHeight: 'calc(100vh - 220px)' }"
   >
     <!-- Left: block type palette -->
-    <BlockTypePanel :is-admin="isAdmin" />
+    <BlockTypePanel :is-admin="isAdmin" :is-partial="isPartial" />
 
     <!-- Centre: canvas drop zone + reorder -->
     <BlockCanvas
@@ -86,6 +86,7 @@ import { SOURCE_FIELDS, SOURCES } from '@/lib/loopSources.js'
 const props = defineProps({
   modelValue:    { type: Array,   default: () => [] },
   isAdmin:       { type: Boolean, default: false },
+  isPartial:     { type: Boolean, default: false },
   meta:          { type: Object,  default: () => ({}) },
   fullscreen:    { type: Boolean, default: false },
   contextFields: { type: Array,   default: () => [] },
