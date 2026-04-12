@@ -69,6 +69,7 @@ import {
   ChevronRight as ChevronRightIcon,
   Navigation2,
   Table2,
+  Filter,
 } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -99,8 +100,9 @@ const ALL_TYPES = [
   { type: 'cta',       label: 'CTA',       icon: MousePointerClick, group: 'Interactive' },
   { type: 'search',    label: 'Search',    icon: Search,            group: 'Interactive' },
   { type: 'loop',      label: 'Loop',      icon: Repeat2,           group: 'Interactive' },
-  { type: 'link',      label: 'Link',      icon: Link,              group: 'Interactive' },
-  { type: 'pagination',label: 'Pagination',icon: ChevronRightIcon,  group: 'Interactive' },
+  { type: 'link',        label: 'Link',        icon: Link,              group: 'Interactive' },
+  { type: 'filter-link', label: 'Filter Link', icon: Filter,            group: 'Interactive' },
+  { type: 'pagination',  label: 'Pagination',  icon: ChevronRightIcon,  group: 'Interactive' },
   { type: 'table',     label: 'Table',     icon: Table2,            group: 'Interactive' },
   { type: 'html',      label: 'HTML',      icon: FileCode,          group: 'Developer', adminOnly: true },
   // ── Post (hidden from palette — only used inside loop blocks) ───────────
@@ -190,6 +192,7 @@ const DEFAULT_DATA = {
     rel: '',
     icon: { name: '', position: 'left', size: 'md', color: 'inherit' },
   },
+  'filter-link': { paramName: 'category', label: '' },
   accordion: {
     defaultState: 'first-open',
     borderStyle: 'bordered',
