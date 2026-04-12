@@ -17,7 +17,7 @@ class QueryController extends Controller
             'source'          => ['required', Rule::in(['posts', 'categories', 'tags', 'pages'])],
             'filters'         => ['nullable', 'array'],
             'filters.*.field' => ['nullable', 'string', 'max:50'],
-            'filters.*.op'    => ['nullable', 'string', Rule::in(['=', '!=', 'not_empty', 'empty'])],
+            'filters.*.op'    => ['nullable', 'string', Rule::in(['=', '!=', 'contains', 'not_empty', 'empty'])],
             'filters.*.value' => ['nullable'],
             'sort'            => ['nullable', 'array'],
             'sort.field'      => ['nullable', 'string', 'max:50'],
