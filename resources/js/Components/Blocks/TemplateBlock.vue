@@ -1,31 +1,44 @@
 <!-- resources/js/Components/Blocks/TemplateBlock.vue -->
 <script setup>
-import { computed } from 'vue'
+import { computed, inject, provide } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import BlockRenderer from '@/Components/BlockRenderer.vue'
 
 const props = defineProps({ block: { type: Object, required: true } })
 
-const partials = computed(() => usePage().props.partials ?? [])
+// Depth guard — prevents infinite loops when templates embed each other
+const depth = inject('templateDepth', 0)
+const MAX_DEPTH = 10
+provide('templateDepth', depth + 1)
 
-const partial = computed(() =>
-  partials.value.find(p => p.id === props.block.data?.template_id) ?? null
+const sharedTemplates = computed(() => usePage().props.sharedTemplates ?? [])
+
+const template = computed(() =>
+  sharedTemplates.value.find(t => t.id === props.block.data?.template_id) ?? null
 )
 </script>
 
 <template>
-  <!-- Partial found: render its blocks inline, inheriting any loop context -->
+  <!-- Depth limit exceeded -->
+  <div
+    v-if="depth >= MAX_DEPTH"
+    class="rounded-lg border border-dashed border-destructive/40 px-4 py-6 text-center text-sm text-destructive/70"
+  >
+    Template nesting limit reached
+  </div>
+
+  <!-- Template found: render its blocks inline, inheriting any loop context -->
   <BlockRenderer
-    v-if="partial"
-    :blocks="partial.blocks ?? []"
+    v-else-if="template"
+    :blocks="template.blocks ?? []"
     wrapper-class="contents"
   />
 
-  <!-- No partial selected or partial was deleted/unpublished -->
+  <!-- No template selected or template was deleted/unpublished -->
   <div
     v-else
     class="rounded-lg border border-dashed border-border/60 px-4 py-6 text-center text-sm text-muted-foreground"
   >
-    {{ block.data?.template_id ? 'Partial not found (deleted or unpublished)' : 'No partial selected — choose one in settings' }}
+    {{ block.data?.template_id ? 'Template not found (deleted or unpublished)' : 'No template selected — choose one in settings' }}
   </div>
 </template>

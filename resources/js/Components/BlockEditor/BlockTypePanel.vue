@@ -73,8 +73,7 @@ import {
 } from 'lucide-vue-next'
 
 const props = defineProps({
-  isAdmin:   { type: Boolean, default: false },
-  isPartial: { type: Boolean, default: false },
+  isAdmin: { type: Boolean, default: false },
 })
 
 const ALL_TYPES = [
@@ -134,8 +133,7 @@ const GROUP_ORDER = ['Content', 'Layout', 'Interactive', 'Developer', 'Post', 'A
 const visibleGroups = computed(() => {
   const visible = ALL_TYPES.filter(t =>
     (!t.adminOnly || props.isAdmin) &&
-    !t.hiddenFromPalette &&
-    !(t.type === 'template' && props.isPartial)
+    !t.hiddenFromPalette
   )
   return GROUP_ORDER
     .map(name => ({ name, types: visible.filter(t => t.group === name) }))

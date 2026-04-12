@@ -10,7 +10,28 @@ const props = defineProps({
 })
 const emit = defineEmits(['update'])
 
-const partials = computed(() => usePage().props.partials ?? [])
+const TYPE_LABELS = {
+  'blog-index':     'Blog Index',
+  'single-post':    'Single Post',
+  'archive':        'Archive',
+  'search-results': 'Search Results',
+  'partial':        'Partial',
+}
+
+const sharedTemplates = computed(() => usePage().props.sharedTemplates ?? [])
+
+// Group templates by type for the <select> optgroups
+const groups = computed(() => {
+  const map = {}
+  for (const t of sharedTemplates.value) {
+    if (!map[t.type]) map[t.type] = []
+    map[t.type].push(t)
+  }
+  return Object.entries(map).map(([type, items]) => ({
+    label: TYPE_LABELS[type] ?? type,
+    items,
+  }))
+})
 
 const selectedId = computed(() => props.block.data?.template_id ?? null)
 
@@ -27,9 +48,9 @@ function update(value) {
   <div class="space-y-3 p-3">
     <div v-show="!tab || tab === 'content'" class="space-y-3">
 
-      <!-- No partials exist yet -->
-      <div v-if="partials.length === 0" class="rounded-md border border-dashed p-4 text-center">
-        <p class="text-xs text-muted-foreground">No partials yet.</p>
+      <!-- No templates exist yet -->
+      <div v-if="sharedTemplates.length === 0" class="rounded-md border border-dashed p-4 text-center">
+        <p class="text-xs text-muted-foreground">No published templates yet.</p>
         <a
           href="/templates"
           target="_blank"
@@ -39,23 +60,29 @@ function update(value) {
         </a>
       </div>
 
-      <!-- Partial selector -->
+      <!-- Template selector -->
       <template v-else>
         <div>
-          <label class="text-xs font-medium text-muted-foreground block mb-1">Partial</label>
+          <label class="text-xs font-medium text-muted-foreground block mb-1">Template</label>
           <select
             :value="selectedId"
             @change="update($event.target.value || null)"
             class="w-full rounded-md border border-border bg-background px-2 py-1.5 text-xs"
           >
-            <option value="">— Select a partial —</option>
-            <option
-              v-for="p in partials"
-              :key="p.id"
-              :value="p.id"
+            <option value="">— Select a template —</option>
+            <optgroup
+              v-for="group in groups"
+              :key="group.label"
+              :label="group.label"
             >
-              {{ p.title }}
-            </option>
+              <option
+                v-for="t in group.items"
+                :key="t.id"
+                :value="t.id"
+              >
+                {{ t.title }}
+              </option>
+            </optgroup>
           </select>
         </div>
 
@@ -65,7 +92,7 @@ function update(value) {
           target="_blank"
           class="inline-flex items-center gap-1 text-xs text-primary hover:underline"
         >
-          Edit partial <ExternalLink class="w-3 h-3" />
+          Edit template <ExternalLink class="w-3 h-3" />
         </a>
       </template>
 

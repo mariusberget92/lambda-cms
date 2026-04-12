@@ -130,7 +130,6 @@ function submit() {
       <BlockEditor
         :model-value="form.blocks"
         :is-admin="authUser?.role === 'administrator'"
-        :is-partial="props.type === 'partial'"
         :context-fields="props.type === 'single-post' ? POST_CONTEXT_FIELDS : []"
         @update:model-value="form.blocks = $event"
       />
