@@ -40,7 +40,7 @@ const editUrl = computed(() =>
 )
 
 function update(value) {
-  emit('update', { data: { ...props.block.data, template_id: value ? Number(value) : null } })
+  emit('update', { id: props.block.id, data: { template_id: value ? Number(value) : null } })
 }
 </script>
 
