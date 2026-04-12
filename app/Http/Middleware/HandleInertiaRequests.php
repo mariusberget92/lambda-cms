@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\Comment;
 use App\Models\Setting;
+use App\Models\Template;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -40,7 +41,7 @@ class HandleInertiaRequests extends Middleware
                 ? Comment::pending()->count()
                 : null,
             'accentColor' => fn () => Setting::get('site.accent_color') ?: null,
-            'partials' => fn () => \App\Models\Template::published()
+            'partials' => fn () => Template::published()
                 ->where('type', 'partial')
                 ->get(['id', 'title', 'blocks'])
                 ->toArray(),
