@@ -28,7 +28,7 @@ class TemplateController extends Controller
 
     public function create(Request $request)
     {
-        $request->validate(['type' => ['required', 'in:blog-index,single-post,archive,search-results']]);
+        $request->validate(['type' => ['required', 'in:blog-index,single-post,archive,search-results,partial']]);
 
         return Inertia::render('Templates/Create', ['type' => $request->type]);
     }
@@ -37,7 +37,7 @@ class TemplateController extends Controller
     {
         $validated = $request->validate([
             'title'            => ['required', 'string', 'max:255'],
-            'type'             => ['required', 'in:blog-index,single-post,archive,search-results'],
+            'type'             => ['required', 'in:blog-index,single-post,archive,search-results,partial'],
             'status'           => ['required', 'in:draft,published'],
             'blocks'           => ['nullable', 'array'],
             'meta_title'       => ['nullable', 'string', 'max:100'],
@@ -45,7 +45,7 @@ class TemplateController extends Controller
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
         ]);
 
-        if ($validated['status'] === 'published') {
+        if ($validated['status'] === 'published' && $validated['type'] !== 'partial') {
             Template::where('type', $validated['type'])
                 ->where('status', 'published')
                 ->update(['status' => 'draft']);
@@ -90,7 +90,7 @@ class TemplateController extends Controller
 
         $validated = $request->validate([
             'title'            => ['required', 'string', 'max:255'],
-            'type'             => ['required', 'in:blog-index,single-post,archive,search-results'],
+            'type'             => ['required', 'in:blog-index,single-post,archive,search-results,partial'],
             'status'           => ['required', 'in:draft,published'],
             'blocks'           => ['nullable', 'array'],
             'meta_title'       => ['nullable', 'string', 'max:100'],
@@ -98,7 +98,7 @@ class TemplateController extends Controller
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
         ]);
 
-        if ($validated['status'] === 'published') {
+        if ($validated['status'] === 'published' && $validated['type'] !== 'partial') {
             Template::where('type', $validated['type'])
                 ->where('id', '!=', $template->id)
                 ->where('status', 'published')
