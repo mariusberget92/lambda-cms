@@ -29,7 +29,7 @@ const TYPE_LABELS = {
 const typeLabel = TYPE_LABELS[props.type] ?? props.type
 
 const form = useForm({
-  name:             '',
+  title:            '',
   type:             props.type,
   status:           'draft',
   blocks:           [],
@@ -73,13 +73,13 @@ function submit() {
         <!-- Name -->
         <div>
           <input
-            v-model="form.name"
+            v-model="form.title"
             type="text"
             placeholder="Template name..."
             class="w-full rounded-lg border bg-background px-4 py-3 text-xl font-semibold placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-ring"
-            :class="{ 'border-destructive': form.errors.name }"
+            :class="{ 'border-destructive': form.errors.title }"
           />
-          <p v-if="form.errors.name" class="text-xs text-destructive mt-1">{{ form.errors.name }}</p>
+          <p v-if="form.errors.title" class="text-xs text-destructive mt-1">{{ form.errors.title }}</p>
         </div>
 
         <!-- Inline sub-fields: status · SEO -->

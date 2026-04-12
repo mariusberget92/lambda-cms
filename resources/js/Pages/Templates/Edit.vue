@@ -27,7 +27,7 @@ const TYPE_LABELS = {
 }
 
 const form = useForm({
-  name:             props.template.name,
+  title:            props.template.title,
   type:             props.template.type,
   status:           props.template.status,
   blocks:           props.template.blocks ?? [],
@@ -166,7 +166,7 @@ async function confirmRestore() {
           <div>
             <h2 class="text-lg font-semibold">Edit template</h2>
             <p class="text-sm text-muted-foreground mt-0.5 line-clamp-1">
-              {{ TYPE_LABELS[template.type] ?? template.type }} — {{ template.name }}
+              {{ TYPE_LABELS[template.type] ?? template.type }} — {{ template.title }}
             </p>
           </div>
         </div>
@@ -181,12 +181,12 @@ async function confirmRestore() {
         <!-- Name -->
         <div>
           <input
-            v-model="form.name"
+            v-model="form.title"
             type="text"
             class="w-full rounded-lg border bg-background px-4 py-3 text-xl font-semibold focus:outline-none focus:ring-2 focus:ring-ring"
-            :class="{ 'border-destructive': form.errors.name }"
+            :class="{ 'border-destructive': form.errors.title }"
           />
-          <p v-if="form.errors.name" class="text-xs text-destructive mt-1">{{ form.errors.name }}</p>
+          <p v-if="form.errors.title" class="text-xs text-destructive mt-1">{{ form.errors.title }}</p>
         </div>
 
         <!-- Inline sub-fields: status · SEO · Revisions -->
