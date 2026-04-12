@@ -73,7 +73,8 @@ import {
 } from 'lucide-vue-next'
 
 const props = defineProps({
-  isAdmin: { type: Boolean, default: false },
+  isAdmin:   { type: Boolean, default: false },
+  isPartial: { type: Boolean, default: false },
 })
 
 const ALL_TYPES = [
@@ -102,6 +103,7 @@ const ALL_TYPES = [
   { type: 'loop',      label: 'Loop',      icon: Repeat2,           group: 'Interactive' },
   { type: 'link',        label: 'Link',        icon: Link,              group: 'Interactive' },
   { type: 'filter-link', label: 'Filter Link', icon: Filter,            group: 'Interactive' },
+  { type: 'template',   label: 'Template',    icon: LayoutTemplate,    group: 'Interactive' },
   { type: 'pagination',  label: 'Pagination',  icon: ChevronRightIcon,  group: 'Interactive' },
   { type: 'table',     label: 'Table',     icon: Table2,            group: 'Interactive' },
   { type: 'html',      label: 'HTML',      icon: FileCode,          group: 'Developer', adminOnly: true },
@@ -130,7 +132,11 @@ const GROUP_COLORS = {
 const GROUP_ORDER = ['Content', 'Layout', 'Interactive', 'Developer', 'Post', 'Archive']
 
 const visibleGroups = computed(() => {
-  const visible = ALL_TYPES.filter(t => (!t.adminOnly || props.isAdmin) && !t.hiddenFromPalette)
+  const visible = ALL_TYPES.filter(t =>
+    (!t.adminOnly || props.isAdmin) &&
+    !t.hiddenFromPalette &&
+    !(t.type === 'template' && props.isPartial)
+  )
   return GROUP_ORDER
     .map(name => ({ name, types: visible.filter(t => t.group === name) }))
     .filter(g => g.types.length > 0)
@@ -193,6 +199,7 @@ const DEFAULT_DATA = {
     icon: { name: '', position: 'left', size: 'md', color: 'inherit' },
   },
   'filter-link': { paramName: 'category', label: '' },
+  'template': { template_id: null },
   accordion: {
     defaultState: 'first-open',
     borderStyle: 'bordered',

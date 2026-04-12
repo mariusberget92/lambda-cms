@@ -169,6 +169,7 @@ import HtmlSettings      from './blocks/HtmlSettings.vue'
 import ComponentSettings from './blocks/ComponentSettings.vue'
 import LinkSettings           from './blocks/LinkSettings.vue'
 import FilterLinkSettings     from './blocks/FilterLinkSettings.vue'
+import TemplateSettings      from './blocks/TemplateSettings.vue'
 import AccordionSettings      from './blocks/AccordionSettings.vue'
 import AccordionItemSettings  from './blocks/AccordionItemSettings.vue'
 import TabsSettings           from './blocks/TabsSettings.vue'
@@ -252,7 +253,7 @@ const LABELS = {
   'archive-title': 'Archive Title',
   'archive-loop': 'Archive Loop',
   search: 'Search',
-  link: 'Link', 'filter-link': 'Filter Link', accordion: 'Accordion', 'accordion-item': 'Accordion Item',
+  link: 'Link', 'filter-link': 'Filter Link', 'template': 'Template', accordion: 'Accordion', 'accordion-item': 'Accordion Item',
   tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
   navigation: 'Navigation', table: 'Table',
 }
@@ -275,6 +276,7 @@ const COMPONENT_MAP = {
   search:                SearchSettings,
   link:                  LinkSettings,
   'filter-link':         FilterLinkSettings,
+  'template':            TemplateSettings,
   accordion:             AccordionSettings,
   'accordion-item':      AccordionItemSettings,
   tabs:                  TabsSettings,
