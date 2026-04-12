@@ -93,7 +93,7 @@ function hasAny() {
                   :key="template.id"
                   class="border-b last:border-0 hover:bg-muted/30 transition-colors group"
                 >
-                  <td class="px-4 py-3 font-medium">{{ template.name }}</td>
+                  <td class="px-4 py-3 font-medium">{{ template.title }}</td>
                   <td class="px-4 py-3">
                     <StatusBadge :status="template.status" />
                   </td>
@@ -145,7 +145,7 @@ function hasAny() {
                 :key="template.id"
                 class="border-b last:border-0 hover:bg-muted/30 transition-colors group"
               >
-                <td class="px-4 py-3 font-medium">{{ template.name }}</td>
+                <td class="px-4 py-3 font-medium">{{ template.title }}</td>
                 <td class="px-4 py-3"><StatusBadge :status="template.status" /></td>
                 <td class="px-4 py-3 text-muted-foreground">{{ formatDate(template.updated_at) }}</td>
                 <td class="px-4 py-3">
@@ -187,7 +187,7 @@ function hasAny() {
         <div class="relative bg-card border rounded-xl shadow-xl w-full max-w-sm p-6">
           <h3 class="font-semibold text-base mb-2">Delete template?</h3>
           <p class="text-sm text-muted-foreground mb-5">
-            "<span class="font-medium text-foreground">{{ deleteTarget.name }}</span>" will be permanently deleted.
+            "<span class="font-medium text-foreground">{{ deleteTarget.title }}</span>" will be permanently deleted.
           </p>
           <div class="flex gap-3 justify-end">
             <button
