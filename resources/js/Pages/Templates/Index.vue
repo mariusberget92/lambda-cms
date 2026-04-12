@@ -16,6 +16,7 @@ const TYPE_LABELS = {
   'single-post':    'Single Post',
   'archive':        'Archive',
   'search-results': 'Search Results',
+  'partial':        'Partial',
 }
 
 const ALL_TYPES = ['blog-index', 'single-post', 'archive', 'search-results']
@@ -34,7 +35,7 @@ function deleteTemplate() {
 }
 
 function hasAny() {
-  return ALL_TYPES.some(t => props.templates[t]?.length > 0)
+  return [...ALL_TYPES, 'partial'].some(t => props.templates[t]?.length > 0)
 }
 </script>
 
@@ -58,6 +59,14 @@ function hasAny() {
       >
         <Plus class="w-3.5 h-3.5" />
         {{ TYPE_LABELS[type] }}
+      </a>
+      <div class="h-4 w-px bg-border shrink-0 hidden sm:block" />
+      <a
+        :href="route('templates.create', { type: 'partial' })"
+        class="inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium hover:bg-accent transition-colors"
+      >
+        <Plus class="w-3.5 h-3.5" />
+        New Partial
       </a>
     </div>
 
@@ -113,6 +122,55 @@ function hasAny() {
             </table>
           </div>
         </template>
+      </div>
+
+      <!-- Partials section -->
+      <div v-if="templates['partial']?.length > 0">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Partials</h3>
+        </div>
+        <div class="rounded-lg border bg-card overflow-hidden">
+          <table class="w-full text-sm">
+            <thead class="border-b bg-muted/50">
+              <tr>
+                <th class="px-4 py-3 text-left font-medium text-muted-foreground">Name</th>
+                <th class="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
+                <th class="px-4 py-3 text-left font-medium text-muted-foreground">Updated</th>
+                <th class="px-4 py-3" />
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="template in templates['partial']"
+                :key="template.id"
+                class="border-b last:border-0 hover:bg-muted/30 transition-colors group"
+              >
+                <td class="px-4 py-3 font-medium">{{ template.name }}</td>
+                <td class="px-4 py-3"><StatusBadge :status="template.status" /></td>
+                <td class="px-4 py-3 text-muted-foreground">{{ formatDate(template.updated_at) }}</td>
+                <td class="px-4 py-3">
+                  <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <a
+                      :href="route('templates.edit', template.id)"
+                      class="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+                      title="Edit"
+                    >
+                      <Pencil class="w-3.5 h-3.5" />
+                    </a>
+                    <button
+                      type="button"
+                      class="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                      title="Delete"
+                      @click="confirmDelete(template)"
+                    >
+                      <Trash2 class="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 

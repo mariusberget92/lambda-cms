@@ -23,6 +23,7 @@ const TYPE_LABELS = {
   'single-post':    'Single Post',
   'archive':        'Archive',
   'search-results': 'Search Results',
+  'partial':        'Partial',
 }
 
 const typeLabel = TYPE_LABELS[props.type] ?? props.type
@@ -129,6 +130,7 @@ function submit() {
       <BlockEditor
         :model-value="form.blocks"
         :is-admin="authUser?.role === 'administrator'"
+        :is-partial="props.type === 'partial'"
         :context-fields="props.type === 'single-post' ? POST_CONTEXT_FIELDS : []"
         @update:model-value="form.blocks = $event"
       />

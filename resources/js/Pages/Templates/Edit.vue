@@ -23,6 +23,7 @@ const TYPE_LABELS = {
   'single-post':    'Single Post',
   'archive':        'Archive',
   'search-results': 'Search Results',
+  'partial':        'Partial',
 }
 
 const form = useForm({
@@ -268,6 +269,7 @@ async function confirmRestore() {
       <BlockEditor
         :model-value="form.blocks"
         :is-admin="authUser?.role === 'administrator'"
+        :is-partial="template.type === 'partial'"
         :context-fields="template.type === 'single-post' ? POST_CONTEXT_FIELDS : []"
         @update:model-value="form.blocks = $event"
       />
