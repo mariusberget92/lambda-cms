@@ -56,15 +56,15 @@ function formatDate(date) {
     <!-- Meta row -->
     <div class="flex items-center gap-2">
       <img
-        v-if="post.author.avatar_url"
+        v-if="post.author?.avatar_url"
         :src="post.author.avatar_url"
-        :alt="post.author.name"
+        :alt="post.author?.name ?? 'Author'"
         class="w-6 h-6 rounded-full object-cover"
       />
       <div v-else class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-semibold text-gray-500">
-        {{ post.author.name.charAt(0).toUpperCase() }}
+        {{ post.author?.name?.charAt(0)?.toUpperCase() ?? '?' }}
       </div>
-      <span class="text-sm text-gray-500">{{ post.author.name }}</span>
+      <span class="text-sm text-gray-500">{{ post.author?.name ?? 'Unknown' }}</span>
       <span class="text-sm text-gray-300">·</span>
       <span class="text-sm text-gray-500">{{ formatDate(post.published_at) }}</span>
       <span class="text-sm text-gray-300">·</span>
