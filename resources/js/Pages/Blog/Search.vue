@@ -19,54 +19,45 @@ defineProps({
 <template>
   <SeoHead :seo="seo" />
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-    <!-- Main -->
     <div class="lg:col-span-2">
 
       <!-- Search heading -->
-      <div class="mb-8 pb-6 border-b">
-        <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Search</p>
-        <h1 class="text-3xl font-bold tracking-tight">
-          {{ query ? `Search results for "${query}"` : 'Search' }}
+      <div class="mb-10">
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">Search</p>
+        <h1 class="font-editorial text-3xl font-bold text-gray-900">
+          {{ query ? `Results for "${query}"` : 'Search' }}
         </h1>
-        <p class="text-sm text-muted-foreground mt-1">
+        <p class="text-sm text-gray-500 mt-1">
           {{ results.total }} {{ results.total === 1 ? 'result' : 'results' }}
         </p>
       </div>
 
       <!-- Empty state -->
-      <div v-if="!results.data.length" class="text-center py-20 text-muted-foreground">
+      <div v-if="!results.data.length" class="text-center py-20 text-gray-400">
         <p class="text-sm">No posts found.</p>
       </div>
 
-      <!-- Post cards -->
-      <div v-else class="space-y-8">
-        <PostCard v-for="post in results.data" :key="post.id" :post="post" />
+      <!-- Post list with dividers -->
+      <div v-else class="divide-y divide-gray-200">
+        <div v-for="post in results.data" :key="post.id" class="py-10 first:pt-0">
+          <PostCard :post="post" />
+        </div>
       </div>
 
       <!-- Pagination -->
-      <div v-if="results.links?.length > 3" class="flex items-center justify-center gap-1 mt-10">
+      <div v-if="results.links?.length > 3" class="flex items-center justify-center gap-3 mt-12 pt-8 border-t border-gray-200">
         <template v-for="link in results.links" :key="link.label">
           <Link
             v-if="link.url"
             :href="link.url"
-            class="px-3 py-1.5 text-sm rounded-md border transition-colors"
-            :class="link.active
-              ? 'bg-gradient-to-b from-primary to-accent text-primary-foreground border-primary shadow-sm'
-              : 'bg-card text-muted-foreground hover:bg-muted hover:text-foreground hover:border-foreground'"
-          >
-            {{ decodeHtmlEntities(link.label) }}
-          </Link>
-          <span
-            v-else
-            class="px-3 py-1.5 text-sm rounded-md border text-muted-foreground/40 cursor-not-allowed"
-          >
-            {{ decodeHtmlEntities(link.label) }}
-          </span>
+            class="text-sm transition-colors"
+            :class="link.active ? 'font-semibold text-gray-900 underline underline-offset-2' : 'text-gray-500 hover:text-gray-900'"
+          >{{ decodeHtmlEntities(link.label) }}</Link>
+          <span v-else class="text-sm text-gray-300 cursor-not-allowed">{{ decodeHtmlEntities(link.label) }}</span>
         </template>
       </div>
     </div>
 
-    <!-- Sidebar -->
     <BlogSidebar :sidebar="sidebar" :query="query" />
   </div>
 </template>
