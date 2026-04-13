@@ -7,6 +7,9 @@
 .scrollbar-hidden { scrollbar-width: none; }
 .scrollbar-hidden::-webkit-scrollbar { display: none; }
 
+/* Editorial serif font for blog headings */
+.font-editorial { font-family: 'Lora', Georgia, serif; }
+
 :root {
   --background: #f7f8fa;
   --foreground: #2e3440;
