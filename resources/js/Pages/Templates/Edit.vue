@@ -1,13 +1,13 @@
 <!-- resources/js/Pages/Templates/Edit.vue -->
 <script setup>
-import AppLayout   from '@/Layouts/AppLayout.vue'
-import BlockEditor from '@/Components/BlockEditor/BlockEditor.vue'
+import PageBuilderLayout  from '@/Layouts/PageBuilderLayout.vue'
+import TemplateBuilderBar from '@/Components/TemplateBuilderBar.vue'
+import BlockEditor        from '@/Components/BlockEditor/BlockEditor.vue'
 import { useForm, usePage, Head } from '@inertiajs/vue3'
 import { POST_CONTEXT_FIELDS } from '@/lib/loopSources.js'
 import { filterEmptyBlocks } from '@/lib/utils.js'
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
+import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue'
 import axios from 'axios'
-import { ChevronDown, ArrowLeft } from 'lucide-vue-next'
 import { useNotifications } from '@/composables/useNotifications.js'
 
 const authUser = usePage().props.auth.user
@@ -26,15 +26,21 @@ const TYPE_LABELS = {
   'partial':        'Partial',
 }
 
+const typeLabel = TYPE_LABELS[props.template.type] ?? props.template.type
+
 const form = useForm({
   title:            props.template.title,
   type:             props.template.type,
+  loop_source:      props.template.loop_source ?? 'posts',
   status:           props.template.status,
   blocks:           props.template.blocks ?? [],
   meta_title:       props.template.meta_title ?? '',
   meta_description: props.template.meta_description ?? '',
   meta_keywords:    props.template.meta_keywords ?? '',
 })
+
+const isSinglePost      = computed(() => props.template.type === 'single-post')
+const defaultLoopSource = computed(() => isSinglePost.value ? null : form.loop_source)
 
 function submit() {
   form.blocks = filterEmptyBlocks(form.blocks)
@@ -43,8 +49,8 @@ function submit() {
   })
 }
 
-// Autosave
-let autosaveTimer = null
+// ── Autosave ──────────────────────────────────────────────────────────────────
+let autosaveTimer   = null
 let autosaveToastId = null
 
 watch(form, () => {
@@ -54,9 +60,7 @@ watch(form, () => {
 
 async function doAutosave() {
   try {
-    const res = await axios.post(route('templates.autosave', props.template.id), {
-      payload: form.data(),
-    })
+    const res = await axios.post(route('templates.autosave', props.template.id), { payload: form.data() })
     if (autosaveToastId !== null) dismiss(autosaveToastId)
     autosaveToastId = notify(`Draft saved at ${res.data.saved_at}`, 'info')
   } catch {
@@ -68,9 +72,7 @@ async function doAutosave() {
 async function restoreAutosave() {
   try {
     const payload = props.autosave.payload
-    Object.keys(payload).forEach(key => {
-      if (key in form) form[key] = payload[key]
-    })
+    Object.keys(payload).forEach(key => { if (key in form) form[key] = payload[key] })
     await axios.delete(route('templates.autosave.destroy', props.template.id))
     notify('Draft restored.', 'success')
   } catch {
@@ -79,38 +81,25 @@ async function restoreAutosave() {
 }
 
 async function dismissAutosave() {
-  try {
-    await axios.delete(route('templates.autosave.destroy', props.template.id))
-  } catch {
-    // non-critical
-  }
+  try { await axios.delete(route('templates.autosave.destroy', props.template.id)) } catch { /* non-critical */ }
 }
 
 onMounted(() => {
-  if (
-    props.autosave &&
-    props.template.updated_at &&
-    new Date(props.autosave.updated_at) > new Date(props.template.updated_at)
-  ) {
-    notify(
-      'You have unsaved changes from a previous session.',
-      'info',
-      {
-        duration: null,
-        actions: [
-          { label: 'Restore', handler: restoreAutosave },
-          { label: 'Dismiss', handler: dismissAutosave },
-        ],
-      }
-    )
+  if (props.autosave && props.template.updated_at &&
+      new Date(props.autosave.updated_at) > new Date(props.template.updated_at)) {
+    notify('You have unsaved changes from a previous session.', 'info', {
+      duration: null,
+      actions: [
+        { label: 'Restore', handler: restoreAutosave },
+        { label: 'Dismiss', handler: dismissAutosave },
+      ],
+    })
   }
 })
 
 onBeforeUnmount(() => clearTimeout(autosaveTimer))
 
-// Revisions
-const seoOpen          = ref(false)
-const revisionsOpen    = ref(false)
+// ── Revisions ─────────────────────────────────────────────────────────────────
 const revisionsLoading = ref(false)
 const revisions        = ref([])
 const restoreTarget    = ref(null)
@@ -126,11 +115,6 @@ async function loadRevisions() {
   }
 }
 
-function toggleRevisions() {
-  revisionsOpen.value = !revisionsOpen.value
-  if (revisionsOpen.value) loadRevisions()
-}
-
 function restoreRevision(revision) {
   restoreTarget.value = revision
 }
@@ -139,12 +123,10 @@ async function confirmRestore() {
   try {
     const res = await axios.get(route('revisions.restore', restoreTarget.value.id))
     const payload = res.data
-    Object.keys(payload).forEach(key => {
-      if (key in form) form[key] = payload[key]
-    })
-    revisions.value = []
-    revisionsOpen.value = false
+    Object.keys(payload).forEach(key => { if (key in form) form[key] = payload[key] })
+    revisions.value     = []
     restoreTarget.value = null
+    notify('Revision restored.', 'success')
   } catch {
     notify('Failed to restore revision. Please try again.', 'error')
     restoreTarget.value = null
@@ -153,157 +135,73 @@ async function confirmRestore() {
 </script>
 
 <template>
-  <AppLayout title="Edit Template">
-    <Head title="Edit Template" />
-    <form @submit.prevent="submit" class="space-y-4">
+  <PageBuilderLayout>
+    <Head :title="`Edit Template — ${template.title}`" />
 
-      <!-- Header -->
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <a :href="route('templates.index')" title="Go back" aria-label="Go back" class="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:bg-accent transition-colors">
-            <ArrowLeft class="w-4 h-4" />
-          </a>
-          <div>
-            <h2 class="text-lg font-semibold">Edit template</h2>
-            <p class="text-sm text-muted-foreground mt-0.5 line-clamp-1">
-              {{ TYPE_LABELS[template.type] ?? template.type }} — {{ template.title }}
-            </p>
-          </div>
-        </div>
-        <button type="submit" :disabled="form.processing"
-          class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-[var(--primary-hover)] disabled:opacity-50 transition-colors">
-          {{ form.processing ? 'Saving...' : 'Update template' }}
-        </button>
-      </div>
-
-      <!-- Meta card: name + status/SEO/revisions inline -->
-      <div class="rounded-lg border bg-card p-4 space-y-3">
-        <!-- Name -->
-        <div>
-          <input
-            v-model="form.title"
-            type="text"
-            class="w-full rounded-lg border bg-background px-4 py-3 text-xl font-semibold focus:outline-none focus:ring-2 focus:ring-ring"
-            :class="{ 'border-destructive': form.errors.title }"
-          />
-          <p v-if="form.errors.title" class="text-xs text-destructive mt-1">{{ form.errors.title }}</p>
-        </div>
-
-        <!-- Inline sub-fields: status · SEO · Revisions -->
-        <div class="flex flex-wrap items-center gap-x-4 gap-y-2 pt-2 border-t border-border/50">
-          <!-- Status -->
-          <div class="flex items-center gap-4 shrink-0">
-            <label class="flex items-center gap-1.5 cursor-pointer">
-              <input type="radio" v-model="form.status" value="draft" class="accent-primary" />
-              <span class="text-sm font-medium">Draft</span>
-            </label>
-            <label class="flex items-center gap-1.5 cursor-pointer">
-              <input type="radio" v-model="form.status" value="published" class="accent-primary" />
-              <span class="text-sm font-medium">Published</span>
-            </label>
-          </div>
-
-          <div class="h-4 w-px bg-border hidden sm:block shrink-0" />
-
-          <!-- SEO toggle -->
-          <button type="button" @click="seoOpen = !seoOpen"
-            class="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors shrink-0">
-            SEO
-            <ChevronDown class="w-3.5 h-3.5 transition-transform" :class="{ 'rotate-180': seoOpen }" />
-          </button>
-
-          <div class="h-4 w-px bg-border hidden sm:block shrink-0" />
-
-          <!-- Revisions toggle -->
-          <button type="button" @click="toggleRevisions"
-            class="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors shrink-0">
-            Revisions
-            <ChevronDown class="w-3.5 h-3.5 transition-transform" :class="{ 'rotate-180': revisionsOpen }" />
-          </button>
-        </div>
-
-        <!-- SEO fields (expanded) -->
-        <div v-if="seoOpen" class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-border/50">
-          <div>
-            <label class="text-xs text-muted-foreground block mb-1">Meta title</label>
-            <input v-model="form.meta_title" type="text"
-              class="w-full rounded border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-          </div>
-          <div>
-            <label class="text-xs text-muted-foreground block mb-1">Meta description</label>
-            <textarea v-model="form.meta_description" rows="2"
-              class="w-full rounded border bg-background px-2 py-1.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring" />
-          </div>
-          <div>
-            <label class="text-xs text-muted-foreground block mb-1">Meta keywords</label>
-            <input v-model="form.meta_keywords" type="text"
-              class="w-full rounded border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-          </div>
-        </div>
-
-        <!-- Revisions list (expanded) -->
-        <div v-if="revisionsOpen" class="pt-2 border-t border-border/50">
-          <div v-if="revisionsLoading" class="text-xs text-muted-foreground text-center py-3">Loading…</div>
-          <div v-else-if="revisions.length === 0" class="text-xs text-muted-foreground text-center py-3">No revisions yet.</div>
-          <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-            <div
-              v-for="rev in revisions"
-              :key="rev.id"
-              class="flex items-center justify-between gap-2 rounded-md border px-3 py-2 hover:bg-muted/50"
-            >
-              <div class="min-w-0">
-                <p class="text-xs font-medium truncate">{{ rev.user?.name ?? 'Unknown' }}</p>
-                <p class="text-[11px] text-muted-foreground">{{ new Date(rev.created_at).toLocaleString() }}</p>
-              </div>
-              <button
-                type="button"
-                class="shrink-0 rounded border px-2 py-0.5 text-xs hover:bg-accent transition-colors"
-                @click="restoreRevision(rev)"
-              >Restore</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Block editor: full remaining width -->
-      <BlockEditor
-        :model-value="form.blocks"
-        :is-admin="authUser?.role === 'administrator'"
-        :context-fields="template.type === 'single-post' ? POST_CONTEXT_FIELDS : []"
-        :default-loop-source="template.type === 'single-post' ? null : 'posts'"
-        @update:model-value="form.blocks = $event"
+    <template #bar>
+      <TemplateBuilderBar
+        :back-href="route('templates.index')"
+        :title="form.title"
+        :type-label="typeLabel"
+        :loop-source="form.loop_source"
+        :show-loop-source="!isSinglePost"
+        :status="form.status"
+        :meta-title="form.meta_title"
+        :meta-description="form.meta_description"
+        :meta-keywords="form.meta_keywords"
+        :processing="form.processing"
+        save-label="Save template"
+        show-revisions
+        :revisions="revisions"
+        :revisions-loading="revisionsLoading"
+        @update:title="form.title = $event"
+        @update:loop-source="form.loop_source = $event"
+        @update:status="form.status = $event"
+        @update:meta-title="form.meta_title = $event"
+        @update:meta-description="form.meta_description = $event"
+        @update:meta-keywords="form.meta_keywords = $event"
+        @save="submit"
+        @restore-revision="restoreRevision"
+        @revisions-open="loadRevisions"
       />
+    </template>
 
-    </form>
+    <BlockEditor
+      :model-value="form.blocks"
+      :is-admin="authUser?.role === 'administrator'"
+      :context-fields="isSinglePost ? POST_CONTEXT_FIELDS : []"
+      :default-loop-source="defaultLoopSource"
+      @update:model-value="form.blocks = $event"
+    />
 
-    <!-- Restore revision confirmation modal -->
-    <Transition
-      enter-active-class="transition ease-out duration-150"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
-      leave-active-class="transition ease-in duration-100"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
-      <div v-if="restoreTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" @click.self="restoreTarget = null">
-        <div class="w-full max-w-sm rounded-lg border bg-card p-6 shadow-lg space-y-4">
-          <h3 class="text-base font-semibold">Restore version?</h3>
-          <p class="text-sm text-muted-foreground">Your current unsaved changes will be replaced with the selected revision. This cannot be undone.</p>
-          <div class="flex justify-end gap-2">
-            <button
-              type="button"
-              class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent transition-colors"
-              @click="restoreTarget = null"
-            >Cancel</button>
-            <button
-              type="button"
-              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-[var(--primary-hover)] transition-colors"
-              @click="confirmRestore"
-            >Restore</button>
-          </div>
+  </PageBuilderLayout>
+
+  <!-- Restore revision confirmation modal -->
+  <Transition
+    enter-active-class="transition ease-out duration-150"
+    enter-from-class="opacity-0"
+    enter-to-class="opacity-100"
+    leave-active-class="transition ease-in duration-100"
+    leave-from-class="opacity-100"
+    leave-to-class="opacity-0"
+  >
+    <div v-if="restoreTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" @click.self="restoreTarget = null">
+      <div class="w-full max-w-sm rounded-lg border bg-card p-6 shadow-lg space-y-4">
+        <h3 class="text-base font-semibold">Restore version?</h3>
+        <p class="text-sm text-muted-foreground">Your current unsaved changes will be replaced with the selected revision. This cannot be undone.</p>
+        <div class="flex justify-end gap-2">
+          <button
+            type="button"
+            class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent transition-colors"
+            @click="restoreTarget = null"
+          >Cancel</button>
+          <button
+            type="button"
+            class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-[var(--primary-hover)] transition-colors"
+            @click="confirmRestore"
+          >Restore</button>
         </div>
       </div>
-    </Transition>
-
-  </AppLayout>
+    </div>
+  </Transition>
 </template>

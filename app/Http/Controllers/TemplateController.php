@@ -38,6 +38,7 @@ class TemplateController extends Controller
         $validated = $request->validate([
             'title'            => ['required', 'string', 'max:255'],
             'type'             => ['required', 'in:blog-index,single-post,archive,search-results,partial'],
+            'loop_source'      => ['nullable', 'in:posts,categories,tags,pages'],
             'status'           => ['required', 'in:draft,published'],
             'blocks'           => ['nullable', 'array'],
             'meta_title'       => ['nullable', 'string', 'max:100'],
@@ -53,7 +54,7 @@ class TemplateController extends Controller
 
         $template = Template::create([...$validated, 'user_id' => auth()->id()]);
 
-        return redirect()->route('templates.index')->with('status', 'Template created.');
+        return redirect()->route('templates.edit', $template->id)->with('status', 'Template created.');
     }
 
     public function edit(Request $request, Template $template)
@@ -69,6 +70,7 @@ class TemplateController extends Controller
                 'id'               => $template->id,
                 'title'            => $template->title,
                 'type'             => $template->type,
+                'loop_source'      => $template->loop_source ?? 'posts',
                 'status'           => $template->status,
                 'blocks'           => $template->blocks ?? [],
                 'meta_title'       => $template->meta_title,
@@ -91,6 +93,7 @@ class TemplateController extends Controller
         $validated = $request->validate([
             'title'            => ['required', 'string', 'max:255'],
             'type'             => ['required', 'in:blog-index,single-post,archive,search-results,partial'],
+            'loop_source'      => ['nullable', 'in:posts,categories,tags,pages'],
             'status'           => ['required', 'in:draft,published'],
             'blocks'           => ['nullable', 'array'],
             'meta_title'       => ['nullable', 'string', 'max:100'],
@@ -109,7 +112,7 @@ class TemplateController extends Controller
         $template->saveRevision(auth()->id());
         $template->autosaves()->where('user_id', auth()->id())->delete();
 
-        return redirect()->route('templates.index')->with('status', 'Template saved.');
+        return redirect()->route('templates.edit', $template->id)->with('status', 'Template saved.');
     }
 
     public function destroy(Request $request, Template $template)

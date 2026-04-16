@@ -15,6 +15,7 @@ class Template extends Model
     protected $fillable = [
         'user_id',
         'type',
+        'loop_source',
         'title',
         'status',
         'blocks',
