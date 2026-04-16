@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('templates', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->enum('type', ['blog-index', 'single-post', 'archive', 'search-results']);
+            $table->enum('type', ['blog-index', 'single-post', 'archive', 'search-results', 'partial']);
             $table->string('title');
             $table->enum('status', ['draft', 'published'])->default('draft');
             $table->json('blocks')->nullable();
