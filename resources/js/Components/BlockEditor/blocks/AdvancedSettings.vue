@@ -81,20 +81,29 @@
 
       <!-- Image -->
       <div v-if="block.data?.advBgType === 'image'" class="space-y-2">
-        <div class="flex gap-1">
-          <input
-            :value="block.data?.advBgImage?.url ?? ''"
-            type="text"
-            placeholder="https://… or pick from library"
-            class="flex-1 min-w-0 rounded border bg-background px-2 py-1 text-xs"
-            @input="updateNestedData('advBgImage', 'url', $event.target.value)"
-          />
-          <button type="button"
-            class="shrink-0 rounded border bg-background px-2 py-1 text-xs hover:bg-muted transition-colors"
-            @click="showImagePicker = true">
-            Library
-          </button>
-        </div>
+        <DynamicField
+          label="Image URL"
+          field-name="advBgImageUrl"
+          :block="block"
+          :available-fields="availableFields"
+          @bind="onBgUrlBind"
+          @unbind="onBgUrlUnbind"
+        >
+          <div class="flex gap-1">
+            <input
+              :value="block.data?.advBgImage?.url ?? ''"
+              type="text"
+              placeholder="https://… or pick from library"
+              class="flex-1 min-w-0 rounded border bg-background px-2 py-1 text-xs"
+              @input="updateNestedData('advBgImage', 'url', $event.target.value)"
+            />
+            <button type="button"
+              class="shrink-0 rounded border bg-background px-2 py-1 text-xs hover:bg-muted transition-colors"
+              @click="showImagePicker = true">
+              Library
+            </button>
+          </div>
+        </DynamicField>
         <div>
           <label class="text-[10px] text-muted-foreground block mb-1">Position</label>
           <div class="flex gap-1 flex-wrap">
@@ -182,6 +191,7 @@ import SpacingControl from '../SpacingControl.vue'
 import ColorPicker from '../ColorPicker.vue'
 import CssEditor from '../CssEditor.vue'
 import MediaPicker from '@/Components/MediaPicker.vue'
+import DynamicField from './DynamicField.vue'
 
 const FONTS = [
   'Inter', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Poppins', 'Raleway', 'Nunito',
@@ -191,7 +201,10 @@ const FONTS = [
   'JetBrains Mono', 'Fira Code', 'Source Code Pro',
 ]
 
-const props = defineProps({ block: { type: Object, required: true } })
+const props = defineProps({
+  block:           { type: Object, required: true },
+  availableFields: { type: Array,  default: () => [] },
+})
 const emit = defineEmits(['update'])
 
 const showImagePicker = ref(false)
@@ -199,6 +212,16 @@ const showImagePicker = ref(false)
 function onBgImageSelect(media) {
   showImagePicker.value = false
   updateNestedData('advBgImage', 'url', media.url)
+}
+
+function onBgUrlBind(fieldName, loopField) {
+  emit('update', { id: props.block.id, bindings: { ...(props.block.bindings ?? {}), [fieldName]: loopField } })
+}
+
+function onBgUrlUnbind(fieldName) {
+  const b = { ...(props.block.bindings ?? {}) }
+  delete b[fieldName]
+  emit('update', { id: props.block.id, bindings: Object.keys(b).length ? b : undefined })
 }
 
 function update(key, value) {

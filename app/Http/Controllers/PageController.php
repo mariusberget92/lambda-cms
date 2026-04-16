@@ -104,7 +104,7 @@ class PageController extends Controller
             'user_id'           => $request->user()->id,
         ])->delete();
 
-        return redirect()->route('pages.index')->with('status', 'Page updated.');
+        return redirect()->route('pages.edit', $page->id)->with('status', 'Page updated.');
     }
 
     public function destroy(Page $page)

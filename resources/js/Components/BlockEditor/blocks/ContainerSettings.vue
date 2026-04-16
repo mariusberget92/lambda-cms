@@ -4,6 +4,7 @@ import SelectBox     from '@/Components/SelectBox.vue'
 import NumberInput   from '@/Components/NumberInput.vue'
 import DimensionInput from '../DimensionInput.vue'
 import SpacingControl from '../SpacingControl.vue'
+import BorderControl  from '../BorderControl.vue'
 
 const props = defineProps({
   block: { type: Object, required: true },
@@ -172,6 +173,11 @@ function update(key, value) {
           @update:model-value="v => update('padding', v)"
         />
       </div>
+
+      <BorderControl
+        :model-value="block.data.border ?? {}"
+        @update:model-value="v => update('border', v)"
+      />
 
     </div>
 

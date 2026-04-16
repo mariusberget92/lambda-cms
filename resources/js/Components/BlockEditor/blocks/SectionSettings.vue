@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import SelectBox   from '@/Components/SelectBox.vue'
 import SpacingControl from '../SpacingControl.vue'
+import BorderControl  from '../BorderControl.vue'
 
 const props = defineProps({
   block: { type: Object, required: true },
@@ -73,6 +74,11 @@ function update(key, value) {
           @update:model-value="v => update('minHeight', v)"
         />
       </div>
+
+      <BorderControl
+        :model-value="d.border ?? {}"
+        @update:model-value="v => update('border', v)"
+      />
 
     </div>
 

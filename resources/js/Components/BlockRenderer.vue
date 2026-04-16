@@ -91,14 +91,43 @@ function blockWrapperStyle(block) {
     const g = block.data.advBgGradient
     const dir = { 'to-r': 'to right', 'to-l': 'to left', 'to-b': 'to bottom', 'to-t': 'to top', 'to-br': 'to bottom right', 'to-bl': 'to bottom left' }[g.direction ?? 'to-r'] ?? 'to right'
     style.backgroundImage = `linear-gradient(${dir}, ${g.from ?? '#3b4252'}, ${g.to ?? '#4c566a'})`
-  } else if (bgType === 'image' && block.data?.advBgImage?.url) {
-    const img = block.data.advBgImage
-    style.backgroundImage    = `url('${img.url}')`
-    style.backgroundPosition = img.position ?? 'center'
-    style.backgroundSize     = img.size ?? 'cover'
-    style.backgroundRepeat   = 'no-repeat'
-    if (img.parallax) style.backgroundAttachment = 'fixed'
+  } else if (bgType === 'image') {
+    const img = block.data.advBgImage ?? {}
+    // Resolve dynamic binding first, fall back to static URL
+    let url = img.url ?? null
+    const binding = block.bindings?.advBgImageUrl
+    if (binding && loopItem?.value) {
+      const field = binding.replace(/^(?:loop|post):/, '')
+      url = loopItem.value[field] ?? url
+    }
+    if (url) {
+      style.backgroundImage    = `url('${url}')`
+      style.backgroundPosition = img.position ?? 'center'
+      style.backgroundSize     = img.size ?? 'cover'
+      style.backgroundRepeat   = 'no-repeat'
+      if (img.parallax) style.backgroundAttachment = 'fixed'
+    }
   }
+  // Border radius + border stroke (from BorderControl data)
+  const border = block.data?.border
+  if (border) {
+    // Radius — per-corner (new) or legacy single value
+    if (border.radiusTL || border.radiusTR || border.radiusBL || border.radiusBR) {
+      if (border.radiusTL) style.borderTopLeftRadius     = border.radiusTL
+      if (border.radiusTR) style.borderTopRightRadius    = border.radiusTR
+      if (border.radiusBL) style.borderBottomLeftRadius  = border.radiusBL
+      if (border.radiusBR) style.borderBottomRightRadius = border.radiusBR
+    } else if (border.radius) {
+      style.borderRadius = border.radius   // legacy single-value fallback
+    }
+    // Border stroke
+    if (border.style && border.style !== 'none') {
+      style.borderStyle = border.style
+      if (border.width) style.borderWidth = border.width
+      if (border.color) style.borderColor = border.color
+    }
+  }
+
   return Object.keys(style).length ? style : undefined
 }
 

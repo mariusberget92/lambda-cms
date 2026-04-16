@@ -117,6 +117,7 @@
               <template v-else-if="settingsTab === 'advanced'">
                 <AdvancedSettings
                   :block="selectedBlock"
+                  :available-fields="availableFields"
                   @update="$emit('update', $event)"
                 />
                 <ConditionSettings

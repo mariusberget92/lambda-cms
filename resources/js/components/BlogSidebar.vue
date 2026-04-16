@@ -16,6 +16,11 @@ function submitSearch() {
   const q = searchQuery.value.trim()
   router.get('/search', q ? { q } : {})
 }
+
+function formatDate(date) {
+  if (!date) return ''
+  return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+}
 </script>
 
 <template>
@@ -79,7 +84,7 @@ function submitSearch() {
             :href="`/blog/${post.slug}`"
             class="text-sm text-gray-700 hover:text-gray-900 transition-colors line-clamp-2"
           >{{ post.title }}</Link>
-          <p class="text-xs text-gray-400 mt-0.5">{{ post.published_at }}</p>
+          <p class="text-xs text-gray-400 mt-0.5">{{ formatDate(post.published_at) }}</p>
         </li>
       </ul>
     </div>

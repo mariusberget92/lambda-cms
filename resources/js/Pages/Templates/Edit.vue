@@ -270,6 +270,7 @@ async function confirmRestore() {
         :model-value="form.blocks"
         :is-admin="authUser?.role === 'administrator'"
         :context-fields="template.type === 'single-post' ? POST_CONTEXT_FIELDS : []"
+        :default-loop-source="template.type === 'single-post' ? null : 'posts'"
         @update:model-value="form.blocks = $event"
       />
 

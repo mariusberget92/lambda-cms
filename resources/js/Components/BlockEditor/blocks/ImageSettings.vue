@@ -40,12 +40,14 @@
         >
           {{ block.data.url ? 'Change image' : 'Select image' }}
         </button>
-        <MediaPicker v-model="showPicker" :dark="true" @select="onMediaSelect" />
       </div>
     </DynamicField>
 
+    <!-- MediaPicker: always mounted so it can open from both Library tab and switchMode() -->
+    <MediaPicker v-model="showPicker" :dark="true" @select="onMediaSelect" />
+
     <!-- URL mode -->
-    <div v-else>
+    <div v-if="mode === 'url'">
       <label class="text-xs font-medium text-muted-foreground block mb-1">Image URL</label>
       <div v-if="block.data.url" class="rounded-md overflow-hidden border mb-2">
         <img :src="block.data.url" :alt="block.data.alt" class="w-full object-cover max-h-32" />

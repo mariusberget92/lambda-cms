@@ -11,6 +11,13 @@ const depth = inject('templateDepth', 0)
 const MAX_DEPTH = 10
 provide('templateDepth', depth + 1)
 
+// Explicitly re-provide loop/post context so template's internal blocks can inject them
+// even if a slot-boundary or component-tree discontinuity would otherwise break the chain.
+const loopItem    = inject('loopItem',    null)
+const postContext = inject('postContext', null)
+if (loopItem    !== null) provide('loopItem',    loopItem)
+if (postContext !== null) provide('postContext', postContext)
+
 const sharedTemplates = computed(() => usePage().props.sharedTemplates ?? [])
 
 const template = computed(() =>

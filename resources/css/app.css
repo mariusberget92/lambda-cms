@@ -134,6 +134,32 @@
   --color-info-border: color-mix(in srgb, #81a1c1 30%, transparent);
 }
 
+/* Light reset — use data-theme="light" inside a dark scope to restore :root values */
+[data-theme="light"] {
+  --background: #f7f8fa;
+  --foreground: #2e3440;
+  --card: #ffffff;
+  --card-foreground: #2e3440;
+  --popover: #eceff4;
+  --popover-foreground: #2e3440;
+  --primary: #5e81ac;
+  --primary-foreground: #ffffff;
+  --primary-hover: #4a6d92;
+  --secondary: #d8dee9;
+  --secondary-foreground: #3b4252;
+  --muted: #d8dee9;
+  --muted-foreground: #4c566a;
+  --accent: #88c0d0;
+  --accent-foreground: #2e3440;
+  --destructive: #bf616a;
+  --destructive-foreground: #eceff4;
+  --border: #e4e7ec;
+  --input: #d8dee9;
+  --ring: #81a1c1;
+  color: var(--foreground);
+  background-color: var(--background);
+}
+
 /* Block editor forced dark scope — overrides CSS tokens inside [data-theme="dark"] */
 [data-theme="dark"] {
   color: var(--foreground);

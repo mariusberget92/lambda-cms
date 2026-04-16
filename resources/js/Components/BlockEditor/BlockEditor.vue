@@ -84,11 +84,14 @@ import BlockLayers    from './BlockLayers.vue'
 import { SOURCE_FIELDS, SOURCES } from '@/lib/loopSources.js'
 
 const props = defineProps({
-  modelValue:    { type: Array,   default: () => [] },
-  isAdmin:       { type: Boolean, default: false },
-  meta:          { type: Object,  default: () => ({}) },
-  fullscreen:    { type: Boolean, default: false },
-  contextFields: { type: Array,   default: () => [] },
+  modelValue:        { type: Array,   default: () => [] },
+  isAdmin:           { type: Boolean, default: false },
+  meta:              { type: Object,  default: () => ({}) },
+  fullscreen:        { type: Boolean, default: false },
+  contextFields:     { type: Array,   default: () => [] },
+  // When set, loop binding fields for this source are shown in DynamicField dropdowns
+  // even when no loop block exists in the canvas (used by the template editor).
+  defaultLoopSource: { type: String,  default: null },
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -274,10 +277,12 @@ const loopAncestor = computed(() => {
   return result ?? null
 })
 
-// Field names exposed by the loop ancestor's source — used to populate binding dropdowns
+// Field names exposed by the loop ancestor's source — used to populate binding dropdowns.
+// Falls back to defaultLoopSource when no loop ancestor exists (e.g. in the template editor).
 const loopFields = computed(() => {
-  if (!loopAncestor.value) return []
-  return SOURCE_FIELDS[loopAncestor.value.data?.source ?? 'posts'] ?? []
+  if (loopAncestor.value) return SOURCE_FIELDS[loopAncestor.value.data?.source ?? 'posts'] ?? []
+  if (props.defaultLoopSource) return SOURCE_FIELDS[props.defaultLoopSource] ?? []
+  return []
 })
 
 // availableFields: merged prefixed list for DynamicField dropdowns.
@@ -292,7 +297,7 @@ const availableFields = computed(() => {
   }
 
   if (loopFields.value.length) {
-    const source      = loopAncestor.value?.data?.source ?? 'posts'
+    const source      = loopAncestor.value?.data?.source ?? props.defaultLoopSource ?? 'posts'
     const sourceLabel = SOURCES.find(s => s.value === source)?.label ?? source
     fields.push(
       ...loopFields.value.map(f => ({

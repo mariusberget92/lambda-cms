@@ -40,8 +40,8 @@
 
     <div class="relative flex-1 overflow-y-auto scrollbar-hidden">
 
-      <!-- Live preview mode -->
-      <div v-if="previewMode" class="p-6 bg-white min-h-full">
+      <!-- Live preview mode — reset to light theme so blocks render with :root CSS vars -->
+      <div v-if="previewMode" data-theme="light" class="p-6 bg-white min-h-full">
         <BlockRenderer :blocks="blocks" />
       </div>
 

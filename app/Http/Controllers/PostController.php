@@ -248,7 +248,7 @@ class PostController extends Controller
         ])->delete();
 
         return redirect()
-            ->route('posts.index')
+            ->route('posts.edit', $post->id)
             ->with('status', 'Post updated successfully.');
     }
 
