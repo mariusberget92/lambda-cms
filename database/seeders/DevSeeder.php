@@ -51,13 +51,15 @@ class DevSeeder extends Seeder
         // ── Posts ─────────────────────────────────────────────────────────────
         $allUsers = $users->merge(User::where('email', 'admin@example.com')->get());
 
-        // 60 published — ~40% get a featured image
-        Post::factory()->count(60)->published()->make()->each(function ($post) use ($allUsers, $categories, $tags, $seedImages) {
+        // 60 published — every post gets a featured image (cycling through seed images)
+        $imageIndex = 0;
+        Post::factory()->count(60)->published()->make()->each(function ($post) use ($allUsers, $categories, $tags, $seedImages, &$imageIndex) {
             $post->user_id = $allUsers->random()->id;
             $post->featured = rand(0, 10) === 0; // ~10% featured
 
-            if ($seedImages->isNotEmpty() && rand(0, 9) < 4) {
-                $post->featured_image_id = $seedImages->random()->id;
+            if ($seedImages->isNotEmpty()) {
+                $post->featured_image_id = $seedImages[$imageIndex % $seedImages->count()]->id;
+                $imageIndex++;
             }
 
             $post->save();
