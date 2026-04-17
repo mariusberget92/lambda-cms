@@ -226,6 +226,7 @@ class TemplateSeeder extends Seeder
                 [
                     'mode'      => 'flex',
                     'direction' => 'column',
+                    'align'     => 'stretch',
                     'gap'       => 0,
                     'padding'   => 0,
                     'maxWidth'  => 'full',
@@ -262,8 +263,7 @@ class TemplateSeeder extends Seeder
                                 'color: #6b7280;'
                             ),
 
-                            // Meta + Read more row — customCss overrides flex-1 on children
-                            // so date stays left and link is pushed to the far right
+                            // Meta + Read more — date left, link right
                             $this->block(507, 'container',
                                 [
                                     'mode'      => 'flex',
@@ -290,12 +290,7 @@ class TemplateSeeder extends Seeder
                                         'text-sm font-medium hover:underline shrink-0',
                                         'color: #6366f1;'
                                     ),
-                                ],
-                                [],
-                                // Cancel the flex-1 ContainerBlock applies to every child in
-                                // flex-row mode, then push the last child to the right end
-                                '#block-507 > div > div { flex: none !important; }
-                                 #block-507 > div > div:last-child { margin-left: auto; }'
+                                ]
                             ),
                         ]
                     ),

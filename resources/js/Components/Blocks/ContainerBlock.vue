@@ -81,9 +81,14 @@ const rendererWrapperClass = computed(() =>
   mode.value === 'flex' || mode.value === 'grid' ? 'contents' : 'space-y-4'
 )
 
-const rendererItemClass = computed(() =>
-  isFlexRow.value ? 'flex-1 min-w-0' : ''
-)
+const rendererItemClass = computed(() => {
+  if (!isFlexRow.value) return ''
+  const justify = props.block.data?.justify
+  // With space-distribution justify, items should be natural width — flex-1 would
+  // consume all space and leave nothing for justify to distribute
+  if (justify === 'between' || justify === 'around') return 'min-w-0'
+  return 'flex-1 min-w-0'
+})
 </script>
 
 <template>
