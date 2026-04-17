@@ -4,7 +4,7 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import { Head, router } from '@inertiajs/vue3'
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import StatusBadge from '@/Components/StatusBadge.vue'
-import { LayoutTemplate, Plus, Pencil, Trash2, ChevronDown } from 'lucide-vue-next'
+import { LayoutTemplate, Plus, Pencil, Trash2, ChevronDown, Lock } from 'lucide-vue-next'
 import { formatDate } from '@/lib/utils.js'
 
 const props = defineProps({
@@ -138,7 +138,18 @@ function deleteTemplate() {
                 >
                   <Pencil class="w-3.5 h-3.5" />
                 </a>
+                <!-- System templates: show lock, no delete -->
+                <span
+                  v-if="template.is_system"
+                  class="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground/40 cursor-default"
+                  title="System templates cannot be deleted"
+                >
+                  <Lock class="w-3.5 h-3.5" />
+                </span>
+
+                <!-- User templates: show trash -->
                 <button
+                  v-else
                   type="button"
                   class="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
                   title="Delete"
