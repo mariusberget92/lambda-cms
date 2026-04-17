@@ -13,7 +13,17 @@ class TemplateSeeder extends Seeder
         $admin = User::role('administrator')->first();
         if (!$admin) return;
 
+        // Retroactively mark any already-seeded system templates
+        Template::whereIn('title', [
+            'Default Blog Index',
+            'Default Single Post',
+            'Default Archive',
+            'Default Search Results',
+            'Post Card',
+        ])->update(['is_system' => true]);
+
         $definitions = [
+            ['type' => 'partial',        'title' => 'Post Card',              'loop_source' => 'posts', 'blocks' => $this->postCardBlocks()],
             ['type' => 'blog-index',     'title' => 'Default Blog Index',     'blocks' => $this->blogIndexBlocks()],
             ['type' => 'single-post',    'title' => 'Default Single Post',    'blocks' => $this->singlePostBlocks()],
             ['type' => 'archive',        'title' => 'Default Archive',        'blocks' => $this->archiveBlocks()],
@@ -21,15 +31,23 @@ class TemplateSeeder extends Seeder
         ];
 
         foreach ($definitions as $def) {
-            if (Template::where('type', $def['type'])->where('status', 'published')->exists()) {
+            $existing = Template::where('type', $def['type'])
+                ->where('title', $def['title'])
+                ->first();
+
+            if ($existing) {
+                $existing->update(['is_system' => true]);
                 continue;
             }
+
             Template::create([
-                'user_id' => $admin->id,
-                'type'    => $def['type'],
-                'title'   => $def['title'],
-                'status'  => 'published',
-                'blocks'  => $def['blocks'],
+                'user_id'     => $admin->id,
+                'type'        => $def['type'],
+                'title'       => $def['title'],
+                'loop_source' => $def['loop_source'] ?? null,
+                'status'      => 'published',
+                'is_system'   => true,
+                'blocks'      => $def['blocks'],
             ]);
         }
     }
@@ -75,7 +93,7 @@ class TemplateSeeder extends Seeder
                             'limit'        => 9,
                             'columns'      => 3,
                             'gap'          => 'md',
-                        ], [$this->postCard(10)]),
+                        ], [$this->templateBlock(10, $this->postCardTemplateId() ?? 0)]),
                     ], [], '', 'flex:3;min-width:0'),
 
                     // ── Sidebar column (flex: 1) ─────────────────────────
@@ -153,7 +171,7 @@ class TemplateSeeder extends Seeder
                     'limit'   => 9,
                     'columns' => 3,
                     'gap'     => 'md',
-                ], [$this->postCard(210)]),
+                ], [$this->templateBlock(210, $this->postCardTemplateId() ?? 0)]),
             ]),
         ];
     }
@@ -171,38 +189,89 @@ class TemplateSeeder extends Seeder
                     'limit'   => 10,
                     'columns' => 1,
                     'gap'     => 'md',
-                ], [$this->postCard(310)]),
+                ], [$this->templateBlock(310, $this->postCardTemplateId() ?? 0)]),
             ]),
         ];
     }
 
-    // ── Shared card ───────────────────────────────────────────────────────────
+    // ── Post Card partial ─────────────────────────────────────────────────────
 
-    /**
-     * A minimal post card for use inside a loop block.
-     * Uses IDs: $baseId, $baseId+1, $baseId+2, $baseId+3
-     */
-    private function postCard(int $baseId): array
+    private function postCardBlocks(): array
     {
-        return $this->block(
-            $baseId, 'container',
-            ['mode' => 'flex', 'direction' => 'column', 'gap' => 3, 'padding' => 4, 'maxWidth' => 'full'],
-            [
-                $this->block($baseId + 1, 'heading',
-                    ['level' => 3, 'text' => ''],
-                    [], ['text' => 'loop:title']
-                ),
-                $this->block($baseId + 2, 'paragraph',
-                    ['content' => ''],
-                    [], ['content' => 'loop:excerpt']
-                ),
-                $this->block($baseId + 3, 'link',
-                    ['label' => 'Read more →', 'url' => '#', 'target' => '_self'],
-                    [], ['url' => 'loop:url']
-                ),
-            ],
-            [], 'rounded-xl border bg-card'
-        );
+        return [
+            $this->block(
+                500, 'container',
+                [
+                    'mode'      => 'flex',
+                    'direction' => 'column',
+                    'gap'       => 0,
+                    'padding'   => 0,
+                    'maxWidth'  => 'full',
+                ],
+                [
+                    // Featured image — bound to loop:featured_image_url
+                    $this->block(501, 'image',
+                        ['url' => '', 'alt' => '', 'maxHeight' => '200px'],
+                        [], ['url' => 'loop:featured_image_url', 'alt' => 'loop:title']
+                    ),
+
+                    // Inner content area
+                    $this->block(502, 'container',
+                        [
+                            'mode'      => 'flex',
+                            'direction' => 'column',
+                            'gap'       => '0.5rem',
+                            'padding'   => 16,
+                            'maxWidth'  => 'full',
+                        ],
+                        [
+                            // Title
+                            $this->block(503, 'heading',
+                                ['level' => 3, 'text' => ''],
+                                [], ['text' => 'loop:title']
+                            ),
+
+                            // Excerpt
+                            $this->block(504, 'paragraph',
+                                ['content' => ''],
+                                [], ['content' => 'loop:excerpt'],
+                                'line-clamp-2 text-sm text-muted-foreground'
+                            ),
+
+                            // Published date
+                            $this->block(505, 'paragraph',
+                                ['content' => ''],
+                                [], ['content' => 'loop:published_at'],
+                                'text-xs text-muted-foreground/70'
+                            ),
+
+                            // Read more link
+                            $this->block(506, 'link',
+                                ['label' => 'Read more →', 'url' => '#', 'target' => '_self'],
+                                [], ['url' => 'loop:url'],
+                                'text-sm font-medium text-primary hover:underline mt-1'
+                            ),
+                        ]
+                    ),
+                ],
+                [], 'rounded-xl shadow-md overflow-hidden bg-card',
+                'font-family: Inter, sans-serif;'
+            ),
+        ];
+    }
+
+    // ── Template reference helpers ─────────────────────────────────────────────
+
+    private function postCardTemplateId(): ?int
+    {
+        return \App\Models\Template::where('title', 'Post Card')
+            ->where('type', 'partial')
+            ->value('id');
+    }
+
+    private function templateBlock(int $id, int $templateId): array
+    {
+        return $this->block($id, 'template', ['template_id' => $templateId]);
     }
 
     // ── Block builder helpers ─────────────────────────────────────────────────
