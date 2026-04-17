@@ -41,11 +41,15 @@ const page      = usePage()
 const items     = ref(props.block.data?.resolved?.items ?? [])
 const isLoading = ref(false)
 
-// CSS grid wrapper — columns and gap driven by block.data
+// CSS grid/flex wrapper — columns and gap driven by block.data
 const GAP_CLASS = { sm: 'gap-2', md: 'gap-4', lg: 'gap-6', xl: 'gap-8' }
 const wrapperClass = computed(() => {
   const cols = props.block.data?.columns ?? 1
   const gap  = GAP_CLASS[props.block.data?.gap ?? 'md'] ?? 'gap-4'
+  // flex-wrap mode: when columns is set to 'flex' or block.data.flexWrap is true
+  if (cols === 'flex' || props.block.data?.flexWrap) {
+    return `flex flex-wrap ${gap}`
+  }
   return `grid grid-cols-${cols} ${gap}`
 })
 

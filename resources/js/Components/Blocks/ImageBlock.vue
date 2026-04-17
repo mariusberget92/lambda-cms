@@ -1,6 +1,6 @@
 <!-- resources/js/Components/Blocks/ImageBlock.vue -->
 <template>
-  <figure class="my-4">
+  <figure>
     <img
       v-if="resolvedUrl"
       :src="resolvedUrl"

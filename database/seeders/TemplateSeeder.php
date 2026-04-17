@@ -123,23 +123,36 @@ class TemplateSeeder extends Seeder
                             'columns' => 1,
                             'gap'     => 'sm',
                         ], [
-                            $this->block(30, 'filter-link',
-                                ['paramName' => 'category', 'label' => ''],
-                                [], ['label' => 'loop:name']
-                            ),
+                            // Each category wrapped in a card-style container
+                            $this->block(30, 'container', [
+                                'mode'      => 'flex',
+                                'direction' => 'row',
+                                'gap'       => 0,
+                                'padding'   => 0,
+                                'maxWidth'  => 'full',
+                            ], [
+                                $this->block(32, 'filter-link',
+                                    ['paramName' => 'category', 'label' => ''],
+                                    [], ['label' => 'loop:name'],
+                                    'w-full'
+                                ),
+                            ], [], 'rounded-lg border bg-card shadow-sm overflow-hidden'),
                         ]),
                         $this->block(24, 'heading', ['level' => 3, 'text' => 'Tags']),
                         $this->block(25, 'loop', [
-                            'source'  => 'tags',
-                            'filters' => [],
-                            'sort'    => ['field' => 'posts_count', 'direction' => 'desc'],
-                            'limit'   => 30,
-                            'columns' => 1,
-                            'gap'     => 'sm',
+                            'source'   => 'tags',
+                            'filters'  => [],
+                            'sort'     => ['field' => 'posts_count', 'direction' => 'desc'],
+                            'limit'    => 30,
+                            'columns'  => 'flex',
+                            'flexWrap' => true,
+                            'gap'      => 'sm',
                         ], [
+                            // Tag as a pill
                             $this->block(31, 'filter-link',
                                 ['paramName' => 'tag', 'label' => ''],
-                                [], ['label' => 'loop:name']
+                                [], ['label' => 'loop:name'],
+                                'inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium bg-muted hover:bg-accent transition-colors cursor-pointer'
                             ),
                         ]),
                     ], [], '', 'flex:1;min-width:0'),
@@ -214,9 +227,9 @@ class TemplateSeeder extends Seeder
                     'maxWidth'  => 'full',
                 ],
                 [
-                    // Featured image — bound to loop:featured_image_url
+                    // Featured image — bound to loop:featured_image_url, aspect-video, no margin
                     $this->block(501, 'image',
-                        ['url' => '', 'alt' => '', 'maxHeight' => '200px'],
+                        ['url' => '', 'alt' => '', 'aspectRatio' => '16/9'],
                         [], ['url' => 'loop:featured_image_url', 'alt' => 'loop:title']
                     ),
 
@@ -256,10 +269,10 @@ class TemplateSeeder extends Seeder
                                     'justify'   => 'between',
                                 ],
                                 [
-                                    // Published date
+                                    // Published date (human-readable)
                                     $this->block(505, 'paragraph',
                                         ['content' => ''],
-                                        [], ['content' => 'loop:published_at'],
+                                        [], ['content' => 'loop:published_at_formatted'],
                                         'text-xs text-muted-foreground/70'
                                     ),
 

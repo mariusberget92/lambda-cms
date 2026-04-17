@@ -34,10 +34,8 @@ function navigate(e) {
   <a
     :href="filterUrl"
     :class="[
-      'block text-sm transition-colors hover:text-foreground',
-      isActive
-        ? 'font-semibold text-foreground ring-1 ring-primary/40 rounded px-2 py-0.5'
-        : 'text-muted-foreground px-2 py-0.5',
+      'transition-colors',
+      isActive ? 'font-semibold text-foreground ring-2 ring-primary/40' : 'text-muted-foreground hover:text-foreground',
     ]"
     @click="navigate"
   >
