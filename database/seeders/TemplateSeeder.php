@@ -22,12 +22,14 @@ class TemplateSeeder extends Seeder
             'Post Card',
         ])->update(['is_system' => true]);
 
+        // Definitions with lazy block builders (closures) so that templates referencing
+        // the Post Card partial can resolve its DB id AFTER it has been inserted.
         $definitions = [
-            ['type' => 'partial',        'title' => 'Post Card',              'loop_source' => 'posts', 'blocks' => $this->postCardBlocks()],
-            ['type' => 'blog-index',     'title' => 'Default Blog Index',     'blocks' => $this->blogIndexBlocks()],
-            ['type' => 'single-post',    'title' => 'Default Single Post',    'blocks' => $this->singlePostBlocks()],
-            ['type' => 'archive',        'title' => 'Default Archive',        'blocks' => $this->archiveBlocks()],
-            ['type' => 'search-results', 'title' => 'Default Search Results', 'blocks' => $this->searchBlocks()],
+            ['type' => 'partial',        'title' => 'Post Card',              'loop_source' => 'posts', 'blocks' => fn () => $this->postCardBlocks()],
+            ['type' => 'blog-index',     'title' => 'Default Blog Index',     'blocks' => fn () => $this->blogIndexBlocks()],
+            ['type' => 'single-post',    'title' => 'Default Single Post',    'blocks' => fn () => $this->singlePostBlocks()],
+            ['type' => 'archive',        'title' => 'Default Archive',        'blocks' => fn () => $this->archiveBlocks()],
+            ['type' => 'search-results', 'title' => 'Default Search Results', 'blocks' => fn () => $this->searchBlocks()],
         ];
 
         foreach ($definitions as $def) {
@@ -40,6 +42,9 @@ class TemplateSeeder extends Seeder
                 continue;
             }
 
+            // Resolve blocks lazily so postCardTemplateId() can find the Post Card row
+            $blocks = is_callable($def['blocks']) ? ($def['blocks'])() : $def['blocks'];
+
             Template::create([
                 'user_id'     => $admin->id,
                 'type'        => $def['type'],
@@ -47,7 +52,7 @@ class TemplateSeeder extends Seeder
                 'loop_source' => $def['loop_source'] ?? null,
                 'status'      => 'published',
                 'is_system'   => true,
-                'blocks'      => $def['blocks'],
+                'blocks'      => $blocks,
             ]);
         }
     }
