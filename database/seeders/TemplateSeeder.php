@@ -96,7 +96,7 @@ class TemplateSeeder extends Seeder
                             'filter_logic' => 'and',
                             'sort'         => ['field' => 'published_at', 'direction' => 'desc'],
                             'limit'        => 9,
-                            'columns'      => 3,
+                            'columns'      => 1,
                             'gap'          => 'md',
                         ], [$this->templateBlock(10, $this->postCardTemplateId() ?? 0)]),
                     ], [], '', 'flex:3;min-width:0'),
@@ -174,7 +174,7 @@ class TemplateSeeder extends Seeder
                     'filters' => [],
                     'sort'    => ['field' => 'published_at', 'direction' => 'desc'],
                     'limit'   => 9,
-                    'columns' => 3,
+                    'columns' => 1,
                     'gap'     => 'md',
                 ], [$this->templateBlock(210, $this->postCardTemplateId() ?? 0)]),
             ]),
@@ -220,41 +220,56 @@ class TemplateSeeder extends Seeder
                         [], ['url' => 'loop:featured_image_url', 'alt' => 'loop:title']
                     ),
 
-                    // Inner content area
+                    // Inner content area — tighter padding, left-aligned text
                     $this->block(502, 'container',
                         [
                             'mode'      => 'flex',
                             'direction' => 'column',
                             'gap'       => '0.5rem',
-                            'padding'   => 16,
+                            'padding'   => 4,
                             'maxWidth'  => 'full',
                         ],
                         [
                             // Title
                             $this->block(503, 'heading',
                                 ['level' => 3, 'text' => ''],
-                                [], ['text' => 'loop:title']
+                                [], ['text' => 'loop:title'],
+                                'text-left'
                             ),
 
                             // Excerpt
                             $this->block(504, 'paragraph',
                                 ['content' => ''],
                                 [], ['content' => 'loop:excerpt'],
-                                'line-clamp-2 text-sm text-muted-foreground'
+                                'line-clamp-2 text-sm text-muted-foreground text-left'
                             ),
 
-                            // Published date
-                            $this->block(505, 'paragraph',
-                                ['content' => ''],
-                                [], ['content' => 'loop:published_at'],
-                                'text-xs text-muted-foreground/70'
-                            ),
+                            // Meta + Read more on the same row
+                            $this->block(507, 'container',
+                                [
+                                    'mode'      => 'flex',
+                                    'direction' => 'row',
+                                    'gap'       => '0.5rem',
+                                    'padding'   => 0,
+                                    'maxWidth'  => 'full',
+                                    'align'     => 'center',
+                                    'justify'   => 'between',
+                                ],
+                                [
+                                    // Published date
+                                    $this->block(505, 'paragraph',
+                                        ['content' => ''],
+                                        [], ['content' => 'loop:published_at'],
+                                        'text-xs text-muted-foreground/70'
+                                    ),
 
-                            // Read more link
-                            $this->block(506, 'link',
-                                ['label' => 'Read more →', 'url' => '#', 'target' => '_self'],
-                                [], ['url' => 'loop:url'],
-                                'text-sm font-medium text-primary hover:underline mt-1'
+                                    // Read more link
+                                    $this->block(506, 'link',
+                                        ['label' => 'Read more →', 'url' => '#', 'target' => '_self'],
+                                        [], ['url' => 'loop:url'],
+                                        'text-sm font-medium text-primary hover:underline shrink-0'
+                                    ),
+                                ]
                             ),
                         ]
                     ),
