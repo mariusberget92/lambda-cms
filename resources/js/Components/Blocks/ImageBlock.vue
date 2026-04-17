@@ -5,7 +5,11 @@
       v-if="resolvedUrl"
       :src="resolvedUrl"
       :alt="resolvedAlt || ''"
-      class="w-full rounded-lg object-cover"
+      class="w-full object-cover"
+      :style="[
+        block.data?.maxHeight ? { maxHeight: block.data.maxHeight, height: block.data.maxHeight } : {},
+        block.data?.aspectRatio && block.data.aspectRatio !== 'auto' ? { aspectRatio: block.data.aspectRatio } : {}
+      ]"
       @error="onError"
     />
     <div
