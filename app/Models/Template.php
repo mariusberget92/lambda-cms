@@ -16,6 +16,7 @@ class Template extends Model
         'user_id',
         'type',
         'loop_source',
+        'is_system',
         'title',
         'status',
         'blocks',
@@ -24,7 +25,10 @@ class Template extends Model
         'meta_keywords',
     ];
 
-    protected $casts = ['blocks' => 'array'];
+    protected $casts = [
+        'blocks'    => 'array',
+        'is_system' => 'boolean',
+    ];
 
     // ─── Relationships ────────────────────────────────────────────────────────
 

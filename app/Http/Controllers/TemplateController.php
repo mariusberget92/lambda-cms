@@ -18,6 +18,7 @@ class TemplateController extends Controller
                 'title'      => $t->title,
                 'type'       => $t->type,
                 'status'     => $t->status,
+                'is_system'  => $t->is_system,
                 'updated_at' => $t->updated_at->toDateString(),
                 'creator'    => $t->creator->name,
             ])
@@ -72,6 +73,7 @@ class TemplateController extends Controller
                 'type'             => $template->type,
                 'loop_source'      => $template->loop_source ?? 'posts',
                 'status'           => $template->status,
+                'is_system'        => $template->is_system,
                 'blocks'           => $template->blocks ?? [],
                 'meta_title'       => $template->meta_title,
                 'meta_description' => $template->meta_description,
@@ -119,6 +121,10 @@ class TemplateController extends Controller
     {
         if ($template->user_id !== $request->user()->id && !$request->user()->hasRole('administrator')) {
             abort(403);
+        }
+
+        if ($template->is_system) {
+            abort(403, 'System templates cannot be deleted.');
         }
 
         $template->delete();
