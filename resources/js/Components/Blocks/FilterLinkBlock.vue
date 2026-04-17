@@ -34,9 +34,10 @@ function navigate(e) {
   <a
     :href="filterUrl"
     :class="[
-      'transition-colors',
-      isActive ? 'font-semibold text-foreground ring-2 ring-primary/40' : 'text-muted-foreground hover:text-foreground',
+      'block px-3 py-2.5 transition-colors',
+      isActive ? 'font-semibold' : 'hover:opacity-80',
     ]"
+    :style="isActive ? 'color:#4f46e5;' : 'color:#374151;'"
     @click="navigate"
   >
     {{ label || slug }}

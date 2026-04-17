@@ -123,7 +123,7 @@ class TemplateSeeder extends Seeder
                             'columns' => 1,
                             'gap'     => 'sm',
                         ], [
-                            // Each category wrapped in a card-style container
+                            // Category card with left accent border
                             $this->block(30, 'container', [
                                 'mode'      => 'flex',
                                 'direction' => 'row',
@@ -134,9 +134,12 @@ class TemplateSeeder extends Seeder
                                 $this->block(32, 'filter-link',
                                     ['paramName' => 'category', 'label' => ''],
                                     [], ['label' => 'loop:name'],
-                                    'w-full'
+                                    'w-full text-sm font-medium'
                                 ),
-                            ], [], 'rounded-lg border bg-card shadow-sm overflow-hidden'),
+                            ], [],
+                            'rounded-lg overflow-hidden',
+                            'background:#fff; border:1px solid #e5e7eb; border-left:3px solid #818cf8; box-shadow:0 1px 2px rgba(0,0,0,0.05); transition:box-shadow 0.15s;'
+                            ),
                         ]),
                         $this->block(24, 'heading', ['level' => 3, 'text' => 'Tags']),
                         $this->block(25, 'loop', [
@@ -152,7 +155,8 @@ class TemplateSeeder extends Seeder
                             $this->block(31, 'filter-link',
                                 ['paramName' => 'tag', 'label' => ''],
                                 [], ['label' => 'loop:name'],
-                                'inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium bg-muted hover:bg-accent transition-colors cursor-pointer'
+                                'rounded-full text-xs font-medium cursor-pointer',
+                                'display:inline-flex; align-items:center; padding:2px 10px; border:1px solid #e5e7eb; background:#f9fafb; color:#374151; transition:all 0.15s;'
                             ),
                         ]),
                     ], [], '', 'flex:1;min-width:0'),
@@ -227,13 +231,13 @@ class TemplateSeeder extends Seeder
                     'maxWidth'  => 'full',
                 ],
                 [
-                    // Featured image — bound to loop:featured_image_url, aspect-video, no margin
+                    // Featured image — 200px max height, full width, object-cover
                     $this->block(501, 'image',
-                        ['url' => '', 'alt' => '', 'aspectRatio' => '16/9'],
+                        ['url' => '', 'alt' => '', 'maxHeight' => '200px'],
                         [], ['url' => 'loop:featured_image_url', 'alt' => 'loop:title']
                     ),
 
-                    // Inner content area — tighter padding, left-aligned text
+                    // Inner content area
                     $this->block(502, 'container',
                         [
                             'mode'      => 'flex',
@@ -254,10 +258,12 @@ class TemplateSeeder extends Seeder
                             $this->block(504, 'paragraph',
                                 ['content' => ''],
                                 [], ['content' => 'loop:excerpt'],
-                                'line-clamp-2 text-sm text-muted-foreground text-left'
+                                'line-clamp-2 text-sm text-left',
+                                'color: #6b7280;'
                             ),
 
-                            // Meta + Read more on the same row
+                            // Meta + Read more row — customCss overrides flex-1 on children
+                            // so date stays left and link is pushed to the far right
                             $this->block(507, 'container',
                                 [
                                     'mode'      => 'flex',
@@ -269,26 +275,33 @@ class TemplateSeeder extends Seeder
                                     'justify'   => 'between',
                                 ],
                                 [
-                                    // Published date (human-readable)
+                                    // Published date
                                     $this->block(505, 'paragraph',
                                         ['content' => ''],
                                         [], ['content' => 'loop:published_at_formatted'],
-                                        'text-xs text-muted-foreground/70'
+                                        'text-xs',
+                                        'color: #9ca3af;'
                                     ),
 
                                     // Read more link
                                     $this->block(506, 'link',
                                         ['label' => 'Read more →', 'url' => '#', 'target' => '_self'],
                                         [], ['url' => 'loop:url'],
-                                        'text-sm font-medium text-primary hover:underline shrink-0'
+                                        'text-sm font-medium hover:underline shrink-0',
+                                        'color: #6366f1;'
                                     ),
-                                ]
+                                ],
+                                [],
+                                // Cancel the flex-1 ContainerBlock applies to every child in
+                                // flex-row mode, then push the last child to the right end
+                                '#block-507 > div > div { flex: none !important; }
+                                 #block-507 > div > div:last-child { margin-left: auto; }'
                             ),
                         ]
                     ),
                 ],
-                [], 'rounded-xl shadow-md overflow-hidden bg-card',
-                'font-family: Inter, sans-serif;'
+                [], 'rounded-xl overflow-hidden',
+                'background:#ffffff; box-shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.06); font-family: Inter, sans-serif;'
             ),
         ];
     }
