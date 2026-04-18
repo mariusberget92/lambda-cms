@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Comment;
+use App\Models\NavItem;
 use App\Models\Setting;
 use App\Models\Template;
 use Illuminate\Http\Request;
@@ -43,6 +44,16 @@ class HandleInertiaRequests extends Middleware
             'accentColor' => fn () => Setting::get('site.accent_color') ?: null,
             'sharedTemplates' => fn () => Template::published()
                 ->get(['id', 'title', 'type', 'blocks'])
+                ->toArray(),
+            'navItems' => fn () => NavItem::with('page:id,slug')
+                ->orderBy('sort_order')
+                ->get()
+                ->map(fn ($item) => [
+                    'label' => $item->label,
+                    'url'   => $item->getResolvedUrl(),
+                ])
+                ->filter(fn ($item) => $item['url'] !== null)
+                ->values()
                 ->toArray(),
         ]);
     }
