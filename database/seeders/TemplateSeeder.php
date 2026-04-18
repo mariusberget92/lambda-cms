@@ -121,24 +121,11 @@ class TemplateSeeder extends Seeder
                             'sort'    => ['field' => 'posts_count', 'direction' => 'desc'],
                             'limit'   => 20,
                             'columns' => 1,
-                            'gap'     => 'sm',
+                            'gap'     => 0,
                         ], [
-                            // Category card with left accent border
-                            $this->block(30, 'container', [
-                                'mode'      => 'flex',
-                                'direction' => 'row',
-                                'gap'       => 0,
-                                'padding'   => 0,
-                                'maxWidth'  => 'full',
-                            ], [
-                                $this->block(32, 'filter-link',
-                                    ['paramName' => 'category', 'label' => ''],
-                                    [], ['label' => 'loop:name'],
-                                    'w-full text-sm font-medium'
-                                ),
-                            ], [],
-                            'rounded-lg overflow-hidden',
-                            'background:#fff; border:1px solid #e5e7eb; border-left:3px solid #818cf8; box-shadow:0 1px 2px rgba(0,0,0,0.05); transition:box-shadow 0.15s;'
+                            $this->block(30, 'filter-link',
+                                ['paramName' => 'category', 'label' => '', 'variant' => 'list'],
+                                [], ['label' => 'loop:name']
                             ),
                         ]),
                         $this->block(24, 'heading', ['level' => 3, 'text' => 'Tags']),
@@ -151,12 +138,9 @@ class TemplateSeeder extends Seeder
                             'flexWrap' => true,
                             'gap'      => 'sm',
                         ], [
-                            // Tag as a pill
                             $this->block(31, 'filter-link',
-                                ['paramName' => 'tag', 'label' => ''],
-                                [], ['label' => 'loop:name'],
-                                'rounded-full text-xs font-medium cursor-pointer',
-                                'display:inline-flex; align-items:center; padding:2px 10px; border:1px solid #e5e7eb; background:#f9fafb; color:#374151; transition:all 0.15s;'
+                                ['paramName' => 'tag', 'label' => '', 'variant' => 'pill'],
+                                [], ['label' => 'loop:name']
                             ),
                         ]),
                     ], [], '', 'flex:1;min-width:0'),
@@ -263,16 +247,15 @@ class TemplateSeeder extends Seeder
                                 'color: #6b7280;'
                             ),
 
-                            // Meta + Read more — date left, link right
+                            // Meta + Read more — inline-flex so it hugs its content (both items stay left)
                             $this->block(507, 'container',
                                 [
-                                    'mode'      => 'flex',
+                                    'mode'      => 'inline-flex',
                                     'direction' => 'row',
-                                    'gap'       => '0.5rem',
+                                    'gap'       => '0.75rem',
                                     'padding'   => 0,
-                                    'maxWidth'  => 'full',
                                     'align'     => 'center',
-                                    'justify'   => 'between',
+                                    'childGrow' => false,
                                 ],
                                 [
                                     // Published date

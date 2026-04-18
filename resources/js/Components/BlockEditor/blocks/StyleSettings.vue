@@ -2,6 +2,10 @@
 <script setup>
 import { ref, computed } from 'vue'
 import SelectBox    from '@/Components/SelectBox.vue'
+import NumberInput    from '@/Components/NumberInput.vue'
+import DimensionInput from '../DimensionInput.vue'
+import BorderControl  from '../BorderControl.vue'
+import ShadowControl  from '../ShadowControl.vue'
 import SpacingControl from '../SpacingControl.vue'
 import ColorPicker    from '../ColorPicker.vue'
 import MediaPicker    from '@/Components/MediaPicker.vue'
@@ -43,6 +47,37 @@ const hasEffects = computed(() => {
          !!d.transitionDuration
 })
 
+// Display section
+const containerMode = computed(() => props.block.data?.mode ?? 'flex')
+
+const showDisplay = computed(() =>
+  props.block.type === 'container' || props.block.type === 'section'
+)
+
+const hasDisplay = computed(() => showDisplay.value)
+
+function getBreakpoint(field, bp) {
+  const val = props.block.data?.[field]
+  if (typeof val === 'object' && val !== null) return val[bp] ?? null
+  if (bp === 'default') return val ?? null
+  return null
+}
+
+function setBreakpoint(field, bp, value) {
+  const current = props.block.data?.[field]
+  const base = (typeof current === 'object' && current !== null)
+    ? { ...current }
+    : { default: current }
+  updateData(field, { ...base, [bp]: value })
+}
+
+// Border section
+const hasBorder = computed(() => {
+  const b = props.block.data?.border ?? {}
+  return !!(b.radiusTL || b.radiusTR || b.radiusBL || b.radiusBR || b.radius ||
+            (b.style && b.style !== 'none') || props.block.data?.shadow)
+})
+
 function update(key, value) {
   emit('update', { id: props.block.id, [key]: value })
 }
@@ -78,6 +113,166 @@ function onBgUrlUnbind(fieldName) {
       @update:model-value="v => update('fontFamily', v)"
     />
   </div>
+
+  <!-- Display section — container and section blocks only -->
+  <SettingsSection v-if="showDisplay" label="Display" :default-open="hasDisplay">
+
+    <!-- Container: flex/grid controls -->
+    <template v-if="block.type === 'container'">
+
+      <!-- Mode toggle -->
+      <div>
+        <label class="text-xs font-medium text-muted-foreground block mb-1">Mode</label>
+        <div class="flex rounded-md border overflow-hidden text-xs">
+          <button type="button"
+            v-for="m in ['flex', 'grid', 'inline-flex']" :key="m"
+            class="flex-1 py-1.5 transition-colors capitalize"
+            :class="containerMode === m ? 'bg-primary text-primary-foreground' : 'bg-background text-foreground'"
+            @click="updateData('mode', m)">
+            {{ m }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Flex-only controls -->
+      <template v-if="containerMode === 'flex' || containerMode === 'inline-flex'">
+        <div>
+          <label class="text-xs font-medium text-muted-foreground block mb-1">Direction</label>
+          <div class="grid grid-cols-3 gap-1">
+            <div v-for="bp in ['default', 'sm', 'lg']" :key="bp">
+              <span class="text-[10px] text-muted-foreground block mb-0.5 text-center">
+                {{ bp === 'default' ? 'Mobile' : bp === 'sm' ? 'SM' : 'LG' }}
+              </span>
+              <SelectBox size="sm"
+                :model-value="getBreakpoint('direction', bp)"
+                :data="[{ value: 'row', label: 'Row' }, { value: 'column', label: 'Col' }]"
+                @update:model-value="v => setBreakpoint('direction', bp, v)"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <EditorCheckbox :model-value="block.data?.wrap ?? false" @update:model-value="v => updateData('wrap', v)" />
+          <span class="text-xs text-muted-foreground">Wrap items</span>
+        </div>
+
+        <div>
+          <label class="text-xs font-medium text-muted-foreground block mb-1">Justify content</label>
+          <SelectBox size="sm"
+            :model-value="block.data?.justify ?? 'start'"
+            :data="[
+              { value: 'start',   label: 'Start' },
+              { value: 'center',  label: 'Center' },
+              { value: 'end',     label: 'End' },
+              { value: 'between', label: 'Space between' },
+              { value: 'around',  label: 'Space around' },
+            ]"
+            @update:model-value="v => updateData('justify', v)"
+          />
+        </div>
+
+        <div>
+          <label class="text-xs font-medium text-muted-foreground block mb-1">Align items</label>
+          <SelectBox size="sm"
+            :model-value="block.data?.align ?? 'start'"
+            :data="[
+              { value: 'start',   label: 'Start' },
+              { value: 'center',  label: 'Center' },
+              { value: 'end',     label: 'End' },
+              { value: 'stretch', label: 'Stretch' },
+            ]"
+            @update:model-value="v => updateData('align', v)"
+          />
+        </div>
+      </template>
+
+      <!-- Grid-only controls -->
+      <template v-if="containerMode === 'grid'">
+        <div>
+          <label class="text-xs font-medium text-muted-foreground block mb-1">Columns</label>
+          <div class="grid grid-cols-3 gap-1">
+            <div v-for="bp in ['default', 'sm', 'lg']" :key="bp">
+              <span class="text-[10px] text-muted-foreground block mb-0.5 text-center">
+                {{ bp === 'default' ? 'Mobile' : bp === 'sm' ? 'SM' : 'LG' }}
+              </span>
+              <NumberInput size="sm"
+                :model-value="getBreakpoint('columns', bp) ?? ''"
+                :min="1" :max="12"
+                @update:model-value="v => setBreakpoint('columns', bp, v || null)"
+              />
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- Shared flex+grid controls -->
+      <div>
+        <label class="text-xs font-medium text-muted-foreground block mb-1">Gap</label>
+        <DimensionInput
+          :model-value="typeof block.data?.gap === 'string' ? block.data.gap : ''"
+          placeholder="0"
+          @update:model-value="v => updateData('gap', v)"
+        />
+      </div>
+
+      <div>
+        <label class="text-xs font-medium text-muted-foreground block mb-1">Max width</label>
+        <SelectBox size="sm"
+          :model-value="block.data?.maxWidth ?? 'full'"
+          :data="[
+            { value: 'full',  label: 'Full' },
+            { value: 'prose', label: 'Prose (65ch)' },
+            { value: 'sm',    label: 'SM (24rem)' },
+            { value: 'md',    label: 'MD (28rem)' },
+            { value: 'lg',    label: 'LG (32rem)' },
+            { value: 'xl',    label: 'XL (36rem)' },
+            { value: '2xl',   label: '2XL (42rem)' },
+          ]"
+          @update:model-value="v => updateData('maxWidth', v)"
+        />
+      </div>
+
+    </template>
+
+    <!-- Section: layout controls -->
+    <template v-if="block.type === 'section'">
+      <div class="flex items-center gap-2">
+        <EditorCheckbox :model-value="block.data?.fullWidth ?? false" @update:model-value="v => updateData('fullWidth', v)" />
+        <span class="text-xs text-muted-foreground">Full width (no inner max-width)</span>
+      </div>
+
+      <div v-if="!(block.data?.fullWidth)">
+        <label class="text-xs text-muted-foreground block mb-1">Inner max width</label>
+        <SelectBox size="sm"
+          :model-value="block.data?.innerMaxWidth ?? 'xl'"
+          :data="[
+            { value: 'sm',   label: 'SM (24rem)' },
+            { value: 'md',   label: 'MD (28rem)' },
+            { value: 'lg',   label: 'LG (32rem)' },
+            { value: 'xl',   label: 'XL (36rem)' },
+            { value: '2xl',  label: '2XL (42rem)' },
+            { value: 'full', label: 'Full' },
+          ]"
+          @update:model-value="v => updateData('innerMaxWidth', v)"
+        />
+      </div>
+
+      <div>
+        <label class="text-xs font-medium text-muted-foreground block mb-1">Min height</label>
+        <SelectBox size="sm"
+          :model-value="block.data?.minHeight ?? 'auto'"
+          :data="[
+            { value: 'auto',   label: 'Auto' },
+            { value: 'screen', label: 'Full screen (100vh)' },
+            { value: '1/2',    label: 'Half screen (50vh)' },
+          ]"
+          @update:model-value="v => updateData('minHeight', v)"
+        />
+      </div>
+    </template>
+
+  </SettingsSection>
 
   <!-- Spacing -->
   <SettingsSection label="Spacing" :default-open="hasSpacing">

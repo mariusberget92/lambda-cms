@@ -44,15 +44,17 @@ const containerClasses = computed(() => {
     ].filter(Boolean).join(' ')
   }
 
-  // flex mode (default)
+  // flex / inline-flex mode (default)
+  const displayClass = mode.value === 'inline-flex' ? 'inline-flex' : 'flex'
   return [
-    'flex',
+    displayClass,
     resolveResponsive(d.direction ?? 'row', v => v === 'column' ? 'flex-col' : 'flex-row'),
     d.wrap ? 'flex-wrap' : 'flex-nowrap',
     gapIsString.value     ? null : (GAP_MAP[d.gap]     ?? 'gap-4'),
     JUSTIFY_MAP[d.justify]     ?? 'justify-start',
     ALIGN_MAP[d.align]         ?? 'items-start',
-    MAX_WIDTH_MAP[d.maxWidth]  ?? 'max-w-full',
+    // inline-flex sizes itself to content — skip max-width constraint
+    mode.value !== 'inline-flex' ? (MAX_WIDTH_MAP[d.maxWidth]  ?? 'max-w-full') : null,
     paddingIsObject.value ? null : (PADDING_MAP[d.padding] ?? 'p-4'),
   ].filter(Boolean).join(' ')
 })
@@ -60,17 +62,19 @@ const containerClasses = computed(() => {
 const containerStyle = computed(() => {
   const d = props.block.data ?? {}
   const style = {}
+  // inline-flex: force via inline style so it isn't dependent on Tailwind scanning the dynamic class
+  if (mode.value === 'inline-flex') style.display = 'inline-flex'
   if (gapIsString.value && d.gap)     style.gap     = d.gap
   if (paddingIsObject.value)          Object.assign(style, paddingToStyle(d.padding))
   return style
 })
 
-// When this container is flex or grid, the BlockRenderer wrapper must be layout-transparent
+// When this container is flex/inline-flex/grid, the BlockRenderer wrapper must be layout-transparent
 // ('contents') so each child block becomes a direct flex/grid item — not nested inside a
 // 'space-y-4' div that collapses the whole row into a single column.
 // In flex-row mode each item also gets 'flex-1 min-w-0' so siblings share space equally.
 const isFlexRow = computed(() => {
-  if (mode.value !== 'flex') return false
+  if (mode.value !== 'flex' && mode.value !== 'inline-flex') return false
   const dir = props.block.data?.direction
   // direction can be a plain string or a responsive object; default is row
   const defaultDir = typeof dir === 'object' ? (dir?.default ?? 'row') : (dir ?? 'row')
@@ -78,7 +82,7 @@ const isFlexRow = computed(() => {
 })
 
 const rendererWrapperClass = computed(() =>
-  mode.value === 'flex' || mode.value === 'grid' ? 'contents' : 'space-y-4'
+  mode.value === 'flex' || mode.value === 'inline-flex' || mode.value === 'grid' ? 'contents' : 'space-y-4'
 )
 
 const rendererItemClass = computed(() => {
@@ -87,6 +91,8 @@ const rendererItemClass = computed(() => {
   // With space-distribution justify, items should be natural width — flex-1 would
   // consume all space and leave nothing for justify to distribute
   if (justify === 'between' || justify === 'around') return 'min-w-0'
+  // childGrow: false → children keep natural width (no flex-1)
+  if (props.block.data?.childGrow === false) return 'min-w-0'
   return 'flex-1 min-w-0'
 })
 </script>
