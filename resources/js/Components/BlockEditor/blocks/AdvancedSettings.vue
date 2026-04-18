@@ -138,6 +138,100 @@
       </div>
     </div>
 
+    <!-- Effects -->
+    <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground pt-1 border-t">Effects</p>
+
+    <!-- Opacity -->
+    <div>
+      <label class="text-xs font-medium text-muted-foreground block mb-1">
+        Opacity <span class="text-foreground font-semibold">{{ block.data?.opacity ?? 100 }}%</span>
+      </label>
+      <input
+        type="range" min="0" max="100" step="1"
+        :value="block.data?.opacity ?? 100"
+        class="w-full accent-primary"
+        @input="updateData('opacity', Number($event.target.value))"
+      />
+    </div>
+
+    <!-- Cursor -->
+    <div>
+      <label class="text-xs font-medium text-muted-foreground block mb-1">Cursor</label>
+      <SelectBox size="sm"
+        :model-value="block.data?.cursor ?? ''"
+        :data="[
+          { value: '',              label: 'Default' },
+          { value: 'pointer',       label: 'Pointer (hand)' },
+          { value: 'not-allowed',   label: 'Not allowed' },
+          { value: 'wait',          label: 'Wait (spinner)' },
+          { value: 'text',          label: 'Text (I-beam)' },
+          { value: 'grab',          label: 'Grab' },
+        ]"
+        @update:model-value="v => updateData('cursor', v || null)"
+      />
+    </div>
+
+    <!-- Overflow -->
+    <div>
+      <label class="text-xs font-medium text-muted-foreground block mb-1">Overflow</label>
+      <SelectBox size="sm"
+        :model-value="block.data?.overflow ?? ''"
+        :data="[
+          { value: '',        label: 'Visible (default)' },
+          { value: 'hidden',  label: 'Hidden' },
+          { value: 'auto',    label: 'Auto (scrollbar if needed)' },
+          { value: 'scroll',  label: 'Scroll (always)' },
+        ]"
+        @update:model-value="v => updateData('overflow', v || null)"
+      />
+    </div>
+
+    <!-- Z-index -->
+    <div>
+      <label class="text-xs font-medium text-muted-foreground block mb-1">Z-index</label>
+      <input
+        type="number"
+        :value="block.data?.zIndex ?? ''"
+        placeholder="Auto"
+        class="w-full rounded-md border border-border bg-background px-2 py-1.5 text-xs"
+        @input="updateData('zIndex', $event.target.value !== '' ? Number($event.target.value) : null)"
+      />
+    </div>
+
+    <!-- Transition -->
+    <div class="grid grid-cols-2 gap-2">
+      <div>
+        <label class="text-xs font-medium text-muted-foreground block mb-1">Transition</label>
+        <SelectBox size="sm"
+          :model-value="block.data?.transitionDuration ?? ''"
+          :data="[
+            { value: '',       label: 'None' },
+            { value: '75ms',   label: '75ms' },
+            { value: '150ms',  label: '150ms' },
+            { value: '300ms',  label: '300ms' },
+            { value: '500ms',  label: '500ms' },
+            { value: '700ms',  label: '700ms' },
+            { value: '1000ms', label: '1s' },
+          ]"
+          @update:model-value="v => updateData('transitionDuration', v || null)"
+        />
+      </div>
+      <div>
+        <label class="text-xs font-medium text-muted-foreground block mb-1">Easing</label>
+        <SelectBox size="sm"
+          :model-value="block.data?.transitionEasing ?? ''"
+          :data="[
+            { value: '',            label: 'Ease (default)' },
+            { value: 'linear',      label: 'Linear' },
+            { value: 'ease-in',     label: 'Ease in' },
+            { value: 'ease-out',    label: 'Ease out' },
+            { value: 'ease-in-out', label: 'Ease in-out' },
+          ]"
+          @update:model-value="v => updateData('transitionEasing', v || null)"
+        />
+      </div>
+    </div>
+
     <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground pt-1 border-t">Advanced</p>
 
     <div>
