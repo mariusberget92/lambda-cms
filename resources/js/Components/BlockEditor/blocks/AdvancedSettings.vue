@@ -191,10 +191,11 @@
       <label class="text-xs font-medium text-muted-foreground block mb-1">Z-index</label>
       <input
         type="number"
+        step="1"
         :value="block.data?.zIndex ?? ''"
         placeholder="Auto"
         class="w-full rounded-md border border-border bg-background px-2 py-1.5 text-xs"
-        @input="updateData('zIndex', $event.target.value !== '' ? Number($event.target.value) : null)"
+        @input="updateData('zIndex', $event.target.value !== '' ? Math.round(Number($event.target.value)) : null)"
       />
     </div>
 
