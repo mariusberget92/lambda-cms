@@ -39,6 +39,11 @@ class Media extends Model
 
     public function getUrlAttribute(): string
     {
+        // External URLs (e.g. picsum.photos) are stored as full URLs in the path column
+        if ($this->disk === 'external') {
+            return $this->path;
+        }
+
         return Storage::disk($this->disk)->url($this->path);
     }
 

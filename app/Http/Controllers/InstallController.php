@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\GenreSeeder;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -41,6 +42,14 @@ class InstallController extends Controller
     public function showMail(): Response
     {
         return Inertia::render('Install/Mail', ['step' => 4]);
+    }
+
+    public function showGenre(): Response
+    {
+        return Inertia::render('Install/Genre', [
+            'step'   => 5,
+            'genres' => GenreSeeder::genres(),
+        ]);
     }
 
     // ── POST handlers ─────────────────────────────────────────────────────────
@@ -145,7 +154,7 @@ class InstallController extends Controller
     }
 
     /**
-     * Step 4 — Mail configuration. Runs migrations, seeds, creates admin, finishes install.
+     * Step 4 — Mail configuration. Stores config and redirects to genre selection.
      */
     public function mail(Request $request): RedirectResponse
     {
@@ -179,12 +188,24 @@ class InstallController extends Controller
 
         Artisan::call('config:clear');
 
+        return redirect('/install/genre');
+    }
+
+    /**
+     * Step 5 — Genre / theme selection. Runs migrations, seeds, creates admin, finishes install.
+     */
+    public function genre(Request $request): RedirectResponse
+    {
+        $validGenres = array_keys(GenreSeeder::genres());
+
+        $request->validate([
+            'genre' => ['required', 'string', 'in:' . implode(',', $validGenres)],
+        ]);
+
         // Run migrations (idempotent — safe to run even if partially applied)
         Artisan::call('migrate', ['--force' => true]);
 
-        // Switch session and cache to database AFTER migrations have run,
-        // so a failed install never leaves the app in a state where it tries
-        // to query a sessions table that doesn't exist yet.
+        // Switch session and cache to database AFTER migrations have run
         $this->writeEnv([
             'SESSION_DRIVER' => 'database',
             'CACHE_STORE'    => 'database',
@@ -192,12 +213,14 @@ class InstallController extends Controller
 
         Artisan::call('config:clear');
 
-        // Retrieve admin data from session before the transaction clears it
+        // Retrieve admin data from session
         $adminData = $request->session()->get('install.admin');
         $request->session()->forget('install.admin');
 
-        // Wrap seeding + user creation in a transaction so any crash leaves no partial state
-        $user = DB::transaction(function () use ($adminData) {
+        $selectedGenre = $request->genre;
+
+        // Wrap seeding + user creation in a transaction
+        $user = DB::transaction(function () use ($adminData, $selectedGenre) {
             Artisan::call('db:seed', ['--force' => true, '--class' => 'DatabaseSeeder']);
 
             // Use firstOrCreate so a retry after a partial failure doesn't violate the unique constraint
@@ -214,9 +237,8 @@ class InstallController extends Controller
                 $user->assignRole('administrator');
             }
 
-            // Seed default "Hello World" post
-            $seeder = new DatabaseSeeder();
-            $seeder->seedDefaultPost($user);
+            // Seed genre-specific posts instead of the generic "Hello World"
+            (new GenreSeeder())->seed($selectedGenre, $user);
 
             return $user;
         });
