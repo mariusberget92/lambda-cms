@@ -228,6 +228,10 @@ const STYLE_BLOCKS = new Set([
   // Content blocks with style tabs
   'paragraph', 'image', 'gallery', 'video', 'quote', 'cta', 'code',
   'table',
+  // Text-rendering blocks now with TypographyControl
+  'filter-link', 'navigation', 'search',
+  'post-title', 'post-meta', 'post-author', 'post-taxonomy',
+  'archive-title',
 ])
 
 // Block types where Style should be the default active tab
