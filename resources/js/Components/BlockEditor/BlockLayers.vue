@@ -82,7 +82,6 @@
               Content
             </TabsTrigger>
             <TabsTrigger
-              v-if="STYLE_BLOCKS.has(selectedBlock.type)"
               value="style"
               class="text-xs h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground px-3"
             >
@@ -108,6 +107,13 @@
                   :is-admin="isAdmin"
                   :meta="meta"
                   :loop-fields="loopFields"
+                  :available-fields="availableFields"
+                  @update="$emit('update', $event)"
+                />
+                <!-- Shared style sections (always shown in style tab) -->
+                <StyleSettings
+                  v-if="settingsTab === 'style'"
+                  :block="selectedBlock"
                   :available-fields="availableFields"
                   @update="$emit('update', $event)"
                 />
@@ -144,6 +150,7 @@ import { RotateCcw, RotateCw } from 'lucide-vue-next'
 import { VueDraggable } from 'vue-draggable-plus'
 import LayerItem from './LayerItem.vue'
 import AdvancedSettings  from './blocks/AdvancedSettings.vue'
+import StyleSettings     from './blocks/StyleSettings.vue'
 import ConditionSettings from './blocks/ConditionSettings.vue'
 import LoopSettings      from './blocks/LoopSettings.vue'
 import PostTitleSettings         from './blocks/PostTitleSettings.vue'
