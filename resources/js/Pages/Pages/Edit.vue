@@ -32,6 +32,9 @@ const form = useForm({
 function submit() {
   form.blocks = filterEmptyBlocks(form.blocks)
   form.put(route('pages.update', props.page.id), {
+    preserveState:  true,
+    preserveScroll: true,
+    onSuccess: () => notify('Page saved.', 'success'),
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   })
 }

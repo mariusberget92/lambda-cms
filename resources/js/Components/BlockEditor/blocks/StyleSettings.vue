@@ -295,6 +295,18 @@ function onBgUrlUnbind(fieldName) {
     </div>
   </SettingsSection>
 
+  <!-- Border & Shadow -->
+  <SettingsSection label="Border & Shadow" :default-open="hasBorder">
+    <BorderControl
+      :model-value="block.data?.border ?? {}"
+      @update:model-value="v => updateData('border', v)"
+    />
+    <ShadowControl
+      :model-value="block.data?.shadow ?? ''"
+      @update:model-value="v => updateData('shadow', v)"
+    />
+  </SettingsSection>
+
   <!-- Background -->
   <SettingsSection label="Background" :default-open="hasBackground">
     <div class="space-y-2">

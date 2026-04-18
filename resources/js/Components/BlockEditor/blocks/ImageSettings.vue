@@ -125,16 +125,6 @@
       </div>
     </div>
 
-    <BorderControl
-      :model-value="block.data.border ?? {}"
-      @update:model-value="v => emit('update', { id: block.id, data: { border: v } })"
-    />
-
-    <ShadowControl
-      :model-value="block.data.shadow ?? ''"
-      @update:model-value="v => emit('update', { id: block.id, data: { shadow: v } })"
-    />
-
   </div>
 </template>
 
@@ -143,8 +133,6 @@ import { ref, computed } from 'vue'
 import MediaPicker    from '@/Components/MediaPicker.vue'
 import DynamicField   from './DynamicField.vue'
 import DimensionInput from '../DimensionInput.vue'
-import BorderControl  from '../BorderControl.vue'
-import ShadowControl  from '../ShadowControl.vue'
 
 const props = defineProps({
   block:           { type: Object, required: true },

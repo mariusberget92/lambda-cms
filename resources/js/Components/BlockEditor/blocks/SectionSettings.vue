@@ -1,30 +1,26 @@
 <script setup>
-import { computed } from 'vue'
 import SelectBox   from '@/Components/SelectBox.vue'
-import SpacingControl from '../SpacingControl.vue'
-import BorderControl  from '../BorderControl.vue'
 import EditorCheckbox from '../EditorCheckbox.vue'
+import { computed } from 'vue'
 
 const props = defineProps({
   block: { type: Object, required: true },
-  tab: { type: String, default: null },  // 'content' | 'style' | null (show all)
+  tab:   { type: String, default: null },
 })
-const emit   = defineEmits(['update'])
+const emit = defineEmits(['update'])
 
 const d = computed(() => props.block.data ?? {})
 
 function update(key, value) {
   emit('update', { id: props.block.id, data: { [key]: value } })
 }
-
-
 </script>
 
 <template>
   <div>
 
-    <!-- Style tab fields -->
-    <div v-show="!tab || tab === 'style'" class="space-y-4">
+    <!-- Content tab fields -->
+    <div v-show="!tab || tab === 'content'" class="space-y-4">
 
       <!-- Width -->
       <div class="space-y-2">
@@ -50,15 +46,6 @@ function update(key, value) {
         </div>
       </div>
 
-      <!-- Spacing -->
-      <div class="space-y-2">
-        <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block">Padding</label>
-        <SpacingControl
-          :model-value="typeof d.padding === 'object' ? d.padding : {}"
-          @update:model-value="v => update('padding', v)"
-        />
-      </div>
-
       <!-- Min height -->
       <div class="space-y-1">
         <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block">Min Height</label>
@@ -72,11 +59,6 @@ function update(key, value) {
           @update:model-value="v => update('minHeight', v)"
         />
       </div>
-
-      <BorderControl
-        :model-value="d.border ?? {}"
-        @update:model-value="v => update('border', v)"
-      />
 
     </div>
 

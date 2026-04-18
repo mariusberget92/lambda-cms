@@ -144,6 +144,9 @@ function blockWrapperStyle(block) {
     }
   }
 
+  // Shadow (from BorderControl / ShadowControl)
+  if (block.data?.shadow) style.boxShadow = block.data.shadow
+
   // Effects (from AdvancedSettings Effects section)
   if (block.data?.opacity != null && block.data.opacity !== 100) {
     style.opacity = block.data.opacity / 100

@@ -518,6 +518,9 @@ function submit() {
     return
   }
   form.put(route("posts.update", props.post.id), {
+    preserveState:  true,
+    preserveScroll: true,
+    onSuccess: () => notify('Post saved.', 'success'),
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   });
 }
