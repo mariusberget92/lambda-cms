@@ -79,11 +79,6 @@
               : 'border-white/10 bg-white/4 hover:border-white/20'"
             @click="$emit('select', block.id)"
           >
-            <!-- Custom CSS injection -->
-            <component v-if="block.customCss" :is="'style'">
-              #{{ block.customId ? CSS.escape(block.customId) : 'block-' + block.id }} { {{ sanitizeCss(block.customCss) }} }
-            </component>
-
             <!-- Drag handle -->
             <div
               class="block-drag-handle shrink-0 w-7 flex items-center justify-center border-r border-transparent group-hover:border-white/8 cursor-grab active:cursor-grabbing text-white/20 group-hover:text-white/40 transition-colors"
@@ -268,10 +263,6 @@ const draggableBlocks = computed({
 function onAdd(evt) {
   const newBlock = draggableBlocks.value[evt.newIndex]
   if (newBlock) emit('select', newBlock.id)
-}
-
-function sanitizeCss(css) {
-  return css.replace(/<\/?style/gi, '')
 }
 
 function isEmptyBlock(block) {

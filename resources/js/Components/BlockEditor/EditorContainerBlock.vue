@@ -5,13 +5,6 @@
       {{ block.blockName || 'Container' }}
     </p>
 
-    <!-- Custom CSS injection for children -->
-    <template v-for="child in localChildren" :key="'style-' + child.id">
-      <component v-if="child.customCss" :is="'style'">
-        #{{ child.customId ? CSS.escape(child.customId) : 'block-' + child.id }} { {{ sanitizeCss(child.customCss) }} }
-      </component>
-    </template>
-
     <VueDraggable
       v-model="localChildren"
       tag="div"
@@ -146,10 +139,6 @@ const draggableClass = computed(() => {
   if (isFlexRow.value) return `${base} flex flex-row flex-wrap gap-2`
   return `${base} space-y-1.5`
 })
-
-function sanitizeCss(css) {
-  return css.replace(/<\/?style/gi, '')
-}
 
 const _children = ref([...(props.block.children ?? [])])
 watch(() => props.block.children, (v) => { _children.value = v ?? [] })
