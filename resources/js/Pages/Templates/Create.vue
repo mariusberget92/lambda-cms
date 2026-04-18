@@ -78,6 +78,7 @@ function submit() {
     </template>
 
     <BlockEditor
+      :fullscreen="true"
       :model-value="form.blocks"
       :is-admin="authUser?.role === 'administrator'"
       :context-fields="isSinglePost ? POST_CONTEXT_FIELDS : []"
