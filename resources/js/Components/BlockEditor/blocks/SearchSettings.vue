@@ -1,4 +1,6 @@
 <script setup>
+import TypographyControl from '../TypographyControl.vue'
+
 const props = defineProps({
   block: Object,
   tab:   { type: String, default: null },  // 'content' | 'style' | null (show all)
@@ -34,6 +36,13 @@ function update(key, value) {
           <option value="all">Posts + Pages</option>
         </select>
       </div>
+    </div>
+    <!-- Style tab -->
+    <div v-show="!tab || tab === 'style'" class="space-y-3">
+      <TypographyControl
+        :model-value="block.data?.typography ?? {}"
+        @update:model-value="v => emit('update', { id: block.id, data: { typography: v } })"
+      />
     </div>
   </div>
 </template>

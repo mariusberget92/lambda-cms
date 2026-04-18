@@ -1,5 +1,7 @@
 <!-- resources/js/Components/BlockEditor/blocks/FilterLinkSettings.vue -->
 <script setup>
+import TypographyControl from '../TypographyControl.vue'
+
 const props = defineProps({
   block: Object,
   tab:   { type: String, default: null },
@@ -26,6 +28,13 @@ function update(key, value) {
           Sets <code class="bg-muted px-1 rounded">?{{ block.data?.paramName || 'category' }}=slug</code> in the URL when clicked.
         </p>
       </div>
+    </div>
+    <!-- Style tab -->
+    <div v-show="!tab || tab === 'style'" class="space-y-3">
+      <TypographyControl
+        :model-value="block.data?.typography ?? {}"
+        @update:model-value="v => emit('update', { id: block.id, data: { typography: v } })"
+      />
     </div>
   </div>
 </template>
