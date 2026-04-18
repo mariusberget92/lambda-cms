@@ -7,9 +7,9 @@
         <component
           v-if="block.customCss"
           :is="'style'"
-        >#{{ block.customId ? CSS.escape(block.customId) : 'block-' + block.id }} { {{ sanitizeCss(block.customCss) }} }</component>
+        >#{{ block.customId ? CSS.escape(block.customId) : 'lambda-be-' + block.id }} { {{ sanitizeCss(block.customCss) }} }</component>
         <div
-          :id="block.customId || `block-${block.id}`"
+          :id="block.customId || `lambda-be-${block.id}`"
           :class="[block.customClasses || undefined, itemClass || undefined]"
           :style="blockWrapperStyle(block)"
         >
@@ -80,6 +80,22 @@ function spacingStyle(obj, prop) {
 function blockWrapperStyle(block) {
   const style = {}
   if (block.fontFamily) style.fontFamily = `'${block.fontFamily}', sans-serif`
+  // Typography (from TypographyControl — cascades into block content)
+  const typo = block.data?.typography
+  if (typo) {
+    if (typo.textAlign)      style.textAlign      = typo.textAlign
+    if (typo.color)          style.color          = typo.color
+    if (typo.fontSize)       style.fontSize       = typo.fontSize
+    if (typo.fontWeight)     style.fontWeight     = typo.fontWeight
+    if (typo.lineHeight)     style.lineHeight     = typo.lineHeight
+    if (typo.letterSpacing)  style.letterSpacing  = typo.letterSpacing
+    if (typo.textDecoration) style.textDecoration = typo.textDecoration
+    if (typo.textTransform)  style.textTransform  = typo.textTransform
+    if (typo.textShadow?.color) {
+      const ts = typo.textShadow
+      style.textShadow = `${ts.x ?? 0}px ${ts.y ?? 0}px ${ts.blur ?? 0}px ${ts.color}`
+    }
+  }
   if (block.data?.margin) Object.assign(style, spacingStyle(block.data.margin, 'margin'))
   if (block.data?.padding && !SELF_PADDED_TYPES.has(block.type)) {
     Object.assign(style, spacingStyle(block.data.padding, 'padding'))
