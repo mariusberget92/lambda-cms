@@ -129,7 +129,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import MediaPicker    from '@/Components/MediaPicker.vue'
 import DynamicField   from './DynamicField.vue'
 import DimensionInput from '../DimensionInput.vue'
@@ -143,9 +143,17 @@ const emit = defineEmits(['update'])
 
 const showPicker = ref(false)
 
-const mode = computed(() => props.block.data.media_id ? 'library' : 'url')
+// localMode tracks which tab the user clicked; falls back to 'library' if media_id is set
+const localMode = ref(props.block.data.media_id ? 'library' : 'url')
+const mode = computed(() => localMode.value)
+
+// Keep in sync when block prop changes externally (e.g. selecting a different block)
+watch(() => props.block.id, () => {
+  localMode.value = props.block.data.media_id ? 'library' : 'url'
+})
 
 function switchMode(newMode) {
+  localMode.value = newMode
   if (newMode === 'library') {
     showPicker.value = true
   } else {
