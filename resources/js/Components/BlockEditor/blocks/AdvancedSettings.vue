@@ -127,9 +127,9 @@
           </div>
         </div>
         <label class="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox"
-            :checked="block.data?.advBgImage?.parallax ?? false"
-            @change="updateNestedData('advBgImage', 'parallax', $event.target.checked)"
+          <EditorCheckbox
+            :model-value="block.data?.advBgImage?.parallax ?? false"
+            @update:model-value="v => updateNestedData('advBgImage', 'parallax', v)"
           />
           <span class="text-xs text-muted-foreground">Parallax (fixed)</span>
         </label>
@@ -287,6 +287,7 @@ import ColorPicker from '../ColorPicker.vue'
 import CssEditor from '../CssEditor.vue'
 import MediaPicker from '@/Components/MediaPicker.vue'
 import DynamicField from './DynamicField.vue'
+import EditorCheckbox from '../EditorCheckbox.vue'
 
 const FONTS = [
   'Inter', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Poppins', 'Raleway', 'Nunito',

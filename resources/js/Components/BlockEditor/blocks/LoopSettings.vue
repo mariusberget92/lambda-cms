@@ -69,11 +69,9 @@
           <!-- Value or URL param (hidden when op is not_empty / empty) -->
           <template v-if="filter.op !== 'not_empty' && filter.op !== 'empty'">
             <label class="flex items-center gap-2 text-xs cursor-pointer">
-              <input
-                type="checkbox"
-                :checked="!!filter.urlParam"
-                class="accent-primary"
-                @change="toggleUrlParam(i, $event)"
+              <EditorCheckbox
+                :model-value="!!filter.urlParam"
+                @update:model-value="v => toggleUrlParam(i, v)"
               />
               From URL param
             </label>
@@ -183,6 +181,7 @@ import { computed } from 'vue'
 import SelectBox from '@/Components/SelectBox.vue'
 import NumberInput from '@/Components/NumberInput.vue'
 import { SOURCES, SOURCE_FIELDS, SORT_FIELDS, FILTER_OPS } from '@/lib/loopSources.js'
+import EditorCheckbox from '../EditorCheckbox.vue'
 
 const props = defineProps({
   block: { type: Object, required: true },
@@ -223,8 +222,8 @@ function updateFilter(i, patch) {
   emitData({ filters: updated })
 }
 
-function toggleUrlParam(i, e) {
-  if (e.target.checked) {
+function toggleUrlParam(i, checked) {
+  if (checked) {
     updateFilter(i, { urlParam: '', value: undefined })
   } else {
     const updated = filters.value.map((f, idx) => {

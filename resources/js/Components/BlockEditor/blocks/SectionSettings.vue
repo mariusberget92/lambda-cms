@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import SelectBox   from '@/Components/SelectBox.vue'
 import SpacingControl from '../SpacingControl.vue'
 import BorderControl  from '../BorderControl.vue'
+import EditorCheckbox from '../EditorCheckbox.vue'
 
 const props = defineProps({
   block: { type: Object, required: true },
@@ -29,11 +30,8 @@ function update(key, value) {
       <div class="space-y-2">
         <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block">Width</label>
         <div class="flex items-center gap-2">
-          <input type="checkbox" id="section-fullwidth"
-            :checked="d.fullWidth"
-            @change="update('fullWidth', $event.target.checked)"
-            class="rounded border-border accent-nord-green" />
-          <label for="section-fullwidth" class="text-xs text-muted-foreground">Full width (no inner max-width)</label>
+          <EditorCheckbox :model-value="d.fullWidth ?? false" @update:model-value="v => update('fullWidth', v)" />
+          <label class="text-xs text-muted-foreground">Full width (no inner max-width)</label>
         </div>
         <div v-if="!d.fullWidth">
           <label class="text-xs text-muted-foreground block mb-1">Inner max width</label>

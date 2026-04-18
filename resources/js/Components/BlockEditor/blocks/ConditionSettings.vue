@@ -4,11 +4,9 @@
     <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Visibility Condition</p>
 
     <label class="flex items-center gap-2 text-xs cursor-pointer">
-      <input
-        type="checkbox"
-        :checked="hasCondition"
-        class="accent-primary"
-        @change="toggleCondition"
+      <EditorCheckbox
+        :model-value="hasCondition"
+        @update:model-value="toggleCondition"
       />
       Show only if…
     </label>
@@ -40,6 +38,7 @@
 <script setup>
 import { computed } from 'vue'
 import SelectBox from '@/Components/SelectBox.vue'
+import EditorCheckbox from '../EditorCheckbox.vue'
 
 const props = defineProps({
   block:      { type: Object, required: true },
@@ -59,11 +58,11 @@ const fieldOptions = computed(() => props.loopFields)
 const hasCondition = computed(() => !!props.block.condition)
 const condition    = computed(() => props.block.condition ?? { field: '', op: '=', value: '' })
 
-function toggleCondition(e) {
+function toggleCondition(checked) {
   // 'condition' is a top-level block attr (not inside data) — goes into updateBlock(...attrs)
   emit('update', {
     id:        props.block.id,
-    condition: e.target.checked ? { field: '', op: '=', value: '' } : null,
+    condition: checked ? { field: '', op: '=', value: '' } : null,
   })
 }
 

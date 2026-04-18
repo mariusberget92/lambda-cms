@@ -51,11 +51,9 @@
 
         <!-- Featured only -->
         <label class="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            :checked="block.data.featured_only"
-            class="accent-nord-green"
-            @change="update('featured_only', $event.target.checked)"
+          <EditorCheckbox
+            :model-value="block.data.featured_only ?? false"
+            @update:model-value="v => update('featured_only', v)"
           />
           <span class="text-xs font-medium text-muted-foreground">Featured posts only</span>
         </label>
@@ -69,12 +67,9 @@
               :key="cat.id"
               class="flex items-center gap-2 cursor-pointer"
             >
-              <input
-                type="checkbox"
-                :value="cat.id"
-                :checked="block.data.category_ids?.includes(cat.id)"
-                class="accent-nord-green"
-                @change="toggleId('category_ids', cat.id, $event.target.checked)"
+              <EditorCheckbox
+                :model-value="block.data.category_ids?.includes(cat.id) ?? false"
+                @update:model-value="v => toggleId('category_ids', cat.id, v)"
               />
               <span class="text-xs">{{ cat.name }}</span>
             </label>
@@ -90,12 +85,9 @@
               :key="tag.id"
               class="flex items-center gap-2 cursor-pointer"
             >
-              <input
-                type="checkbox"
-                :value="tag.id"
-                :checked="block.data.tag_ids?.includes(tag.id)"
-                class="accent-nord-green"
-                @change="toggleId('tag_ids', tag.id, $event.target.checked)"
+              <EditorCheckbox
+                :model-value="block.data.tag_ids?.includes(tag.id) ?? false"
+                @update:model-value="v => toggleId('tag_ids', tag.id, v)"
               />
               <span class="text-xs">{{ tag.name }}</span>
             </label>
@@ -109,6 +101,7 @@
 <script setup>
 import SelectBox from '@/Components/SelectBox.vue'
 import NumberInput from '@/Components/NumberInput.vue'
+import EditorCheckbox from '../EditorCheckbox.vue'
 
 const props = defineProps({
   block: { type: Object, required: true },

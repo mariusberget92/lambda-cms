@@ -54,7 +54,7 @@
               class="w-full rounded border bg-background px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-ring"
             />
             <label class="flex items-center gap-1.5 text-xs cursor-pointer">
-              <input type="checkbox" v-model="link.newTab" class="rounded border-border" />
+              <EditorCheckbox v-model="link.newTab" />
               Open in new tab
             </label>
           </div>
@@ -79,6 +79,7 @@
 
 <script setup>
 import TypographyControl from '../TypographyControl.vue'
+import EditorCheckbox from '../EditorCheckbox.vue'
 
 const props = defineProps({
   block: Object,

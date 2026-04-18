@@ -5,6 +5,7 @@ import NumberInput   from '@/Components/NumberInput.vue'
 import DimensionInput from '../DimensionInput.vue'
 import SpacingControl from '../SpacingControl.vue'
 import BorderControl  from '../BorderControl.vue'
+import EditorCheckbox from '../EditorCheckbox.vue'
 
 const props = defineProps({
   block: { type: Object, required: true },
@@ -82,11 +83,8 @@ function update(key, value) {
         </div>
 
         <div class="flex items-center gap-2">
-          <input type="checkbox" id="container-wrap"
-            :checked="block.data.wrap"
-            @change="update('wrap', $event.target.checked)"
-            class="rounded border-border accent-nord-green" />
-          <label for="container-wrap" class="text-xs font-medium text-muted-foreground">Wrap items</label>
+          <EditorCheckbox :model-value="block.data.wrap ?? false" @update:model-value="v => update('wrap', v)" />
+          <label class="text-xs font-medium text-muted-foreground">Wrap items</label>
         </div>
 
         <div>

@@ -181,12 +181,12 @@
       </div>
 
       <label class="flex items-center gap-2 cursor-pointer">
-        <input type="checkbox" :checked="d.striped ?? true" class="accent-nord-green rounded" @change="update('striped', $event.target.checked)" />
+        <EditorCheckbox :model-value="d.striped ?? true" @update:model-value="v => update('striped', v)" />
         <span class="text-xs font-medium text-muted-foreground">Striped rows</span>
       </label>
 
       <label class="flex items-center gap-2 cursor-pointer">
-        <input type="checkbox" :checked="d.headerStyle ?? true" class="accent-nord-green rounded" @change="update('headerStyle', $event.target.checked)" />
+        <EditorCheckbox :model-value="d.headerStyle ?? true" @update:model-value="v => update('headerStyle', v)" />
         <span class="text-xs font-medium text-muted-foreground">Styled header row</span>
       </label>
 
@@ -202,6 +202,7 @@ import { GripVertical, X } from 'lucide-vue-next'
 import SelectBox  from '@/Components/SelectBox.vue'
 import NumberInput from '@/Components/NumberInput.vue'
 import { SOURCES, SOURCE_FIELDS, SORT_FIELDS, FILTER_OPS } from '@/lib/loopSources.js'
+import EditorCheckbox from '../EditorCheckbox.vue'
 
 const props = defineProps({
   block: { type: Object, required: true },

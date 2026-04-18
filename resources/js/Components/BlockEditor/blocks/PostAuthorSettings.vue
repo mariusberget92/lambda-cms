@@ -1,5 +1,6 @@
 <script setup>
 import TypographyControl from '../TypographyControl.vue'
+import EditorCheckbox from '../EditorCheckbox.vue'
 
 const props = defineProps({
   block: Object,
@@ -13,10 +14,10 @@ function update(key, val) { emit('update', { data: { ...props.block.data, [key]:
     <!-- Content fields -->
     <div v-show="!tab || tab === 'content'" class="space-y-3">
       <label class="flex items-center gap-2 text-xs cursor-pointer">
-        <input type="checkbox"
-          :checked="block.data?.showAvatar !== false"
-          @change="update('showAvatar', $event.target.checked)"
-          class="accent-primary" />
+        <EditorCheckbox
+          :model-value="block.data?.showAvatar !== false"
+          @update:model-value="v => update('showAvatar', v)"
+        />
         Show avatar
       </label>
     </div>
