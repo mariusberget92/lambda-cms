@@ -167,7 +167,7 @@ async function confirmRestore() {
     </template>
 
     <BlockEditor
-      :fullscreen="true"
+      fullscreen
       :model-value="form.blocks"
       :is-admin="authUser?.role === 'administrator'"
       :context-fields="isSinglePost ? POST_CONTEXT_FIELDS : []"
