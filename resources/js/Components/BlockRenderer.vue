@@ -144,6 +144,19 @@ function blockWrapperStyle(block) {
     }
   }
 
+  // Effects (from AdvancedSettings Effects section)
+  if (block.data?.opacity != null && block.data.opacity !== 100) {
+    style.opacity = block.data.opacity / 100
+  }
+  if (block.data?.cursor)   style.cursor   = block.data.cursor
+  if (block.data?.overflow) style.overflow = block.data.overflow
+  if (block.data?.zIndex != null) style.zIndex = block.data.zIndex
+  if (block.data?.transitionDuration) {
+    const dur  = block.data.transitionDuration
+    const ease = block.data.transitionEasing ?? 'ease'
+    style.transition = `all ${dur} ${ease}`
+  }
+
   return Object.keys(style).length ? style : undefined
 }
 
