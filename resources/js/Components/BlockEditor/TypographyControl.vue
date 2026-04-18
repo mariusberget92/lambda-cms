@@ -106,7 +106,7 @@
 
     <!-- Text transform -->
     <div>
-      <label class="text-xs font-medium text-muted-foreground block mb-1">Transform</label>
+      <label class="text-xs font-medium text-muted-foreground block mb-1">Text transform</label>
       <div class="flex rounded-md border overflow-hidden text-xs">
         <button
           v-for="opt in [{ value: 'none', label: 'None' }, { value: 'uppercase', label: 'AA' }, { value: 'lowercase', label: 'aa' }, { value: 'capitalize', label: 'Aa' }]"
@@ -135,19 +135,19 @@
           <div>
             <label class="text-[10px] text-muted-foreground block mb-0.5">X (px)</label>
             <input type="number" :value="modelValue.textShadow?.x ?? 0"
-              class="w-full rounded border bg-background px-2 py-1 text-xs"
+              class="w-full rounded border border-border bg-background px-2 py-1 text-xs"
               @input="updateShadow('x', Number($event.target.value))" />
           </div>
           <div>
             <label class="text-[10px] text-muted-foreground block mb-0.5">Y (px)</label>
             <input type="number" :value="modelValue.textShadow?.y ?? 0"
-              class="w-full rounded border bg-background px-2 py-1 text-xs"
+              class="w-full rounded border border-border bg-background px-2 py-1 text-xs"
               @input="updateShadow('y', Number($event.target.value))" />
           </div>
           <div>
             <label class="text-[10px] text-muted-foreground block mb-0.5">Blur</label>
             <input type="number" :value="modelValue.textShadow?.blur ?? 0" min="0"
-              class="w-full rounded border bg-background px-2 py-1 text-xs"
+              class="w-full rounded border border-border bg-background px-2 py-1 text-xs"
               @input="updateShadow('blur', Number($event.target.value))" />
           </div>
         </div>
