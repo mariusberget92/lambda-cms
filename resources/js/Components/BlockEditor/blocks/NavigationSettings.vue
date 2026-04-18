@@ -10,7 +10,7 @@
             v-for="s in styles"
             :key="s.value"
             type="button"
-            @click="block.data.style = s.value"
+            @click="emit('update', { id: block.id, data: { style: s.value } })"
             class="px-2.5 py-1 rounded text-xs font-medium border transition-colors"
             :class="block.data.style === s.value ? 'bg-primary text-primary-foreground border-primary' : 'hover:bg-accent'"
           >{{ s.label }}</button>
@@ -22,7 +22,7 @@
         <label class="text-xs font-medium text-muted-foreground uppercase tracking-wide">Alignment</label>
         <div class="flex gap-1.5">
           <button v-for="a in alignments" :key="a.value" type="button"
-            @click="block.data.alignment = a.value"
+            @click="emit('update', { id: block.id, data: { alignment: a.value } })"
             class="px-2.5 py-1 rounded text-xs font-medium border transition-colors"
             :class="block.data.alignment === a.value ? 'bg-primary text-primary-foreground border-primary' : 'hover:bg-accent'"
           >{{ a.label }}</button>
@@ -40,7 +40,8 @@
           >
             <div class="flex items-center gap-2">
               <input
-                v-model="link.label"
+                :value="link.label"
+                @input="updateLink(i, 'label', $event.target.value)"
                 type="text"
                 placeholder="Label"
                 class="flex-1 rounded border bg-background px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-ring"
@@ -48,13 +49,14 @@
               <button type="button" @click="removeLink(i)" class="text-destructive hover:opacity-80 text-xs px-1">✕</button>
             </div>
             <input
-              v-model="link.url"
+              :value="link.url"
+              @input="updateLink(i, 'url', $event.target.value)"
               type="text"
               placeholder="URL (e.g. /about)"
               class="w-full rounded border bg-background px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-ring"
             />
             <label class="flex items-center gap-1.5 text-xs cursor-pointer">
-              <EditorCheckbox v-model="link.newTab" />
+              <EditorCheckbox :model-value="link.newTab" @update:model-value="v => updateLink(i, 'newTab', v)" />
               Open in new tab
             </label>
           </div>
@@ -101,11 +103,19 @@ const alignments = [
 ]
 
 function addLink() {
-  if (!Array.isArray(props.block.data.links)) props.block.data.links = []
-  props.block.data.links.push({ label: '', url: '', newTab: false })
+  const links = [...(props.block.data.links ?? []), { label: '', url: '', newTab: false }]
+  emit('update', { id: props.block.id, data: { links } })
 }
 
 function removeLink(i) {
-  props.block.data.links.splice(i, 1)
+  const links = (props.block.data.links ?? []).filter((_, idx) => idx !== i)
+  emit('update', { id: props.block.id, data: { links } })
+}
+
+function updateLink(i, key, val) {
+  const links = (props.block.data.links ?? []).map((l, idx) =>
+    idx === i ? { ...l, [key]: val } : l
+  )
+  emit('update', { id: props.block.id, data: { links } })
 }
 </script>

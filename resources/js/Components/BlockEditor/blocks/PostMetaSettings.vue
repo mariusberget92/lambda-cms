@@ -7,7 +7,7 @@ const props = defineProps({
   tab:   { type: String, default: null },  // 'content' | 'style' | null (show all)
 })
 const emit = defineEmits(['update'])
-function update(key, val) { emit('update', { data: { ...props.block.data, [key]: val } }) }
+function update(key, val) { emit('update', { id: props.block.id, data: { [key]: val } }) }
 </script>
 <template>
   <div class="space-y-2 p-3">
