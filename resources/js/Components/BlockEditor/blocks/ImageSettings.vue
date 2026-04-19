@@ -47,19 +47,28 @@
     <MediaPicker v-model="showPicker" :dark="true" @select="onMediaSelect" />
 
     <!-- URL mode -->
-    <div v-if="mode === 'url'">
-      <label class="text-xs font-medium text-muted-foreground block mb-1">Image URL</label>
-      <div v-if="block.data.url" class="rounded-md overflow-hidden border mb-2">
-        <img :src="block.data.url" :alt="block.data.alt" class="w-full object-cover max-h-32" />
+    <DynamicField
+      v-if="mode === 'url'"
+      label="Image URL"
+      field-name="url"
+      :block="block"
+      :available-fields="availableFields"
+      @bind="onBind"
+      @unbind="onUnbind"
+    >
+      <div>
+        <div v-if="block.data.url" class="rounded-md overflow-hidden border mb-2">
+          <img :src="block.data.url" :alt="block.data.alt" class="w-full object-cover max-h-32" />
+        </div>
+        <input
+          :value="block.data.url"
+          type="text"
+          placeholder="https://example.com/image.jpg"
+          class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          @input="emit('update', { id: block.id, data: { url: $event.target.value, media_id: null } })"
+        />
       </div>
-      <input
-        :value="block.data.url"
-        type="text"
-        placeholder="https://example.com/image.jpg"
-        class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-        @input="emit('update', { id: block.id, data: { url: $event.target.value, media_id: null } })"
-      />
-    </div>
+    </DynamicField>
 
     <!-- Alt text (both modes) -->
     <DynamicField
