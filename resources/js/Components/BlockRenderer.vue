@@ -52,6 +52,7 @@ import SearchBlock            from '@/Components/Blocks/SearchBlock.vue'
 import NavigationBlock        from '@/components/Blocks/NavigationBlock.vue'
 import LinkBlock              from '@/components/Blocks/LinkBlock.vue'
 import FilterLinkBlock        from '@/Components/Blocks/FilterLinkBlock.vue'
+import PaginationBlock        from '@/components/Blocks/PaginationBlock.vue'
 import PostListBlock          from '@/Components/Blocks/PostListBlock.vue'
 import TemplateBlock          from '@/Components/Blocks/TemplateBlock.vue'
 import TableBlock             from '@/Components/Blocks/TableBlock.vue'
@@ -234,6 +235,7 @@ const BLOCK_MAP = {
   navigation:            NavigationBlock,
   link:                  LinkBlock,
   'filter-link':         FilterLinkBlock,
+  pagination:            PaginationBlock,
   'template':            TemplateBlock,
   table:                 TableBlock,
 }
