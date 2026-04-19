@@ -1,24 +1,25 @@
 <!-- resources/js/Components/Blocks/ParagraphBlock.vue -->
 <template>
-  <div
-    :style="hasIcon ? { display: 'flex', alignItems: 'flex-start', gap: icon.gap ?? '0.5em' } : undefined"
-  >
-    <Icon
-      v-if="hasIcon && (icon.position ?? 'prefix') !== 'suffix'"
-      :icon="icon.name"
-      :style="iconStyle"
-      class="shrink-0 mt-[0.2em]"
-      aria-hidden="true"
-    />
-    <div class="prose prose-sm max-w-none dark:prose-invert" v-html="resolvedContent" />
-    <Icon
-      v-if="hasIcon && icon.position === 'suffix'"
-      :icon="icon.name"
-      :style="iconStyle"
-      class="shrink-0 mt-[0.2em]"
-      aria-hidden="true"
-    />
-  </div>
+  <template v-if="hasIcon">
+    <div :style="{ display: 'flex', alignItems: 'flex-start', gap: icon.gap ?? '0.5em' }">
+      <Icon
+        v-if="(icon.position ?? 'prefix') !== 'suffix'"
+        :icon="icon.name"
+        :style="iconStyle"
+        class="shrink-0 mt-[0.2em]"
+        aria-hidden="true"
+      />
+      <div class="prose prose-sm max-w-none dark:prose-invert" v-html="resolvedContent" />
+      <Icon
+        v-if="icon.position === 'suffix'"
+        :icon="icon.name"
+        :style="iconStyle"
+        class="shrink-0 mt-[0.2em]"
+        aria-hidden="true"
+      />
+    </div>
+  </template>
+  <div v-else class="prose prose-sm max-w-none dark:prose-invert" v-html="resolvedContent" />
 </template>
 
 <script setup>
