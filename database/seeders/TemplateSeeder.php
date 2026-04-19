@@ -247,15 +247,15 @@ class TemplateSeeder extends Seeder
                                 'color: #6b7280;'
                             ),
 
-                            // Meta + Read more — inline-flex so it hugs its content (both items stay left)
+                            // Meta + Read more — full-width flex row, date left / link right
                             $this->block(507, 'container',
                                 [
-                                    'mode'      => 'inline-flex',
+                                    'mode'      => 'flex',
                                     'direction' => 'row',
                                     'gap'       => '0.75rem',
                                     'padding'   => 0,
                                     'align'     => 'center',
-                                    'childGrow' => false,
+                                    'justify'   => 'between',
                                 ],
                                 [
                                     // Published date
