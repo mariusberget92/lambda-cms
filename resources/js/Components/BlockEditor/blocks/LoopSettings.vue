@@ -142,6 +142,21 @@
         </div>
       </div>
 
+      <!-- ── Pagination ─────────────────────────────────────────────── -->
+      <div>
+        <label class="text-xs font-medium text-muted-foreground block mb-1">Page URL param</label>
+        <input
+          :value="block.data.pageParam ?? ''"
+          type="text"
+          placeholder="Leave empty to disable pagination"
+          class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          @input="emitData({ pageParam: $event.target.value })"
+        />
+        <p class="text-[10px] text-muted-foreground mt-1">
+          Set to e.g. <code>page</code> and add a Pagination block with the same param to enable paging.
+        </p>
+      </div>
+
     </div>
 
     <!-- Style fields -->
