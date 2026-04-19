@@ -98,7 +98,14 @@ class TemplateSeeder extends Seeder
                             'limit'        => 9,
                             'columns'      => 1,
                             'gap'          => 'md',
+                            'pageParam'    => 'page',
                         ], [$this->templateBlock(10, $this->postCardTemplateId() ?? 0)]),
+                        $this->block(6, 'pagination', [
+                            'pageParam'   => 'page',
+                            'style'       => 'numbered',
+                            'alignment'   => 'center',
+                            'buttonStyle' => 'outline',
+                        ]),
                     ], [], '', 'flex:3;min-width:0'),
 
                     // ── Sidebar column (flex: 1) ─────────────────────────
