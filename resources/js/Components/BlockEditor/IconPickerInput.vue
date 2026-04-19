@@ -1,4 +1,4 @@
-<!-- resources/js/components/BlockEditor/IconPickerInput.vue -->
+<!-- resources/js/Components/BlockEditor/IconPickerInput.vue -->
 <template>
   <div>
     <!-- Trigger -->
@@ -48,7 +48,7 @@
               :class="activeSet === s.id
                 ? 'bg-primary text-primary-foreground border-primary'
                 : 'bg-background border-border hover:border-muted-foreground'"
-              @click="activeSet = s.id; page = 0"
+              @click="activeSet = s.id; page = 0; search = ''"
             >
               {{ s.label }}
               <span class="opacity-60 ml-0.5">({{ s.id === 'all' ? FLAT_ALL.length : (ALL_ICONS[s.id]?.length ?? 0) }})</span>
@@ -154,7 +154,7 @@ const SETS = [
 
 const PAGE_SIZE = 96  // 8 columns × 12 rows
 
-const props = defineProps({ modelValue: { type: String, default: null } })
+const props = defineProps({ modelValue: { type: [String, null], default: null } })
 const emit  = defineEmits(['update:modelValue'])
 
 const open      = ref(false)
