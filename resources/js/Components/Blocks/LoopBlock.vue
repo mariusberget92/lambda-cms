@@ -34,6 +34,7 @@ import { usePage } from '@inertiajs/vue3'
 import axios from 'axios'
 import LoopItemProvider from './LoopItemProvider.vue'
 import BlockRenderer from '@/Components/BlockRenderer.vue'
+import { useLoopPagination } from '@/composables/useLoopPagination.js'
 
 const props = defineProps({ block: { type: Object, required: true } })
 
@@ -41,12 +42,13 @@ const page      = usePage()
 const items     = ref(props.block.data?.resolved?.items ?? [])
 const isLoading = ref(false)
 
+const { setPagination } = useLoopPagination()
+
 // CSS grid/flex wrapper — columns and gap driven by block.data
 const GAP_CLASS = { sm: 'gap-2', md: 'gap-4', lg: 'gap-6', xl: 'gap-8' }
 const wrapperClass = computed(() => {
   const cols = props.block.data?.columns ?? 1
   const gap  = GAP_CLASS[props.block.data?.gap ?? 'md'] ?? 'gap-4'
-  // flex-wrap mode: when columns is set to 'flex' or block.data.flexWrap is true
   if (cols === 'flex' || props.block.data?.flexWrap) {
     return `flex flex-wrap ${gap}`
   }
@@ -57,6 +59,16 @@ const wrapperClass = computed(() => {
 const hasUrlParamFilters = computed(() =>
   (props.block.data?.filters ?? []).some(f => f.urlParam)
 )
+
+// The URL param name used for page-based pagination (optional).
+const pageParam = computed(() => props.block.data?.pageParam?.trim() || null)
+
+// Read current page number from the URL for this loop's pageParam.
+function getCurrentPage() {
+  if (!pageParam.value) return 1
+  const n = parseInt(new URL(window.location.href).searchParams.get(pageParam.value))
+  return Number.isFinite(n) && n > 0 ? n : 1
+}
 
 // Extract relevant URL param values from the current window URL
 function getUrlParams() {
@@ -69,15 +81,29 @@ function getUrlParams() {
 async function fetchItems() {
   isLoading.value = true
   try {
+    const limit = props.block.data?.limit ?? 12
+
+    // When pageParam is set, derive offset from the current page number.
+    // Otherwise fall back to the static offset field.
+    const offset = pageParam.value
+      ? (getCurrentPage() - 1) * limit
+      : (props.block.data?.offset ?? 0)
+
     const { data } = await axios.post('/api/v1/query', {
       source:     props.block.data?.source ?? 'posts',
       filters:    props.block.data?.filters ?? [],
       sort:       props.block.data?.sort    ?? { field: 'published_at', direction: 'desc' },
-      limit:      props.block.data?.limit   ?? 12,
-      offset:     props.block.data?.offset  ?? 0,
+      limit,
+      offset,
       url_params: getUrlParams(),
     })
+
     items.value = data.items ?? []
+
+    // Publish total + perPage so PaginationBlock can compute page count.
+    if (pageParam.value) {
+      setPagination(pageParam.value, data.total ?? 0, limit)
+    }
   } catch (err) {
     if (import.meta.env.DEV) console.error('[LoopBlock] fetch error', err)
   } finally {
@@ -87,12 +113,10 @@ async function fetchItems() {
 
 onMounted(() => fetchItems())
 
-// Watch for Inertia URL changes (client-side navigation / URL param changes)
-// Only set up the watcher when we actually have urlParam filters — avoids unnecessary overhead
-if (hasUrlParamFilters.value) {
-  watch(
-    () => page.url,
-    (newUrl, oldUrl) => { if (newUrl !== oldUrl) fetchItems() }
-  )
-}
+// Watch for Inertia URL changes — covers both filter params and page params.
+const shouldWatch = computed(() => hasUrlParamFilters.value || !!pageParam.value)
+watch(
+  () => page.url,
+  (newUrl, oldUrl) => { if (newUrl !== oldUrl && shouldWatch.value) fetchItems() }
+)
 </script>
