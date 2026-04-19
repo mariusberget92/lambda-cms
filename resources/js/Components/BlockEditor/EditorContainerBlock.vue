@@ -21,9 +21,12 @@
           v-if="isNestable(child.type)"
           :id="child.customId || `block-${child.id}`"
           class="rounded-md border bg-background/50 overflow-hidden transition-colors"
-          :class="child.id === selectedId
-            ? 'border-primary ring-1 ring-primary'
-            : 'border-border hover:border-muted-foreground'"
+          :class="[
+            child.id === selectedId
+              ? 'border-primary ring-1 ring-primary'
+              : 'border-border hover:border-muted-foreground',
+            isFlexRow ? 'flex-1 min-w-0' : '',
+          ]"
         >
           <!-- Header row: drag handle + label -->
           <div
