@@ -26,13 +26,16 @@
       @update:model-value="v => emit('update', { id: block.id, data: { typography: v } })"
     />
 
+    <IconSettings :block="block" @update="emit('update', $event)" />
+
   </div>
 </template>
 
 <script setup>
-import TiptapEditor    from '@/Components/TiptapEditor.vue'
-import DynamicField    from './DynamicField.vue'
+import TiptapEditor      from '@/Components/TiptapEditor.vue'
+import DynamicField      from './DynamicField.vue'
 import TypographyControl from '../TypographyControl.vue'
+import IconSettings      from './IconSettings.vue'
 
 const props = defineProps({
   block:           { type: Object, required: true },
