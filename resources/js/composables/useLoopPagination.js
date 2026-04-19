@@ -15,5 +15,5 @@ export function useLoopPagination() {
     return store[pageParam] ?? { total: 0, perPage: 1 }
   }
 
-  return { setPagination, getPagination, store }
+  return { setPagination, getPagination }
 }
