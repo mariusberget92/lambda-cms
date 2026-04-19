@@ -33,7 +33,7 @@
           type="text"
           placeholder="1.25em"
           class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-          @change="update('size', $event.target.value)"
+          @change="update('size', $event.target.value || '1.25em')"
         />
       </div>
 
@@ -44,7 +44,7 @@
           type="text"
           placeholder="0.5em"
           class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-          @change="update('gap', $event.target.value)"
+          @change="update('gap', $event.target.value || '0.5em')"
         />
       </div>
 
@@ -60,7 +60,8 @@
             @click="update('color', null)"
           >Inherit</button>
           <ColorPicker
-            :model-value="icon.color || '#000000'"
+            v-if="icon.color"
+            :model-value="icon.color"
             :show-value="false"
             @update:model-value="v => update('color', v)"
           />
