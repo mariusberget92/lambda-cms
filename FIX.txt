@@ -2,7 +2,7 @@ Block-editor:
 	- [done] When adding a background image via Advanced settings in the block editor we should be able to bind it dynamically to forexample the featured image of a post.
 	- [done] Border-radius the same controlls used for padding and spacing so we can controll radius each side.
 	- [done] Border-radius needs to be a setting for a container aswell.
-	- Image block clicking library/url does not show the media picker. Also, should be able to bind dynamically.
+	- [done] Image block clicking library/url does not show the media picker. Also, should be able to bind dynamically.
 	- [done] Clicking update/save when in the blockeditor should not redirect the user anywhere, the user should stay in the block editor.
 	- [done] Having a template inside a loop does not seem to work correctly. The dynamically bound fields in the template does not display/render anything (looks like same issue with any bound data).
 	- [done] Container and sections and such needs border options so we can have borders.
