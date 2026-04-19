@@ -1,6 +1,6 @@
 # ⚡ Lambda CMS
 
-> A modern, self-hosted CMS built with **Laravel 12**, **Inertia.js**, and **Vue 3**. Clean, fast, and developer-friendly — with a full-featured drag-and-drop block editor, media library, comment moderation, and a headless JSON API.
+> A modern, self-hosted CMS built with **Laravel 12**, **Inertia.js**, and **Vue 3**. Clean, fast, and developer-friendly — with a full-featured drag-and-drop block editor, template system, media library, comment moderation, webhooks, and a headless JSON API.
 
 ---
 
@@ -23,34 +23,47 @@
 
 - **Posts** — Full CRUD with rich text (Tiptap) or drag-and-drop block editor
 - **Pages** — Custom static pages built entirely with the block editor
-- **Categories & Tags** — Full CRUD, many-to-many on posts
+- **Categories & Tags** — Full CRUD, many-to-many on posts; categories support custom colors
 - **Post scheduling** — Set a future publish date; posts go live automatically
 - **Autosave** — Drafts are saved automatically while editing
 - **Revisions** — Full revision history with one-click restore (up to 25 revisions)
-- **Bulk actions** — Bulk publish, draft, or delete posts with author-scoped guards
+- **Draft preview** — Shareable `/preview/posts/{token}` and `/preview/pages/{token}` URLs, no login required
+- **Bulk actions** — Bulk publish, draft, or delete posts with author-scoped permission checks
 
 ### 🧱 Block Editor
 
-30+ block types organized by purpose:
+30 block types organized by purpose:
 
 | Category | Blocks |
 |---|---|
-| 📄 Content | Paragraph, Heading, Image, Quote, Code, Gallery, Video, Divider, CTA, HTML |
-| 🗂️ Layout | Section, Container (flex/grid), Spacer |
-| 🔗 Interactive | Link (wrapper), Accordion, Tabs, Embed, Pagination |
-| 🔄 Dynamic | Loop (posts/categories/tags/pages), Post List component |
-| 📰 Post parts | Post Title, Post Body, Featured Image, Post Meta, Author, Categories & Tags, Comments |
+| 📄 Content | Paragraph, Heading, Image, Video, Gallery, Quote, Code, CTA, HTML, Table, Divider, Spacer |
+| 🗂️ Layout | Section, Container (flex / grid / inline-flex) |
+| 🔗 Interactive | Link, Navigation, Search, Filter Link |
+| 🔄 Dynamic | Loop (posts / categories / tags / pages), Post List |
+| 📰 Post parts | Post Title, Post Body, Featured Image, Post Meta, Post Author, Post Taxonomy, Post Comments |
 | 🗃️ Archive | Archive Title, Archive Loop |
-| 🔍 Utility | Search, Navigation |
+| 🧩 Composition | Template (embed a saved partial or layout template) |
 
 **Editor features:**
 - 🖱️ Drag-and-drop canvas with cross-list nesting
-- 📋 Layers panel with infinite depth tree navigation
-- 🎨 Per-block Style tab — typography, colors, background (solid/image/gradient), border, shadow, spacing
-- 🔁 Dynamic field bindings (link block fields to loop data sources)
-- ⚙️ Per-block Advanced settings — custom CSS classes, custom CSS, animation, font family, margin
-- 👁️ Conditional block visibility (show/hide based on loop field values)
+- 📋 Layers panel with infinite-depth tree navigation
+- 🎨 Per-block Style tab — typography, colors, background (solid / gradient / image), border & shadow, spacing
+- 🔁 Dynamic field bindings — link block fields to loop or post-context data sources
+- ⚙️ Per-block Advanced settings — custom CSS classes, inline CSS, animation, font family, margin
+- 👁️ Conditional block visibility based on loop field values
 - 🏷️ Block labels / custom names shown in canvas and layers panel
+
+### 🧩 Template System
+
+- **Template types:** `partial`, `blog-index`, `single-post`, `archive`, `search-results`
+- **5 pre-shipped system templates** — cannot be deleted, can be freely edited
+  - Post Card (partial — used in the default blog index loop)
+  - Default Blog Index
+  - Default Single Post
+  - Default Archive
+  - Default Search Results
+- Full CRUD for custom templates with the same block editor, autosave, and revisions
+- Templates embedded in loop blocks correctly inherit loop context for dynamic field bindings
 
 ### 🖼️ Media Library
 
@@ -59,14 +72,14 @@
 - Edit alt text and description per file
 - Bulk delete; admins see all files, users see their own
 - UUID-based filenames with dimension tracking
+- External disk support (stores full URL when `disk = external`)
 
-### 🌐 Public Blog
+### 🌐 Public Frontend
 
-- Paginated post listing with featured images, excerpts, and author info
-- Single post view with full content, categories/tags, and comment section
-- Category and tag archive pages
-- Custom page rendering (fully block-based)
+- Block-driven pages — every public page is rendered from saved block templates
 - RSS feed at `/feed` and XML sitemap at `/sitemap.xml`
+- Admin bar visible to authenticated users (hidden from public visitors)
+- Navigation items managed from the admin and rendered via the Navigation block
 
 ### 💬 Comments
 
@@ -79,11 +92,13 @@
 ### 👥 Users & Roles
 
 - Two roles: **administrator** and **user**
-- Administrators manage all content, users, settings, and pages
+- Administrators manage all content, users, settings, pages, and templates
 - Users manage their own posts, categories, and tags
 - Avatar upload per user profile
 - Online status tracking (`last_seen_at`)
+- User banning with reason tracking (ban / unban)
 - Admin count enforcement — at least one admin must always exist
+- User invite flow — auto-generated password + welcome email
 
 ### 🔒 Auth & Security
 
@@ -91,7 +106,13 @@
 - Forgot / reset password via email token
 - Email verification required before accessing the dashboard
 - Author-scoped post edit/delete (admins can override)
-- User invite flow — auto-generated password + welcome email
+
+### 🪝 Webhooks
+
+- CRUD at `/webhooks` (admin-only)
+- Events: `post.published`, `post.updated`, `post.deleted`, `page.published`, `page.updated`, `page.deleted`
+- HMAC-SHA256 request signature (`X-Lambda-Signature`) when a secret is set
+- Dispatched via queued jobs; `last_triggered_at` tracked per webhook
 
 ### 🗓️ Editorial Calendar
 
@@ -103,7 +124,7 @@
 
 - Stats: total posts, published, scheduled, drafts, pending comments
 - Upcoming scheduled posts (next 5)
-- Recent posts with status badges and quick actions
+- Recent posts with status badges
 
 ### ⚙️ Settings (Admin)
 
@@ -116,21 +137,21 @@
 ### 🔌 REST API (Headless)
 
 ```
-GET /api/v1/posts
-GET /api/v1/posts/{slug}
-GET /api/v1/categories
-GET /api/v1/categories/{slug}
-GET /api/v1/tags
-GET /api/v1/tags/{slug}
+GET  /api/v1/posts
+GET  /api/v1/posts/{slug}
+GET  /api/v1/categories
+GET  /api/v1/categories/{slug}
+GET  /api/v1/tags
+GET  /api/v1/tags/{slug}
 POST /api/v1/query          ← block editor loop data source
 ```
 
 ### 🧙 Installer
 
-- 4-step browser-based setup wizard: **Database → Site → Admin → Mail**
-- Supports SQLite and MySQL
-- Tests DB connection before writing `.env`
-- Runs migrations, seeds defaults, and creates the first admin automatically
+- 5-step browser-based setup wizard: **Database → Site → Admin → Mail → Genre**
+- Supports SQLite and MySQL; tests DB connection before writing `.env`
+- Runs migrations, seeds system templates, and creates the first admin automatically
+- **Genre / theme selection** — choose from 20 content themes (food, travel, tech, gaming, AI, …) to pre-seed 10 themed posts with placeholder images, or start empty
 
 ---
 
@@ -158,7 +179,7 @@ php artisan key:generate
 npm run build
 ```
 
-Then visit `/install` in your browser and complete the 4-step setup wizard.
+Then visit `/install` in your browser and complete the 5-step setup wizard.
 
 ### Local Development
 
@@ -171,16 +192,14 @@ npm run dev
 
 ## 🗺️ Roadmap
 
-- [ ] Public full-text search across posts and pages
-- [ ] Draft preview — shareable preview URL without publishing
-- [ ] Post import/export — JSON or Markdown
+- [ ] Post import / export — JSON or Markdown
 - [ ] Two-factor authentication — TOTP-based 2FA
 - [ ] API write access — token-based auth for creating/updating content
-- [ ] Webhook support — fire events on publish/update for external integrations
 - [ ] Multi-language / i18n content support
 - [ ] Featured image in-browser crop before saving to media library
-- [ ] More component block types — related posts, category grid, newsletter embed
-- [ ] Tag/category typeahead — autocomplete when assigning to posts
+- [ ] Pagination block for the public frontend
+- [ ] User-configurable accent color
+- [ ] Import / export pages and templates
 
 ---
 

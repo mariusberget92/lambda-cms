@@ -4,13 +4,14 @@
     <template v-for="block in blocks" :key="block.id">
       <!-- Skip block if its visibility condition evaluates to false -->
       <template v-if="isVisible(block)">
+        <!-- Only use a <style> tag for complex CSS (selectors, @rules, etc.) -->
         <component
-          v-if="block.customCss"
+          v-if="block.customCss && isComplexCss(block.customCss)"
           :is="'style'"
         >#{{ block.customId ? CSS.escape(block.customId) : 'lambda-be-' + block.id }} { {{ sanitizeCss(block.customCss) }} }</component>
         <div
           :id="block.customId || `lambda-be-${block.id}`"
-          :class="[block.customClasses || undefined, itemClass || undefined]"
+          :class="blockItemClass(block) || undefined"
           :style="blockWrapperStyle(block)"
         >
           <component
@@ -51,6 +52,7 @@ import SearchBlock            from '@/Components/Blocks/SearchBlock.vue'
 import NavigationBlock        from '@/components/Blocks/NavigationBlock.vue'
 import LinkBlock              from '@/components/Blocks/LinkBlock.vue'
 import FilterLinkBlock        from '@/Components/Blocks/FilterLinkBlock.vue'
+import PostListBlock          from '@/Components/Blocks/PostListBlock.vue'
 import TemplateBlock          from '@/Components/Blocks/TemplateBlock.vue'
 import TableBlock             from '@/Components/Blocks/TableBlock.vue'
 
@@ -160,12 +162,47 @@ function blockWrapperStyle(block) {
     style.transition = `all ${dur} ${ease}`
   }
 
+  // Inline simple customCss declarations directly (complex CSS stays in <style> tag)
+  if (block.customCss) {
+    const parsed = parseCssDeclarations(block.customCss)
+    if (parsed) Object.assign(style, parsed)
+  }
+
   return Object.keys(style).length ? style : undefined
 }
 
 function sanitizeCss(css) {
-  // Strip both opening and closing style tags to prevent tag breakout / HTML injection
   return css.replace(/<\/?style/gi, '')
+}
+
+// Returns true if customCss needs a <style> tag (contains selectors, @rules, or braces).
+function isComplexCss(css) {
+  return /[{}@]/.test(css)
+}
+
+// Parse simple "prop: value; prop: value" declarations into a camelCase style object.
+// Returns {} for empty input, null if the CSS is complex (caller should use <style> tag).
+function parseCssDeclarations(css) {
+  if (!css) return {}
+  if (isComplexCss(css)) return null
+  const result = {}
+  for (const decl of css.split(';')) {
+    const trimmed = decl.trim()
+    if (!trimmed) continue
+    const colon = trimmed.indexOf(':')
+    if (colon === -1) return null
+    const prop = trimmed.slice(0, colon).trim()
+    const val  = trimmed.slice(colon + 1).trim()
+    if (!prop || !val) continue
+    const camel = prop.replace(/-([a-z])/g, (_, c) => c.toUpperCase())
+    result[camel] = val
+  }
+  return result
+}
+
+function blockItemClass(block) {
+  const parts = [block.customClasses, props.itemClass].filter(s => s && s.trim())
+  return parts.length ? parts.join(' ') : null
 }
 
 const BLOCK_MAP = {
@@ -183,6 +220,7 @@ const BLOCK_MAP = {
   section:   SectionBlock,
   spacer:    SpacerBlock,
   loop:      LoopBlock,
+  'post-list': PostListBlock,
   'post-title':          PostTitleBlock,
   'post-body':           PostBodyBlock,
   'post-featured-image': PostFeaturedImageBlock,

@@ -87,7 +87,7 @@ resources/js/lib/loopSources.js       — Loop source field definitions
 
 ### 🧱 Block Editor
 Block types available:
-`container`, `section`, `heading`, `paragraph`, `image`, `video`, `gallery`, `code`, `quote`, `divider`, `spacer`, `cta`, `html`, `component`, `loop`, `post-list`, `post-title`, `post-body`, `post-featured-image`, `post-meta`, `post-author`, `post-taxonomy`, `post-comments`, `archive-title`, `archive-loop`, `search`, `navigation`, `link`, `filter-link`, `template`, `table`
+`container`, `section`, `heading`, `paragraph`, `image`, `video`, `gallery`, `code`, `quote`, `divider`, `spacer`, `cta`, `html`, `loop`, `post-list`, `post-title`, `post-body`, `post-featured-image`, `post-meta`, `post-author`, `post-taxonomy`, `post-comments`, `archive-title`, `archive-loop`, `search`, `navigation`, `link`, `filter-link`, `template`, `table`
 
 **Canvas features:**
 - Drag-and-drop with cross-list nesting

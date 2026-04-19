@@ -222,11 +222,12 @@ class TemplateSeeder extends Seeder
                         [], ['url' => 'loop:featured_image_url', 'alt' => 'loop:title']
                     ),
 
-                    // Inner content area
+                    // Inner content area — stretch so children fill the card width
                     $this->block(502, 'container',
                         [
                             'mode'      => 'flex',
                             'direction' => 'column',
+                            'align'     => 'stretch',
                             'gap'       => '0.5rem',
                             'padding'   => 4,
                             'maxWidth'  => 'full',
