@@ -1,0 +1,368 @@
+# DateTimePicker Component Implementation Plan
+
+> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
+
+**Goal:** Build a custom `DateTimePicker.vue` component using reka-ui's Calendar primitive and Nord CSS tokens, replacing the native `<input type="datetime-local">` in Posts/Edit and Posts/Create.
+
+**Architecture:** A single `DateTimePicker.vue` with a styled trigger button + absolute-positioned popover. The popover contains a reka-ui `CalendarRoot` (handles all date logic, keyboard nav, ARIA) and a hand-built time row (hours/minutes/AM-PM). Internally uses `@internationalized/date` `CalendarDate` for reka-ui; emits `YYYY-MM-DDTHH:mm` strings so drop-in replacement requires zero form changes.
+
+**Tech Stack:** Vue 3 `<script setup>`, reka-ui Calendar primitives, `@internationalized/date`, `@vueuse/core` `onClickOutside`, lucide-vue-next icons, Tailwind 4 Nord tokens.
+
+---
+
+### Task 1: Create `DateTimePicker.vue`
+
+**Files:**
+- Create: `resources/js/Components/DateTimePicker.vue`
+
+**Step 1: Create the file with the full implementation**
+
+```vue
+<script setup>
+import { ref, computed, watch } from 'vue'
+import { onClickOutside } from '@vueuse/core'
+import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import {
+  CalendarRoot, CalendarHeader, CalendarHeading,
+  CalendarGrid, CalendarGridHead, CalendarGridBody,
+  CalendarGridRow, CalendarHeadCell, CalendarCell, CalendarCellTrigger,
+  CalendarNext, CalendarPrev,
+} from 'reka-ui'
+import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date'
+
+const props = defineProps({
+  modelValue: { type: String, default: '' },
+})
+const emit = defineEmits(['update:modelValue'])
+
+const open  = ref(false)
+const container = ref(null)
+onClickOutside(container, () => { open.value = false })
+
+// Internal state
+const selectedCalDate = ref(undefined) // CalendarDate | undefined
+const hours   = ref(12)   // 1–12
+const minutes = ref(0)    // 0–59
+const period  = ref('AM') // 'AM' | 'PM'
+
+// Parse incoming modelValue → internal state
+watch(() => props.modelValue, (val) => {
+  if (!val) { selectedCalDate.value = undefined; return }
+  const [datePart, timePart] = val.split('T')
+  if (!datePart) return
+  const [y, m, d] = datePart.split('-').map(Number)
+  selectedCalDate.value = new CalendarDate(y, m, d)
+  if (timePart) {
+    const [h, min] = timePart.split(':').map(Number)
+    period.value  = h >= 12 ? 'PM' : 'AM'
+    hours.value   = h === 0 ? 12 : h > 12 ? h - 12 : h
+    minutes.value = min
+  }
+}, { immediate: true })
+
+// Emit combined YYYY-MM-DDTHH:mm whenever anything changes
+watch([selectedCalDate, hours, minutes, period], () => {
+  if (!selectedCalDate.value) return
+  let h = hours.value
+  if (period.value === 'AM' && h === 12) h = 0
+  if (period.value === 'PM' && h !== 12) h += 12
+  const pad = (n) => String(n).padStart(2, '0')
+  const { year, month, day } = selectedCalDate.value
+  emit('update:modelValue', `${year}-${pad(month)}-${pad(day)}T${pad(h)}:${pad(minutes.value)}`)
+})
+
+// Minimum selectable date = today
+const minDate = computed(() => today(getLocalTimeZone()))
+
+// When user picks today, ensure time is not in the past
+function onDateSelect(val) {
+  if (!val) return
+  const t = today(getLocalTimeZone())
+  const isToday = val.year === t.year && val.month === t.month && val.day === t.day
+  if (!isToday) return
+  const now = new Date()
+  let h24 = hours.value
+  if (period.value === 'AM' && h24 === 12) h24 = 0
+  if (period.value === 'PM' && h24 !== 12) h24 += 12
+  if (h24 < now.getHours() || (h24 === now.getHours() && minutes.value <= now.getMinutes())) {
+    const next = new Date(now.getTime() + 60 * 60 * 1000)
+    const nh = next.getHours()
+    period.value  = nh >= 12 ? 'PM' : 'AM'
+    hours.value   = nh === 0 ? 12 : nh > 12 ? nh - 12 : nh
+    minutes.value = 0
+  }
+}
+
+// Trigger display string
+const displayValue = computed(() => {
+  if (!selectedCalDate.value) return ''
+  const { year, month, day } = selectedCalDate.value
+  const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${names[month - 1]} ${day}, ${year} · ${hours.value}:${pad(minutes.value)} ${period.value}`
+})
+
+function clampHours(e) {
+  hours.value = Math.max(1, Math.min(12, parseInt(e.target.value) || 1))
+}
+function clampMinutes(e) {
+  minutes.value = Math.max(0, Math.min(59, parseInt(e.target.value) || 0))
+}
+</script>
+
+<template>
+  <div ref="container" class="relative">
+    <!-- Trigger -->
+    <button
+      type="button"
+      class="w-full flex items-center gap-2 rounded-md border bg-background px-3 py-1.5 text-sm text-left focus:outline-none focus:ring-2 focus:ring-ring"
+      @click="open = !open"
+    >
+      <CalendarDays class="w-4 h-4 text-muted-foreground shrink-0" />
+      <span :class="displayValue ? 'text-foreground' : 'text-muted-foreground'">
+        {{ displayValue || 'Pick a date and time' }}
+      </span>
+    </button>
+
+    <!-- Popover -->
+    <Transition
+      enter-active-class="transition ease-out duration-100"
+      enter-from-class="opacity-0 scale-95"
+      enter-to-class="opacity-100 scale-100"
+      leave-active-class="transition ease-in duration-75"
+      leave-from-class="opacity-100 scale-100"
+      leave-to-class="opacity-0 scale-95"
+    >
+      <div
+        v-if="open"
+        class="absolute left-0 top-full z-50 mt-1 w-72 rounded-lg border border-border bg-card p-3 shadow-lg dark:shadow-black/40"
+      >
+        <!-- reka-ui Calendar -->
+        <CalendarRoot
+          v-model="selectedCalDate"
+          :min-value="minDate"
+          :week-starts-on="0"
+          v-slot="{ weekDays, grid }"
+          @update:model-value="onDateSelect"
+        >
+          <div v-for="month in grid" :key="month.value.toString()">
+            <!-- Month header -->
+            <CalendarHeader class="flex items-center justify-between mb-2">
+              <CalendarPrev
+                class="p-1 rounded hover:bg-accent/20 text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft class="w-4 h-4" />
+              </CalendarPrev>
+              <CalendarHeading class="text-sm font-medium" />
+              <CalendarNext
+                class="p-1 rounded hover:bg-accent/20 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <ChevronRight class="w-4 h-4" />
+              </CalendarNext>
+            </CalendarHeader>
+
+            <!-- Day grid -->
+            <CalendarGrid class="w-full">
+              <CalendarGridHead>
+                <CalendarGridRow class="grid grid-cols-7 mb-1">
+                  <CalendarHeadCell
+                    v-for="day in weekDays"
+                    :key="day"
+                    class="text-xs text-muted-foreground text-center font-normal pb-1"
+                  >{{ day }}</CalendarHeadCell>
+                </CalendarGridRow>
+              </CalendarGridHead>
+              <CalendarGridBody>
+                <CalendarGridRow
+                  v-for="(week, wi) in month.rows"
+                  :key="wi"
+                  class="grid grid-cols-7"
+                >
+                  <CalendarCell
+                    v-for="date in week"
+                    :key="date.toString()"
+                    :date="date"
+                    class="p-0"
+                  >
+                    <CalendarCellTrigger
+                      :day="date"
+                      :month="month.value"
+                      v-slot="{ dayValue, selected, today: isToday, disabled, outsideView }"
+                      class="w-full"
+                    >
+                      <div
+                        class="w-8 h-8 mx-auto flex items-center justify-center rounded-md text-sm transition-colors"
+                        :class="{
+                          'bg-primary text-primary-foreground': selected,
+                          'border border-primary text-primary font-medium': isToday && !selected,
+                          'opacity-30 pointer-events-none': disabled,
+                          'text-muted-foreground/40': outsideView,
+                          'hover:bg-accent/20 cursor-pointer': !disabled && !selected,
+                        }"
+                      >{{ dayValue }}</div>
+                    </CalendarCellTrigger>
+                  </CalendarCell>
+                </CalendarGridRow>
+              </CalendarGridBody>
+            </CalendarGrid>
+          </div>
+        </CalendarRoot>
+
+        <!-- Time row -->
+        <div class="border-t border-border mt-3 pt-3 flex items-center gap-2">
+          <span class="text-xs text-muted-foreground">Time</span>
+          <input
+            type="number"
+            :value="hours"
+            min="1"
+            max="12"
+            class="w-10 text-center rounded border border-border bg-background text-sm px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-ring [appearance:textfield]"
+            @change="clampHours"
+          />
+          <span class="text-muted-foreground font-medium">:</span>
+          <input
+            type="number"
+            :value="String(minutes).padStart(2, '0')"
+            min="0"
+            max="59"
+            class="w-10 text-center rounded border border-border bg-background text-sm px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-ring [appearance:textfield]"
+            @change="clampMinutes"
+          />
+          <div class="ml-auto flex rounded border border-border overflow-hidden text-xs">
+            <button
+              type="button"
+              class="px-2 py-1 transition-colors"
+              :class="period === 'AM' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent/20'"
+              @click="period = 'AM'"
+            >AM</button>
+            <button
+              type="button"
+              class="px-2 py-1 transition-colors border-l border-border"
+              :class="period === 'PM' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent/20'"
+              @click="period = 'PM'"
+            >PM</button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </div>
+</template>
+```
+
+**Step 2: Verify the file exists**
+
+```bash
+ls resources/js/Components/DateTimePicker.vue
+```
+
+**Step 3: Commit**
+
+```bash
+git add resources/js/Components/DateTimePicker.vue
+git commit -m "feat: DateTimePicker — custom calendar + time picker using reka-ui + Nord tokens"
+```
+
+---
+
+### Task 2: Replace in `Posts/Edit.vue`
+
+**Files:**
+- Modify: `resources/js/Pages/Posts/Edit.vue`
+
+**Step 1: Add import**
+
+At the top of `<script setup>`, add:
+```js
+import DateTimePicker from '@/Components/DateTimePicker.vue'
+```
+
+**Step 2: Replace the native input**
+
+Find this block (around line 107):
+```html
+              <input
+                type="datetime-local"
+                v-model="form.published_at"
+                class="w-full rounded-md border bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring [color-scheme:light] dark:[color-scheme:dark]"
+                @click="$event.target.showPicker?.()"
+              />
+```
+
+Replace with:
+```html
+              <DateTimePicker v-model="form.published_at" />
+```
+
+**Step 3: Commit**
+
+```bash
+git add resources/js/Pages/Posts/Edit.vue
+git commit -m "feat: Posts/Edit — use DateTimePicker component"
+```
+
+---
+
+### Task 3: Replace in `Posts/Create.vue`
+
+**Files:**
+- Modify: `resources/js/Pages/Posts/Create.vue`
+
+**Step 1: Add import**
+
+```js
+import DateTimePicker from '@/Components/DateTimePicker.vue'
+```
+
+**Step 2: Replace the native input**
+
+Find this block (around line 109):
+```html
+              <input
+                type="datetime-local"
+                v-model="form.published_at"
+                class="w-full rounded-md border bg-background px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring [color-scheme:light] dark:[color-scheme:dark]"
+                @click="$event.target.showPicker?.()"
+              />
+```
+
+Replace with:
+```html
+              <DateTimePicker v-model="form.published_at" />
+```
+
+**Step 3: Commit**
+
+```bash
+git add resources/js/Pages/Posts/Create.vue
+git commit -m "feat: Posts/Create — use DateTimePicker component"
+```
+
+---
+
+### Task 4: Build and verify
+
+**Step 1: Run production build**
+
+```bash
+npm run build
+```
+Expected: no errors, build succeeds.
+
+**Step 2: Smoke test checklist**
+- [ ] On Posts/Create, select "Scheduled" → DateTimePicker trigger appears
+- [ ] Clicking trigger opens the popover calendar
+- [ ] Past days are visually muted/disabled
+- [ ] Today has a border highlight
+- [ ] Clicking a future date selects it (filled primary color)
+- [ ] Time row updates hours/minutes/AM-PM
+- [ ] Trigger button shows formatted date string after selection
+- [ ] Clicking outside closes popover
+- [ ] Dark mode: popover uses `bg-card`, borders visible, primary colors correct
+- [ ] Saving the post stores the correct `published_at` value
+
+**Step 3: Commit if any fixes needed**
+
+```bash
+git add -A
+git commit -m "fix: DateTimePicker polish"
+```

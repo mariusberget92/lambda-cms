@@ -1,0 +1,220 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "overlayscrollbars/overlayscrollbars.css";
+
+/* ── Hidden scrollbar (scroll via wheel/touch, no visible bar) ────────────── */
+.scrollbar-hidden {
+  scrollbar-width: none;
+}
+.scrollbar-hidden::-webkit-scrollbar { display: none; }
+
+/* ── OverlayScrollbars — Nord theme ──────────────────────────────────────── */
+.os-theme-nord {
+  --os-size:             6px;
+  --os-padding-perpendicular: 2px;
+  --os-padding-axis:     0px;
+  --os-track-border-radius: 3px;
+  --os-handle-border-radius: 3px;
+  --os-track-bg:         transparent;
+  --os-track-bg-hover:   transparent;
+  --os-track-bg-active:  transparent;
+  --os-track-border:     none;
+  /* light mode thumb — Nord3 at 35% opacity */
+  --os-handle-bg:        rgba(76, 86, 106, 0.35);
+  --os-handle-bg-hover:  rgba(76, 86, 106, 0.6);
+  --os-handle-bg-active: rgba(94, 129, 172, 0.85);
+  --os-handle-border:    none;
+  --os-handle-interactive-area-size: 16px;
+}
+
+.dark .os-theme-nord {
+  /* dark mode thumb — Nord4 at 25% opacity */
+  --os-handle-bg:        rgba(216, 222, 233, 0.25);
+  --os-handle-bg-hover:  rgba(216, 222, 233, 0.45);
+  --os-handle-bg-active: rgba(136, 192, 208, 0.8);
+}
+
+:root {
+  --background: #eceff4;
+  --foreground: #2e3440;
+  --card: #e5e9f0;
+  --card-foreground: #2e3440;
+  --popover: #eceff4;
+  --popover-foreground: #2e3440;
+  --primary: #5e81ac;
+  --primary-foreground: #ffffff;
+  --primary-hover: #4a6d92;
+  --secondary: #d8dee9;
+  --secondary-foreground: #3b4252;
+  --muted: #d8dee9;
+  --muted-foreground: #4c566a;
+  --accent: #88c0d0;
+  --accent-foreground: #2e3440;
+  --destructive: #bf616a;
+  --destructive-foreground: #eceff4;
+  --border: #d8dee9;
+  --input: #d8dee9;
+  --ring: #81a1c1;
+  --chart-1: #5e81ac;
+  --chart-2: #88c0d0;
+  --chart-3: #a3be8c;
+  --chart-4: #ebcb8b;
+  --chart-5: #b48ead;
+  --radius: 0.625rem;
+  --sidebar: #e5e9f0;
+  --sidebar-foreground: #3b4252;
+  --sidebar-primary: #5e81ac;
+  --sidebar-primary-foreground: #eceff4;
+  --sidebar-accent: #d8dee9;
+  --sidebar-accent-foreground: #2e3440;
+  --sidebar-border: #d8dee9;
+  --sidebar-ring: #81a1c1;
+
+  /* Role badge tokens — light mode */
+  --color-role-admin-bg: color-mix(in srgb, #5e81ac 15%, transparent);
+  --color-role-admin-fg: #3b5e8a;
+  --color-role-user-bg: color-mix(in srgb, #4c566a 12%, transparent);
+  --color-role-user-fg: #4c566a;
+
+  /* Presence dot token */
+  --color-online-dot: #a3be8c;
+
+  /* Status tokens — light mode */
+  --color-success-bg: color-mix(in srgb, #a3be8c 20%, transparent);
+  --color-success-fg: #638a47;
+  --color-success-border: color-mix(in srgb, #a3be8c 40%, transparent);
+  --color-warning-bg: color-mix(in srgb, #ebcb8b 20%, transparent);
+  --color-warning-fg: #a07c20;
+  --color-warning-border: color-mix(in srgb, #ebcb8b 40%, transparent);
+  --color-error-bg: color-mix(in srgb, #bf616a 15%, transparent);
+  --color-error-fg: #bf616a;
+  --color-error-border: color-mix(in srgb, #bf616a 35%, transparent);
+  --color-info-bg: color-mix(in srgb, #81a1c1 20%, transparent);
+  --color-info-fg: #5e81ac;
+  --color-info-border: color-mix(in srgb, #81a1c1 40%, transparent);
+}
+
+.dark {
+  --background: #2e3440;           /* Nord0 */
+  --foreground: #d8dee9;           /* Nord4 */
+  --card: #3b4252;                 /* Nord1 */
+  --card-foreground: #d8dee9;
+  --popover: #3b4252;              /* Nord1 */
+  --popover-foreground: #d8dee9;
+  --primary: #88c0d0;              /* Nord8 */
+  --primary-foreground: #2e3440;   /* Nord0 */
+  --primary-hover: #72a4b4;
+  --secondary: #434c5e;            /* Nord2 */
+  --secondary-foreground: #d8dee9;
+  --muted: #3b4252;                /* Nord1 */
+  --muted-foreground: #7b8898;
+  --accent: #4c566a;               /* Nord3 */
+  --accent-foreground: #eceff4;    /* Nord6 */
+  --destructive: #bf616a;          /* Nord11 */
+  --destructive-foreground: #eceff4;
+  --border: #434c5e;               /* Nord2 */
+  --input: #434c5e;                /* Nord2 */
+  --ring: #88c0d0;
+  --chart-1: #88c0d0;
+  --chart-2: #8fbcbb;
+  --chart-3: #a3be8c;
+  --chart-4: #ebcb8b;
+  --chart-5: #b48ead;
+  --sidebar: #2a2f3a;              /* slightly darker than Nord0 */
+  --sidebar-foreground: #d8dee9;
+  --sidebar-primary: #88c0d0;
+  --sidebar-primary-foreground: #2e3440;
+  --sidebar-accent: #434c5e;       /* Nord2 */
+  --sidebar-accent-foreground: #d8dee9;
+  --sidebar-border: #434c5e;       /* Nord2 */
+  --sidebar-ring: #88c0d0;
+
+  /* Role badge tokens — dark mode */
+  --color-role-admin-bg: color-mix(in srgb, #88c0d0 15%, transparent);
+  --color-role-admin-fg: #88c0d0;
+  --color-role-user-bg: color-mix(in srgb, #4c566a 25%, transparent);
+  --color-role-user-fg: #9ca3af;
+
+  /* Presence dot token */
+  --color-online-dot: #a3be8c;
+
+  /* Status tokens — dark mode */
+  --color-success-bg: color-mix(in srgb, #a3be8c 15%, transparent);
+  --color-success-fg: #a3be8c;
+  --color-success-border: color-mix(in srgb, #a3be8c 30%, transparent);
+  --color-warning-bg: color-mix(in srgb, #ebcb8b 15%, transparent);
+  --color-warning-fg: #ebcb8b;
+  --color-warning-border: color-mix(in srgb, #ebcb8b 30%, transparent);
+  --color-error-bg: color-mix(in srgb, #bf616a 15%, transparent);
+  --color-error-fg: #bf616a;
+  --color-error-border: color-mix(in srgb, #bf616a 30%, transparent);
+  --color-info-bg: color-mix(in srgb, #81a1c1 15%, transparent);
+  --color-info-fg: #81a1c1;
+  --color-info-border: color-mix(in srgb, #81a1c1 30%, transparent);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-status-success-bg: var(--color-success-bg);
+  --color-status-success-fg: var(--color-success-fg);
+  --color-status-success-border: var(--color-success-border);
+  --color-status-warning-bg: var(--color-warning-bg);
+  --color-status-warning-fg: var(--color-warning-fg);
+  --color-status-warning-border: var(--color-warning-border);
+  --color-status-error-bg: var(--color-error-bg);
+  --color-status-error-fg: var(--color-error-fg);
+  --color-status-error-border: var(--color-error-border);
+  --color-status-info-bg: var(--color-info-bg);
+  --color-status-info-fg: var(--color-info-fg);
+  --color-status-info-border: var(--color-info-border);
+  --color-role-admin-bg: var(--color-role-admin-bg);
+  --color-role-admin-fg: var(--color-role-admin-fg);
+  --color-role-user-bg: var(--color-role-user-bg);
+  --color-role-user-fg: var(--color-role-user-fg);
+  --color-online-dot: var(--color-online-dot);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+*,
+::after,
+::before,
+::backdrop,
+::file-selector-button {
+  border-color: var(--border);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}

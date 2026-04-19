@@ -1,0 +1,186 @@
+<!-- resources/js/components/BlockEditor/blocks/GallerySettings.vue -->
+<template>
+  <!-- Content fields -->
+  <div v-show="!tab || tab === 'content'" class="space-y-3">
+
+    <!-- Existing items -->
+    <div v-if="block.data.items?.length" class="grid grid-cols-3 gap-1">
+      <div
+        v-for="(item, i) in block.data.items"
+        :key="i"
+        class="relative group rounded overflow-hidden border aspect-square"
+      >
+        <img :src="item.url" :alt="item.alt" class="w-full h-full object-cover" />
+        <button
+          type="button"
+          class="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+          @click="removeItem(i)"
+        >&#x2715;</button>
+      </div>
+    </div>
+    <p v-else class="text-xs text-muted-foreground text-center py-2">No images yet</p>
+
+    <!-- Add-form -->
+    <div class="rounded-md border border-dashed p-2 space-y-2">
+
+      <!-- Mode toggle -->
+      <div class="flex gap-1 p-0.5 rounded-md bg-muted w-fit">
+        <button
+          type="button"
+          class="px-2.5 py-1 rounded text-xs font-medium transition-colors"
+          :class="addMode === 'library' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+          @click="addMode = 'library'"
+        >Library</button>
+        <button
+          type="button"
+          class="px-2.5 py-1 rounded text-xs font-medium transition-colors"
+          :class="addMode === 'url' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+          @click="addMode = 'url'"
+        >URL</button>
+      </div>
+
+      <!-- Library mode -->
+      <button
+        v-if="addMode === 'library'"
+        type="button"
+        class="w-full rounded-md px-3 py-2 text-xs text-muted-foreground hover:text-primary transition-colors text-left"
+        @click="showPicker = true"
+      >+ Add from library</button>
+
+      <!-- URL mode -->
+      <template v-else>
+        <input
+          v-model="urlInput"
+          type="text"
+          placeholder="https://example.com/image.jpg"
+          class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        />
+        <input
+          v-model="altInput"
+          type="text"
+          placeholder="Alt text (optional)"
+          class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        />
+        <button
+          type="button"
+          :disabled="!urlInput.trim()"
+          class="w-full rounded-md px-3 py-1.5 text-xs font-medium bg-primary text-primary-foreground disabled:opacity-40 transition-colors"
+          @click="addByUrl"
+        >Add image</button>
+      </template>
+
+    </div>
+
+    <MediaPicker v-model="showPicker" :dark="true" @select="onMediaSelect" />
+  </div>
+
+  <!-- Style fields -->
+  <div v-show="!tab || tab === 'style'" class="space-y-4">
+
+    <!-- Columns (responsive) -->
+    <div>
+      <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block mb-2">Columns</label>
+      <div class="grid grid-cols-3 gap-1">
+        <div v-for="bp in ['default', 'sm', 'lg']" :key="bp">
+          <span class="text-[10px] text-muted-foreground block mb-0.5 text-center">
+            {{ bp === 'default' ? 'Mobile' : bp === 'sm' ? 'SM' : 'LG' }}
+          </span>
+          <NumberInput size="sm"
+            :model-value="getColumns(bp)"
+            :min="1"
+            :max="6"
+            @update:model-value="v => setColumns(bp, v || null)"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Gap -->
+    <div>
+      <label class="text-xs font-medium text-muted-foreground block mb-1">Gap</label>
+      <DimensionInput
+        :model-value="block.data.gap ?? ''"
+        placeholder="0"
+        @update:model-value="v => emit('update', { id: block.id, data: { gap: v || null } })"
+      />
+    </div>
+
+    <!-- Image aspect ratio -->
+    <div>
+      <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wide block mb-2">Image aspect ratio</label>
+      <div class="flex gap-1 flex-wrap">
+        <button
+          v-for="ratio in ['auto', 'square', 'landscape', 'portrait']"
+          :key="ratio"
+          type="button"
+          class="px-2 py-1 text-xs rounded border transition-colors capitalize"
+          :class="(block.data.imageAspect ?? 'auto') === ratio
+            ? 'bg-primary text-primary-foreground border-primary'
+            : 'bg-background border-border'"
+          @click="emit('update', { id: block.id, data: { imageAspect: ratio } })"
+        >{{ ratio }}</button>
+      </div>
+    </div>
+
+    <!-- Border radius -->
+    <div>
+      <label class="text-xs font-medium text-muted-foreground block mb-1">Image radius</label>
+      <DimensionInput
+        :model-value="block.data.borderRadius ?? ''"
+        placeholder="0"
+        @update:model-value="v => emit('update', { id: block.id, data: { borderRadius: v || null } })"
+      />
+    </div>
+
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import MediaPicker    from '@/Components/MediaPicker.vue'
+import NumberInput    from '@/Components/NumberInput.vue'
+import DimensionInput from '../DimensionInput.vue'
+
+const props = defineProps({
+  block: { type: Object, required: true },
+  tab:   { type: String, default: null },
+})
+const emit = defineEmits(['update'])
+
+const showPicker = ref(false)
+const addMode    = ref('library')
+const urlInput   = ref('')
+const altInput   = ref('')
+
+function getColumns(bp) {
+  const val = props.block.data.columns
+  if (typeof val === 'object' && val !== null) return val[bp] ?? null
+  if (bp === 'default') return val
+  return null
+}
+
+function setColumns(bp, value) {
+  const current = props.block.data.columns
+  const base = (typeof current === 'object' && current !== null) ? { ...current } : { default: current }
+  emit('update', { id: props.block.id, data: { columns: { ...base, [bp]: value } } })
+}
+
+function onMediaSelect(media) {
+  showPicker.value = false
+  const items = [...(props.block.data.items ?? []), { media_id: media.id, url: media.url, alt: media.alt ?? '' }]
+  emit('update', { id: props.block.id, data: { items } })
+}
+
+function addByUrl() {
+  if (!urlInput.value.trim()) return
+  const items = [...(props.block.data.items ?? []), { media_id: null, url: urlInput.value.trim(), alt: altInput.value.trim() }]
+  emit('update', { id: props.block.id, data: { items } })
+  urlInput.value = ''
+  altInput.value = ''
+}
+
+function removeItem(index) {
+  const items = props.block.data.items.filter((_, i) => i !== index)
+  emit('update', { id: props.block.id, data: { items } })
+}
+</script>
