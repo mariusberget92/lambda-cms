@@ -33,13 +33,12 @@ onBeforeUnmount(() => {
 
     <!-- Admin bar — only visible when signed in -->
     <div v-if="authUser" data-theme="dark" class="bg-sidebar text-sidebar-foreground border-b border-sidebar-border">
-      <div class="max-w-5xl mx-auto px-6 h-9 flex items-center justify-between gap-4">
+      <div class="max-w-6xl mx-auto px-6 h-9 flex items-center justify-between gap-4">
         <!-- Left: Lambda logo + label -->
         <div class="flex items-center gap-2 shrink-0">
-          <div class="w-5 h-5 rounded bg-sidebar-primary flex items-center justify-center shrink-0">
-            <span class="text-sidebar-primary-foreground font-bold text-xs leading-none select-none">Λ</span>
+          <div class="w-10 h-10 rounded flex items-center justify-center shrink-0">
+            <img src="storage/assets/logo-light.png" />
           </div>
-          <span class="text-xs font-semibold text-sidebar-foreground/70 tracking-tight hidden sm:block">Lambda CMS</span>
         </div>
 
         <!-- Right: quick actions -->
