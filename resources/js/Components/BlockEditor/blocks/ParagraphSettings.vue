@@ -21,12 +21,14 @@
   <!-- Style fields -->
   <div v-show="!tab || tab === 'style'" class="space-y-4">
 
+    <IconSettings :block="block" @update="emit('update', $event)" />
+
+    <hr class="border-border" />
+
     <TypographyControl
       :model-value="block.data.typography ?? {}"
       @update:model-value="v => emit('update', { id: block.id, data: { typography: v } })"
     />
-
-    <IconSettings :block="block" @update="emit('update', $event)" />
 
   </div>
 </template>

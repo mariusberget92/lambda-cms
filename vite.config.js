@@ -16,6 +16,7 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': resolve(__dirname, 'resources/js'),
+            'storage': resolve(__dirname, 'storage/app/public/'),
         },
     },
 });

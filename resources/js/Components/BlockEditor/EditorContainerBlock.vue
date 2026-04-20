@@ -68,7 +68,7 @@
         <div
           v-else
           :id="child.customId || `block-${child.id}`"
-          class="group relative flex items-center gap-2 rounded-md border bg-background px-2 py-1.5 cursor-pointer text-xs transition-colors"
+          class="group relative flex items-center gap-2 rounded-md border bg-background px-2 py-2.5 cursor-pointer text-xs transition-colors"
           :class="[
             child.id === selectedId
               ? 'border-primary ring-1 ring-primary'

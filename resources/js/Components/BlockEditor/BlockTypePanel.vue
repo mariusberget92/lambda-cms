@@ -194,7 +194,7 @@ const DEFAULT_DATA = {
     url: '',
     target: '_self',
     rel: '',
-    icon: { name: '', position: 'left', size: 'md', color: 'inherit' },
+    icon: { name: null, position: 'prefix', size: '1.25em', color: null, gap: '0.5em' },
   },
   'filter-link': { paramName: 'category', label: '' },
   'template': { template_id: null },
