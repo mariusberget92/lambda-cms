@@ -37,7 +37,7 @@ onBeforeUnmount(() => {
         <!-- Left: Lambda logo + label -->
         <div class="flex items-center gap-2 shrink-0">
           <div class="w-10 h-10 rounded flex items-center justify-center shrink-0">
-            <img src="storage/assets/logo-light.png" />
+            <img :src="'/storage/assets/logo-light.png'" />
           </div>
         </div>
 
