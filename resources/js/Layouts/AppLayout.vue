@@ -170,6 +170,19 @@
           </template>
           Webhooks
         </SidebarLink>
+
+        <SidebarLink
+          v-if="user.role === 'administrator'"
+          :href="route('import-export.index')"
+          :active="currentRoute?.startsWith('import-export.')"
+        >
+          <template #icon>
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l-3-3m3 3l3-3"/>
+            </svg>
+          </template>
+          Import / Export
+        </SidebarLink>
         <div class="border-t border-sidebar-border my-3"></div>
         <a
           href="/"
