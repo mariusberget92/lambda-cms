@@ -56,6 +56,8 @@ import PaginationBlock        from '@/components/Blocks/PaginationBlock.vue'
 import PostListBlock          from '@/Components/Blocks/PostListBlock.vue'
 import TemplateBlock          from '@/Components/Blocks/TemplateBlock.vue'
 import TableBlock             from '@/Components/Blocks/TableBlock.vue'
+import AccordionBlock         from '@/Components/Blocks/AccordionBlock.vue'
+import TabsBlock              from '@/Components/Blocks/TabsBlock.vue'
 
 const props = defineProps({
   blocks:       { type: Array,  default: () => [] },
@@ -238,6 +240,8 @@ const BLOCK_MAP = {
   pagination:            PaginationBlock,
   'template':            TemplateBlock,
   table:                 TableBlock,
+  accordion:             AccordionBlock,
+  tabs:                  TabsBlock,
 }
 
 // Injected by LoopItemProvider when this renderer is inside a loop iteration
@@ -272,8 +276,13 @@ function loadFont(family) {
 function loadFontsFromBlocks(blocks) {
   for (const block of blocks) {
     if (block.fontFamily) loadFont(block.fontFamily)
-    if (['container', 'section', 'loop', 'archive-loop', 'link'].includes(block.type) && block.children?.length) {
+    const nestable = ['container', 'section', 'loop', 'archive-loop', 'link', 'accordion', 'tabs']
+    if (nestable.includes(block.type) && block.children?.length) {
       loadFontsFromBlocks(block.children)
+      // recurse into accordion-item / tab-item grandchildren
+      for (const child of block.children) {
+        if (child.children?.length) loadFontsFromBlocks(child.children)
+      }
     }
   }
 }

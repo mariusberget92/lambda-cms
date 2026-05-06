@@ -212,6 +212,8 @@ import EmbedBlock       from '@/components/Blocks/EmbedBlock.vue'
 import PaginationBlock  from '@/components/Blocks/PaginationBlock.vue'
 import NavigationBlock  from '@/components/Blocks/NavigationBlock.vue'
 import TableBlock       from '@/Components/Blocks/TableBlock.vue'
+import AccordionBlock  from '@/Components/Blocks/AccordionBlock.vue'
+import TabsBlock       from '@/Components/Blocks/TabsBlock.vue'
 import EditorNavigationBlock from './EditorNavigationBlock.vue'
 
 const BLOCK_MAP = {
@@ -229,6 +231,8 @@ const BLOCK_MAP = {
   pagination: PaginationBlock,
   navigation: EditorNavigationBlock,
   table:      TableBlock,
+  accordion:  AccordionBlock,
+  tabs:       TabsBlock,
 }
 
 const LABELS = {
