@@ -135,19 +135,19 @@
           <div>
             <label class="text-[10px] text-muted-foreground block mb-0.5">X (px)</label>
             <input type="number" :value="modelValue.textShadow?.x ?? 0"
-              class="w-full rounded border border-border bg-background px-2 py-1 text-xs"
+              class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               @input="updateShadow('x', Number($event.target.value))" />
           </div>
           <div>
             <label class="text-[10px] text-muted-foreground block mb-0.5">Y (px)</label>
             <input type="number" :value="modelValue.textShadow?.y ?? 0"
-              class="w-full rounded border border-border bg-background px-2 py-1 text-xs"
+              class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               @input="updateShadow('y', Number($event.target.value))" />
           </div>
           <div>
             <label class="text-[10px] text-muted-foreground block mb-0.5">Blur</label>
             <input type="number" :value="modelValue.textShadow?.blur ?? 0" min="0"
-              class="w-full rounded border border-border bg-background px-2 py-1 text-xs"
+              class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               @input="updateShadow('blur', Number($event.target.value))" />
           </div>
         </div>

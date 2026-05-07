@@ -12,15 +12,15 @@
     <template v-if="icon.name">
       <div>
         <label class="text-xs font-medium text-muted-foreground block mb-1">Position</label>
-        <div class="flex gap-1">
+        <div class="flex rounded-md border overflow-hidden text-xs">
           <button
             v-for="[val, label] in [['prefix', 'Prefix'], ['suffix', 'Suffix']]"
             :key="val"
             type="button"
-            class="flex-1 px-2 py-1 text-xs rounded border transition-colors"
+            class="flex-1 py-1.5 transition-colors"
             :class="(icon.position ?? 'prefix') === val
-              ? 'bg-primary text-primary-foreground border-primary'
-              : 'bg-background border-border hover:border-muted-foreground'"
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-background text-foreground'"
             @click="update('position', val)"
           >{{ label }}</button>
         </div>

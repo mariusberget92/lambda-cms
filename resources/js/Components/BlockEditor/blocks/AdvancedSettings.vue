@@ -6,7 +6,7 @@
       <label class="text-xs font-medium text-muted-foreground block mb-1">Block label</label>
       <input type="text" :value="block.blockName ?? ''" @input="update('blockName', $event.target.value)"
         placeholder="e.g. Hero heading"
-        class="w-full rounded-md border bg-background px-2 py-1.5 text-xs" />
+        class="w-full rounded-md border bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
       <p class="text-[10px] text-muted-foreground mt-1">Shown in the canvas and layers panel.</p>
     </div>
 
@@ -14,14 +14,14 @@
       <label class="text-xs font-medium text-muted-foreground block mb-1">Custom ID</label>
       <input type="text" :value="block.customId ?? ''" @input="update('customId', $event.target.value)"
         placeholder="my-section"
-        class="w-full rounded-md border bg-background px-2 py-1.5 text-xs font-mono" />
+        class="w-full rounded-md border bg-background px-2 py-1.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring" />
     </div>
 
     <div>
       <label class="text-xs font-medium text-muted-foreground block mb-1">Custom classes</label>
       <input type="text" :value="block.customClasses ?? ''" @input="update('customClasses', $event.target.value)"
         placeholder="my-class another-class"
-        class="w-full rounded-md border bg-background px-2 py-1.5 text-xs font-mono" />
+        class="w-full rounded-md border bg-background px-2 py-1.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring" />
     </div>
 
     <div>

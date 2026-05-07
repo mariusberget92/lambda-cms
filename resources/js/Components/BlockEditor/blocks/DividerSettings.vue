@@ -13,8 +13,8 @@
             type="button"
             class="rounded-md border px-2 py-3 text-center text-xs transition-colors"
             :class="block.data.style === opt.value
-              ? 'border-primary bg-primary/10 text-primary font-medium'
-              : 'hover:border-foreground/30 text-muted-foreground'"
+              ? 'border-primary bg-primary text-primary-foreground font-medium'
+              : 'border-border bg-background text-muted-foreground hover:border-muted-foreground'"
             @click="emit('update', { id: block.id, data: { style: opt.value } })"
           >
             <div class="mb-1">{{ opt.preview }}</div>

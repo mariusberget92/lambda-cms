@@ -63,20 +63,20 @@ function toggle(idx) {
 
 const wrapperClass = computed(() => {
   if (borderStyle.value === 'separated')  return 'space-y-2'
-  if (borderStyle.value === 'borderless') return 'divide-y divide-gray-200'
-  return 'border border-gray-200 rounded-lg divide-y divide-gray-200 overflow-hidden'
+  if (borderStyle.value === 'borderless') return 'divide-y divide-border'
+  return 'border border-border rounded-lg divide-y divide-border overflow-hidden'
 })
 
 function itemClass(idx) {
-  if (borderStyle.value === 'separated') return 'border border-gray-200 rounded-lg overflow-hidden'
+  if (borderStyle.value === 'separated') return 'border border-border rounded-lg overflow-hidden'
   return ''
 }
 
 function headerClass(idx) {
   return [
     'flex items-center justify-between gap-3 w-full px-4 py-3 text-left transition-colors',
-    'hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary',
-    isOpen(idx) ? 'bg-gray-50' : 'bg-white',
+    'hover:bg-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary',
+    isOpen(idx) ? 'bg-black/5' : '',
   ].join(' ')
 }
 </script>
