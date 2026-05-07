@@ -186,6 +186,12 @@ import EmbedSettings          from './blocks/EmbedSettings.vue'
 import PaginationSettings     from './blocks/PaginationSettings.vue'
 import NavigationSettings     from './blocks/NavigationSettings.vue'
 import TableSettings         from './blocks/TableSettings.vue'
+import ButtonSettings      from './blocks/ButtonSettings.vue'
+import AlertSettings       from './blocks/AlertSettings.vue'
+import CardSettings        from './blocks/CardSettings.vue'
+import TestimonialSettings from './blocks/TestimonialSettings.vue'
+import IconBoxSettings     from './blocks/IconBoxSettings.vue'
+import ProgressSettings    from './blocks/ProgressSettings.vue'
 
 const props = defineProps({
   blocks:        { type: Array,   default: () => [] },
@@ -239,6 +245,8 @@ const STYLE_BLOCKS = new Set([
   'filter-link', 'navigation', 'search',
   'post-title', 'post-meta', 'post-author', 'post-taxonomy',
   'archive-title',
+  // New blocks
+  'button', 'alert', 'card', 'testimonial', 'icon-box', 'progress',
 ])
 
 // Block types where Style should be the default active tab
@@ -268,6 +276,8 @@ const LABELS = {
   link: 'Link', 'filter-link': 'Filter Link', 'template': 'Template', accordion: 'Accordion', 'accordion-item': 'Accordion Item',
   tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
   navigation: 'Navigation', table: 'Table',
+  button: 'Button', alert: 'Alert', card: 'Card',
+  testimonial: 'Testimonial', 'icon-box': 'Icon Box', progress: 'Progress',
 }
 
 const COMPONENT_MAP = {
@@ -297,6 +307,12 @@ const COMPONENT_MAP = {
   pagination:            PaginationSettings,
   navigation:            NavigationSettings,
   table:                 TableSettings,
+  button:                ButtonSettings,
+  alert:                 AlertSettings,
+  card:                  CardSettings,
+  testimonial:           TestimonialSettings,
+  'icon-box':            IconBoxSettings,
+  progress:              ProgressSettings,
 }
 
 const settingsComponent = computed(() =>

@@ -214,6 +214,12 @@ import NavigationBlock  from '@/components/Blocks/NavigationBlock.vue'
 import TableBlock       from '@/Components/Blocks/TableBlock.vue'
 import AccordionBlock  from '@/Components/Blocks/AccordionBlock.vue'
 import TabsBlock       from '@/Components/Blocks/TabsBlock.vue'
+import ButtonBlock      from '@/Components/Blocks/ButtonBlock.vue'
+import AlertBlock       from '@/Components/Blocks/AlertBlock.vue'
+import CardBlock        from '@/Components/Blocks/CardBlock.vue'
+import TestimonialBlock from '@/Components/Blocks/TestimonialBlock.vue'
+import IconBoxBlock     from '@/Components/Blocks/IconBoxBlock.vue'
+import ProgressBlock    from '@/Components/Blocks/ProgressBlock.vue'
 import EditorNavigationBlock from './EditorNavigationBlock.vue'
 
 const BLOCK_MAP = {
@@ -231,8 +237,14 @@ const BLOCK_MAP = {
   pagination: PaginationBlock,
   navigation: EditorNavigationBlock,
   table:      TableBlock,
-  accordion:  AccordionBlock,
-  tabs:       TabsBlock,
+  accordion:   AccordionBlock,
+  tabs:        TabsBlock,
+  button:      ButtonBlock,
+  alert:       AlertBlock,
+  card:        CardBlock,
+  testimonial: TestimonialBlock,
+  'icon-box':  IconBoxBlock,
+  progress:    ProgressBlock,
 }
 
 const LABELS = {
@@ -243,6 +255,8 @@ const LABELS = {
   link: 'Link', accordion: 'Accordion', 'accordion-item': 'Acc. Item',
   tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
   navigation: 'Navigation', table: 'Table',
+  button: 'Button', alert: 'Alert', card: 'Card',
+  testimonial: 'Testimonial', 'icon-box': 'Icon Box', progress: 'Progress',
 }
 
 const props = defineProps({

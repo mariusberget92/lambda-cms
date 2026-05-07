@@ -4,15 +4,23 @@
     <template v-for="block in blocks" :key="block.id">
       <!-- Skip block if its visibility condition evaluates to false -->
       <template v-if="isVisible(block)">
-        <!-- Only use a <style> tag for complex CSS (selectors, @rules, etc.) -->
+        <!-- Complex customCss: needs a <style> tag for selectors / @rules -->
         <component
           v-if="block.customCss && isComplexCss(block.customCss)"
           :is="'style'"
-        >#{{ block.customId ? CSS.escape(block.customId) : 'lambda-be-' + block.id }} { {{ sanitizeCss(block.customCss) }} }</component>
+        >#{{ blockId(block) }} { {{ sanitizeCss(block.customCss) }} }</component>
+        <!-- Hover interaction CSS (background, text color, scale) -->
+        <component
+          v-if="hasHoverCss(block)"
+          :is="'style'"
+        >#{{ blockId(block) }}:hover { {{ blockHoverCss(block) }} }
+#{{ blockId(block) }} { transition: background-color 0.2s, color 0.2s, transform 0.2s; }</component>
         <div
           :id="block.customId || `lambda-be-${block.id}`"
           :class="blockItemClass(block) || undefined"
           :style="blockWrapperStyle(block)"
+          @mouseenter="onBlockMouseEnter(block)"
+          @animationend.self="onBlockAnimationEnd(block)"
         >
           <component
             :is="BLOCK_MAP[block.type]"
@@ -25,7 +33,7 @@
 </template>
 
 <script setup>
-import { inject, onMounted, watch } from 'vue'
+import { inject, onMounted, watch, reactive } from 'vue'
 import ParagraphBlock from '@/Components/Blocks/ParagraphBlock.vue'
 import HeadingBlock   from '@/Components/Blocks/HeadingBlock.vue'
 import ImageBlock     from '@/Components/Blocks/ImageBlock.vue'
@@ -58,6 +66,12 @@ import TemplateBlock          from '@/Components/Blocks/TemplateBlock.vue'
 import TableBlock             from '@/Components/Blocks/TableBlock.vue'
 import AccordionBlock         from '@/Components/Blocks/AccordionBlock.vue'
 import TabsBlock              from '@/Components/Blocks/TabsBlock.vue'
+import ButtonBlock       from '@/Components/Blocks/ButtonBlock.vue'
+import AlertBlock        from '@/Components/Blocks/AlertBlock.vue'
+import CardBlock         from '@/Components/Blocks/CardBlock.vue'
+import TestimonialBlock  from '@/Components/Blocks/TestimonialBlock.vue'
+import IconBoxBlock      from '@/Components/Blocks/IconBoxBlock.vue'
+import ProgressBlock     from '@/Components/Blocks/ProgressBlock.vue'
 
 const props = defineProps({
   blocks:       { type: Array,  default: () => [] },
@@ -203,11 +217,6 @@ function parseCssDeclarations(css) {
   return result
 }
 
-function blockItemClass(block) {
-  const parts = [block.customClasses, props.itemClass].filter(s => s && s.trim())
-  return parts.length ? parts.join(' ') : null
-}
-
 const BLOCK_MAP = {
   paragraph: ParagraphBlock,
   heading:   HeadingBlock,
@@ -242,7 +251,59 @@ const BLOCK_MAP = {
   table:                 TableBlock,
   accordion:             AccordionBlock,
   tabs:                  TabsBlock,
+  button:                ButtonBlock,
+  alert:                 AlertBlock,
+  card:                  CardBlock,
+  testimonial:           TestimonialBlock,
+  'icon-box':            IconBoxBlock,
+  progress:              ProgressBlock,
 }
+
+// ── Hover interactions (animate.css + hover color/scale) ─────────────────────
+
+const animatingBlocks = reactive({})
+
+function blockHoverCss(block) {
+  const i = block.interaction
+  if (!i) return null
+  const parts = []
+  if (i.hoverBgColor)  parts.push(`background-color: ${i.hoverBgColor} !important`)
+  if (i.hoverTextColor) parts.push(`color: ${i.hoverTextColor} !important`)
+  if (i.hoverScale)    parts.push(`transform: scale(${i.hoverScale}) !important`)
+  return parts.length ? parts.join('; ') : null
+}
+
+function hasHoverCss(block) {
+  return blockHoverCss(block) !== null
+}
+
+function blockId(block) {
+  return block.customId ? CSS.escape(block.customId) : 'lambda-be-' + block.id
+}
+
+function onBlockMouseEnter(block) {
+  if (block.interaction?.hoverAnimation) {
+    animatingBlocks[block.id] = false
+    requestAnimationFrame(() => { animatingBlocks[block.id] = true })
+  }
+}
+
+function onBlockAnimationEnd(block) {
+  animatingBlocks[block.id] = false
+}
+
+function blockItemClass(block) {
+  const parts = [block.customClasses, props.itemClass].filter(s => s && s.trim())
+  if (block.interaction?.hoverAnimation && animatingBlocks[block.id]) {
+    parts.push('animate__animated', `animate__${block.interaction.hoverAnimation}`)
+    if (block.interaction.hoverAnimationSpeed) {
+      parts.push(`animate__${block.interaction.hoverAnimationSpeed}`)
+    }
+  }
+  return parts.length ? parts.join(' ') : null
+}
+
+// ── Loop injection ────────────────────────────────────────────────────────────
 
 // Injected by LoopItemProvider when this renderer is inside a loop iteration
 const loopItem = inject('loopItem', null)

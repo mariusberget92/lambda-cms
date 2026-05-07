@@ -11,7 +11,8 @@ import ColorPicker    from '../ColorPicker.vue'
 import MediaPicker    from '@/Components/MediaPicker.vue'
 import DynamicField   from './DynamicField.vue'
 import EditorCheckbox from '../EditorCheckbox.vue'
-import SettingsSection from '../SettingsSection.vue'
+import SettingsSection     from '../SettingsSection.vue'
+import InteractionControl from '../InteractionControl.vue'
 
 const FONTS = [
   'Inter', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Poppins', 'Raleway', 'Nunito',
@@ -45,6 +46,11 @@ const hasEffects = computed(() => {
          !!d.cursor || !!d.overflow ||
          d.zIndex != null ||
          !!d.transitionDuration
+})
+
+const hasInteractions = computed(() => {
+  const i = props.block.interaction ?? {}
+  return !!(i.hoverAnimation || i.hoverBgColor || i.hoverTextColor || i.hoverScale)
 })
 
 // Display section
@@ -517,5 +523,13 @@ function onBgUrlUnbind(fieldName) {
         />
       </div>
     </div>
+  </SettingsSection>
+
+  <!-- Interactions (hover effects) -->
+  <SettingsSection label="Interactions" :default-open="hasInteractions">
+    <InteractionControl
+      :model-value="block.interaction ?? {}"
+      @update:model-value="v => update('interaction', v)"
+    />
   </SettingsSection>
 </template>
