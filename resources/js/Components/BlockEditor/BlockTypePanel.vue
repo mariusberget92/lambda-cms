@@ -1,12 +1,42 @@
 <!-- resources/js/Components/BlockEditor/BlockTypePanel.vue -->
 <template>
   <div class="w-48 shrink-0 border-r border-white/8 flex flex-col bg-sidebar">
+
+    <!-- Header -->
     <div class="px-3 py-2 border-b border-white/8 shrink-0 bg-black/20">
       <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Add Block</p>
     </div>
 
+    <!-- Search -->
+    <div class="px-2 py-2 border-b border-white/8 shrink-0">
+      <div class="relative">
+        <SearchIcon class="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-white/30 pointer-events-none" />
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Search blocks…"
+          class="w-full bg-black/20 border border-white/10 rounded-md pl-7 pr-6 py-1.5 text-xs text-white/80 placeholder:text-white/30 focus:outline-none focus:border-white/25 transition-colors"
+        />
+        <button
+          v-if="searchQuery"
+          type="button"
+          class="absolute right-1.5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+          @click="searchQuery = ''"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Block list -->
     <div class="flex-1 overflow-y-auto scrollbar-hidden">
-      <template v-for="group in visibleGroups" :key="group.name">
+
+      <!-- Empty search state -->
+      <div v-if="searchQuery && displayGroups.length === 0" class="px-3 py-8 text-center">
+        <p class="text-[11px] text-white/30">No blocks match<br><span class="text-white/50">"{{ searchQuery }}"</span></p>
+      </div>
+
+      <template v-else v-for="group in displayGroups" :key="group.name">
         <div class="px-3 pt-3 pb-1 flex items-center">
           <span class="inline-flex bg-white/5 rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-white/40">
             {{ group.name }}
@@ -24,9 +54,11 @@
           <div
             v-for="btype in group.types"
             :key="btype.type"
-            class="flex flex-col items-center justify-center gap-1.5 rounded-lg border bg-white/5 border-white/10 px-1 py-4 cursor-grab active:cursor-grabbing hover:bg-white/10 hover:border-white/20 active:border-primary/60 active:bg-primary/10 transition-colors select-none"
+            class="relative flex flex-col items-center justify-center gap-1.5 rounded-lg border bg-white/5 border-white/10 px-1 py-4 cursor-grab active:cursor-grabbing hover:bg-white/10 hover:border-white/20 active:border-primary/60 active:bg-primary/10 transition-colors select-none"
+            :title="`${btype.label} — drag to position or click to append`"
+            @click="onAdd(btype)"
           >
-            <component :is="btype.icon" class="w-5 h-5 shrink-0" :class="GROUP_COLORS[btype.group]" />
+            <component :is="btype.icon" class="w-5 h-5 shrink-0" :class="GROUP_COLORS[btype.group] ?? 'text-white/50'" />
             <span class="text-[11px] leading-none text-center text-muted-foreground">{{ btype.label }}</span>
           </div>
         </VueDraggable>
@@ -36,7 +68,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
 import {
   AlignLeft,
@@ -60,7 +92,7 @@ import {
   MessageCircle,
   FolderOpen,
   List,
-  Search,
+  Search as SearchIcon,
   Link,
   ChevronDown,
   Layers,
@@ -81,6 +113,25 @@ import {
 const props = defineProps({
   isAdmin: { type: Boolean, default: false },
 })
+const emit = defineEmits(['add'])
+
+// ── Search ────────────────────────────────────────────────────────────────────
+const searchQuery = ref('')
+
+// ── Recently used (persisted in localStorage) ─────────────────────────────────
+const RECENT_KEY = 'lambda-cms-recent-blocks'
+const MAX_RECENT = 6
+const recentTypeKeys = ref([])
+
+onMounted(() => {
+  try { recentTypeKeys.value = JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]') } catch { /* ignore */ }
+})
+
+function trackRecentType(type) {
+  const updated = [type, ...recentTypeKeys.value.filter(t => t !== type)].slice(0, MAX_RECENT)
+  recentTypeKeys.value = updated
+  try { localStorage.setItem(RECENT_KEY, JSON.stringify(updated)) } catch { /* ignore */ }
+}
 
 const ALL_TYPES = [
   // ── Content ──────────────────────────────────────────────────────────────
@@ -138,18 +189,39 @@ const GROUP_COLORS = {
   'Developer':   'text-[var(--chart-4)]',
   'Post':        'text-[var(--chart-5)]',
   'Archive':     'text-[var(--chart-1)]',
+  'Recent':      'text-white/50',
+  'Results':     'text-white/50',
 }
 
 const GROUP_ORDER = ['Content', 'Layout', 'Interactive', 'Developer', 'Post', 'Archive']
 
+const allowedTypes = computed(() =>
+  ALL_TYPES.filter(t => (!t.adminOnly || props.isAdmin) && !t.hiddenFromPalette)
+)
+
 const visibleGroups = computed(() => {
-  const visible = ALL_TYPES.filter(t =>
-    (!t.adminOnly || props.isAdmin) &&
-    !t.hiddenFromPalette
-  )
   return GROUP_ORDER
-    .map(name => ({ name, types: visible.filter(t => t.group === name) }))
+    .map(name => ({ name, types: allowedTypes.value.filter(t => t.group === name) }))
     .filter(g => g.types.length > 0)
+})
+
+// Groups shown in the panel — filtered by search, prepended with recent when idle
+const displayGroups = computed(() => {
+  const q = searchQuery.value.toLowerCase().trim()
+
+  if (q) {
+    const matches = allowedTypes.value.filter(t => t.label.toLowerCase().includes(q))
+    return matches.length ? [{ name: 'Results', types: matches }] : []
+  }
+
+  const recent = recentTypeKeys.value
+    .map(key => allowedTypes.value.find(t => t.type === key))
+    .filter(Boolean)
+
+  return [
+    ...(recent.length ? [{ name: 'Recent', types: recent }] : []),
+    ...visibleGroups.value,
+  ]
 })
 
 const DEFAULT_DATA = {
@@ -313,6 +385,7 @@ const DEFAULT_DATA = {
 }
 
 function cloneBlock(typeDef) {
+  trackRecentType(typeDef.type)
   const makeId = () => typeof crypto !== 'undefined' && crypto.randomUUID
     ? crypto.randomUUID()
     : Math.random().toString(36).slice(2) + Date.now().toString(36)
@@ -354,5 +427,9 @@ function cloneBlock(typeDef) {
   }
 
   return block
+}
+
+function onAdd(typeDef) {
+  emit('add', cloneBlock(typeDef))
 }
 </script>

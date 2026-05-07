@@ -28,6 +28,21 @@
         <GripVertical class="w-3 h-3" />
       </span>
 
+      <!-- Collapse toggle for container-capable blocks -->
+      <button
+        v-if="CHILD_CAPABLE.has(block.type)"
+        type="button"
+        class="shrink-0 transition-colors"
+        :class="block.id === selectedId ? 'text-primary-foreground/60 hover:text-primary-foreground' : 'text-muted-foreground hover:text-foreground'"
+        :title="collapsed ? 'Expand' : 'Collapse'"
+        @click.stop="collapsed = !collapsed"
+      >
+        <ChevronRight
+          class="w-3 h-3 transition-transform duration-150"
+          :class="{ 'rotate-90': !collapsed }"
+        />
+      </button>
+
       <template v-if="editingId === block.id">
         <input
           :id="`rename-${block.id}`"
@@ -47,6 +62,12 @@
           @dblclick.stop="startRename(block)"
         >{{ block.blockName || LABELS[block.type] || block.type }}</span>
       </template>
+
+      <!-- Child count badge (shown when collapsed, hidden on hover to make room for actions) -->
+      <span
+        v-if="CHILD_CAPABLE.has(block.type) && collapsed && localChildren.length > 0"
+        class="shrink-0 group-hover:hidden text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-white/10 text-white/40"
+      >{{ localChildren.length }}</span>
 
       <!-- Duplicate -->
       <button
@@ -99,7 +120,7 @@
 
          Uses handle=".layer-child-handle" (different from the outer VueDraggable's
          ".layer-handle") so the two Sortable instances never both fire on the same event. -->
-    <div v-if="CHILD_CAPABLE.has(block.type)" class="pl-4 mt-0.5">
+    <div v-if="CHILD_CAPABLE.has(block.type)" v-show="!collapsed" class="pl-4 mt-0.5">
       <VueDraggable
         v-model="localChildren"
         tag="div"
@@ -138,7 +159,7 @@
 <script setup>
 import { ref, watch, computed, nextTick } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
-import { GripVertical, X, CopyPlus, Copy, Clipboard } from 'lucide-vue-next'
+import { GripVertical, X, CopyPlus, Copy, Clipboard, ChevronRight } from 'lucide-vue-next'
 
 defineOptions({ name: 'LayerItem' })
 
@@ -175,6 +196,9 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['select', 'remove', 'duplicate', 'copy', 'paste', 'update-children', 'update'])
+
+// ── Collapse state for container blocks ──────────────────────────────────────
+const collapsed = ref(false)
 
 // ── Inline rename ─────────────────────────────────────────────────────────────
 const editingId = ref(null)

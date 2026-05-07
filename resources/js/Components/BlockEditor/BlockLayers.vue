@@ -1,6 +1,6 @@
 <!-- resources/js/Components/BlockEditor/BlockLayers.vue -->
 <template>
-  <div class="w-80 shrink-0 border-l flex flex-col bg-sidebar overflow-hidden">
+  <div class="w-80 shrink-0 border-l flex flex-col bg-sidebar overflow-hidden" @click.self="showShortcuts = false">
 
     <!-- Layers list -->
     <div class="flex flex-col shrink-0" style="max-height: 40%">
@@ -25,6 +25,31 @@
           >
             <RotateCw class="w-3.5 h-3.5" />
           </button>
+
+          <!-- Keyboard shortcut cheatsheet -->
+          <div class="relative">
+            <button
+              type="button"
+              class="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              title="Keyboard shortcuts"
+              @click="showShortcuts = !showShortcuts"
+            >
+              <Keyboard class="w-3.5 h-3.5" />
+            </button>
+            <Transition name="shortcuts-fade">
+              <div
+                v-if="showShortcuts"
+                class="absolute right-0 top-full mt-1.5 z-50 w-64 rounded-lg border border-white/10 bg-sidebar shadow-xl p-3 space-y-1"
+                @click.outside="showShortcuts = false"
+              >
+                <p class="text-[10px] font-semibold uppercase tracking-widest text-white/40 pb-1 mb-1 border-b border-white/8">Keyboard shortcuts</p>
+                <div v-for="s in SHORTCUTS" :key="s.key" class="flex items-center justify-between gap-3">
+                  <span class="text-xs text-white/60">{{ s.label }}</span>
+                  <kbd class="text-[10px] font-mono bg-white/8 border border-white/15 rounded px-1.5 py-0.5 text-white/50 whitespace-nowrap">{{ s.key }}</kbd>
+                </div>
+              </div>
+            </Transition>
+          </div>
         </div>
       </div>
 
@@ -146,7 +171,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { RotateCcw, RotateCw } from 'lucide-vue-next'
+import { RotateCcw, RotateCw, Keyboard } from 'lucide-vue-next'
 import { VueDraggable } from 'vue-draggable-plus'
 import LayerItem from './LayerItem.vue'
 import AdvancedSettings  from './blocks/AdvancedSettings.vue'
@@ -207,6 +232,21 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['select', 'remove', 'update', 'reorder', 'update-children', 'duplicate', 'copy', 'paste', 'undo', 'redo'])
+
+const showShortcuts = ref(false)
+
+const SHORTCUTS = [
+  { key: 'Click block',   label: 'Select block' },
+  { key: 'Escape',        label: 'Deselect' },
+  { key: 'Delete',        label: 'Remove selected' },
+  { key: 'Ctrl + D',      label: 'Duplicate' },
+  { key: 'Ctrl + C',      label: 'Copy block' },
+  { key: 'Ctrl + V',      label: 'Paste block' },
+  { key: 'Ctrl + Z',      label: 'Undo' },
+  { key: 'Ctrl + Y',      label: 'Redo' },
+  { key: 'Dbl-click name', label: 'Rename block' },
+  { key: 'Click palette',  label: 'Append block' },
+]
 
 // ── Drag-to-reorder ───────────────────────────────────────────────────────────
 // _list is kept in sync with props.blocks via a flush:'sync' watcher so it is
@@ -323,3 +363,8 @@ function blockLabel(type) {
   return LABELS[type] ?? type
 }
 </script>
+
+<style scoped>
+.shortcuts-fade-enter-active, .shortcuts-fade-leave-active { transition: opacity 0.15s, transform 0.15s; }
+.shortcuts-fade-enter-from, .shortcuts-fade-leave-to { opacity: 0; transform: translateY(-4px); }
+</style>

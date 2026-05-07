@@ -9,7 +9,7 @@
     :style="fullscreen ? {} : { minHeight: '500px', maxHeight: 'calc(100vh - 220px)' }"
   >
     <!-- Left: block type palette -->
-    <BlockTypePanel :is-admin="isAdmin" />
+    <BlockTypePanel :is-admin="isAdmin" @add="addBlock" />
 
     <!-- Centre: canvas drop zone + reorder -->
     <BlockCanvas
@@ -421,6 +421,27 @@ function duplicateBlock(id) {
   emit('update:modelValue', localBlocks.value)
 }
 
+// ── Add from palette (click-to-add) ──────────────────────────────────────────
+
+function addBlock(block) {
+  const sel = selectedBlockId.value
+    ? findBlock(localBlocks.value, selectedBlockId.value)
+    : null
+
+  if (sel && CHILD_CAPABLE.has(sel.type)) {
+    localBlocks.value = appendChildInList(localBlocks.value, sel.id, block)
+  } else if (sel) {
+    const result = insertAfterInList(localBlocks.value, sel.id, block)
+    localBlocks.value = result !== localBlocks.value ? result : [...localBlocks.value, block]
+  } else {
+    localBlocks.value = [...localBlocks.value, block]
+  }
+
+  selectedBlockId.value = block.id
+  pushHistory()
+  emit('update:modelValue', localBlocks.value)
+}
+
 // ── Copy / Paste ──────────────────────────────────────────────────────────────
 
 function copyBlock(id) {
@@ -481,6 +502,13 @@ function onKeydown(e) {
   } else if (ctrl && e.key === 'v') {
     e.preventDefault()
     pasteBlock()
+  } else if (e.key === 'Delete' || e.key === 'Backspace') {
+    if (selectedBlockId.value && !ctrl) {
+      e.preventDefault()
+      removeBlock(selectedBlockId.value)
+    }
+  } else if (e.key === 'Escape') {
+    selectedBlockId.value = null
   }
 }
 
