@@ -24,21 +24,39 @@
         <span v-else class="text-white/25 italic text-xs">No block selected</span>
       </div>
 
-      <!-- Live preview toggle -->
-      <button
-        type="button"
-        class="flex items-center gap-1.5 text-xs px-2 py-1 rounded-md border transition-colors"
-        :class="previewMode
-          ? 'bg-primary/20 border-primary/40 text-primary'
-          : 'bg-white/8 border-white/12 text-white/60 hover:text-white/80 hover:bg-white/12'"
-        @click="previewMode = !previewMode"
-      >
-        <Eye class="w-3.5 h-3.5" />
-        <span>Preview</span>
-      </button>
+      <div class="flex items-center gap-2">
+        <!-- Device width picker -->
+        <div class="flex items-center gap-0.5 border border-white/10 rounded-md p-0.5">
+          <button
+            v-for="d in DEVICES"
+            :key="d.key"
+            type="button"
+            class="p-1 rounded transition-colors"
+            :class="deviceWidth === d.key ? 'bg-white/15 text-white/80' : 'text-white/30 hover:text-white/60'"
+            :title="d.label"
+            @click="deviceWidth = d.key"
+          >
+            <component :is="d.icon" class="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        <!-- Live preview toggle -->
+        <button
+          type="button"
+          class="flex items-center gap-1.5 text-xs px-2 py-1 rounded-md border transition-colors"
+          :class="previewMode
+            ? 'bg-primary/20 border-primary/40 text-primary'
+            : 'bg-white/8 border-white/12 text-white/60 hover:text-white/80 hover:bg-white/12'"
+          @click="previewMode = !previewMode"
+        >
+          <Eye class="w-3.5 h-3.5" />
+          <span>Preview</span>
+        </button>
+      </div>
     </div>
 
-    <div class="relative flex-1 overflow-y-auto scrollbar-hidden">
+    <div class="relative flex-1 overflow-y-auto scrollbar-hidden" :class="deviceWidth !== 'desktop' ? 'bg-black/20' : ''">
+      <div :style="deviceContainerStyle" :class="deviceWidth !== 'desktop' ? 'min-h-full shadow-2xl' : ''">
 
       <!-- Live preview mode — reset to light theme so blocks render with :root CSS vars -->
       <div v-if="previewMode" data-theme="light" class="p-6 bg-white min-h-full">
@@ -182,6 +200,7 @@
           </div>
         </VueDraggable>
       </template>
+      </div>
     </div>
   </div>
 </template>
@@ -189,7 +208,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { VueDraggable }  from 'vue-draggable-plus'
-import { GripVertical, Eye, ChevronRight, LayoutTemplate } from 'lucide-vue-next'
+import { GripVertical, Eye, ChevronRight, LayoutTemplate, Smartphone, Tablet, Monitor } from 'lucide-vue-next'
 import EditorContainerBlock from './EditorContainerBlock.vue'
 import EditorSectionBlock   from './EditorSectionBlock.vue'
 import EditorLoopBlock      from './EditorLoopBlock.vue'
@@ -220,6 +239,9 @@ import CardBlock        from '@/Components/Blocks/CardBlock.vue'
 import TestimonialBlock from '@/Components/Blocks/TestimonialBlock.vue'
 import IconBoxBlock     from '@/Components/Blocks/IconBoxBlock.vue'
 import ProgressBlock    from '@/Components/Blocks/ProgressBlock.vue'
+import SliderBlock      from '@/Components/Blocks/SliderBlock.vue'
+import CounterBlock     from '@/Components/Blocks/CounterBlock.vue'
+import PricingBlock     from '@/Components/Blocks/PricingBlock.vue'
 import EditorNavigationBlock from './EditorNavigationBlock.vue'
 
 const BLOCK_MAP = {
@@ -245,6 +267,9 @@ const BLOCK_MAP = {
   testimonial: TestimonialBlock,
   'icon-box':  IconBoxBlock,
   progress:    ProgressBlock,
+  slider:      SliderBlock,
+  counter:     CounterBlock,
+  pricing:     PricingBlock,
 }
 
 const LABELS = {
@@ -257,6 +282,7 @@ const LABELS = {
   navigation: 'Navigation', table: 'Table',
   button: 'Button', alert: 'Alert', card: 'Card',
   testimonial: 'Testimonial', 'icon-box': 'Icon Box', progress: 'Progress',
+  slider: 'Slider', counter: 'Counter', pricing: 'Pricing',
 }
 
 const props = defineProps({
@@ -296,12 +322,28 @@ function isEmptyBlock(block) {
     case 'cta':       return !d.headline && !d.text
     case 'html':      return !d.content
     case 'embed':     return !d.url
+    case 'slider':    return !(d.slides?.length)
+    case 'counter':   return !(d.stats?.length)
+    case 'pricing':   return !d.name
     default:          return false
   }
 }
 
 // Live preview toggle
 const previewMode = ref(false)
+
+// Responsive preview device
+const deviceWidth = ref('desktop')
+const DEVICES = [
+  { key: 'mobile',  label: 'Mobile (375px)',  width: 375,  icon: Smartphone },
+  { key: 'tablet',  label: 'Tablet (768px)',  width: 768,  icon: Tablet },
+  { key: 'desktop', label: 'Desktop (full)',  width: null, icon: Monitor },
+]
+const deviceContainerStyle = computed(() => {
+  const d = DEVICES.find(d => d.key === deviceWidth.value)
+  if (!d?.width) return {}
+  return { maxWidth: `${d.width}px`, margin: '0 auto' }
+})
 
 // Breadcrumb: find the path from root to selectedId
 function findPath(blocks, targetId, path = []) {

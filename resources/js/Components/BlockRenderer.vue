@@ -72,6 +72,9 @@ import CardBlock         from '@/Components/Blocks/CardBlock.vue'
 import TestimonialBlock  from '@/Components/Blocks/TestimonialBlock.vue'
 import IconBoxBlock      from '@/Components/Blocks/IconBoxBlock.vue'
 import ProgressBlock     from '@/Components/Blocks/ProgressBlock.vue'
+import SliderBlock       from '@/Components/Blocks/SliderBlock.vue'
+import CounterBlock      from '@/Components/Blocks/CounterBlock.vue'
+import PricingBlock      from '@/Components/Blocks/PricingBlock.vue'
 
 const props = defineProps({
   blocks:       { type: Array,  default: () => [] },
@@ -257,6 +260,9 @@ const BLOCK_MAP = {
   testimonial:           TestimonialBlock,
   'icon-box':            IconBoxBlock,
   progress:              ProgressBlock,
+  slider:                SliderBlock,
+  counter:               CounterBlock,
+  pricing:               PricingBlock,
 }
 
 // ── Hover interactions (animate.css + hover color/scale) ─────────────────────

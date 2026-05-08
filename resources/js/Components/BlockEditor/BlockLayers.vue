@@ -217,6 +217,9 @@ import CardSettings        from './blocks/CardSettings.vue'
 import TestimonialSettings from './blocks/TestimonialSettings.vue'
 import IconBoxSettings     from './blocks/IconBoxSettings.vue'
 import ProgressSettings    from './blocks/ProgressSettings.vue'
+import SliderSettings      from './blocks/SliderSettings.vue'
+import CounterSettings     from './blocks/CounterSettings.vue'
+import PricingSettings     from './blocks/PricingSettings.vue'
 
 const props = defineProps({
   blocks:        { type: Array,   default: () => [] },
@@ -287,6 +290,7 @@ const STYLE_BLOCKS = new Set([
   'archive-title',
   // New blocks
   'button', 'alert', 'card', 'testimonial', 'icon-box', 'progress',
+  'slider', 'counter', 'pricing',
 ])
 
 // Block types where Style should be the default active tab
@@ -318,6 +322,7 @@ const LABELS = {
   navigation: 'Navigation', table: 'Table',
   button: 'Button', alert: 'Alert', card: 'Card',
   testimonial: 'Testimonial', 'icon-box': 'Icon Box', progress: 'Progress',
+  slider: 'Slider', counter: 'Counter', pricing: 'Pricing',
 }
 
 const COMPONENT_MAP = {
@@ -353,6 +358,9 @@ const COMPONENT_MAP = {
   testimonial:           TestimonialSettings,
   'icon-box':            IconBoxSettings,
   progress:              ProgressSettings,
+  slider:                SliderSettings,
+  counter:               CounterSettings,
+  pricing:               PricingSettings,
 }
 
 const settingsComponent = computed(() =>

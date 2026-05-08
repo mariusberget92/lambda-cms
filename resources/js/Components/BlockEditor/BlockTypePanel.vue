@@ -108,6 +108,9 @@ import {
   MessageSquare,
   Star,
   Gauge,
+  GalleryHorizontal,
+  TrendingUp,
+  BadgeDollarSign,
 } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -153,6 +156,9 @@ const ALL_TYPES = [
   { type: 'testimonial',    label: 'Testimonial',  icon: MessageSquare,        group: 'Content' },
   { type: 'icon-box',       label: 'Icon Box',     icon: Star,                 group: 'Content' },
   { type: 'progress',       label: 'Progress',     icon: Gauge,                group: 'Content' },
+  { type: 'slider',         label: 'Slider',       icon: GalleryHorizontal,    group: 'Content' },
+  { type: 'counter',        label: 'Counter',      icon: TrendingUp,           group: 'Content' },
+  { type: 'pricing',        label: 'Pricing',      icon: BadgeDollarSign,      group: 'Content' },
   // ── Layout ───────────────────────────────────────────────────────────────
   { type: 'container', label: 'Container', icon: LayoutTemplate,    group: 'Layout' },
   { type: 'section',   label: 'Section',   icon: Rows2,             group: 'Layout' },
@@ -335,6 +341,43 @@ const DEFAULT_DATA = {
     showValue: true,
     animated: true,
     striped: false,
+  },
+  slider: {
+    slides: [],
+    height: '320px',
+    showArrows: true,
+    showDots: true,
+    autoplay: false,
+    autoplayDelay: 4,
+    overlay: false,
+    overlayColor: 'rgba(0,0,0,0.4)',
+  },
+  counter: {
+    stats: [
+      { value: 500, label: 'Happy clients', prefix: '', suffix: '+', color: '' },
+      { value: 10,  label: 'Years experience', prefix: '', suffix: '+', color: '' },
+      { value: 99,  label: 'Satisfaction rate', prefix: '', suffix: '%', color: '' },
+    ],
+    alignment: 'center',
+  },
+  pricing: {
+    name: 'Starter',
+    eyebrow: '',
+    description: 'Everything you need to get started.',
+    currency: '$',
+    price: '9',
+    period: 'month',
+    features: [
+      { text: '5 projects', included: true },
+      { text: '10 GB storage', included: true },
+      { text: 'Email support', included: true },
+      { text: 'API access', included: false },
+    ],
+    featured: false,
+    badge: '',
+    accentColor: '',
+    bgColor: '',
+    button: { text: 'Get started', href: '', variant: 'solid' },
   },
   accordion: {
     defaultState: 'first-open',

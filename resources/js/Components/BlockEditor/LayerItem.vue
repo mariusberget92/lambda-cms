@@ -183,6 +183,7 @@ const LABELS = {
   link: 'Link', accordion: 'Accordion', 'accordion-item': 'Accordion Item',
   tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
   navigation: 'Navigation',
+  slider: 'Slider', counter: 'Counter', pricing: 'Pricing',
 }
 
 const props = defineProps({
