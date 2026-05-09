@@ -111,6 +111,7 @@ import {
   GalleryHorizontal,
   TrendingUp,
   BadgeDollarSign,
+  ClipboardList,
 } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -159,6 +160,7 @@ const ALL_TYPES = [
   { type: 'slider',         label: 'Slider',       icon: GalleryHorizontal,    group: 'Content' },
   { type: 'counter',        label: 'Counter',      icon: TrendingUp,           group: 'Content' },
   { type: 'pricing',        label: 'Pricing',      icon: BadgeDollarSign,      group: 'Content' },
+  { type: 'form',           label: 'Form',         icon: ClipboardList,        group: 'Interactive' },
   // ── Layout ───────────────────────────────────────────────────────────────
   { type: 'container', label: 'Container', icon: LayoutTemplate,    group: 'Layout' },
   { type: 'section',   label: 'Section',   icon: Rows2,             group: 'Layout' },
@@ -359,6 +361,10 @@ const DEFAULT_DATA = {
       { value: 99,  label: 'Satisfaction rate', prefix: '', suffix: '%', color: '' },
     ],
     alignment: 'center',
+  },
+  form: {
+    form_id:     null,
+    submitLabel: 'Submit',
   },
   pricing: {
     name: 'Starter',

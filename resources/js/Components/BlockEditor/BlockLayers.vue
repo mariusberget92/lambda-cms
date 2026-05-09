@@ -220,6 +220,7 @@ import ProgressSettings    from './blocks/ProgressSettings.vue'
 import SliderSettings      from './blocks/SliderSettings.vue'
 import CounterSettings     from './blocks/CounterSettings.vue'
 import PricingSettings     from './blocks/PricingSettings.vue'
+import FormSettings        from './blocks/FormSettings.vue'
 
 const props = defineProps({
   blocks:        { type: Array,   default: () => [] },
@@ -322,7 +323,7 @@ const LABELS = {
   navigation: 'Navigation', table: 'Table',
   button: 'Button', alert: 'Alert', card: 'Card',
   testimonial: 'Testimonial', 'icon-box': 'Icon Box', progress: 'Progress',
-  slider: 'Slider', counter: 'Counter', pricing: 'Pricing',
+  slider: 'Slider', counter: 'Counter', pricing: 'Pricing', form: 'Form',
 }
 
 const COMPONENT_MAP = {
@@ -361,6 +362,7 @@ const COMPONENT_MAP = {
   slider:                SliderSettings,
   counter:               CounterSettings,
   pricing:               PricingSettings,
+  form:                  FormSettings,
 }
 
 const settingsComponent = computed(() =>

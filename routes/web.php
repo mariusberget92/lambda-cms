@@ -29,6 +29,8 @@ use App\Http\Controllers\PreviewController;
 use App\Http\Controllers\NavigationController;
 use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\ImportExportController;
+use App\Http\Controllers\FormController;
+use App\Http\Controllers\FormSubmissionController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -178,12 +180,20 @@ Route::middleware('installed')->group(function () {
         Route::post('/export',        [ImportExportController::class, 'export'])->name('import-export.export');
         Route::post('/import',        [ImportExportController::class, 'import'])->name('import-export.import');
 
+        Route::resource('forms', FormController::class)->except(['show']);
+        Route::get('/forms/{form}/submissions', [FormSubmissionController::class, 'index'])->name('forms.submissions');
+        Route::delete('/forms/{form}/submissions/{submission}', [FormSubmissionController::class, 'destroy'])->name('forms.submissions.destroy');
+
     });
     Route::get('/search', [SearchController::class, 'index'])->name('search');
 
+    Route::get('/api/forms', [FormSubmissionController::class, 'apiList'])->name('forms.api.list');
+    Route::get('/api/forms/{form}', [FormSubmissionController::class, 'apiShow'])->name('forms.api.show');
+    Route::post('/forms/{form}/submit', [FormSubmissionController::class, 'submit'])->name('forms.submit')->middleware('throttle:10,1');
+
     // ── Public custom pages (catch-all — must be last inside this group) ─────
     Route::get('/{slug}', [PublicPageController::class, 'show'])
-        ->where('slug', '^(?!login|logout|dashboard|blog|feed|sitemap\.xml|posts|categories|tags|users|profile|settings|media|comments|pages|templates|calendar|password|register|verify|install|email|forgot-password|reset-password|search|import-export|export|import).*$')
+        ->where('slug', '^(?!login|logout|dashboard|blog|feed|sitemap\.xml|posts|categories|tags|users|profile|settings|media|comments|pages|templates|calendar|password|register|verify|install|email|forgot-password|reset-password|search|import-export|export|import|forms|api).*$')
         ->name('pages.show');
 
 });

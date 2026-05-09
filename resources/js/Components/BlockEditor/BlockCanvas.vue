@@ -242,6 +242,7 @@ import ProgressBlock    from '@/Components/Blocks/ProgressBlock.vue'
 import SliderBlock      from '@/Components/Blocks/SliderBlock.vue'
 import CounterBlock     from '@/Components/Blocks/CounterBlock.vue'
 import PricingBlock     from '@/Components/Blocks/PricingBlock.vue'
+import FormBlock        from '@/Components/Blocks/FormBlock.vue'
 import EditorNavigationBlock from './EditorNavigationBlock.vue'
 
 const BLOCK_MAP = {
@@ -270,6 +271,7 @@ const BLOCK_MAP = {
   slider:      SliderBlock,
   counter:     CounterBlock,
   pricing:     PricingBlock,
+  form:        FormBlock,
 }
 
 const LABELS = {
@@ -282,7 +284,7 @@ const LABELS = {
   navigation: 'Navigation', table: 'Table',
   button: 'Button', alert: 'Alert', card: 'Card',
   testimonial: 'Testimonial', 'icon-box': 'Icon Box', progress: 'Progress',
-  slider: 'Slider', counter: 'Counter', pricing: 'Pricing',
+  slider: 'Slider', counter: 'Counter', pricing: 'Pricing', form: 'Form',
 }
 
 const props = defineProps({

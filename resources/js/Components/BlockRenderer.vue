@@ -75,6 +75,7 @@ import ProgressBlock     from '@/Components/Blocks/ProgressBlock.vue'
 import SliderBlock       from '@/Components/Blocks/SliderBlock.vue'
 import CounterBlock      from '@/Components/Blocks/CounterBlock.vue'
 import PricingBlock      from '@/Components/Blocks/PricingBlock.vue'
+import FormBlock         from '@/Components/Blocks/FormBlock.vue'
 
 const props = defineProps({
   blocks:       { type: Array,  default: () => [] },
@@ -263,6 +264,7 @@ const BLOCK_MAP = {
   slider:                SliderBlock,
   counter:               CounterBlock,
   pricing:               PricingBlock,
+  form:                  FormBlock,
 }
 
 // ── Hover interactions (animate.css + hover color/scale) ─────────────────────
