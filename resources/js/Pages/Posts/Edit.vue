@@ -119,13 +119,15 @@
             </div>
 
             <!-- Datetime picker — only when Scheduled -->
-            <div v-show="form.status === 'scheduled'" class="mt-3 pt-3 border-t border-border">
-              <label class="text-xs font-medium text-muted-foreground mb-1 block">Publish on</label>
-              <DateTimePicker v-model="form.published_at" />
-              <p v-if="daysUntilPublish" class="text-xs text-status-info-fg mt-1">
-                ⏱ publishes in {{ daysUntilPublish }} day{{ daysUntilPublish === 1 ? '' : 's' }}
-              </p>
-            </div>
+            <Transition name="slide-down">
+              <div v-if="form.status === 'scheduled'" class="mt-3 pt-3 border-t border-border">
+                <label class="text-xs font-medium text-muted-foreground mb-1 block">Publish on</label>
+                <DateTimePicker v-model="form.published_at" />
+                <p v-if="daysUntilPublish" class="text-xs text-status-info-fg mt-1">
+                  ⏱ publishes in {{ daysUntilPublish }} day{{ daysUntilPublish === 1 ? '' : 's' }}
+                </p>
+              </div>
+            </Transition>
           </div>
 
           <!-- Categories -->
@@ -276,6 +278,7 @@
               <ChevronDown class="w-4 h-4 transition-transform" :class="{ 'rotate-180': revisionsOpen }" />
             </button>
 
+            <Transition name="slide-down">
             <div v-if="revisionsOpen" class="border-t px-4 py-3 space-y-1">
               <div v-if="revisionsLoading" class="text-xs text-muted-foreground text-center py-3">Loading…</div>
               <div v-else-if="revisions.length === 0" class="text-xs text-muted-foreground text-center py-3">No revisions yet.</div>
@@ -297,6 +300,7 @@
                 </button>
               </div>
             </div>
+            </Transition>
           </div>
         </div>
       </div>
@@ -525,3 +529,10 @@ function submit() {
   });
 }
 </script>
+
+<style scoped>
+.slide-down-enter-active { transition: opacity 0.2s ease, transform 0.2s ease; }
+.slide-down-leave-active { transition: opacity 0.15s ease, transform 0.15s ease; }
+.slide-down-enter-from   { opacity: 0; transform: translateY(-6px); }
+.slide-down-leave-to     { opacity: 0; transform: translateY(-6px); }
+</style>

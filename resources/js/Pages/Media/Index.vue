@@ -151,6 +151,7 @@
       </div>
 
       <!-- Detail panel — desktop sidebar (md+) -->
+      <Transition name="detail-slide">
       <div
         v-if="activeItem"
         class="hidden md:flex w-72 shrink-0 rounded-lg border bg-card flex-col self-start sticky top-6"
@@ -171,6 +172,7 @@
           @update:description="detailForm.description = $event"
         />
       </div>
+      </Transition>
     </div>
 
     <!-- Detail panel — bottom sheet on mobile -->
@@ -530,4 +532,9 @@ async function doBulkDelete() {
 <style scoped>
 .sheet-enter-active, .sheet-leave-active { transition: transform 0.25s ease; }
 .sheet-enter-from, .sheet-leave-to { transform: translateY(100%); }
+
+.detail-slide-enter-active { transition: opacity 0.2s ease, transform 0.2s ease; }
+.detail-slide-leave-active { transition: opacity 0.15s ease, transform 0.15s ease; }
+.detail-slide-enter-from   { opacity: 0; transform: translateX(12px); }
+.detail-slide-leave-to     { opacity: 0; transform: translateX(12px); }
 </style>

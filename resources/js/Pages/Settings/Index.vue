@@ -22,10 +22,12 @@
         </button>
       </div>
 
-      <!-- Tab panels — v-show preserves form state when switching -->
+      <!-- Tab panels — animated via Transition key swap on activeTab -->
+      <Transition name="tab-fade" mode="out-in">
+      <div :key="activeTab">
 
       <!-- General: Site + Locale -->
-      <div v-show="activeTab === 'general'" class="space-y-6">
+      <div v-if="activeTab === 'general'" class="space-y-6">
 
         <!-- ── Site panel ──────────────────────────────────────────────────── -->
         <form @submit.prevent="submitSite">
@@ -118,7 +120,7 @@
       </div>
 
       <!-- Mail: Mail form + Test email form -->
-      <div v-show="activeTab === 'mail'" class="space-y-6">
+      <div v-if="activeTab === 'mail'" class="space-y-6">
 
         <!-- ── Mail panel ──────────────────────────────────────────────────── -->
         <form @submit.prevent="submitMail">
@@ -261,7 +263,7 @@
       </div>
 
       <!-- Media -->
-      <div v-show="activeTab === 'media'">
+      <div v-if="activeTab === 'media'">
 
         <!-- ── Media panel ─────────────────────────────────────────────────── -->
         <form @submit.prevent="submitMedia">
@@ -357,7 +359,7 @@
       </div>
 
       <!-- Comments -->
-      <div v-show="activeTab === 'comments'">
+      <div v-if="activeTab === 'comments'">
 
         <!-- ── Comments panel ────────────────────────────────────────────── -->
         <form @submit.prevent="submitComments">
@@ -408,7 +410,7 @@
       </div>
 
       <!-- SEO -->
-      <div v-show="activeTab === 'seo'">
+      <div v-if="activeTab === 'seo'">
 
         <!-- ── SEO panel ──────────────────────────────────────────────────────────────────── -->
         <form @submit.prevent="submitSeo">
@@ -479,7 +481,7 @@
       </div>
 
       <!-- Appearance -->
-      <div v-show="activeTab === 'appearance'">
+      <div v-if="activeTab === 'appearance'">
         <form @submit.prevent="submitAppearance">
           <ContentCard
             title="Appearance"
@@ -525,6 +527,9 @@
           </ContentCard>
         </form>
       </div>
+
+      </div>
+      </Transition>
 
     </div>
   </AppLayout>
@@ -776,4 +781,9 @@ function sendTestEmail() {
 .fade-leave-to {
   opacity: 0;
 }
+
+.tab-fade-enter-active { transition: opacity 0.18s ease, transform 0.18s ease; }
+.tab-fade-leave-active { transition: opacity 0.1s ease; }
+.tab-fade-enter-from   { opacity: 0; transform: translateY(6px); }
+.tab-fade-leave-to     { opacity: 0; }
 </style>

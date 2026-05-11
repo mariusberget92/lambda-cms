@@ -22,18 +22,24 @@
       <div v-if="tags.length === 0" class="text-sm text-muted-foreground text-center py-4">
         No tags yet.
       </div>
-      <div v-else class="flex flex-wrap gap-2 items-center justify-center">
+      <TransitionGroup
+        v-else
+        tag="div"
+        name="tag-pop"
+        appear
+        class="flex flex-wrap gap-2 items-center justify-center"
+      >
         <a
           v-for="(tag, i) in tags"
           :key="tag.id"
           :href="route('tags.edit', tag.id)"
           :title="`${tag.name} — ${tag.posts_count} post${tag.posts_count !== 1 ? 's' : ''}`"
-          :style="bubbleStyle(tag, i)"
+          :style="[bubbleStyle(tag, i), { '--i': i }]"
           class="rounded-full border font-medium transition-all duration-150 hover:scale-105 hover:opacity-90 cursor-pointer leading-none"
         >
           {{ tag.name }}
         </a>
-      </div>
+      </TransitionGroup>
     </div>
 
     <DataTable :empty="tags.length === 0">
@@ -174,4 +180,10 @@ function confirmDelete() {
 <style scoped>
 .fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
+
+.tag-pop-enter-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition-delay: calc(var(--i, 0) * 25ms);
+}
+.tag-pop-enter-from { opacity: 0; transform: scale(0.7); }
 </style>
