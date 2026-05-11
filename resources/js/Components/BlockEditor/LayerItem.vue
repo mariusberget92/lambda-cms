@@ -71,6 +71,14 @@
         class="shrink-0 group-hover:hidden text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-white/10 text-white/40"
       >{{ localChildren.length }}</span>
 
+      <!-- Device visibility indicator (shown when any device is hidden) -->
+      <EyeOff
+        v-if="hasVisibilityRestriction"
+        class="shrink-0 group-hover:hidden w-3 h-3"
+        :class="block.id === selectedId ? 'text-primary-foreground/40' : 'text-muted-foreground/40'"
+        title="Hidden on some devices"
+      />
+
       <!-- Duplicate -->
       <button
         type="button"
@@ -184,7 +192,7 @@
 <script setup>
 import { ref, watch, computed, nextTick } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
-import { GripVertical, X, CopyPlus, Copy, Clipboard, ChevronRight, Lock, LockOpen } from 'lucide-vue-next'
+import { GripVertical, X, CopyPlus, Copy, Clipboard, ChevronRight, Lock, LockOpen, EyeOff } from 'lucide-vue-next'
 
 defineOptions({ name: 'LayerItem' })
 
@@ -222,6 +230,12 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['select', 'remove', 'duplicate', 'copy', 'paste', 'update-children', 'update'])
+
+// ── Device visibility restriction indicator ───────────────────────────────────
+const hasVisibilityRestriction = computed(() => {
+  const v = props.block.visibility
+  return v && (v.mobile === false || v.tablet === false || v.desktop === false)
+})
 
 // ── Collapse state for container blocks ──────────────────────────────────────
 const collapsed = ref(false)

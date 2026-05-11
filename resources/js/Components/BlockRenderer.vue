@@ -300,8 +300,28 @@ function onBlockAnimationEnd(block) {
   animatingBlocks[block.id] = false
 }
 
+// Visibility class lookup — all strings are literal so Tailwind's scanner detects them.
+// Breakpoints: mobile < 640px (below sm), tablet 640-1023px (sm–lg), desktop ≥ 1024px (lg+)
+const VISIBILITY_CLASSES = {
+  'true-true-true':    '',
+  'false-true-true':   'hidden sm:block',
+  'true-false-true':   'sm:hidden lg:block',
+  'true-true-false':   'lg:hidden',
+  'false-false-true':  'hidden lg:block',
+  'false-true-false':  'hidden sm:block lg:hidden',
+  'true-false-false':  'sm:hidden',
+  'false-false-false': 'hidden',
+}
+
+function visibilityClass(block) {
+  const v = block.visibility
+  if (!v) return ''
+  const key = `${v.mobile !== false}-${v.tablet !== false}-${v.desktop !== false}`
+  return VISIBILITY_CLASSES[key] ?? ''
+}
+
 function blockItemClass(block) {
-  const parts = [block.customClasses, props.itemClass].filter(s => s && s.trim())
+  const parts = [block.customClasses, props.itemClass, visibilityClass(block)].filter(s => s && s.trim())
   if (block.interaction?.hoverAnimation && animatingBlocks[block.id]) {
     parts.push('animate__animated', `animate__${block.interaction.hoverAnimation}`)
     if (block.interaction.hoverAnimationSpeed) {
