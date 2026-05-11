@@ -31,6 +31,7 @@
       :loop-fields="loopFields"
       :available-fields="availableFields"
       :clipboard="clipboard"
+      :style-clipboard="styleClipboard"
       :can-undo="canUndo"
       :can-redo="canRedo"
       @select="selectBlock"
@@ -43,6 +44,8 @@
       @paste="pasteBlock"
       @undo="undo"
       @redo="redo"
+      @copy-style="copyStyle"
+      @paste-style="pasteStyle"
     />
 
     <!-- Remove block confirmation modal -->
@@ -147,6 +150,44 @@ function redo() {
 
 // ── Clipboard ─────────────────────────────────────────────────────────────────
 const clipboard = ref(null)
+
+// ── Style clipboard ───────────────────────────────────────────────────────────
+const styleClipboard = ref(null)
+
+const STYLE_KEYS = [
+  'typography', 'margin', 'padding',
+  'advBgType', 'advBgColor', 'advBgGradient', 'advBgImage',
+  'border', 'shadow', 'opacity', 'cursor', 'overflow', 'zIndex',
+  'transitionDuration', 'transitionEasing',
+]
+
+function copyStyle(id) {
+  const block = findBlock(localBlocks.value, id)
+  if (!block) return
+  const styleData = {}
+  STYLE_KEYS.forEach(k => {
+    if (block.data?.[k] !== undefined) styleData[k] = JSON.parse(JSON.stringify(block.data[k]))
+  })
+  styleClipboard.value = {
+    data: styleData,
+    customCss:     block.customCss     ?? null,
+    customClasses: block.customClasses ?? null,
+    fontFamily:    block.fontFamily    ?? null,
+    interaction:   block.interaction   ? JSON.parse(JSON.stringify(block.interaction)) : null,
+  }
+}
+
+function pasteStyle(id) {
+  if (!styleClipboard.value || !id) return
+  const { data, customCss, customClasses, fontFamily, interaction } = styleClipboard.value
+  localBlocks.value = updateBlockInList(
+    localBlocks.value, id,
+    data ? JSON.parse(JSON.stringify(data)) : undefined,
+    { customCss, customClasses, fontFamily, interaction },
+  )
+  pushHistory()
+  emit('update:modelValue', localBlocks.value)
+}
 
 // ── Recursive helpers ─────────────────────────────────────────────────────────
 
@@ -345,6 +386,7 @@ function onReorder(newList) {
 
 function removeBlock(id) {
   const block = findBlock(localBlocks.value, id)
+  if (block?.locked) return
   if (block) {
     const hasContent = Object.values(block.data ?? {}).some(v =>
       v !== null && v !== '' && !(Array.isArray(v) && v.length === 0)
@@ -502,8 +544,13 @@ function onKeydown(e) {
   } else if (ctrl && e.key === 'v') {
     e.preventDefault()
     pasteBlock()
+  } else if (ctrl && e.altKey && e.key === 'c') {
+    if (selectedBlockId.value) copyStyle(selectedBlockId.value)
+  } else if (ctrl && e.altKey && e.key === 'v') {
+    e.preventDefault()
+    if (selectedBlockId.value) pasteStyle(selectedBlockId.value)
   } else if (e.key === 'Delete' || e.key === 'Backspace') {
-    if (selectedBlockId.value && !ctrl) {
+    if (selectedBlockId.value && !ctrl && !selectedBlock.value?.locked) {
       e.preventDefault()
       removeBlock(selectedBlockId.value)
     }

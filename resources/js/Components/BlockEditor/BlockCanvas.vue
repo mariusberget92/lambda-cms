@@ -97,12 +97,18 @@
               : 'border-white/10 bg-white/4 hover:border-white/20'"
             @click="$emit('select', block.id)"
           >
-            <!-- Drag handle -->
+            <!-- Drag handle (removed when locked so VueDraggable can't pick it up) -->
             <div
-              class="block-drag-handle shrink-0 w-7 flex items-center justify-center border-r border-transparent group-hover:border-white/8 cursor-grab active:cursor-grabbing text-white/20 group-hover:text-white/40 transition-colors"
+              :class="[
+                'shrink-0 w-7 flex items-center justify-center border-r border-transparent group-hover:border-white/8 transition-colors',
+                block.locked
+                  ? 'cursor-not-allowed text-white/15'
+                  : 'block-drag-handle cursor-grab active:cursor-grabbing text-white/20 group-hover:text-white/40',
+              ]"
               @click.stop
             >
-              <GripVertical class="w-3.5 h-3.5" />
+              <Lock v-if="block.locked" class="w-3.5 h-3.5" />
+              <GripVertical v-else class="w-3.5 h-3.5" />
             </div>
 
             <!-- Content area -->
@@ -208,7 +214,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { VueDraggable }  from 'vue-draggable-plus'
-import { GripVertical, Eye, ChevronRight, LayoutTemplate, Smartphone, Tablet, Monitor } from 'lucide-vue-next'
+import { GripVertical, Eye, ChevronRight, LayoutTemplate, Smartphone, Tablet, Monitor, Lock } from 'lucide-vue-next'
 import EditorContainerBlock from './EditorContainerBlock.vue'
 import EditorSectionBlock   from './EditorSectionBlock.vue'
 import EditorLoopBlock      from './EditorLoopBlock.vue'

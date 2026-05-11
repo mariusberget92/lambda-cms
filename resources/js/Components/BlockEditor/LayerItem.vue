@@ -19,13 +19,15 @@
       -->
       <span
         :class="[
-          isChild ? 'layer-child-handle' : 'layer-handle',
-          'cursor-grab active:cursor-grabbing shrink-0',
+          block.locked ? '' : (isChild ? 'layer-child-handle' : 'layer-handle'),
+          block.locked ? 'cursor-not-allowed opacity-40' : 'cursor-grab active:cursor-grabbing',
+          'shrink-0',
           block.id === selectedId ? 'text-primary-foreground/60' : 'text-muted-foreground',
         ]"
         @click.stop
       >
-        <GripVertical class="w-3 h-3" />
+        <Lock v-if="block.locked" class="w-3 h-3" />
+        <GripVertical v-else class="w-3 h-3" />
       </span>
 
       <!-- Collapse toggle for container-capable blocks -->
@@ -59,7 +61,7 @@
       <template v-else>
         <span
           class="flex-1 truncate text-xs font-semibold uppercase tracking-wider cursor-default"
-          @dblclick.stop="startRename(block)"
+          @dblclick.stop="block.locked ? null : startRename(block)"
         >{{ block.blockName || LABELS[block.type] || block.type }}</span>
       </template>
 
@@ -103,13 +105,36 @@
         <Clipboard class="w-3 h-3" />
       </button>
 
+      <!-- Lock / Unlock -->
+      <button
+        type="button"
+        class="shrink-0 transition-opacity"
+        :class="[
+          block.locked
+            ? 'opacity-60 hover:opacity-100'
+            : 'opacity-0 group-hover:opacity-60 hover:!opacity-100',
+          block.id === selectedId ? 'text-primary-foreground' : 'text-muted-foreground',
+        ]"
+        :title="block.locked ? 'Unlock block' : 'Lock block'"
+        @click.stop="$emit('update', { id: block.id, locked: !block.locked })"
+      >
+        <LockOpen v-if="block.locked" class="w-3 h-3" />
+        <Lock v-else class="w-3 h-3" />
+      </button>
+
       <!-- Remove -->
       <button
         type="button"
-        class="shrink-0 opacity-50 hover:opacity-100 transition-opacity"
-        :class="block.id === selectedId ? 'text-primary-foreground' : 'text-muted-foreground'"
+        class="shrink-0 transition-opacity"
+        :class="[
+          block.locked
+            ? 'opacity-20 cursor-not-allowed'
+            : 'opacity-50 hover:opacity-100',
+          block.id === selectedId ? 'text-primary-foreground' : 'text-muted-foreground',
+        ]"
         title="Remove block"
-        @click.stop="$emit('remove', block.id)"
+        :disabled="block.locked"
+        @click.stop="!block.locked && $emit('remove', block.id)"
       >
         <X class="w-3 h-3" />
       </button>
@@ -159,7 +184,7 @@
 <script setup>
 import { ref, watch, computed, nextTick } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
-import { GripVertical, X, CopyPlus, Copy, Clipboard, ChevronRight } from 'lucide-vue-next'
+import { GripVertical, X, CopyPlus, Copy, Clipboard, ChevronRight, Lock, LockOpen } from 'lucide-vue-next'
 
 defineOptions({ name: 'LayerItem' })
 

@@ -118,10 +118,42 @@
             >
               Advanced
             </TabsTrigger>
+            <!-- Style clipboard actions -->
+            <div class="ml-auto flex items-center gap-0.5 pr-0.5">
+              <button
+                type="button"
+                class="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                title="Copy styles (Ctrl+Alt+C)"
+                @click="$emit('copy-style', selectedId)"
+              >
+                <Pipette class="w-3 h-3" />
+              </button>
+              <button
+                type="button"
+                class="p-1 rounded transition-colors"
+                :class="styleClipboard
+                  ? 'text-primary hover:text-primary/80 hover:bg-accent'
+                  : 'text-muted-foreground/30 cursor-not-allowed'"
+                :title="styleClipboard ? 'Paste styles (Ctrl+Alt+V)' : 'No styles copied yet'"
+                :disabled="!styleClipboard"
+                @click="styleClipboard && $emit('paste-style', selectedId)"
+              >
+                <PaintBucket class="w-3 h-3" />
+              </button>
+            </div>
           </TabsList>
 
           <div class="flex-1 overflow-y-auto scrollbar-hidden">
             <div class="p-3">
+
+              <!-- Locked notice -->
+              <div
+                v-if="selectedBlock.locked"
+                class="mb-3 flex items-center gap-2 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-400"
+              >
+                <Lock class="w-3 h-3 shrink-0" />
+                <span>Block is locked. Unlock it in the layers panel to move or delete it.</span>
+              </div>
 
               <!-- Content + Style tabs: delegate to block's settings component -->
               <template v-if="settingsTab === 'content' || settingsTab === 'style'">
@@ -171,7 +203,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { RotateCcw, RotateCw, Keyboard } from 'lucide-vue-next'
+import { RotateCcw, RotateCw, Keyboard, Pipette, PaintBucket, Lock } from 'lucide-vue-next'
 import { VueDraggable } from 'vue-draggable-plus'
 import LayerItem from './LayerItem.vue'
 import AdvancedSettings  from './blocks/AdvancedSettings.vue'
@@ -230,12 +262,13 @@ const props = defineProps({
   meta:          { type: Object,  default: () => ({}) },
   loopFields:      { type: Array,   default: () => [] },
   availableFields: { type: Array,   default: () => [] },
-  clipboard: { type: Object,  default: null },
+  clipboard:      { type: Object,  default: null },
+  styleClipboard: { type: Object,  default: null },
   canUndo:   { type: Boolean, default: false },
   canRedo:   { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['select', 'remove', 'update', 'reorder', 'update-children', 'duplicate', 'copy', 'paste', 'undo', 'redo'])
+const emit = defineEmits(['select', 'remove', 'update', 'reorder', 'update-children', 'duplicate', 'copy', 'paste', 'undo', 'redo', 'copy-style', 'paste-style'])
 
 const showShortcuts = ref(false)
 
@@ -248,6 +281,8 @@ const SHORTCUTS = [
   { key: 'Ctrl + V',      label: 'Paste block' },
   { key: 'Ctrl + Z',      label: 'Undo' },
   { key: 'Ctrl + Y',      label: 'Redo' },
+  { key: 'Ctrl+Alt+C',     label: 'Copy styles' },
+  { key: 'Ctrl+Alt+V',     label: 'Paste styles' },
   { key: 'Dbl-click name', label: 'Rename block' },
   { key: 'Click palette',  label: 'Append block' },
 ]
