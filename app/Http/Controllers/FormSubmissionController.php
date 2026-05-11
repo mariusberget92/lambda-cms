@@ -65,7 +65,8 @@ class FormSubmissionController extends Controller
             if ($field->type === 'email')  $fieldRules[] = 'email';
             if ($field->type === 'number') $fieldRules[] = 'numeric';
             if ($field->type === 'url')    $fieldRules[] = 'url';
-            if (in_array($field->type, ['checkboxes', 'checkbox'])) $fieldRules[] = 'array';
+            if ($field->type === 'checkboxes') $fieldRules[] = 'array';
+            if ($field->type === 'checkbox')  $fieldRules[] = 'boolean';
             $rules[$field->name] = $fieldRules;
         }
 

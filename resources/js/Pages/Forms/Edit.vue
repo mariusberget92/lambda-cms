@@ -71,6 +71,7 @@
             placeholder="contact-form"
             class="w-full rounded-md border bg-background px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
             :class="{ 'border-destructive': errors.slug }"
+            @input="onSlugInput"
           />
           <p v-if="errors.slug" class="text-xs text-destructive mt-1">{{ errors.slug }}</p>
         </div>
