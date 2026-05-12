@@ -264,13 +264,22 @@ class InstallController extends Controller
         $contents = file_exists($envPath) ? file_get_contents($envPath) : '';
 
         foreach ($values as $key => $value) {
-            // Quote values that contain spaces
-            $escaped = str_contains($value, ' ') ? "\"{$value}\"" : $value;
-            $line = "{$key}={$escaped}";
+            // Strip newlines to prevent .env injection
+            $value = str_replace(["\n", "\r"], '', $value);
+            // Quote values that contain spaces or special shell characters
+            $escaped = (str_contains($value, ' ') || str_contains($value, '#'))
+                ? "\"{$value}\""
+                : $value;
+            $line    = "{$key}={$escaped}";
+            $safeKey = preg_quote($key, '/');
 
-            if (preg_match("/^{$key}=.*/m", $contents)) {
-                // Replace existing key
-                $contents = preg_replace("/^{$key}=.*/m", $line, $contents);
+            if (preg_match("/^{$safeKey}=.*/m", $contents)) {
+                // Replace existing key; use callback to avoid $ backreference interpretation
+                $contents = preg_replace_callback(
+                    "/^{$safeKey}=.*/m",
+                    fn () => $line,
+                    $contents
+                );
             } else {
                 // Append new key
                 $contents = rtrim($contents) . "\n{$line}\n";

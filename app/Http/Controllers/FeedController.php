@@ -41,9 +41,9 @@ class FeedController extends Controller
             $linkEscaped = htmlspecialchars($link, ENT_XML1 | ENT_COMPAT, 'UTF-8');
 
             $xml .= '    <item>' . "\n";
-            $xml .= '      <title><![CDATA[' . $post->title . ']]></title>' . "\n";
+            $xml .= '      <title><![CDATA[' . self::escapeCdata($post->title) . ']]></title>' . "\n";
             $xml .= '      <link>' . $linkEscaped . '</link>' . "\n";
-            $xml .= '      <description><![CDATA[' . ($post->excerpt ?: mb_substr(strip_tags($post->body ?? ''), 0, 200)) . ']]></description>' . "\n";
+            $xml .= '      <description><![CDATA[' . self::escapeCdata($post->excerpt ?: mb_substr(strip_tags($post->body ?? ''), 0, 200)) . ']]></description>' . "\n";
             $xml .= '      <pubDate>' . $pubDate . '</pubDate>' . "\n";
             $xml .= '      <author>' . $author . '</author>' . "\n";
             $xml .= '      <guid isPermaLink="true">' . $linkEscaped . '</guid>' . "\n";
@@ -56,5 +56,11 @@ class FeedController extends Controller
         return response($xml, 200, [
             'Content-Type' => 'application/rss+xml; charset=utf-8',
         ]);
+    }
+
+    private static function escapeCdata(string $str): string
+    {
+        // ]]> would terminate the CDATA section prematurely; split it across two sections
+        return str_replace(']]>', ']]]]><![CDATA[>', $str);
     }
 }

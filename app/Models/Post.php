@@ -44,7 +44,6 @@ class Post extends Model
         "meta_title",
         "meta_description",
         "meta_keywords",
-        "preview_token",
     ];
 
     protected $casts = [
@@ -86,7 +85,11 @@ class Post extends Model
 
     public function scopePublished($query)
     {
-        return $query->where("status", "published");
+        return $query->where('status', 'published')
+                     ->where(function ($q) {
+                         $q->whereNull('published_at')
+                           ->orWhere('published_at', '<=', now());
+                     });
     }
 
     public function scopeDraft($query)

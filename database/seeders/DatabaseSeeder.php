@@ -28,8 +28,10 @@ class DatabaseSeeder extends Seeder
         $adminRole->syncPermissions(Permission::all());
         $userRole->syncPermissions(['manage posts', 'manage categories', 'manage tags']);
 
-        // ── Admin user (roles must exist first) ──────────────────────────────
-        $this->call(AdminSeeder::class);
+        // ── Admin user (dev only — production installs use the wizard) ───────
+        if (app()->environment('local')) {
+            $this->call(AdminSeeder::class);
+        }
 
         // ── Default templates ────────────────────────────────────────────────
         $this->call(TemplateSeeder::class);
