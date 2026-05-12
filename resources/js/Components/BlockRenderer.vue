@@ -56,6 +56,15 @@ import PaginationBlock        from '@/components/Blocks/PaginationBlock.vue'
 import PostListBlock          from '@/Components/Blocks/PostListBlock.vue'
 import TemplateBlock          from '@/Components/Blocks/TemplateBlock.vue'
 import TableBlock             from '@/Components/Blocks/TableBlock.vue'
+import AccordionBlock        from '@/Components/Blocks/AccordionBlock.vue'
+import TabsBlock             from '@/Components/Blocks/TabsBlock.vue'
+import ButtonBlock           from '@/Components/Blocks/ButtonBlock.vue'
+import IconBlock             from '@/Components/Blocks/IconBlock.vue'
+import AlertBlock            from '@/Components/Blocks/AlertBlock.vue'
+import ListBlock             from '@/Components/Blocks/ListBlock.vue'
+import CardBlock             from '@/Components/Blocks/CardBlock.vue'
+import HeroBlock             from '@/Components/Blocks/HeroBlock.vue'
+import TestimonialBlock      from '@/Components/Blocks/TestimonialBlock.vue'
 
 const props = defineProps({
   blocks:       { type: Array,  default: () => [] },
@@ -238,6 +247,15 @@ const BLOCK_MAP = {
   pagination:            PaginationBlock,
   'template':            TemplateBlock,
   table:                 TableBlock,
+  accordion:             AccordionBlock,
+  tabs:                  TabsBlock,
+  button:                ButtonBlock,
+  icon:                  IconBlock,
+  alert:                 AlertBlock,
+  list:                  ListBlock,
+  card:                  CardBlock,
+  hero:                  HeroBlock,
+  testimonial:           TestimonialBlock,
 }
 
 // Injected by LoopItemProvider when this renderer is inside a loop iteration
@@ -272,8 +290,12 @@ function loadFont(family) {
 function loadFontsFromBlocks(blocks) {
   for (const block of blocks) {
     if (block.fontFamily) loadFont(block.fontFamily)
-    if (['container', 'section', 'loop', 'archive-loop', 'link'].includes(block.type) && block.children?.length) {
+    if (block.children?.length) {
       loadFontsFromBlocks(block.children)
+      // accordion/tabs: recurse into grandchildren (accordion-item / tab-item children)
+      for (const child of block.children) {
+        if (child.children?.length) loadFontsFromBlocks(child.children)
+      }
     }
   }
 }

@@ -186,6 +186,13 @@ import EmbedSettings          from './blocks/EmbedSettings.vue'
 import PaginationSettings     from './blocks/PaginationSettings.vue'
 import NavigationSettings     from './blocks/NavigationSettings.vue'
 import TableSettings         from './blocks/TableSettings.vue'
+import ButtonSettings       from './blocks/ButtonSettings.vue'
+import IconBlockSettings    from './blocks/IconBlockSettings.vue'
+import AlertSettings        from './blocks/AlertSettings.vue'
+import ListSettings         from './blocks/ListSettings.vue'
+import CardSettings         from './blocks/CardSettings.vue'
+import HeroSettings         from './blocks/HeroSettings.vue'
+import TestimonialSettings  from './blocks/TestimonialSettings.vue'
 
 const props = defineProps({
   blocks:        { type: Array,   default: () => [] },
@@ -239,6 +246,8 @@ const STYLE_BLOCKS = new Set([
   'filter-link', 'navigation', 'search',
   'post-title', 'post-meta', 'post-author', 'post-taxonomy',
   'archive-title',
+  // New blocks with style tabs
+  'button', 'icon', 'card', 'hero', 'testimonial',
 ])
 
 // Block types where Style should be the default active tab
@@ -268,6 +277,8 @@ const LABELS = {
   link: 'Link', 'filter-link': 'Filter Link', 'template': 'Template', accordion: 'Accordion', 'accordion-item': 'Accordion Item',
   tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
   navigation: 'Navigation', table: 'Table',
+  button: 'Button', icon: 'Icon', alert: 'Alert', list: 'List',
+  card: 'Card', hero: 'Hero', testimonial: 'Testimonial',
 }
 
 const COMPONENT_MAP = {
@@ -297,6 +308,13 @@ const COMPONENT_MAP = {
   pagination:            PaginationSettings,
   navigation:            NavigationSettings,
   table:                 TableSettings,
+  button:                ButtonSettings,
+  icon:                  IconBlockSettings,
+  alert:                 AlertSettings,
+  list:                  ListSettings,
+  card:                  CardSettings,
+  hero:                  HeroSettings,
+  testimonial:           TestimonialSettings,
 }
 
 const settingsComponent = computed(() =>
