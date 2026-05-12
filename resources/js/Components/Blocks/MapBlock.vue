@@ -1,12 +1,12 @@
 <!-- resources/js/Components/Blocks/MapBlock.vue -->
 <template>
   <div
-    v-if="block.data?.embedUrl"
+    v-if="safeUrl"
     class="overflow-hidden"
     :style="{ borderRadius: block.data?.borderRadius ?? '0.5rem' }"
   >
     <iframe
-      :src="block.data.embedUrl"
+      :src="safeUrl"
       :style="{ width: '100%', height: block.data?.height ?? '400px', border: 0 }"
       allowfullscreen
       loading="lazy"
@@ -25,6 +25,18 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { Icon } from '@iconify/vue'
-defineProps({ block: { type: Object, required: true } })
+const props = defineProps({ block: { type: Object, required: true } })
+
+const safeUrl = computed(() => {
+  const url = props.block.data?.embedUrl
+  if (!url) return null
+  try {
+    const u = new URL(url)
+    return (u.protocol === 'http:' || u.protocol === 'https:') ? url : null
+  } catch {
+    return null
+  }
+})
 </script>

@@ -197,7 +197,11 @@ function blockWrapperStyle(block) {
 }
 
 function sanitizeCss(css) {
-  return css.replace(/<\/?style/gi, '')
+  return css
+    .replace(/<\/?style/gi, '')          // strip stray style tags
+    .replace(/\/\*[\s\S]*?\*\//g, '')    // strip comments (can hide payloads)
+    .replace(/expression\s*\(/gi, '')    // strip IE CSS expressions
+    .replace(/@import\b/gi, '')          // strip @import (external stylesheet loading)
 }
 
 // Returns true if customCss needs a <style> tag (contains selectors, @rules, or braces).
