@@ -193,6 +193,21 @@ import ListSettings         from './blocks/ListSettings.vue'
 import CardSettings         from './blocks/CardSettings.vue'
 import HeroSettings         from './blocks/HeroSettings.vue'
 import TestimonialSettings  from './blocks/TestimonialSettings.vue'
+import BannerSettings       from './blocks/BannerSettings.vue'
+import BreadcrumbSettings   from './blocks/BreadcrumbSettings.vue'
+import SocialLinksSettings  from './blocks/SocialLinksSettings.vue'
+import ProgressBarSettings  from './blocks/ProgressBarSettings.vue'
+import AudioSettings        from './blocks/AudioSettings.vue'
+import FileDownloadSettings from './blocks/FileDownloadSettings.vue'
+import FeatureSettings      from './blocks/FeatureSettings.vue'
+import StatsSettings        from './blocks/StatsSettings.vue'
+import TeamMemberSettings   from './blocks/TeamMemberSettings.vue'
+import TimelineSettings     from './blocks/TimelineSettings.vue'
+import TocSettings          from './blocks/TocSettings.vue'
+import FormSettings         from './blocks/FormSettings.vue'
+import PricingSettings      from './blocks/PricingSettings.vue'
+import MapSettings          from './blocks/MapSettings.vue'
+import CountdownSettings    from './blocks/CountdownSettings.vue'
 
 const props = defineProps({
   blocks:        { type: Array,   default: () => [] },
@@ -248,6 +263,8 @@ const STYLE_BLOCKS = new Set([
   'archive-title',
   // New blocks with style tabs
   'button', 'icon', 'card', 'hero', 'testimonial',
+  'feature', 'pricing', 'stats', 'team-member', 'timeline',
+  'social-links', 'progress-bar', 'countdown',
 ])
 
 // Block types where Style should be the default active tab
@@ -279,6 +296,11 @@ const LABELS = {
   navigation: 'Navigation', table: 'Table',
   button: 'Button', icon: 'Icon', alert: 'Alert', list: 'List',
   card: 'Card', hero: 'Hero', testimonial: 'Testimonial',
+  banner: 'Banner', breadcrumb: 'Breadcrumb', 'social-links': 'Social Links',
+  'progress-bar': 'Progress Bar', audio: 'Audio', 'file-download': 'File Download',
+  feature: 'Feature', stats: 'Stats', 'team-member': 'Team Member',
+  timeline: 'Timeline', toc: 'Table of Contents',
+  form: 'Form', pricing: 'Pricing', map: 'Map', countdown: 'Countdown',
 }
 
 const COMPONENT_MAP = {
@@ -315,6 +337,21 @@ const COMPONENT_MAP = {
   card:                  CardSettings,
   hero:                  HeroSettings,
   testimonial:           TestimonialSettings,
+  banner:                BannerSettings,
+  breadcrumb:            BreadcrumbSettings,
+  'social-links':        SocialLinksSettings,
+  'progress-bar':        ProgressBarSettings,
+  audio:                 AudioSettings,
+  'file-download':       FileDownloadSettings,
+  feature:               FeatureSettings,
+  stats:                 StatsSettings,
+  'team-member':         TeamMemberSettings,
+  timeline:              TimelineSettings,
+  toc:                   TocSettings,
+  form:                  FormSettings,
+  pricing:               PricingSettings,
+  map:                   MapSettings,
+  countdown:             CountdownSettings,
 }
 
 const settingsComponent = computed(() =>

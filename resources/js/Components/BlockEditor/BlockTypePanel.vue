@@ -77,6 +77,21 @@ import {
   LayoutDashboard,
   Layers3,
   MessageSquare,
+  Sparkles,
+  ClipboardList,
+  DollarSign,
+  TrendingUp,
+  Users,
+  Clock,
+  Share2,
+  MapPin,
+  Megaphone,
+  Gauge,
+  Slash,
+  Music,
+  FileDown,
+  Timer,
+  BookOpen,
 } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -102,13 +117,25 @@ const ALL_TYPES = [
   { type: 'alert',         label: 'Alert',     icon: Bell,            group: 'Content' },
   { type: 'card',          label: 'Card',      icon: LayoutDashboard, group: 'Content' },
   { type: 'testimonial',   label: 'Testimonial', icon: MessageSquare, group: 'Content' },
+  { type: 'feature',       label: 'Feature',     icon: Sparkles,      group: 'Content' },
+  { type: 'pricing',       label: 'Pricing',     icon: DollarSign,    group: 'Content' },
+  { type: 'stats',         label: 'Stats',       icon: TrendingUp,    group: 'Content' },
+  { type: 'team-member',   label: 'Team Member', icon: Users,         group: 'Content' },
+  { type: 'timeline',      label: 'Timeline',    icon: Clock,         group: 'Content' },
+  { type: 'social-links',  label: 'Social',      icon: Share2,        group: 'Content' },
+  { type: 'progress-bar',  label: 'Progress',    icon: Gauge,         group: 'Content' },
+  { type: 'audio',         label: 'Audio',       icon: Music,         group: 'Content' },
+  { type: 'file-download', label: 'Download',    icon: FileDown,      group: 'Content' },
+  { type: 'toc',           label: 'Contents',    icon: BookOpen,      group: 'Content' },
   // ── Layout ───────────────────────────────────────────────────────────────
   { type: 'container', label: 'Container', icon: LayoutTemplate,    group: 'Layout' },
   { type: 'section',   label: 'Section',   icon: Rows2,             group: 'Layout' },
   { type: 'divider',   label: 'Divider',   icon: Minus,             group: 'Layout' },
   { type: 'spacer',      label: 'Spacer',     icon: ArrowUpDown,       group: 'Layout' },
   { type: 'navigation', label: 'Navigation', icon: Navigation2,       group: 'Layout' },
-  { type: 'hero',       label: 'Hero',       icon: Layers3,           group: 'Layout' },
+  { type: 'hero',       label: 'Hero',       icon: Layers3,    group: 'Layout' },
+  { type: 'banner',     label: 'Banner',     icon: Megaphone,  group: 'Layout' },
+  { type: 'breadcrumb', label: 'Breadcrumb', icon: Slash,      group: 'Layout' },
   // ── Interactive ──────────────────────────────────────────────────────────
   { type: 'cta',       label: 'CTA',       icon: MousePointerClick, group: 'Interactive' },
   { type: 'search',    label: 'Search',    icon: Search,            group: 'Interactive' },
@@ -118,7 +145,10 @@ const ALL_TYPES = [
   { type: 'template',   label: 'Template',    icon: LayoutTemplate,    group: 'Interactive' },
   { type: 'pagination',  label: 'Pagination',  icon: ChevronRightIcon,  group: 'Interactive' },
   { type: 'table',     label: 'Table',     icon: Table2,            group: 'Interactive' },
-  { type: 'button',    label: 'Button',    icon: Square,            group: 'Interactive' },
+  { type: 'button',    label: 'Button',    icon: Square,         group: 'Interactive' },
+  { type: 'form',      label: 'Form',      icon: ClipboardList,  group: 'Interactive' },
+  { type: 'map',       label: 'Map',       icon: MapPin,         group: 'Interactive' },
+  { type: 'countdown', label: 'Countdown', icon: Timer,          group: 'Interactive' },
   { type: 'html',      label: 'HTML',      icon: FileCode,          group: 'Developer', adminOnly: true },
   // ── Post (hidden from palette — only used inside loop blocks) ───────────
   { type: 'post-title',          label: 'Post Title',  icon: Heading1,      group: 'Post', hiddenFromPalette: true },
@@ -295,6 +325,101 @@ const DEFAULT_DATA = {
     bgColor: null,
     textColor: null,
     bgImage: null,
+  },
+  feature: {
+    icon: null, title: 'Feature title',
+    text: 'A short description of this feature.',
+    layout: 'vertical', iconSize: '1.75rem', iconColor: null, iconBgColor: null, headingLevel: 3,
+  },
+  pricing: {
+    title: 'Pro', price: '$29', period: '/month',
+    description: 'Everything you need to get started.',
+    featured: false, badge: '',
+    buttonLabel: 'Get started', buttonUrl: '#',
+    features: [
+      { text: 'Feature one', included: true },
+      { text: 'Feature two', included: true },
+      { text: 'Advanced feature', included: false },
+    ],
+  },
+  stats: {
+    items: [
+      { value: '10K+', label: 'Users',      prefix: '', suffix: '' },
+      { value: '99',   label: 'Uptime',     prefix: '', suffix: '%' },
+      { value: '24/7', label: 'Support',    prefix: '', suffix: '' },
+    ],
+    layout: 'row', align: 'center', valueSize: '2.5rem',
+  },
+  'team-member': {
+    name: 'Jane Smith', role: 'CEO & Co-founder',
+    bio: 'A brief description about this team member and their expertise.',
+    imageUrl: '', imageShape: 'circle', layout: 'card', socialLinks: [],
+  },
+  timeline: {
+    items: [
+      { date: '2020', title: 'Founded',     description: 'The company was founded.' },
+      { date: '2022', title: 'Growth',      description: 'Reached 1,000 customers.' },
+      { date: '2024', title: 'Today',       description: 'Continuing to grow globally.' },
+    ],
+    layout: 'vertical',
+  },
+  'social-links': {
+    links: [
+      { platform: 'twitter',  url: '#', label: '' },
+      { platform: 'linkedin', url: '#', label: '' },
+      { platform: 'github',   url: '#', label: '' },
+    ],
+    style: 'icon-only', size: 'md', align: 'left',
+  },
+  banner: {
+    text: '🎉 New feature just released!',
+    linkLabel: 'Learn more', linkUrl: '#',
+    type: 'info', dismissible: false, icon: null,
+  },
+  'progress-bar': {
+    items: [
+      { label: 'JavaScript', value: 90, color: null },
+      { label: 'Vue.js',     value: 85, color: null },
+      { label: 'Laravel',    value: 80, color: null },
+    ],
+    showValues: true, height: '0.5rem',
+  },
+  breadcrumb: {
+    items: [
+      { label: 'Home',    url: '/' },
+      { label: 'Blog',    url: '/blog' },
+      { label: 'Article', url: '' },
+    ],
+    separator: 'chevron',
+  },
+  audio: { src: '', title: '', artist: '', coverUrl: '' },
+  'file-download': {
+    url: '', filename: 'document.pdf', filetype: 'pdf',
+    filesize: '', description: '', buttonLabel: 'Download',
+  },
+  form: {
+    fields: [
+      { id: 'f1', type: 'text',     label: 'Name',    placeholder: 'Your name',      required: true },
+      { id: 'f2', type: 'email',    label: 'Email',   placeholder: 'your@email.com', required: true },
+      { id: 'f3', type: 'textarea', label: 'Message', placeholder: 'Your message...', required: false },
+    ],
+    submitLabel: 'Send message',
+    successMessage: 'Thank you! Your message has been sent.',
+    action: '', method: 'POST',
+  },
+  map: { embedUrl: '', height: '400px', borderRadius: '0.5rem' },
+  countdown: {
+    targetDate: '', title: 'Launching soon',
+    showDays: true, showHours: true, showMinutes: true, showSeconds: true,
+    expiredMessage: 'The event has started!', style: 'box', align: 'center',
+  },
+  toc: {
+    title: 'Table of Contents', ordered: false,
+    items: [
+      { label: 'Introduction',   anchor: 'introduction',   level: 1 },
+      { label: 'Getting started', anchor: 'getting-started', level: 1 },
+      { label: 'Installation',   anchor: 'installation',   level: 2 },
+    ],
   },
   testimonial: {
     text: '"This product has completely transformed the way we work. Highly recommended to anyone looking for a modern solution."',

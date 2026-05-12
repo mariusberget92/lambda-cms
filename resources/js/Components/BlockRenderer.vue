@@ -65,6 +65,21 @@ import ListBlock             from '@/Components/Blocks/ListBlock.vue'
 import CardBlock             from '@/Components/Blocks/CardBlock.vue'
 import HeroBlock             from '@/Components/Blocks/HeroBlock.vue'
 import TestimonialBlock      from '@/Components/Blocks/TestimonialBlock.vue'
+import BannerBlock          from '@/Components/Blocks/BannerBlock.vue'
+import BreadcrumbBlock      from '@/Components/Blocks/BreadcrumbBlock.vue'
+import SocialLinksBlock     from '@/Components/Blocks/SocialLinksBlock.vue'
+import ProgressBarBlock     from '@/Components/Blocks/ProgressBarBlock.vue'
+import AudioBlock           from '@/Components/Blocks/AudioBlock.vue'
+import FileDownloadBlock    from '@/Components/Blocks/FileDownloadBlock.vue'
+import FeatureBlock         from '@/Components/Blocks/FeatureBlock.vue'
+import StatsBlock           from '@/Components/Blocks/StatsBlock.vue'
+import TeamMemberBlock      from '@/Components/Blocks/TeamMemberBlock.vue'
+import TimelineBlock        from '@/Components/Blocks/TimelineBlock.vue'
+import TocBlock             from '@/Components/Blocks/TocBlock.vue'
+import FormBlock            from '@/Components/Blocks/FormBlock.vue'
+import PricingBlock         from '@/Components/Blocks/PricingBlock.vue'
+import MapBlock             from '@/Components/Blocks/MapBlock.vue'
+import CountdownBlock       from '@/Components/Blocks/CountdownBlock.vue'
 
 const props = defineProps({
   blocks:       { type: Array,  default: () => [] },
@@ -256,6 +271,21 @@ const BLOCK_MAP = {
   card:                  CardBlock,
   hero:                  HeroBlock,
   testimonial:           TestimonialBlock,
+  banner:                BannerBlock,
+  breadcrumb:            BreadcrumbBlock,
+  'social-links':        SocialLinksBlock,
+  'progress-bar':        ProgressBarBlock,
+  audio:                 AudioBlock,
+  'file-download':       FileDownloadBlock,
+  feature:               FeatureBlock,
+  stats:                 StatsBlock,
+  'team-member':         TeamMemberBlock,
+  timeline:              TimelineBlock,
+  toc:                   TocBlock,
+  form:                  FormBlock,
+  pricing:               PricingBlock,
+  map:                   MapBlock,
+  countdown:             CountdownBlock,
 }
 
 // Injected by LoopItemProvider when this renderer is inside a loop iteration
