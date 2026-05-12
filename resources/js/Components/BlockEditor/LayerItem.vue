@@ -28,6 +28,21 @@
         <GripVertical class="w-3 h-3" />
       </span>
 
+      <!-- Expand/collapse toggle for container-capable blocks -->
+      <button
+        v-if="CHILD_CAPABLE.has(block.type)"
+        type="button"
+        class="shrink-0 transition-transform duration-200"
+        :class="[
+          collapsed ? '' : 'rotate-90',
+          block.id === selectedId ? 'text-primary-foreground/60' : 'text-muted-foreground/60',
+        ]"
+        title="Toggle children"
+        @click.stop="collapsed = !collapsed"
+      >
+        <ChevronRight class="w-3 h-3" />
+      </button>
+
       <template v-if="editingId === block.id">
         <input
           :id="`rename-${block.id}`"
@@ -94,51 +109,53 @@
       </button>
     </div>
 
-    <!-- Indented children — always rendered for CHILD_CAPABLE blocks (even empty)
-         so there is a valid drop target when the container has no children yet.
-
+    <!-- Indented children — animated expand/collapse for CHILD_CAPABLE blocks.
          Uses handle=".layer-child-handle" (different from the outer VueDraggable's
          ".layer-handle") so the two Sortable instances never both fire on the same event. -->
-    <div v-if="CHILD_CAPABLE.has(block.type)" class="pl-4 mt-0.5">
-      <VueDraggable
-        v-model="localChildren"
-        tag="div"
-        class="space-y-0.5 min-h-[28px] rounded border border-dashed border-border/40 p-0.5"
-        handle=".layer-child-handle"
-        ghost-class="opacity-40"
-        :group="{ name: 'layers' }"
-        :animation="150"
-      >
-        <div v-for="child in localChildren" :key="child.id">
-          <LayerItem
-            :block="child"
-            :is-child="true"
-            :selected-id="selectedId"
-            :clipboard="clipboard"
-            @select="$emit('select', $event)"
-            @remove="$emit('remove', $event)"
-            @duplicate="$emit('duplicate', $event)"
-            @copy="$emit('copy', $event)"
-            @paste="$emit('paste', $event)"
-            @update-children="$emit('update-children', $event)"
-            @update="$emit('update', $event)"
-          />
+    <template v-if="CHILD_CAPABLE.has(block.type)">
+      <Transition :css="false" @enter="onChildrenEnter" @leave="onChildrenLeave">
+        <div v-if="!collapsed" class="pl-4 mt-0.5">
+          <VueDraggable
+            v-model="localChildren"
+            tag="div"
+            class="space-y-0.5 min-h-[28px] rounded border border-dashed border-border/40 p-0.5"
+            handle=".layer-child-handle"
+            ghost-class="opacity-40"
+            :group="{ name: 'layers' }"
+            :animation="150"
+          >
+            <div v-for="child in localChildren" :key="child.id">
+              <LayerItem
+                :block="child"
+                :is-child="true"
+                :selected-id="selectedId"
+                :clipboard="clipboard"
+                @select="$emit('select', $event)"
+                @remove="$emit('remove', $event)"
+                @duplicate="$emit('duplicate', $event)"
+                @copy="$emit('copy', $event)"
+                @paste="$emit('paste', $event)"
+                @update-children="$emit('update-children', $event)"
+                @update="$emit('update', $event)"
+              />
+            </div>
+            <div
+              v-if="localChildren.length === 0"
+              class="text-center py-1.5 text-[10px] text-muted-foreground/40 pointer-events-none select-none"
+            >
+              Drop here
+            </div>
+          </VueDraggable>
         </div>
-        <div
-          v-if="localChildren.length === 0"
-          class="text-center py-1.5 text-[10px] text-muted-foreground/40 pointer-events-none select-none"
-        >
-          Drop here
-        </div>
-      </VueDraggable>
-    </div>
+      </Transition>
+    </template>
   </div>
 </template>
 
 <script setup>
 import { ref, watch, computed, nextTick } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
-import { GripVertical, X, CopyPlus, Copy, Clipboard } from 'lucide-vue-next'
+import { GripVertical, X, CopyPlus, Copy, Clipboard, ChevronRight } from 'lucide-vue-next'
 
 defineOptions({ name: 'LayerItem' })
 
@@ -175,6 +192,36 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['select', 'remove', 'duplicate', 'copy', 'paste', 'update-children', 'update'])
+
+// ── Expand/collapse children ──────────────────────────────────────────────────
+const collapsed = ref(false)
+
+function onChildrenEnter(el, done) {
+  const h = el.scrollHeight
+  el.style.overflow = 'hidden'
+  el.style.height = '0px'
+  el.style.opacity = '0'
+  requestAnimationFrame(() => {
+    el.style.transition = 'height 200ms ease, opacity 150ms ease'
+    el.style.height = h + 'px'
+    el.style.opacity = '1'
+    el.addEventListener('transitionend', () => {
+      el.style.cssText = ''
+      done()
+    }, { once: true })
+  })
+}
+
+function onChildrenLeave(el, done) {
+  el.style.height = el.scrollHeight + 'px'
+  el.style.overflow = 'hidden'
+  requestAnimationFrame(() => {
+    el.style.transition = 'height 200ms ease, opacity 150ms ease'
+    el.style.height = '0px'
+    el.style.opacity = '0'
+    el.addEventListener('transitionend', done, { once: true })
+  })
+}
 
 // ── Inline rename ─────────────────────────────────────────────────────────────
 const editingId = ref(null)

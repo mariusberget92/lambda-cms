@@ -62,18 +62,18 @@
     <!-- Settings panel -->
     <div class="flex-1 flex flex-col border-t border-white/8 overflow-hidden">
 
-      <div v-if="!selectedBlock" class="flex-1 flex items-center justify-center">
-        <p class="text-xs text-muted-foreground text-center">Select a block<br>to edit its settings</p>
-      </div>
-
-      <div v-else-if="selectedBlock.type === 'html' && !isAdmin" class="p-4">
-        <div class="rounded-md border border-dashed p-4 text-center">
-          <p class="text-xs text-muted-foreground">HTML blocks are admin-only and cannot be edited here.</p>
+      <Transition name="settings-fade" mode="out-in">
+        <div v-if="!selectedBlock" key="empty" class="flex-1 flex items-center justify-center">
+          <p class="text-xs text-muted-foreground text-center">Select a block<br>to edit its settings</p>
         </div>
-      </div>
 
-      <template v-else>
-        <Tabs v-model="settingsTab" class="flex flex-col flex-1 overflow-hidden">
+        <div v-else-if="selectedBlock.type === 'html' && !isAdmin" :key="`${selectedId}-html`" class="p-4">
+          <div class="rounded-md border border-dashed p-4 text-center">
+            <p class="text-xs text-muted-foreground">HTML blocks are admin-only and cannot be edited here.</p>
+          </div>
+        </div>
+
+        <Tabs v-else :key="selectedId" v-model="settingsTab" class="flex flex-col flex-1 overflow-hidden">
           <TabsList class="shrink-0 w-full rounded-none border-b border-white/8 bg-black/20 px-2 h-9 gap-0 justify-start">
             <TabsTrigger
               value="content"
@@ -96,48 +96,50 @@
           </TabsList>
 
           <div class="flex-1 overflow-y-auto scrollbar-hidden">
-            <div class="p-3">
+            <Transition name="tab-fade" mode="out-in">
+              <div :key="settingsTab" class="p-3">
 
-              <!-- Content + Style tabs: delegate to block's settings component -->
-              <template v-if="settingsTab === 'content' || settingsTab === 'style'">
-                <component
-                  :is="settingsComponent"
-                  :block="selectedBlock"
-                  :tab="settingsTab"
-                  :is-admin="isAdmin"
-                  :meta="meta"
-                  :loop-fields="loopFields"
-                  :available-fields="availableFields"
-                  @update="$emit('update', $event)"
-                />
-                <!-- Shared style sections (always shown in style tab) -->
-                <StyleSettings
-                  v-if="settingsTab === 'style'"
-                  :block="selectedBlock"
-                  :available-fields="availableFields"
-                  @update="$emit('update', $event)"
-                />
-              </template>
+                <!-- Content + Style tabs: delegate to block's settings component -->
+                <template v-if="settingsTab === 'content' || settingsTab === 'style'">
+                  <component
+                    :is="settingsComponent"
+                    :block="selectedBlock"
+                    :tab="settingsTab"
+                    :is-admin="isAdmin"
+                    :meta="meta"
+                    :loop-fields="loopFields"
+                    :available-fields="availableFields"
+                    @update="$emit('update', $event)"
+                  />
+                  <!-- Shared style sections (always shown in style tab) -->
+                  <StyleSettings
+                    v-if="settingsTab === 'style'"
+                    :block="selectedBlock"
+                    :available-fields="availableFields"
+                    @update="$emit('update', $event)"
+                  />
+                </template>
 
-              <!-- Advanced tab -->
-              <template v-else-if="settingsTab === 'advanced'">
-                <AdvancedSettings
-                  :block="selectedBlock"
-                  :available-fields="availableFields"
-                  @update="$emit('update', $event)"
-                />
-                <ConditionSettings
-                  v-if="loopFields.length"
-                  :block="selectedBlock"
-                  :loop-fields="loopFields"
-                  @update="$emit('update', $event)"
-                />
-              </template>
+                <!-- Advanced tab -->
+                <template v-else-if="settingsTab === 'advanced'">
+                  <AdvancedSettings
+                    :block="selectedBlock"
+                    :available-fields="availableFields"
+                    @update="$emit('update', $event)"
+                  />
+                  <ConditionSettings
+                    v-if="loopFields.length"
+                    :block="selectedBlock"
+                    :loop-fields="loopFields"
+                    @update="$emit('update', $event)"
+                  />
+                </template>
 
-            </div>
+              </div>
+            </Transition>
           </div>
         </Tabs>
-      </template>
+      </Transition>
 
     </div>
   </div>
@@ -362,3 +364,27 @@ function blockLabel(type) {
   return LABELS[type] ?? type
 }
 </script>
+
+<style scoped>
+.settings-fade-enter-active,
+.settings-fade-leave-active {
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+.settings-fade-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+.settings-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.tab-fade-enter-active,
+.tab-fade-leave-active {
+  transition: opacity 80ms ease;
+}
+.tab-fade-enter-from,
+.tab-fade-leave-to {
+  opacity: 0;
+}
+</style>

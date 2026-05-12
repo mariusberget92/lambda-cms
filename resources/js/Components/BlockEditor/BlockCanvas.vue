@@ -73,7 +73,7 @@
             v-for="block in draggableBlocks"
             :key="block.id"
             :id="block.customId || `block-${block.id}`"
-            class="group flex items-stretch rounded-lg border transition-colors cursor-pointer"
+            class="group flex items-stretch rounded-lg border transition-all duration-150 cursor-pointer"
             :class="block.id === selectedId
               ? 'border-primary ring-1 ring-primary bg-primary/8'
               : 'border-white/10 bg-white/4 hover:border-white/20'"
