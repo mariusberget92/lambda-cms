@@ -36,6 +36,9 @@ class DatabaseSeeder extends Seeder
         // ── Default templates ────────────────────────────────────────────────
         $this->call(TemplateSeeder::class);
 
+        // ── Starter newsletter campaign ──────────────────────────────────────
+        $this->call(NewsletterCampaignSeeder::class);
+
         // ── Dev fixtures (test users, posts, categories, tags) ───────────────
         if (app()->environment('local')) {
             $this->call(DevSeeder::class);
