@@ -203,6 +203,8 @@ Route::middleware('installed')->group(function () {
         Route::delete('/newsletter/subscribers/{subscriber}',        [NewsletterController::class, 'destroySubscriber'])->name('newsletter.subscribers.destroy');
         Route::get('/newsletter/campaigns',                          [NewsletterController::class, 'campaigns'])->name('newsletter.campaigns');
         Route::post('/newsletter/campaigns',                         [NewsletterController::class, 'storeCampaign'])->name('newsletter.campaigns.store');
+        Route::get('/newsletter/campaigns/{campaign}/edit',          [NewsletterController::class, 'editCampaign'])->name('newsletter.campaigns.edit');
+        Route::put('/newsletter/campaigns/{campaign}',               [NewsletterController::class, 'updateCampaign'])->name('newsletter.campaigns.update');
         Route::post('/newsletter/campaigns/{campaign}/send',         [NewsletterController::class, 'sendCampaign'])->name('newsletter.campaigns.send');
         Route::delete('/newsletter/campaigns/{campaign}',            [NewsletterController::class, 'destroyCampaign'])->name('newsletter.campaigns.destroy');
 

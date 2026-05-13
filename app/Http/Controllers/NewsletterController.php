@@ -15,6 +15,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class NewsletterController extends Controller
 {
+    // ── Subscribers ───────────────────────────────────────────────────────────
+
     public function subscribers(Request $request): Response
     {
         $filter = $request->input('filter', 'confirmed');
@@ -56,8 +58,8 @@ class NewsletterController extends Controller
     public function bulkSubscribers(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'ids'    => ['required', 'array', 'min:1'],
-            'ids.*'  => ['integer', 'exists:newsletter_subscribers,id'],
+            'ids'   => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:newsletter_subscribers,id'],
         ]);
 
         $count = count($validated['ids']);
@@ -83,6 +85,8 @@ class NewsletterController extends Controller
         ]);
     }
 
+    // ── Campaigns ─────────────────────────────────────────────────────────────
+
     public function campaigns(): Response
     {
         $campaigns = NewsletterCampaign::latest()
@@ -92,6 +96,7 @@ class NewsletterController extends Controller
                 'title'            => $c->title,
                 'subject'          => $c->subject,
                 'sent_at'          => $c->sent_at?->toDateString(),
+                'scheduled_at'     => $c->scheduled_at?->toIso8601String(),
                 'recipients_count' => $c->recipients_count,
                 'created_at'       => $c->created_at->toDateString(),
             ]);
@@ -101,18 +106,66 @@ class NewsletterController extends Controller
         ]);
     }
 
+    /**
+     * Create a draft campaign and redirect to the block editor.
+     */
     public function storeCampaign(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'title'   => ['required', 'string', 'max:255'],
             'subject' => ['required', 'string', 'max:255'],
-            'body'    => ['required', 'string'],
         ]);
 
-        $campaign = NewsletterCampaign::create($validated);
+        $campaign = NewsletterCampaign::create([
+            'title'   => $validated['title'],
+            'subject' => $validated['subject'],
+            'body'    => '',
+            'blocks'  => [],
+        ]);
+
         ActivityLogger::log('created', "Created newsletter campaign '{$campaign->title}'", 'NewsletterCampaign', $campaign->id);
 
-        return back()->with('status', 'Campaign created.');
+        return redirect()->route('newsletter.campaigns.edit', $campaign->id)
+            ->with('status', 'Campaign created. Design it with the block editor.');
+    }
+
+    /**
+     * Full-screen block editor for the campaign.
+     */
+    public function editCampaign(NewsletterCampaign $campaign): Response
+    {
+        abort_if($campaign->isSent(), 403, 'Sent campaigns cannot be edited.');
+
+        return Inertia::render('Newsletter/CampaignEditor', [
+            'campaign' => [
+                'id'           => $campaign->id,
+                'title'        => $campaign->title,
+                'subject'      => $campaign->subject,
+                'blocks'       => $campaign->blocks ?? [],
+                'scheduled_at' => $campaign->scheduled_at?->toIso8601String(),
+            ],
+        ]);
+    }
+
+    /**
+     * Save blocks (and metadata) from the campaign editor.
+     */
+    public function updateCampaign(Request $request, NewsletterCampaign $campaign): RedirectResponse
+    {
+        abort_if($campaign->isSent(), 403, 'Sent campaigns cannot be edited.');
+
+        $validated = $request->validate([
+            'title'        => ['required', 'string', 'max:255'],
+            'subject'      => ['required', 'string', 'max:255'],
+            'blocks'       => ['nullable', 'array'],
+            'scheduled_at' => ['nullable', 'date', 'after:now'],
+        ]);
+
+        $campaign->update($validated);
+
+        ActivityLogger::log('updated', "Updated newsletter campaign '{$campaign->title}'", 'NewsletterCampaign', $campaign->id);
+
+        return back()->with('status', 'Campaign saved.');
     }
 
     public function sendCampaign(Request $request, NewsletterCampaign $campaign): RedirectResponse
@@ -122,24 +175,25 @@ class NewsletterController extends Controller
         }
 
         $subscribers = NewsletterSubscriber::confirmed()->get();
-        $count = $subscribers->count();
+        $count       = $subscribers->count();
 
         foreach ($subscribers as $subscriber) {
             Mail::to($subscriber->email)
                 ->queue(new NewsletterCampaignMail($campaign, $subscriber));
         }
 
-        $campaign->update(['sent_at' => now(), 'recipients_count' => $count]);
+        $campaign->update(['sent_at' => now(), 'scheduled_at' => null, 'recipients_count' => $count]);
 
         ActivityLogger::log('updated', "Sent newsletter campaign '{$campaign->title}' to {$count} subscriber(s)", 'NewsletterCampaign', $campaign->id);
 
-        return back()->with('status', "Campaign sent to {$count} subscriber(s).");
+        return redirect()->route('newsletter.campaigns')
+            ->with('status', "Campaign sent to {$count} subscriber(s).");
     }
 
     public function destroyCampaign(NewsletterCampaign $campaign): RedirectResponse
     {
         ActivityLogger::log('deleted', "Deleted newsletter campaign '{$campaign->title}'", 'NewsletterCampaign', $campaign->id);
         $campaign->delete();
-        return back()->with('status', 'Campaign deleted.');
+        return redirect()->route('newsletter.campaigns')->with('status', 'Campaign deleted.');
     }
 }
