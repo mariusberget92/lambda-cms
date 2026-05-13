@@ -109,6 +109,7 @@ class BlogController extends Controller
                 'use_block_editor' => (bool) $post->use_block_editor,
                 'blocks'           => $post->blocks,
                 'published_at'        => $post->published_at?->toDateString(),
+                'reading_time'        => $post->readingTime(),
                 'featured_image_url'  => $post->featuredImage?->url,
                 'featured_image_alt'  => $post->featuredImage?->alt,
                 'author'              => [
@@ -315,6 +316,7 @@ class BlogController extends Controller
             'slug'                => $post->slug,
             'excerpt'             => $post->excerpt,
             'published_at'        => $post->published_at?->toDateString(),
+            'reading_time'        => $post->readingTime(),
             'featured_image_url'  => $post->featuredImage?->url,
             'author'              => [
                 'name'       => $post->author?->name ?? 'Deleted User',

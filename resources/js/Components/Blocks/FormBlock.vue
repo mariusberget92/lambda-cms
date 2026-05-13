@@ -82,15 +82,46 @@ const props = defineProps({ block: { type: Object, required: true } })
 const submitted = ref(false)
 
 async function handleSubmit(e) {
-  const action = props.block.data?.action
-  if (!action) { submitted.value = true; return }
-  try {
-    const form = e.target
-    const data = new FormData(form)
-    await fetch(action, { method: props.block.data?.method ?? 'POST', body: data })
+  const customAction = props.block.data?.action?.trim()
+
+  if (customAction) {
+    try {
+      const formEl = e.target
+      const data = new FormData(formEl)
+      await fetch(customAction, { method: props.block.data?.method ?? 'POST', body: data })
+    } catch { /* silently swallow */ }
     submitted.value = true
-  } catch {
-    submitted.value = true
+    return
   }
+
+  // Default: collect field values and POST to internal endpoint
+  const formEl = e.target
+  const fieldData = {}
+  for (const field of props.block.data?.fields ?? []) {
+    const el = formEl.elements[field.id]
+    if (el) {
+      fieldData[field.label || field.id] = el.type === 'checkbox' ? (el.checked ? 'Yes' : 'No') : el.value
+    }
+  }
+
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? ''
+
+  try {
+    await fetch('/form-submissions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': csrfToken,
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        form_name: props.block.data?.formName || props.block.data?.submitLabel || null,
+        page_slug: window.location.pathname.replace(/^\//, '') || null,
+        data: fieldData,
+      }),
+    })
+  } catch { /* silently swallow */ }
+
+  submitted.value = true
 }
 </script>

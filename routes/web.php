@@ -28,6 +28,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PreviewController;
 use App\Http\Controllers\NavigationController;
 use App\Http\Controllers\WebhookController;
+use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\FormSubmissionController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -63,6 +65,11 @@ Route::middleware('installed')->group(function () {
     Route::post('/blog/{post:slug}/comments', [CommentController::class, 'store'])
         ->middleware('throttle:comments')
         ->name('comments.store');
+
+    // Form submission (public, rate-limited)
+    Route::post('/form-submissions', [FormSubmissionController::class, 'store'])
+        ->middleware('throttle:10,1')
+        ->name('form-submissions.store');
 
     // ── Preview (public, token-based) ────────────────────────────────────────
     Route::get('/preview/posts/{token}', [PreviewController::class, 'post'])->name('preview.post');
@@ -173,12 +180,17 @@ Route::middleware('installed')->group(function () {
         Route::put('/webhooks/{webhook}',          [WebhookController::class, 'update'])->name('webhooks.update');
         Route::delete('/webhooks/{webhook}',       [WebhookController::class, 'destroy'])->name('webhooks.destroy');
 
+        Route::get('/activity-log',                         [ActivityLogController::class, 'index'])->name('activity-log.index');
+
+        Route::get('/form-submissions',                     [FormSubmissionController::class, 'index'])->name('form-submissions.index');
+        Route::delete('/form-submissions/{submission}',     [FormSubmissionController::class, 'destroy'])->name('form-submissions.destroy');
+
     });
     Route::get('/search', [SearchController::class, 'index'])->name('search');
 
     // ── Public custom pages (catch-all — must be last inside this group) ─────
     Route::get('/{slug}', [PublicPageController::class, 'show'])
-        ->where('slug', '^(?!login|logout|dashboard|blog|feed|sitemap\.xml|posts|categories|tags|users|profile|settings|media|comments|pages|templates|calendar|password|register|verify|install|email|forgot-password|reset-password|search).*$')
+        ->where('slug', '^(?!login|logout|dashboard|blog|feed|sitemap\.xml|posts|categories|tags|users|profile|settings|media|comments|pages|templates|calendar|password|register|verify|install|email|forgot-password|reset-password|search|activity-log|form-submissions|webhooks).*$')
         ->name('pages.show');
 
 });

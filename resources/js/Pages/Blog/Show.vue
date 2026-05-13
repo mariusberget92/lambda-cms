@@ -113,7 +113,10 @@ function submitComment() {
         </div>
         <div>
           <p class="text-sm font-medium text-gray-900">{{ post.author?.name ?? 'Unknown' }}</p>
-          <p class="text-xs text-gray-500">{{ formatDate(post.published_at) }}</p>
+          <p class="text-xs text-gray-500">
+            {{ formatDate(post.published_at) }}
+            <span v-if="post.reading_time" class="ml-2 before:content-['·'] before:mr-2">{{ post.reading_time }} min read</span>
+          </p>
         </div>
       </div>
 

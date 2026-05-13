@@ -170,6 +170,28 @@
           </template>
           Webhooks
         </SidebarLink>
+
+        <SidebarLink
+          v-if="user.role === 'administrator'"
+          :href="route('form-submissions.index')"
+          :active="currentRoute?.startsWith('form-submissions.')"
+        >
+          <template #icon>
+            <Inbox class="w-4 h-4" />
+          </template>
+          Form Submissions
+        </SidebarLink>
+
+        <SidebarLink
+          v-if="user.role === 'administrator'"
+          :href="route('activity-log.index')"
+          :active="currentRoute === 'activity-log.index'"
+        >
+          <template #icon>
+            <ClipboardList class="w-4 h-4" />
+          </template>
+          Activity Log
+        </SidebarLink>
         <div class="border-t border-sidebar-border my-3"></div>
         <a
           href="/"
@@ -238,7 +260,7 @@
 <script setup>
 import { computed, onMounted, watchEffect } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
-import { Sun, Moon, Calendar, ExternalLink, LayoutTemplate } from "lucide-vue-next";
+import { Sun, Moon, Calendar, ExternalLink, LayoutTemplate, Inbox, ClipboardList } from "lucide-vue-next";
 import SidebarLink from "@/Components/SidebarLink.vue";
 import { useTheme } from "@/composables/useTheme.js";
 import Notifications from "@/Components/Notifications.vue";

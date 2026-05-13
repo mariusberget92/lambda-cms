@@ -150,4 +150,34 @@ class Post extends Model
         }
         return (bool) $this->comments_enabled;
     }
+
+    public function readingTime(): int
+    {
+        if ($this->use_block_editor && is_array($this->blocks)) {
+            $text = $this->extractBlocksText($this->blocks);
+        } else {
+            $text = strip_tags((string) $this->body);
+        }
+
+        $words = str_word_count($text);
+        return max(1, (int) ceil($words / 200));
+    }
+
+    private function extractBlocksText(array $blocks): string
+    {
+        $parts = [];
+        foreach ($blocks as $block) {
+            foreach ($block['data'] ?? [] as $value) {
+                if (is_string($value)) {
+                    $parts[] = strip_tags($value);
+                } elseif (is_array($value)) {
+                    $parts[] = $this->extractBlocksText($value);
+                }
+            }
+            if (! empty($block['children'])) {
+                $parts[] = $this->extractBlocksText($block['children']);
+            }
+        }
+        return implode(' ', $parts);
+    }
 }
