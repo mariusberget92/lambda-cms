@@ -2,7 +2,7 @@
 <script setup>
 import PageBuilderLayout from '@/Layouts/PageBuilderLayout.vue'
 import BlockEditor       from '@/Components/BlockEditor/BlockEditor.vue'
-import { useForm, usePage, Head } from '@inertiajs/vue3'
+import { useForm, usePage, router, Head } from '@inertiajs/vue3'
 import { filterEmptyBlocks } from '@/lib/utils.js'
 import { ref } from 'vue'
 import axios from 'axios'
@@ -51,14 +51,12 @@ function schedule() {
 
 function sendNow() {
   showSendModal.value = false
-  // Save blocks first, then trigger send via a separate POST
   form.blocks = filterEmptyBlocks(form.blocks)
   form.put(route('newsletter.campaigns.update', props.campaign.id), {
     onSuccess: () => {
-      // Now send
-      useForm({}).post(route('newsletter.campaigns.send', props.campaign.id), {
+      router.post(route('newsletter.campaigns.send', props.campaign.id), {}, {
         onSuccess: () => notify('Campaign sent!', 'success'),
-        onError: () => notify('Failed to send campaign.', 'error'),
+        onError:   () => notify('Failed to send campaign.', 'error'),
       })
     },
   })
