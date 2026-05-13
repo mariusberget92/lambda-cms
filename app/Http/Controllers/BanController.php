@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 
 class BanController extends Controller
@@ -41,6 +42,8 @@ class BanController extends Controller
             'ban_reason'   => $validated['reason'],
         ]);
 
+        ActivityLogger::log('banned', "Banned user '{$user->name}' for: {$validated['reason']}", 'User', $user->id);
+
         return redirect()->route('users.index')
             ->with('status', "{$user->name} has been banned.");
     }
@@ -52,6 +55,8 @@ class BanController extends Controller
             'banned_until' => null,
             'ban_reason'   => null,
         ]);
+
+        ActivityLogger::log('unbanned', "Unbanned user '{$user->name}'", 'User', $user->id);
 
         return redirect()->route('users.index')
             ->with('status', "{$user->name} has been unbanned.");

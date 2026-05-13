@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Post;
+use App\Services\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -89,6 +90,7 @@ class CommentController extends Controller
     public function approve(Comment $comment): RedirectResponse
     {
         $comment->update(['status' => 'approved']);
+        ActivityLogger::log('updated', "Approved comment by '{$comment->author_name}'", 'Comment', $comment->id);
         return back()->with('status', 'Comment approved.');
     }
 
@@ -98,6 +100,7 @@ class CommentController extends Controller
     public function reject(Comment $comment): RedirectResponse
     {
         $comment->update(['status' => 'rejected']);
+        ActivityLogger::log('updated', "Rejected comment by '{$comment->author_name}'", 'Comment', $comment->id);
         return back()->with('status', 'Comment rejected.');
     }
 
@@ -106,6 +109,7 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment): RedirectResponse
     {
+        ActivityLogger::log('deleted', "Deleted comment by '{$comment->author_name}'", 'Comment', $comment->id);
         $comment->delete();
         return back()->with('status', 'Comment deleted.');
     }
@@ -138,6 +142,8 @@ class CommentController extends Controller
                 ->queue(new \App\Mail\CommentReplyMail($comment, $reply));
         }
 
+        ActivityLogger::log('created', "Replied to comment by '{$comment->author_name}'", 'Comment', $comment->id);
+
         return back()->with('status', 'Reply sent.');
     }
 
@@ -160,6 +166,14 @@ class CommentController extends Controller
             'delete'  => $comments->delete(),
         };
 
-        return back()->with('status', ucfirst($validated['action']) . 'd ' . count($validated['ids']) . ' comment(s).');
+        $bulkCount  = count($validated['ids']);
+        $bulkAction = $validated['action'];
+        ActivityLogger::log(
+            $bulkAction === 'delete' ? 'deleted' : 'updated',
+            "Bulk {$bulkAction}d {$bulkCount} comment" . ($bulkCount === 1 ? '' : 's'),
+            'Comment'
+        );
+
+        return back()->with('status', ucfirst($bulkAction) . 'd ' . $bulkCount . ' comment(s).');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -42,7 +43,9 @@ class CategoryController extends Controller
 
         $validated['slug'] = Category::generateSlug($validated['name']);
 
-        Category::create($validated);
+        $category = Category::create($validated);
+
+        ActivityLogger::log('created', "Created category '{$category->name}'", 'Category', $category->id);
 
         return redirect()
             ->route('categories.index')
@@ -74,6 +77,8 @@ class CategoryController extends Controller
 
         $category->update($validated);
 
+        ActivityLogger::log('updated', "Updated category '{$category->name}'", 'Category', $category->id);
+
         return redirect()
             ->route('categories.index')
             ->with('status', 'Category updated.');
@@ -81,6 +86,8 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
+        ActivityLogger::log('deleted', "Deleted category '{$category->name}'", 'Category', $category->id);
+
         $category->delete();
 
         return redirect()

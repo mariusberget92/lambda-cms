@@ -6,6 +6,7 @@ use App\Models\Page;
 use App\Models\Post;
 use App\Models\Revision;
 use App\Models\Template;
+use App\Services\ActivityLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -68,6 +69,10 @@ class RevisionController extends Controller
             && ! $request->user()->hasRole('administrator')) {
             abort(403);
         }
+
+        $modelType = class_basename($revisable);
+        $modelName = $revisable->title ?? $revisable->name ?? "#{$revisable->id}";
+        ActivityLogger::log('restored', "Restored revision for {$modelType} '{$modelName}'", $modelType, $revisable->id);
 
         return response()->json($revision->payload);
     }

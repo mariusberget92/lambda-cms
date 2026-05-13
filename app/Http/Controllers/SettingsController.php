@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\TestMail;
 use App\Models\Setting;
+use App\Services\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -87,6 +88,8 @@ class SettingsController extends Controller
         foreach ($validated as $key => $value) {
             Setting::set($key, $value ?? '');
         }
+
+        ActivityLogger::log('updated', "Updated {$group} settings", 'Settings');
 
         return back()->with('status', 'Settings saved.');
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\NavItem;
 use App\Models\Page;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -43,13 +44,15 @@ class NavigationController extends Controller
 
         $maxOrder = NavItem::max('sort_order') ?? -1;
 
-        NavItem::create([
+        $navItem = NavItem::create([
             'type'       => $validated['type'],
             'label'      => $validated['label'],
             'url'        => $validated['type'] === 'custom' ? $validated['url'] : null,
             'page_id'    => $validated['type'] === 'page' ? $validated['page_id'] : null,
             'sort_order' => $maxOrder + 1,
         ]);
+
+        ActivityLogger::log('created', "Added navigation item '{$navItem->label}'", 'NavItem', $navItem->id);
 
         return back()->with('status', 'Navigation item added.');
     }
@@ -70,6 +73,8 @@ class NavigationController extends Controller
             'page_id' => $validated['type'] === 'page' ? $validated['page_id'] : null,
         ]);
 
+        ActivityLogger::log('updated', "Updated navigation item '{$navItem->label}'", 'NavItem', $navItem->id);
+
         return back()->with('status', 'Navigation item updated.');
     }
 
@@ -89,6 +94,7 @@ class NavigationController extends Controller
 
     public function destroy(NavItem $navItem)
     {
+        ActivityLogger::log('deleted', "Deleted navigation item '{$navItem->label}'", 'NavItem', $navItem->id);
         $navItem->delete();
         return back()->with('status', 'Navigation item deleted.');
     }

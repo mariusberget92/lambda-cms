@@ -108,6 +108,8 @@ const actionFilters = [
   { label: 'Updated',   value: 'updated' },
   { label: 'Deleted',   value: 'deleted' },
   { label: 'Published', value: 'published' },
+  { label: 'Banned',    value: 'banned' },
+  { label: 'Restored',  value: 'restored' },
 ]
 
 function badgeClass(action) {

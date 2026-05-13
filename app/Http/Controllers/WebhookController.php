@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Webhook;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -26,7 +27,9 @@ class WebhookController extends Controller
             'is_active' => ['boolean'],
         ]);
 
-        Webhook::create($validated);
+        $webhook = Webhook::create($validated);
+
+        ActivityLogger::log('created', "Created webhook for '{$webhook->url}'", 'Webhook', $webhook->id);
 
         return back()->with('status', 'Webhook created.');
     }
@@ -43,11 +46,15 @@ class WebhookController extends Controller
 
         $webhook->update($validated);
 
+        ActivityLogger::log('updated', "Updated webhook for '{$webhook->url}'", 'Webhook', $webhook->id);
+
         return back()->with('status', 'Webhook updated.');
     }
 
     public function destroy(Webhook $webhook)
     {
+        ActivityLogger::log('deleted', "Deleted webhook for '{$webhook->url}'", 'Webhook', $webhook->id);
+
         $webhook->delete();
 
         return back()->with('status', 'Webhook deleted.');

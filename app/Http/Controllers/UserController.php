@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Notifications\WelcomeNotification;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -62,6 +63,8 @@ class UserController extends Controller
         $user->assignRole($validated['role']);
         $user->notify(new WelcomeNotification());
 
+        ActivityLogger::log('created', "Invited user '{$user->email}' with role '{$validated['role']}'", 'User', $user->id);
+
         return redirect()
             ->route('users.index')
             ->with('status', "Invitation sent to {$user->email}.");
@@ -109,6 +112,8 @@ class UserController extends Controller
 
         $user->syncRoles([$validated['role']]);
 
+        ActivityLogger::log('updated', "Updated user '{$user->name}' (role: {$validated['role']})", 'User', $user->id);
+
         return redirect()
             ->route('users.index')
             ->with('status', 'User updated.');
@@ -132,6 +137,8 @@ class UserController extends Controller
                 ->route('users.index')
                 ->with('error', 'There must always be at least one administrator.');
         }
+
+        ActivityLogger::log('deleted', "Deleted user '{$user->name}' ({$user->email})", 'User', $user->id);
 
         $user->delete();
 

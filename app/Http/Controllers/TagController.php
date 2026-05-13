@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tag;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -38,7 +39,9 @@ class TagController extends Controller
 
         $validated['slug'] = Tag::generateSlug($validated['name']);
 
-        Tag::create($validated);
+        $tag = Tag::create($validated);
+
+        ActivityLogger::log('created', "Created tag '{$tag->name}'", 'Tag', $tag->id);
 
         return redirect()
             ->route('tags.index')
@@ -66,6 +69,8 @@ class TagController extends Controller
 
         $tag->update($validated);
 
+        ActivityLogger::log('updated', "Updated tag '{$tag->name}'", 'Tag', $tag->id);
+
         return redirect()
             ->route('tags.index')
             ->with('status', 'Tag updated.');
@@ -73,6 +78,8 @@ class TagController extends Controller
 
     public function destroy(Tag $tag)
     {
+        ActivityLogger::log('deleted', "Deleted tag '{$tag->name}'", 'Tag', $tag->id);
+
         $tag->delete();
 
         return redirect()

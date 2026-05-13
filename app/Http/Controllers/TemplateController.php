@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Template;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -54,6 +55,8 @@ class TemplateController extends Controller
         }
 
         $template = Template::create([...$validated, 'user_id' => auth()->id()]);
+
+        ActivityLogger::log('created', "Created template '{$template->title}' ({$template->type})", 'Template', $template->id);
 
         return redirect()->route('templates.edit', $template->id)->with('status', 'Template created.');
     }
@@ -110,9 +113,17 @@ class TemplateController extends Controller
                 ->update(['status' => 'draft']);
         }
 
+        $wasPublished = $template->status !== 'published' && $validated['status'] === 'published';
+
         $template->update($validated);
         $template->saveRevision(auth()->id());
         $template->autosaves()->where('user_id', auth()->id())->delete();
+
+        ActivityLogger::log(
+            $wasPublished ? 'published' : 'updated',
+            $wasPublished ? "Published template '{$template->title}'" : "Updated template '{$template->title}'",
+            'Template', $template->id
+        );
 
         return redirect()->route('templates.edit', $template->id)->with('status', 'Template saved.');
     }
@@ -126,6 +137,8 @@ class TemplateController extends Controller
         if ($template->is_system) {
             abort(403, 'System templates cannot be deleted.');
         }
+
+        ActivityLogger::log('deleted', "Deleted template '{$template->title}'", 'Template', $template->id);
 
         $template->delete();
 

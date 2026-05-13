@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Media;
 use App\Models\Post;
+use App\Services\ActivityLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -126,6 +127,8 @@ class MediaController extends Controller
             'description'       => null,
         ]);
 
+        ActivityLogger::log('created', "Uploaded media '{$media->original_filename}'", 'Media', $media->id);
+
         return response()->json($this->toArray($media));
     }
 
@@ -150,6 +153,8 @@ class MediaController extends Controller
         if ($media->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
             abort(403);
         }
+
+        ActivityLogger::log('deleted', "Deleted media '{$media->original_filename}'", 'Media', $media->id);
 
         Storage::disk($media->disk)->delete($media->path);
         $media->delete();
@@ -190,7 +195,11 @@ class MediaController extends Controller
             $media->delete();
         }
 
-        return response()->json(['deleted' => $items->count()]);
+        $deletedCount = $items->count();
+
+        ActivityLogger::log('deleted', "Bulk deleted {$deletedCount} media file" . ($deletedCount === 1 ? '' : 's'), 'Media');
+
+        return response()->json(['deleted' => $deletedCount]);
     }
 
     private function toArray(Media $media): array

@@ -6,6 +6,7 @@ use App\Models\Autosave;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
@@ -122,6 +123,8 @@ class PostController extends Controller
         $post->tags()->sync($tagIds);
         $post->categories()->sync($categoryIds);
 
+        ActivityLogger::log('created', "Created post '{$post->title}'", 'Post', $post->id);
+
         return redirect()
             ->route('posts.index')
             ->with('status', 'Post created successfully.');
@@ -235,11 +238,19 @@ class PostController extends Controller
             $validated['published_at'] = null;
         }
 
+        $wasPublished = $post->status !== 'published' && $validated['status'] === 'published';
+
         $post->update($validated);
         $post->tags()->sync($tagIds);
         $post->categories()->sync($categoryIds);
 
         $post->saveRevision($request->user()->id);
+
+        ActivityLogger::log(
+            $wasPublished ? 'published' : 'updated',
+            $wasPublished ? "Published post '{$post->title}'" : "Updated post '{$post->title}'",
+            'Post', $post->id
+        );
 
         Autosave::where([
             'autosaveable_type' => Post::class,
@@ -257,6 +268,8 @@ class PostController extends Controller
         if ($post->user_id !== request()->user()->id && !request()->user()->hasRole('administrator')) {
             abort(403);
         }
+
+        ActivityLogger::log('deleted', "Deleted post '{$post->title}'", 'Post', $post->id);
 
         $post->delete();
 
@@ -301,6 +314,12 @@ class PostController extends Controller
         $count  = $posts->count();
         $labels = ['publish' => 'published', 'draft' => 'drafted', 'delete' => 'deleted'];
         $label  = $labels[$validated['action']];
+
+        ActivityLogger::log(
+            $validated['action'] === 'publish' ? 'published' : $validated['action'] === 'delete' ? 'deleted' : 'updated',
+            "Bulk {$label} {$count} post" . ($count === 1 ? '' : 's'),
+            'Post'
+        );
 
         return redirect()->back()->with('status', "{$count} post" . ($count === 1 ? '' : 's') . " {$label}.");
     }

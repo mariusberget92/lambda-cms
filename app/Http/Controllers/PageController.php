@@ -6,6 +6,7 @@ use App\Models\Autosave;
 use App\Models\Category;
 use App\Models\Page;
 use App\Models\Tag;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -49,10 +50,12 @@ class PageController extends Controller
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
         ]);
 
-        Page::create([
+        $page = Page::create([
             ...$validated,
             'user_id' => auth()->id(),
         ]);
+
+        ActivityLogger::log('created', "Created page '{$page->title}'", 'Page', $page->id);
 
         return redirect()->route('pages.index')->with('status', 'Page created.');
     }
@@ -94,9 +97,17 @@ class PageController extends Controller
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
         ]);
 
+        $wasPublished = $page->status !== 'published' && $validated['status'] === 'published';
+
         $page->update($validated);
 
         $page->saveRevision($request->user()->id);
+
+        ActivityLogger::log(
+            $wasPublished ? 'published' : 'updated',
+            $wasPublished ? "Published page '{$page->title}'" : "Updated page '{$page->title}'",
+            'Page', $page->id
+        );
 
         Autosave::where([
             'autosaveable_type' => Page::class,
@@ -109,6 +120,8 @@ class PageController extends Controller
 
     public function destroy(Page $page)
     {
+        ActivityLogger::log('deleted', "Deleted page '{$page->title}'", 'Page', $page->id);
+
         $page->delete();
 
         return redirect()->route('pages.index')->with('status', 'Page deleted.');
