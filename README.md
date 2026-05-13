@@ -1,6 +1,6 @@
 # ⚡ Lambda CMS
 
-> A modern, self-hosted CMS built with **Laravel 12**, **Inertia.js**, and **Vue 3**. Clean, fast, and developer-friendly — with a full-featured drag-and-drop block editor, template system, media library, comment moderation, webhooks, and a headless JSON API.
+> A modern, self-hosted CMS built with **Laravel 12**, **Inertia.js**, and **Vue 3**. Clean, fast, and developer-friendly — with a full-featured drag-and-drop block editor, template system, media library, comment moderation, newsletter system, post analytics, global search, webhooks, and a headless JSON API.
 
 ---
 
@@ -43,6 +43,7 @@
 | 📰 Post parts | Post Title, Post Body, Featured Image, Post Meta, Post Author, Post Taxonomy, Post Comments |
 | 🗃️ Archive | Archive Title, Archive Loop |
 | 🧩 Composition | Template (embed a saved partial or layout template) |
+| 📧 Newsletter | Newsletter (email subscribe form with double opt-in) |
 
 **Editor features:**
 - 🖱️ Drag-and-drop canvas with cross-list nesting
@@ -82,6 +83,7 @@
 - Admin bar visible to authenticated users (hidden from public visitors)
 - Navigation items managed from the admin and rendered via the Navigation block
 - **Reading time estimate** — automatically calculated and displayed on each post (200 wpm, HTML/block-aware)
+- **Post view tracking** — each post view is counted with cookie-based deduplication (one view per visitor per 24 h)
 
 ### 💬 Comments
 
@@ -109,11 +111,37 @@
 - Rate-limited public endpoint (10 submissions / minute per IP)
 - Stores form name, originating page slug, field data (JSON), and submitter IP
 
+### 📈 Post View Analytics
+
+- View count tracked per post — incremented on each public visit with cookie-based deduplication (`viewed_post_{id}`, 24 h TTL)
+- View count visible in the admin **Posts** table (Views column)
+- **Top Posts by Views** widget on the Dashboard showing the 5 most-read published posts
+
+### 🔍 Admin Global Search
+
+- **Cmd+K / Ctrl+K** keyboard shortcut opens a command palette from anywhere in the admin
+- Searches across posts (title/excerpt), pages (title), media (filename/alt), and users (name/email)
+- Results are grouped by type with keyboard navigation (↑ ↓ ↵) and click-to-navigate
+- Debounced live search (250 ms) via `GET /admin/search?q=`
+- Search button also visible in the admin topbar
+
+### 📬 Newsletter
+
+- **Double opt-in** subscriber flow — confirmation email sent on subscribe; confirmed via token link
+- Unsubscribe via token link (appended to every campaign email automatically)
+- Admin subscriber list at `/newsletter/subscribers` — filter by confirmed / pending / all, bulk delete, CSV export
+- **Campaign editor** — full-screen block editor (same canvas as pages and templates) for designing rich email layouts
+- **Block-to-email renderer** — converts block JSON to inline-styled, email-client-safe HTML; supports paragraph, heading, image, divider, button, CTA, quote, alert, spacer, list, and nested containers
+- **Send now** or **schedule** campaigns for a future date and time
+- Scheduled campaigns are dispatched automatically by `php artisan newsletter:send-scheduled` (runs every minute via the Laravel scheduler)
+- Campaign status badges: Draft / Scheduled / Sent; edit any unsent campaign directly in the block editor
+- **Newsletter block** — embeds a subscribe form in any page or post built with the block editor (configurable heading, description, button label, optional name field)
+
 ### 📋 Activity Log
 
-- Every significant admin action is recorded automatically (create, update, delete, publish, ban/unban)
+- Every significant admin action is recorded automatically (create, update, delete, publish, ban/unban, restore)
 - Admin timeline view at `/activity-log` — colored action badges, user attribution, IP address, timestamps
-- Filterable by action type (All / Created / Updated / Deleted / Published)
+- Filterable by action type (All / Created / Updated / Deleted / Published / Banned / Restored)
 
 ### 🔒 Auth & Security
 
@@ -140,9 +168,10 @@
 
 ### 📊 Dashboard
 
-- Stats: total posts, published, scheduled, drafts, pending comments
+- Stats: total posts, published, scheduled, drafts, pending comments, confirmed newsletter subscribers
 - Upcoming scheduled posts (next 5)
 - Recent posts with status badges
+- **Top Posts by Views** — top 5 published posts ranked by view count
 
 ### ⚙️ Settings (Admin)
 
@@ -215,9 +244,9 @@ npm run dev
 - [ ] API write access — token-based auth for creating/updating content
 - [ ] Multi-language / i18n content support
 - [ ] Featured image in-browser crop before saving to media library
-- [ ] Pagination block for the public frontend
-- [ ] User-configurable accent color
 - [ ] Import / export pages and templates
+- [ ] Newsletter: rich text editor for campaign body (alternative to block editor for simple campaigns)
+- [ ] View analytics chart — views over time per post
 
 ---
 

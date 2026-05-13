@@ -86,8 +86,8 @@ resources/js/lib/loopSources.js       — Loop source field definitions
 - **Preview**: `/preview/pages/{token}` — shareable preview URL for drafts
 
 ### 🧱 Block Editor
-Block types available (55 total):
-`container`, `section`, `heading`, `paragraph`, `image`, `video`, `audio`, `gallery`, `code`, `quote`, `divider`, `spacer`, `cta`, `html`, `list`, `table`, `loop`, `post-list`, `post-title`, `post-body`, `post-featured-image`, `post-meta`, `post-author`, `post-taxonomy`, `post-comments`, `archive-title`, `archive-loop`, `search`, `navigation`, `link`, `filter-link`, `button`, `icon`, `alert`, `card`, `hero`, `banner`, `breadcrumb`, `social-links`, `progress-bar`, `file-download`, `feature`, `stats`, `team-member`, `timeline`, `toc`, `form`, `pricing`, `map`, `embed`, `countdown`, `accordion`, `tabs`, `testimonial`, `template`, `pagination`
+Block types available (56 total):
+`container`, `section`, `heading`, `paragraph`, `image`, `video`, `audio`, `gallery`, `code`, `quote`, `divider`, `spacer`, `cta`, `html`, `list`, `table`, `loop`, `post-list`, `post-title`, `post-body`, `post-featured-image`, `post-meta`, `post-author`, `post-taxonomy`, `post-comments`, `archive-title`, `archive-loop`, `search`, `navigation`, `link`, `filter-link`, `button`, `icon`, `alert`, `card`, `hero`, `banner`, `breadcrumb`, `social-links`, `progress-bar`, `file-download`, `feature`, `stats`, `team-member`, `timeline`, `toc`, `form`, `pricing`, `map`, `embed`, `countdown`, `accordion`, `tabs`, `testimonial`, `template`, `pagination`, `newsletter`
 
 **Canvas features:**
 - Drag-and-drop with cross-list nesting
@@ -171,13 +171,16 @@ Block types available (55 total):
 ### 📊 Dashboard
 - Post counts (total/published/scheduled/draft)
 - Pending comments count
+- **Confirmed newsletter subscribers count** (admin-only stat card)
 - Upcoming scheduled posts (next 5)
 - Recent posts (last 5 updated)
+- **Top Posts by Views** — top 5 published posts by `views` column, descending
 
 ### 🌐 Public Frontend
 - Blog index: paginated published posts, sidebar (categories, tags, recent posts)
 - Single post: full content, featured image, author, categories/tags, comments
 - **Reading time estimate** — `Post::readingTime()` at 200 wpm; exposed as `reading_time` in `BlogController::postData()` and `show()`; displayed in `Blog/Show.vue` next to publish date
+- **Post view tracking** — `BlogController::show()` increments `posts.views` on each visit; cookie `viewed_post_{id}` (24 h TTL) prevents duplicate counts from the same visitor
 - Category + tag archive pages
 - RSS feed (`/feed`) — 20 most recent published posts
 - Sitemap XML (`/sitemap.xml`)
@@ -207,10 +210,54 @@ Block types available (55 total):
 - Admin inbox: `GET /form-submissions` → `Forms/Index.vue` — expandable rows, delete with confirmation
 - Admin `DELETE /form-submissions/{submission}`
 
+### 📈 Post View Analytics
+- `posts.views` — `unsignedBigInteger` column (default 0) added via migration
+- `BlogController::show()` calls `$post->increment('views')` after checking cookie `viewed_post_{id}` (24 h); no auth required
+- **Admin Posts table** — Views column visible at xl breakpoint (`Posts/Index.vue`)
+- **Dashboard widget** — `DashboardController` passes `top_posts_by_views` (top 5 published by `views DESC`); rendered as ranked list in `Dashboard/Index.vue`
+- Views included in `PostController::index()` mapping so it appears in the admin table
+
+### 🔍 Admin Global Search
+- `AdminSearchController` (single-action) — `GET /admin/search?q=`; requires auth + verified; returns JSON with groups: `posts`, `pages`, `media`, `users`; each result has `{type, id, label, meta, url}`; minimum query length 2
+- `CommandPalette.vue` — Teleport'd modal; opens on Cmd+K / Ctrl+K (or topbar search button); closes on ESC or backdrop click; keyboard navigation with ↑↓↵; debounced fetch (250 ms); grouped result display with type icons
+- `AppLayout.vue` — imports and mounts `CommandPalette`; search button in topbar dispatches a synthetic keyboard event to open the palette
+
+### 📬 Newsletter
+- **`newsletter_subscribers`** table: `id`, `email` (unique), `name` (nullable), `token` (unique 64-char random), `confirmed_at` (nullable timestamp), `ip_address`, timestamps
+- **`newsletter_campaigns`** table: `id`, `title`, `subject`, `body`, `blocks` (JSON, nullable), `sent_at` (nullable), `scheduled_at` (nullable), `recipients_count`, timestamps
+- **`NewsletterSubscriber`** model — `confirmed()` scope, `isConfirmed()`, token-based unsubscribe
+- **`NewsletterCampaign`** model — `isSent()`, `isScheduled()`, `blocks` cast to array, `sent_at`/`scheduled_at` cast to datetime
+- **`NewsletterSubscriptionController`** (public):
+  - `POST /newsletter/subscribe` (throttle 5/min) — validates email/name, creates subscriber with random token, queues `NewsletterConfirmMail`; silently ignores already-confirmed; JSON or redirect response
+  - `GET /newsletter/confirm/{token}` — marks `confirmed_at = now()`
+  - `GET /newsletter/unsubscribe/{token}` — deletes subscriber record
+- **`NewsletterController`** (admin-only):
+  - `GET /newsletter/subscribers` — paginated list, filter by confirmed/pending/all; totals passed as props
+  - `DELETE /newsletter/subscribers/{id}` — single delete with activity log
+  - `DELETE /newsletter/subscribers/bulk` — bulk delete by IDs
+  - `GET /newsletter/subscribers/export` — streamed CSV download (email, name, confirmed_at)
+  - `GET /newsletter/campaigns` — paginated campaign list
+  - `POST /newsletter/campaigns` — create draft (title + subject only), redirect to editor
+  - `GET /newsletter/campaigns/{id}/edit` — returns `Newsletter/CampaignEditor` Inertia page (blocks + metadata)
+  - `PUT /newsletter/campaigns/{id}` — save blocks, title, subject, scheduled_at
+  - `POST /newsletter/campaigns/{id}/send` — send immediately to all confirmed subscribers; queues `NewsletterCampaignMail` per subscriber; sets `sent_at`
+  - `DELETE /newsletter/campaigns/{id}` — delete campaign
+- **`BlockEmailRenderer`** service (`app/Services/BlockEmailRenderer.php`) — converts block JSON array to table-layout email HTML with inline styles; supported blocks: `paragraph`, `heading`, `image`, `divider`, `button`, `cta`, `html`, `quote`, `alert`, `spacer`, `list`, `container`, `section`; appends unsubscribe footer
+- **`NewsletterCampaignMail`** — uses `BlockEmailRenderer` when `blocks` is non-empty; falls back to `emails.newsletter.campaign` blade view for legacy plain-text body; uses `Content(htmlString:)` to pass rendered HTML directly
+- **`NewsletterConfirmMail`** — simple confirm link email (`emails.newsletter.confirm` blade view)
+- **`SendScheduledNewslettersCommand`** (`newsletter:send-scheduled`) — finds campaigns where `scheduled_at <= now()` and `sent_at IS NULL`; queues emails to all confirmed subscribers; updates `sent_at` and `recipients_count`; registered in scheduler (every minute, without overlapping)
+- **`Newsletter/Subscribers.vue`** — table with confirmed/pending/all filter tabs, bulk checkbox selection, bulk delete modal, single delete modal, CSV export button, pagination
+- **`Newsletter/Campaigns.vue`** — create-draft form (title + subject); campaign list with Draft/Scheduled/Sent badges and scheduled datetime display; edit link for unsent campaigns; delete modal
+- **`Newsletter/CampaignEditor.vue`** — full-screen `PageBuilderLayout` + `BlockEditor` (same pattern as Templates/Edit); top bar has inline title/subject fields, schedule date-picker toggle, Save / Schedule / Send Now buttons; save → PUT update; send now → PUT update then `router.post()` to send endpoint
+- **`NewsletterBlock.vue`** — public subscribe form block; email + optional name field; posts JSON to `/newsletter/subscribe` with CSRF token; shows success message on confirmed submission; configurable heading, description, button label, placeholder text, disclaimer
+- **Sidebar** — Newsletter section (admin-only): Subscribers link + Campaigns link
+- **Scheduler** — `bootstrap/app.php` registers `newsletter:send-scheduled` every minute alongside `posts:publish-scheduled`; production deployment requires `* * * * * php artisan schedule:run` cron entry
+
 ### 📋 Activity Log
 - `ActivityLog` model — `user_id` (nullable FK), `action`, `model_type`, `model_id`, `description`, `metadata` (JSON), `ip_address`
 - `ActivityLogger::log(action, description, modelType?, modelId?, metadata?)` static helper — reads user from `auth()` and IP from request
-- Admin timeline: `GET /activity-log?action=` → `ActivityLog/Index.vue` — colored badges, filter tabs (All / Created / Updated / Deleted / Published), paginated 50/page
+- Wired to all admin controllers: PostController, PageController, UserController, BanController, MediaController, CommentController, CategoryController, TagController, NavigationController, WebhookController, SettingsController, TemplateController, RevisionController, NewsletterController
+- Admin timeline: `GET /activity-log?action=` → `ActivityLog/Index.vue` — colored badges, filter tabs (All / Created / Updated / Deleted / Published / Banned / Restored), paginated 50/page
 
 ### 🔒 Security
 - `SecurityHeaders` middleware on every web response: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, `X-XSS-Protection`
@@ -240,10 +287,12 @@ Block types available (55 total):
 ## Database Tables
 
 ```
-users, posts, categories, tags, pages, comments, media, nav_items
+users, posts (+ views unsignedBigInteger default 0), categories, tags, pages, comments, media, nav_items
 templates, webhooks, settings
 autosaves (morphable), revisions (morphable)
 activity_logs, form_submissions
+newsletter_subscribers (email, name, token, confirmed_at, ip_address)
+newsletter_campaigns (title, subject, body, blocks JSON, sent_at, scheduled_at, recipients_count)
 Pivots: category_post, post_tag
 Spatie: roles, permissions, model_has_roles, ...
 ```
@@ -277,12 +326,13 @@ GET/POST /reset-password/{token}
 ### Auth + verified
 ```
 GET  /dashboard
-/posts     (resource + bulk + autosave + revisions)
+/posts      (resource + bulk + autosave + revisions)
 /categories (resource)
 /tags       (resource)
 /profile    (info, password, avatar)
 /media      (resource + bulk-destroy + usage)
 /calendar   (index + data)
+GET  /admin/search                 global search (JSON, debounced)
 GET  /search
 POST /logout
 ```
@@ -299,6 +349,23 @@ POST /logout
 GET    /activity-log               activity log timeline (filterable by action)
 GET    /form-submissions           form submissions inbox
 DELETE /form-submissions/{id}      delete a submission
+GET    /newsletter/subscribers                  subscriber list (filter: all/confirmed/pending)
+DELETE /newsletter/subscribers/bulk             bulk delete by IDs
+GET    /newsletter/subscribers/export           CSV download
+DELETE /newsletter/subscribers/{id}             delete single subscriber
+GET    /newsletter/campaigns                    campaign list
+POST   /newsletter/campaigns                    create draft campaign, redirect to editor
+GET    /newsletter/campaigns/{id}/edit          campaign block editor
+PUT    /newsletter/campaigns/{id}               save blocks, title, subject, scheduled_at
+POST   /newsletter/campaigns/{id}/send          send now to all confirmed subscribers
+DELETE /newsletter/campaigns/{id}               delete campaign
+```
+
+### Public Newsletter
+```
+POST /newsletter/subscribe          subscribe (throttle 5/min); queues confirm email
+GET  /newsletter/confirm/{token}    set confirmed_at
+GET  /newsletter/unsubscribe/{token} delete subscriber record
 ```
 
 ### API
@@ -365,4 +432,4 @@ Potential future improvements:
 
 ---
 
-*Last updated: 2026-05-13 — pushed at commit `5d0d596`*
+*Last updated: 2026-05-13 — pushed at commit `f881da7`*
