@@ -29,7 +29,10 @@ use App\Http\Controllers\PreviewController;
 use App\Http\Controllers\NavigationController;
 use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\AdminSearchController;
 use App\Http\Controllers\FormSubmissionController;
+use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\NewsletterSubscriptionController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -71,6 +74,11 @@ Route::middleware('installed')->group(function () {
         ->middleware('throttle:10,1')
         ->name('form-submissions.store');
 
+    // Newsletter (public)
+    Route::post('/newsletter/subscribe',          [NewsletterSubscriptionController::class, 'subscribe'])->middleware('throttle:5,1')->name('newsletter.subscribe');
+    Route::get('/newsletter/confirm/{token}',     [NewsletterSubscriptionController::class, 'confirm'])->name('newsletter.confirm');
+    Route::get('/newsletter/unsubscribe/{token}', [NewsletterSubscriptionController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
+
     // ── Preview (public, token-based) ────────────────────────────────────────
     Route::get('/preview/posts/{token}', [PreviewController::class, 'post'])->name('preview.post');
     Route::get('/preview/pages/{token}', [PreviewController::class, 'page'])->name('preview.page');
@@ -109,6 +117,9 @@ Route::middleware('installed')->group(function () {
     // ── Auth + verified ──────────────────────────────────────────────────────
     Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        // Admin global search
+        Route::get('/admin/search', AdminSearchController::class)->name('admin.search');
 
         Route::post('/posts/bulk', [PostController::class, 'bulk'])->name('posts.bulk');
         Route::resource('posts',   PostController::class)->except(['show']);
@@ -185,12 +196,22 @@ Route::middleware('installed')->group(function () {
         Route::get('/form-submissions',                     [FormSubmissionController::class, 'index'])->name('form-submissions.index');
         Route::delete('/form-submissions/{submission}',     [FormSubmissionController::class, 'destroy'])->name('form-submissions.destroy');
 
+        // Newsletter admin
+        Route::get('/newsletter/subscribers',                        [NewsletterController::class, 'subscribers'])->name('newsletter.subscribers');
+        Route::delete('/newsletter/subscribers/bulk',                [NewsletterController::class, 'bulkSubscribers'])->name('newsletter.subscribers.bulk');
+        Route::get('/newsletter/subscribers/export',                 [NewsletterController::class, 'exportSubscribers'])->name('newsletter.subscribers.export');
+        Route::delete('/newsletter/subscribers/{subscriber}',        [NewsletterController::class, 'destroySubscriber'])->name('newsletter.subscribers.destroy');
+        Route::get('/newsletter/campaigns',                          [NewsletterController::class, 'campaigns'])->name('newsletter.campaigns');
+        Route::post('/newsletter/campaigns',                         [NewsletterController::class, 'storeCampaign'])->name('newsletter.campaigns.store');
+        Route::post('/newsletter/campaigns/{campaign}/send',         [NewsletterController::class, 'sendCampaign'])->name('newsletter.campaigns.send');
+        Route::delete('/newsletter/campaigns/{campaign}',            [NewsletterController::class, 'destroyCampaign'])->name('newsletter.campaigns.destroy');
+
     });
     Route::get('/search', [SearchController::class, 'index'])->name('search');
 
     // ── Public custom pages (catch-all — must be last inside this group) ─────
     Route::get('/{slug}', [PublicPageController::class, 'show'])
-        ->where('slug', '^(?!login|logout|dashboard|blog|feed|sitemap\.xml|posts|categories|tags|users|profile|settings|media|comments|pages|templates|calendar|password|register|verify|install|email|forgot-password|reset-password|search|activity-log|form-submissions|webhooks).*$')
+        ->where('slug', '^(?!login|logout|dashboard|blog|feed|sitemap\.xml|posts|categories|tags|users|profile|settings|media|comments|pages|templates|calendar|password|register|verify|install|email|forgot-password|reset-password|search|activity-log|form-submissions|webhooks|newsletter|admin).*$')
         ->name('pages.show');
 
 });

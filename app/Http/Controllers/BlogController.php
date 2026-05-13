@@ -62,6 +62,13 @@ class BlogController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
+        // Cookie-based dedup: count one view per visitor per 24 hours
+        $cookieKey = 'viewed_post_' . $post->id;
+        if (! request()->cookie($cookieKey)) {
+            $post->increment('views');
+            cookie()->queue(cookie($cookieKey, '1', 60 * 24));
+        }
+
         $perPage   = (int) Setting::get('comments.per_page', 10);
         $total     = $post->comments()->approved()->count();
         $firstPage = $post->comments()

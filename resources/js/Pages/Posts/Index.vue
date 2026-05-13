@@ -63,12 +63,13 @@
             <th class="text-left font-medium px-4 py-3 hidden md:table-cell">Categories</th>
             <th class="text-left font-medium px-4 py-3 hidden md:table-cell">Status</th>
             <th class="text-left font-medium px-4 py-3 hidden lg:table-cell">Date</th>
+            <th class="text-left font-medium px-4 py-3 hidden xl:table-cell">Views</th>
             <th class="px-4 py-3 w-10"></th>
           </tr>
         </thead>
         <tbody class="divide-y divide-border">
           <tr v-if="posts.data.length === 0">
-            <td colspan="7" class="px-4 py-12 text-center text-muted-foreground">
+            <td colspan="8" class="px-4 py-12 text-center text-muted-foreground">
               <svg class="w-8 h-8 mx-auto mb-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
@@ -103,6 +104,9 @@
             </td>
             <td class="px-4 py-3 hidden lg:table-cell text-muted-foreground text-xs">
               {{ formatDate(post.published_at ?? post.created_at) }}
+            </td>
+            <td class="px-4 py-3 hidden xl:table-cell text-muted-foreground text-xs">
+              {{ (post.views ?? 0).toLocaleString() }}
             </td>
             <td class="px-4 py-3">
               <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

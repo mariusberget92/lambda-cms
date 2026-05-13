@@ -44,6 +44,7 @@ class PostController extends Controller
                 'categories'     => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name])->values(),
                 'tags'           => $post->tags->pluck('name'),
                 'comments_count' => $post->comments_count,
+                'views'          => $post->views,
                 'featured_image_url' => $post->featuredImage?->url,
             ]);
 
@@ -315,8 +316,14 @@ class PostController extends Controller
         $labels = ['publish' => 'published', 'draft' => 'drafted', 'delete' => 'deleted'];
         $label  = $labels[$validated['action']];
 
+        $logAction = match ($validated['action']) {
+            'publish' => 'published',
+            'delete'  => 'deleted',
+            default   => 'updated',
+        };
+
         ActivityLogger::log(
-            $validated['action'] === 'publish' ? 'published' : $validated['action'] === 'delete' ? 'deleted' : 'updated',
+            $logAction,
             "Bulk {$label} {$count} post" . ($count === 1 ? '' : 's'),
             'Post'
         );

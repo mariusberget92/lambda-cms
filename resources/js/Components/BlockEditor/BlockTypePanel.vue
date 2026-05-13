@@ -92,6 +92,7 @@ import {
   FileDown,
   Timer,
   BookOpen,
+  Mail,
 } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -146,9 +147,10 @@ const ALL_TYPES = [
   { type: 'pagination',  label: 'Pagination',  icon: ChevronRightIcon,  group: 'Interactive' },
   { type: 'table',     label: 'Table',     icon: Table2,            group: 'Interactive' },
   { type: 'button',    label: 'Button',    icon: Square,         group: 'Interactive' },
-  { type: 'form',      label: 'Form',      icon: ClipboardList,  group: 'Interactive' },
-  { type: 'map',       label: 'Map',       icon: MapPin,         group: 'Interactive' },
-  { type: 'countdown', label: 'Countdown', icon: Timer,          group: 'Interactive' },
+  { type: 'form',       label: 'Form',       icon: ClipboardList, group: 'Interactive' },
+  { type: 'map',        label: 'Map',        icon: MapPin,        group: 'Interactive' },
+  { type: 'countdown',  label: 'Countdown',  icon: Timer,         group: 'Interactive' },
+  { type: 'newsletter', label: 'Newsletter', icon: Mail,          group: 'Interactive' },
   { type: 'html',      label: 'HTML',      icon: FileCode,          group: 'Developer', adminOnly: true },
   // ── Post (hidden from palette — only used inside loop blocks) ───────────
   { type: 'post-title',          label: 'Post Title',  icon: Heading1,      group: 'Post', hiddenFromPalette: true },
@@ -408,6 +410,16 @@ const DEFAULT_DATA = {
     action: '', method: 'POST',
   },
   map: { embedUrl: '', height: '400px', borderRadius: '0.5rem' },
+  newsletter: {
+    heading: 'Subscribe to our newsletter',
+    description: 'Get the latest posts delivered straight to your inbox.',
+    buttonLabel: 'Subscribe',
+    emailPlaceholder: 'your@email.com',
+    showName: false,
+    namePlaceholder: 'Your name',
+    successMessage: 'Check your email to confirm your subscription!',
+    disclaimer: '',
+  },
   countdown: {
     targetDate: '', title: 'Launching soon',
     showDays: true, showHours: true, showMinutes: true, showSeconds: true,

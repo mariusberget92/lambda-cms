@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
+use App\Models\NewsletterSubscriber;
 use App\Models\Post;
 use Inertia\Inertia;
 
@@ -17,6 +18,7 @@ class DashboardController extends Controller
                 "scheduled"            => Post::scheduled()->count(),
                 "drafts"               => Post::draft()->count(),
                 "pendingCommentsCount" => Comment::pending()->count(),
+                "subscribers"          => NewsletterSubscriber::confirmed()->count(),
             ],
 
             // Up to 5 upcoming scheduled posts (future dated only), ascending.
@@ -49,6 +51,19 @@ class DashboardController extends Controller
                     'published_at' => $post->published_at?->toIso8601String(),
                     'updated_at'   => $post->updated_at->toIso8601String(),
                     'author_name'  => $post->author?->name ?? 'Unknown',
+                ])
+                ->values()
+                ->toArray(),
+
+            // Top 5 published posts by view count.
+            "top_posts_by_views" => Post::published()
+                ->orderByDesc('views')
+                ->limit(5)
+                ->get(['id', 'title', 'slug', 'views'])
+                ->map(fn ($post) => [
+                    'id'    => $post->id,
+                    'title' => $post->title,
+                    'views' => $post->views,
                 ])
                 ->values()
                 ->toArray(),

@@ -1,6 +1,6 @@
 <script setup>
 import { computed, watch } from 'vue'
-import { Head, usePage } from '@inertiajs/vue3'
+import { Head, usePage, router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import PageHeader from '@/Components/PageHeader.vue'
 import StatCard from '@/Components/StatCard.vue'
@@ -11,13 +11,17 @@ import { useNotifications } from '@/composables/useNotifications'
 const props = defineProps({
   stats: {
     type: Object,
-    default: () => ({ total: 0, published: 0, scheduled: 0, drafts: 0, pendingCommentsCount: 0 }),
+    default: () => ({ total: 0, published: 0, scheduled: 0, drafts: 0, pendingCommentsCount: 0, subscribers: 0 }),
   },
   upcoming_scheduled: {
     type: Array,
     default: () => [],
   },
   recent_posts: {
+    type: Array,
+    default: () => [],
+  },
+  top_posts_by_views: {
     type: Array,
     default: () => [],
   },
@@ -61,7 +65,7 @@ function timeAgo(dateStr) {
     <PageHeader title="Dashboard" description="Overview of your blog." />
 
     <!-- Stat cards -->
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5 mb-6">
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 mb-6">
       <StatCard label="Total Posts" :value="stats.total" color="blue">
         <template #icon>
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -103,6 +107,20 @@ function timeAgo(dateStr) {
         <template #icon>
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+          </svg>
+        </template>
+      </StatCard>
+
+      <StatCard
+        v-if="user.role === 'administrator'"
+        label="Subscribers"
+        :value="stats.subscribers"
+        color="purple"
+        :href="route('newsletter.subscribers')"
+      >
+        <template #icon>
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
           </svg>
         </template>
       </StatCard>
@@ -154,6 +172,26 @@ function timeAgo(dateStr) {
         </ul>
       </ContentCard>
     </div>
+
+    <!-- Top posts by views -->
+    <ContentCard v-if="top_posts_by_views.length > 0" title="Top posts by views" class="mb-4">
+      <template #actions>
+        <a :href="route('posts.index')" class="text-xs text-primary hover:underline">View all →</a>
+      </template>
+      <ul class="divide-y divide-border -mx-6 -mb-5">
+        <li
+          v-for="(post, index) in top_posts_by_views"
+          :key="post.id"
+          class="px-6 py-3 first:pt-0 flex items-center justify-between gap-3"
+        >
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="text-xs font-mono text-muted-foreground/50 w-4 shrink-0">{{ index + 1 }}</span>
+            <a :href="route('posts.edit', post.id)" class="font-medium text-sm line-clamp-1 hover:text-primary transition-colors">{{ post.title }}</a>
+          </div>
+          <span class="text-xs text-muted-foreground shrink-0">{{ post.views.toLocaleString() }} views</span>
+        </li>
+      </ul>
+    </ContentCard>
 
     <!-- Quick actions -->
     <ContentCard title="Quick actions">

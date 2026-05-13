@@ -192,6 +192,30 @@
           </template>
           Activity Log
         </SidebarLink>
+
+        <p v-if="user.role === 'administrator'" class="px-3 mt-4 mb-1 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/40">Newsletter</p>
+        <SidebarLink
+          v-if="user.role === 'administrator'"
+          :href="route('newsletter.subscribers')"
+          :active="currentRoute === 'newsletter.subscribers'"
+        >
+          <template #icon>
+            <Mail class="w-4 h-4" />
+          </template>
+          Subscribers
+        </SidebarLink>
+        <SidebarLink
+          v-if="user.role === 'administrator'"
+          :href="route('newsletter.campaigns')"
+          :active="currentRoute === 'newsletter.campaigns'"
+        >
+          <template #icon>
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+          </template>
+          Campaigns
+        </SidebarLink>
         <div class="border-t border-sidebar-border my-3"></div>
         <a
           href="/"
@@ -232,21 +256,33 @@
     </aside>
 
     <Notifications />
+    <CommandPalette />
 
     <!-- Main area -->
     <div class="flex flex-col flex-1 overflow-hidden">
       <!-- Topbar -->
       <header class="flex items-center justify-between h-16 px-6 border-b border-border bg-background shrink-0" style="box-shadow: var(--shadow-sm)">
         <h1 class="text-sm font-semibold">{{ title }}</h1>
-        <button
-          @click="toggleTheme"
-          class="inline-flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
-          :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
-          :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
-        >
-          <Sun v-if="isDark" class="w-4 h-4" />
-          <Moon v-else class="w-4 h-4" />
-        </button>
+        <div class="flex items-center gap-1">
+          <button
+            @click="openSearch"
+            class="inline-flex items-center gap-2 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors px-3 py-1.5 text-xs border border-transparent hover:border-primary/20"
+            title="Search (Ctrl+K / ⌘K)"
+          >
+            <Search class="w-4 h-4" />
+            <span class="hidden sm:inline">Search</span>
+            <kbd class="hidden sm:inline-flex h-5 items-center rounded border bg-muted px-1.5 text-[10px] font-mono text-muted-foreground">⌘K</kbd>
+          </button>
+          <button
+            @click="toggleTheme"
+            class="inline-flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+            :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+            :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+          >
+            <Sun v-if="isDark" class="w-4 h-4" />
+            <Moon v-else class="w-4 h-4" />
+          </button>
+        </div>
       </header>
 
       <!-- Page content -->
@@ -260,10 +296,11 @@
 <script setup>
 import { computed, onMounted, watchEffect } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
-import { Sun, Moon, Calendar, ExternalLink, LayoutTemplate, Inbox, ClipboardList } from "lucide-vue-next";
+import { Sun, Moon, Calendar, ExternalLink, LayoutTemplate, Inbox, ClipboardList, Mail, Search } from "lucide-vue-next";
 import SidebarLink from "@/Components/SidebarLink.vue";
 import { useTheme } from "@/composables/useTheme.js";
 import Notifications from "@/Components/Notifications.vue";
+import CommandPalette from "@/Components/CommandPalette.vue";
 
 defineProps({
   title: {
@@ -286,6 +323,10 @@ const userInitials = computed(() =>
 
 function logout() {
   router.post(route("logout"));
+}
+
+function openSearch() {
+  window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }))
 }
 
 const { isDark, initTheme, toggleTheme } = useTheme()

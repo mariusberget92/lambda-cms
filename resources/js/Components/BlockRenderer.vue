@@ -80,6 +80,7 @@ import FormBlock            from '@/Components/Blocks/FormBlock.vue'
 import PricingBlock         from '@/Components/Blocks/PricingBlock.vue'
 import MapBlock             from '@/Components/Blocks/MapBlock.vue'
 import CountdownBlock       from '@/Components/Blocks/CountdownBlock.vue'
+import NewsletterBlock      from '@/Components/Blocks/NewsletterBlock.vue'
 
 const props = defineProps({
   blocks:       { type: Array,  default: () => [] },
@@ -290,6 +291,7 @@ const BLOCK_MAP = {
   pricing:               PricingBlock,
   map:                   MapBlock,
   countdown:             CountdownBlock,
+  newsletter:            NewsletterBlock,
 }
 
 // Injected by LoopItemProvider when this renderer is inside a loop iteration
