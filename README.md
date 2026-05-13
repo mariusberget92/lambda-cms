@@ -32,13 +32,13 @@
 
 ### 🧱 Block Editor
 
-30 block types organized by purpose:
+55 block types organized by purpose:
 
 | Category | Blocks |
 |---|---|
-| 📄 Content | Paragraph, Heading, Image, Video, Gallery, Quote, Code, CTA, HTML, Table, Divider, Spacer |
-| 🗂️ Layout | Section, Container (flex / grid / inline-flex) |
-| 🔗 Interactive | Link, Navigation, Search, Filter Link |
+| 📄 Content | Paragraph, Heading, Image, Video, Audio, Gallery, Quote, Code, CTA, HTML, Table, List, Divider, Spacer |
+| 🗂️ Layout | Section, Container (flex / grid / inline-flex), Accordion, Tabs, Card, Hero, Banner, Feature, Pricing, Stats, Team Member, Testimonial, Timeline |
+| 🔗 Interactive | Button, Link, Navigation, Search, Filter Link, Form, Embed, Map, Icon, Breadcrumb, Social Links, File Download, Pagination, Countdown, Progress Bar, TOC |
 | 🔄 Dynamic | Loop (posts / categories / tags / pages), Post List |
 | 📰 Post parts | Post Title, Post Body, Featured Image, Post Meta, Post Author, Post Taxonomy, Post Comments |
 | 🗃️ Archive | Archive Title, Archive Loop |
@@ -46,12 +46,13 @@
 
 **Editor features:**
 - 🖱️ Drag-and-drop canvas with cross-list nesting
-- 📋 Layers panel with infinite-depth tree navigation
+- 📋 Layers panel with infinite-depth tree navigation and collapsible children
 - 🎨 Per-block Style tab — typography, colors, background (solid / gradient / image), border & shadow, spacing
 - 🔁 Dynamic field bindings — link block fields to loop or post-context data sources
 - ⚙️ Per-block Advanced settings — custom CSS classes, inline CSS, animation, font family, margin
 - 👁️ Conditional block visibility based on loop field values
 - 🏷️ Block labels / custom names shown in canvas and layers panel
+- ✨ Animated settings panel transitions and tab fades
 
 ### 🧩 Template System
 
@@ -80,6 +81,7 @@
 - RSS feed at `/feed` and XML sitemap at `/sitemap.xml`
 - Admin bar visible to authenticated users (hidden from public visitors)
 - Navigation items managed from the admin and rendered via the Navigation block
+- **Reading time estimate** — automatically calculated and displayed on each post (200 wpm, HTML/block-aware)
 
 ### 💬 Comments
 
@@ -100,12 +102,28 @@
 - Admin count enforcement — at least one admin must always exist
 - User invite flow — auto-generated password + welcome email
 
+### 📥 Form Submissions
+
+- The **Form block** captures submissions and stores them in the database when no custom action URL is configured
+- Admin inbox at `/form-submissions` — expandable rows showing all field values, per-submission delete
+- Rate-limited public endpoint (10 submissions / minute per IP)
+- Stores form name, originating page slug, field data (JSON), and submitter IP
+
+### 📋 Activity Log
+
+- Every significant admin action is recorded automatically (create, update, delete, publish, ban/unban)
+- Admin timeline view at `/activity-log` — colored action badges, user attribution, IP address, timestamps
+- Filterable by action type (All / Created / Updated / Deleted / Published)
+
 ### 🔒 Auth & Security
 
 - Email + password login, rate-limited (5 attempts / 60 s)
 - Forgot / reset password via email token
 - Email verification required before accessing the dashboard
 - Author-scoped post edit/delete (admins can override)
+- Security headers on every response (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, `X-XSS-Protection`)
+- SSRF protection on webhook URLs — private/reserved IP ranges blocked
+- Webhook secrets stored encrypted at rest
 
 ### 🪝 Webhooks
 

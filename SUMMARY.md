@@ -86,14 +86,15 @@ resources/js/lib/loopSources.js       — Loop source field definitions
 - **Preview**: `/preview/pages/{token}` — shareable preview URL for drafts
 
 ### 🧱 Block Editor
-Block types available:
-`container`, `section`, `heading`, `paragraph`, `image`, `video`, `gallery`, `code`, `quote`, `divider`, `spacer`, `cta`, `html`, `loop`, `post-list`, `post-title`, `post-body`, `post-featured-image`, `post-meta`, `post-author`, `post-taxonomy`, `post-comments`, `archive-title`, `archive-loop`, `search`, `navigation`, `link`, `filter-link`, `template`, `table`
+Block types available (55 total):
+`container`, `section`, `heading`, `paragraph`, `image`, `video`, `audio`, `gallery`, `code`, `quote`, `divider`, `spacer`, `cta`, `html`, `list`, `table`, `loop`, `post-list`, `post-title`, `post-body`, `post-featured-image`, `post-meta`, `post-author`, `post-taxonomy`, `post-comments`, `archive-title`, `archive-loop`, `search`, `navigation`, `link`, `filter-link`, `button`, `icon`, `alert`, `card`, `hero`, `banner`, `breadcrumb`, `social-links`, `progress-bar`, `file-download`, `feature`, `stats`, `team-member`, `timeline`, `toc`, `form`, `pricing`, `map`, `embed`, `countdown`, `accordion`, `tabs`, `testimonial`, `template`, `pagination`
 
 **Canvas features:**
 - Drag-and-drop with cross-list nesting
 - Block labels / `blockName` (shown in canvas + layers panel)
-- Layers panel with infinite depth nesting
+- Layers panel with infinite depth nesting and collapsible children (JS height animation)
 - Real-time preview in canvas
+- Animated settings panel transitions (fade + slide between blocks, tab fade)
 
 **Settings panels (Style tab — shared for all blocks):**
 - Font family
@@ -176,6 +177,7 @@ Block types available:
 ### 🌐 Public Frontend
 - Blog index: paginated published posts, sidebar (categories, tags, recent posts)
 - Single post: full content, featured image, author, categories/tags, comments
+- **Reading time estimate** — `Post::readingTime()` at 200 wpm; exposed as `reading_time` in `BlogController::postData()` and `show()`; displayed in `Blog/Show.vue` next to publish date
 - Category + tag archive pages
 - RSS feed (`/feed`) — 20 most recent published posts
 - Sitemap XML (`/sitemap.xml`)
@@ -192,10 +194,30 @@ Block types available:
 ### 🪝 Webhooks (admin-only)
 - CRUD at `/webhooks`
 - Events: `post.published`, `post.updated`, `post.deleted`, `page.published`, `page.updated`, `page.deleted`
-- HMAC-SHA256 signature header (`X-Lambda-Signature`) when secret set
+- HMAC-SHA256 signature header (`X-Lambda-Signature`) when secret set; secret stored encrypted (`'encrypted'` cast)
 - Dispatched via queued job (`DispatchWebhookJob`)
 - PostObserver + PageObserver fire events on lifecycle hooks
 - `last_triggered_at` tracked per webhook
+- SSRF protection: hostname resolved to IP, private/reserved ranges rejected via `FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE`
+
+### 📥 Form Submissions
+- `FormSubmission` model — `form_name`, `page_slug`, `data` (JSON), `ip_address`
+- Public `POST /form-submissions` (10 req/min throttle); returns `{ success: true }` JSON
+- `FormBlock.vue` posts to this endpoint when no custom action URL is set; collects field values keyed by label with CSRF header
+- Admin inbox: `GET /form-submissions` → `Forms/Index.vue` — expandable rows, delete with confirmation
+- Admin `DELETE /form-submissions/{submission}`
+
+### 📋 Activity Log
+- `ActivityLog` model — `user_id` (nullable FK), `action`, `model_type`, `model_id`, `description`, `metadata` (JSON), `ip_address`
+- `ActivityLogger::log(action, description, modelType?, modelId?, metadata?)` static helper — reads user from `auth()` and IP from request
+- Admin timeline: `GET /activity-log?action=` → `ActivityLog/Index.vue` — colored badges, filter tabs (All / Created / Updated / Deleted / Published), paginated 50/page
+
+### 🔒 Security
+- `SecurityHeaders` middleware on every web response: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, `X-XSS-Protection`
+- `InstallController::writeEnv()` strips newlines from values, uses `preg_quote` on keys, and `preg_replace_callback` to prevent `.env` injection
+- `FeedController::escapeCdata()` prevents CDATA injection in RSS output
+- `Post::scopePublished()` enforces `published_at <= now()` to block future-dated posts
+- `APP_DEBUG=false`, `LOG_LEVEL=error` in `.env.example`
 
 ### 🧩 Templates
 - CRUD at `/templates` (admin-only)
@@ -221,6 +243,7 @@ Block types available:
 users, posts, categories, tags, pages, comments, media, nav_items
 templates, webhooks, settings
 autosaves (morphable), revisions (morphable)
+activity_logs, form_submissions
 Pivots: category_post, post_tag
 Spatie: roles, permissions, model_has_roles, ...
 ```
@@ -232,10 +255,11 @@ Spatie: roles, permissions, model_has_roles, ...
 ### Public
 ```
 GET  /                          blog index
-GET  /blog/{slug}               single post
+GET  /blog/{slug}               single post (includes reading_time)
 GET  /blog/category/{slug}      category archive
 GET  /blog/tag/{slug}           tag archive
 POST /blog/{post:slug}/comments submit comment (rate-limited)
+POST /form-submissions          submit form (rate-limited: 10/min)
 GET  /feed                      RSS feed
 GET  /sitemap.xml               sitemap
 GET  /preview/posts/{token}     draft post preview
@@ -265,13 +289,16 @@ POST /logout
 
 ### Admin only (auth + verified + administrator role)
 ```
-/pages         (resource + autosave + revisions)
-/templates     (resource + autosave + revisions)
-/users         (resource + ban/unban)
-/comments      (list, approve, reject, delete, bulk, reply)
-/settings      (index + update by group + test-email)
-/navigation    (list, store, update, delete, reorder)
-/webhooks      (index, store, update, destroy)
+/pages              (resource + autosave + revisions)
+/templates          (resource + autosave + revisions)
+/users              (resource + ban/unban)
+/comments           (list, approve, reject, delete, bulk, reply)
+/settings           (index + update by group + test-email)
+/navigation         (list, store, update, delete, reorder)
+/webhooks           (index, store, update, destroy)
+GET    /activity-log               activity log timeline (filterable by action)
+GET    /form-submissions           form submissions inbox
+DELETE /form-submissions/{id}      delete a submission
 ```
 
 ### API
@@ -338,4 +365,4 @@ Potential future improvements:
 
 ---
 
-*Last updated: 2026-04-19 — pushed at commit `017aaea`*
+*Last updated: 2026-05-13 — pushed at commit `5d0d596`*
