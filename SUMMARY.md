@@ -252,6 +252,7 @@ Block types available (56 total):
 - **`NewsletterBlock.vue`** — public subscribe form block; email + optional name field; posts JSON to `/newsletter/subscribe` with CSRF token; shows success message on confirmed submission; configurable heading, description, button label, placeholder text, disclaimer
 - **Sidebar** — Newsletter section (admin-only): Subscribers link + Campaigns link
 - **Scheduler** — `bootstrap/app.php` registers `newsletter:send-scheduled` every minute alongside `posts:publish-scheduled`; production deployment requires `* * * * * php artisan schedule:run` cron entry
+- **`NewsletterCampaignSeeder`** (`database/seeders/NewsletterCampaignSeeder.php`) — seeds one draft "Welcome to Lambda CMS" campaign on every fresh install (14 blocks: hero image, H1 heading, intro paragraph, feature list, quote, CTA, footer note); uses `firstOrCreate` so re-seeding is safe; called from `DatabaseSeeder`
 
 ### 📋 Activity Log
 - `ActivityLog` model — `user_id` (nullable FK), `action`, `model_type`, `model_id`, `description`, `metadata` (JSON), `ip_address`
@@ -432,4 +433,4 @@ Potential future improvements:
 
 ---
 
-*Last updated: 2026-05-13 — pushed at commit `f881da7`*
+*Last updated: 2026-05-14 — pushed at commit `d5bb1f0`*

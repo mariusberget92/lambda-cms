@@ -136,6 +136,7 @@
 - Scheduled campaigns are dispatched automatically by `php artisan newsletter:send-scheduled` (runs every minute via the Laravel scheduler)
 - Campaign status badges: Draft / Scheduled / Sent; edit any unsent campaign directly in the block editor
 - **Newsletter block** — embeds a subscribe form in any page or post built with the block editor (configurable heading, description, button label, optional name field)
+- **Starter campaign** — a pre-designed "Welcome" draft campaign is seeded on every fresh install, ready to open in the block editor and customise before sending
 
 ### 📋 Activity Log
 
