@@ -38,6 +38,7 @@ class Post extends Model
         "status",
         "featured",
         "published_at",
+        "expires_at",
         "comments_enabled",
         "use_block_editor",
         "blocks",
@@ -48,6 +49,7 @@ class Post extends Model
 
     protected $casts = [
         "published_at"     => "datetime",
+        "expires_at"       => "datetime",
         "comments_enabled" => "boolean",
         "use_block_editor" => "boolean",
         "featured"         => "boolean",

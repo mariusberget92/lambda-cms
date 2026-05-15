@@ -101,6 +101,9 @@
             </td>
             <td class="px-4 py-3 hidden md:table-cell">
               <StatusBadge :status="post.status" />
+              <p v-if="post.expires_at" class="text-[11px] text-muted-foreground mt-0.5">
+                ⏱ Expires {{ formatDate(post.expires_at) }}
+              </p>
             </td>
             <td class="px-4 py-3 hidden lg:table-cell text-muted-foreground text-xs">
               {{ formatDate(post.published_at ?? post.created_at) }}

@@ -128,6 +128,27 @@
             </div>
           </div>
 
+          <!-- Content Expiry -->
+          <div class="rounded-lg border bg-card p-4">
+            <h3 class="text-sm font-medium mb-1">Content Expiry</h3>
+            <p class="text-xs text-muted-foreground mb-3">Auto-reverts to draft at the set date and time.</p>
+            <DateTimePicker v-model="form.expires_at" />
+            <div class="flex items-center justify-between mt-2">
+              <p v-if="daysUntilExpiry !== null && daysUntilExpiry > 0" class="text-xs text-status-info-fg">
+                ⏱ expires in {{ daysUntilExpiry }} day{{ daysUntilExpiry === 1 ? '' : 's' }}
+              </p>
+              <p v-else-if="daysUntilExpiry !== null && daysUntilExpiry <= 0" class="text-xs text-destructive">
+                ⚠ expiry date is in the past
+              </p>
+              <button
+                v-if="form.expires_at"
+                type="button"
+                class="text-xs text-muted-foreground hover:text-foreground ml-auto"
+                @click="form.expires_at = ''"
+              >Clear</button>
+            </div>
+          </div>
+
           <!-- Categories -->
           <div class="rounded-lg border bg-card p-4">
             <h3 class="text-sm font-medium mb-3">Categories</h3>
@@ -380,6 +401,7 @@ const form = useForm({
   meta_title:        props.post.meta_title ?? null,
   meta_description:  props.post.meta_description ?? null,
   meta_keywords:     props.post.meta_keywords ?? null,
+  expires_at:        props.post.expires_at ?? '',
 });
 
 // Autosave
@@ -492,6 +514,11 @@ const daysUntilPublish = computed(() => {
   if (!form.published_at) return null
   const diff = Math.ceil((new Date(form.published_at) - Date.now()) / 86400000)
   return diff > 0 ? diff : null
+})
+
+const daysUntilExpiry = computed(() => {
+  if (!form.expires_at) return null
+  return Math.ceil((new Date(form.expires_at) - Date.now()) / 86400000)
 })
 
 function onStatusChange(newStatus) {

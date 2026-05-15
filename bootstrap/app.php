@@ -65,6 +65,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withSchedule(function (Schedule $schedule): void {
         $schedule->command('posts:publish-scheduled')->everyMinute()->withoutOverlapping();
+        $schedule->command('posts:expire')->everyMinute()->withoutOverlapping();
         $schedule->command('newsletter:send-scheduled')->everyMinute()->withoutOverlapping();
     })
     ->create();

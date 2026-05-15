@@ -45,6 +45,7 @@ class PostController extends Controller
                 'tags'           => $post->tags->pluck('name'),
                 'comments_count' => $post->comments_count,
                 'views'          => $post->views,
+                'expires_at'     => $post->expires_at?->format('Y-m-d\TH:i'),
                 'featured_image_url' => $post->featuredImage?->url,
             ]);
 
@@ -88,6 +89,7 @@ class PostController extends Controller
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
             'use_block_editor' => ['nullable', 'boolean'],
             'blocks'           => ['nullable', 'array'],
+            'expires_at'       => ['nullable', 'date'],
         ]);
 
         $tagIds      = $validated['tag_ids'] ?? [];
@@ -165,6 +167,7 @@ class PostController extends Controller
                 'use_block_editor'  => (bool) $post->use_block_editor,
                 'blocks'            => $post->blocks,
                 'preview_token'     => $post->preview_token,
+                'expires_at'        => $post->expires_at?->format('Y-m-d\TH:i'),
             ],
             'categories' => Category::orderBy('name')->get(['id', 'name']),
             'tags'       => Tag::orderBy('name')->get(['id', 'name']),
@@ -205,6 +208,7 @@ class PostController extends Controller
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
             'use_block_editor' => ['nullable', 'boolean'],
             'blocks'           => ['nullable', 'array'],
+            'expires_at'       => ['nullable', 'date'],
         ]);
 
         $tagIds      = $validated['tag_ids'] ?? [];
