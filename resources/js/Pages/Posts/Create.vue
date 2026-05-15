@@ -240,6 +240,14 @@
               </div>
             </div>
           </div>
+
+          <!-- SEO Analysis -->
+          <SeoAnalysis
+            :title="form.title"
+            :body="form.body"
+            :meta-description="form.meta_description ?? ''"
+            :has-featured-image="!!featuredImage"
+          />
         </div>
       </div>
     </form>
@@ -256,6 +264,7 @@ import DateTimePicker from '@/Components/DateTimePicker.vue'
 import TagInput from '@/Components/TagInput.vue'
 import CategoryInput from '@/Components/CategoryInput.vue'
 import { useNotifications } from '@/composables/useNotifications.js'
+import SeoAnalysis from '@/Components/SeoAnalysis.vue'
 const { notify } = useNotifications()
 
 defineProps({

@@ -252,6 +252,14 @@
             </div>
           </div>
 
+          <!-- SEO Analysis -->
+          <SeoAnalysis
+            :title="form.title"
+            :body="form.body"
+            :meta-description="form.meta_description ?? ''"
+            :has-featured-image="!!featuredImage"
+          />
+
           <!-- Details -->
           <div class="rounded-lg border bg-card p-4 text-sm space-y-1.5">
             <h3 class="font-medium mb-2">Details</h3>
@@ -345,6 +353,7 @@ import DateTimePicker from '@/Components/DateTimePicker.vue'
 import TagInput from '@/Components/TagInput.vue'
 import CategoryInput from '@/Components/CategoryInput.vue'
 import { useNotifications } from '@/composables/useNotifications.js'
+import SeoAnalysis from '@/Components/SeoAnalysis.vue'
 
 const { notify, dismiss } = useNotifications()
 let autosaveToastId = null
