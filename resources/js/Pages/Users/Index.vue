@@ -65,7 +65,7 @@
                 ? 'bg-role-admin-bg text-role-admin-fg'
                 : 'bg-role-user-bg text-role-user-fg'"
             >
-              {{ user.role === 'administrator' ? 'Administrator' : 'User' }}
+              {{ user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : '—' }}
             </span>
           </td>
           <!-- Verified -->

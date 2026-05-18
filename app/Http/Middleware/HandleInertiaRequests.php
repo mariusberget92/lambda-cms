@@ -28,6 +28,7 @@ class HandleInertiaRequests extends Middleware
                     [
                         "role"           => $request->user()->getRoleNames()->first(),
                         "email_verified" => $request->user()->hasVerifiedEmail(),
+                        "permissions"    => $request->user()->getAllPermissions()->pluck('name')->values(),
                     ]
                 ) : null,
             ],
@@ -38,7 +39,7 @@ class HandleInertiaRequests extends Middleware
                 "mail_error"   => fn () => $request->session()->get("mail_error"),
             ],
             "currentRoute"         => $request->route()?->getName(),
-            "pendingCommentsCount" => fn () => $request->user()?->hasRole('administrator')
+            "pendingCommentsCount" => fn () => $request->user()?->can('view comments')
                 ? Comment::pending()->count()
                 : null,
             'accentColor' => fn () => Setting::get('site.accent_color') ?: null,

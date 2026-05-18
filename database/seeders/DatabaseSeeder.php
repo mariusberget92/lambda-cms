@@ -18,15 +18,70 @@ class DatabaseSeeder extends Seeder
         // ── Roles & Permissions ──────────────────────────────────────────────
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        foreach (['manage posts', 'manage categories', 'manage tags', 'manage users'] as $name) {
+        $allPermissions = [
+            'view posts', 'create posts', 'edit own posts', 'edit any post',
+            'delete own posts', 'delete any post', 'publish posts',
+            'view pages', 'create pages', 'edit pages', 'delete pages',
+            'view templates', 'create templates', 'edit templates', 'delete templates',
+            'view categories', 'create categories', 'edit categories', 'delete categories',
+            'view tags', 'create tags', 'edit tags', 'delete tags',
+            'view media', 'upload media', 'edit own media', 'edit any media',
+            'delete own media', 'delete any media',
+            'view comments', 'moderate comments', 'reply to comments', 'delete comments',
+            'view users', 'create users', 'edit users', 'delete users', 'ban users',
+            'manage roles', 'manage settings', 'manage navigation', 'manage webhooks',
+        ];
+
+        foreach ($allPermissions as $name) {
             Permission::firstOrCreate(['name' => $name]);
         }
 
-        $adminRole = Role::firstOrCreate(['name' => 'administrator']);
-        $userRole  = Role::firstOrCreate(['name' => 'user']);
+        $adminRole       = Role::firstOrCreate(['name' => 'administrator']);
+        $editorRole      = Role::firstOrCreate(['name' => 'editor']);
+        $authorRole      = Role::firstOrCreate(['name' => 'author']);
+        $contributorRole = Role::firstOrCreate(['name' => 'contributor']);
+        $userRole        = Role::firstOrCreate(['name' => 'user']);
 
+        // Administrator: everything
         $adminRole->syncPermissions(Permission::all());
-        $userRole->syncPermissions(['manage posts', 'manage categories', 'manage tags']);
+
+        // Editor: all content + media + comments + navigation (no users/roles/settings/webhooks)
+        $editorRole->syncPermissions([
+            'view posts', 'create posts', 'edit own posts', 'edit any post',
+            'delete own posts', 'delete any post', 'publish posts',
+            'view pages', 'create pages', 'edit pages', 'delete pages',
+            'view templates', 'create templates', 'edit templates', 'delete templates',
+            'view categories', 'create categories', 'edit categories', 'delete categories',
+            'view tags', 'create tags', 'edit tags', 'delete tags',
+            'view media', 'upload media', 'edit own media', 'edit any media',
+            'delete own media', 'delete any media',
+            'view comments', 'moderate comments', 'reply to comments', 'delete comments',
+            'manage navigation',
+        ]);
+
+        // Author: own posts + publish + own media + view taxonomies
+        $authorRole->syncPermissions([
+            'view posts', 'create posts', 'edit own posts', 'delete own posts', 'publish posts',
+            'view categories',
+            'view tags',
+            'view media', 'upload media', 'edit own media', 'delete own media',
+        ]);
+
+        // Contributor: draft-only posts (no publish) + own media + view taxonomies
+        $contributorRole->syncPermissions([
+            'view posts', 'create posts', 'edit own posts', 'delete own posts',
+            'view categories',
+            'view tags',
+            'view media', 'upload media', 'edit own media', 'delete own media',
+        ]);
+
+        // User (legacy/default): equivalent to author with full taxonomy management
+        $userRole->syncPermissions([
+            'view posts', 'create posts', 'edit own posts', 'delete own posts', 'publish posts',
+            'view categories', 'create categories', 'edit categories', 'delete categories',
+            'view tags', 'create tags', 'edit tags', 'delete tags',
+            'view media', 'upload media', 'edit own media', 'delete own media',
+        ]);
 
         // ── Admin user (roles must exist first) ──────────────────────────────
         $this->call(AdminSeeder::class);

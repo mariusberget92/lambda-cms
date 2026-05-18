@@ -63,6 +63,10 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
+        if (in_array($request->input('status'), ['published', 'scheduled']) && ! $request->user()->can('publish posts')) {
+            abort(403, 'You do not have permission to publish posts.');
+        }
+
         $validated = $request->validate([
             'title'       => ['required', 'string', 'max:255'],
             'excerpt'     => ['nullable', 'string', 'max:500'],
@@ -129,7 +133,7 @@ class PostController extends Controller
 
     public function edit(Request $request, Post $post)
     {
-        if ($post->user_id !== $request->user()->id && !$request->user()->hasRole('administrator')) {
+        if ($post->user_id !== $request->user()->id && ! $request->user()->can('edit any post')) {
             abort(403);
         }
 
@@ -174,8 +178,12 @@ class PostController extends Controller
 
     public function update(Request $request, Post $post)
     {
-        if ($post->user_id !== $request->user()->id && !$request->user()->hasRole('administrator')) {
+        if ($post->user_id !== $request->user()->id && ! $request->user()->can('edit any post')) {
             abort(403);
+        }
+
+        if (in_array($request->input('status'), ['published', 'scheduled']) && ! $request->user()->can('publish posts')) {
+            abort(403, 'You do not have permission to publish posts.');
         }
 
         $validated = $request->validate([
@@ -254,7 +262,7 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
-        if ($post->user_id !== request()->user()->id && !request()->user()->hasRole('administrator')) {
+        if ($post->user_id !== request()->user()->id && ! request()->user()->can('delete any post')) {
             abort(403);
         }
 
@@ -275,11 +283,15 @@ class PostController extends Controller
         $posts = Post::whereIn('id', $validated['ids'])->get();
 
         // Authorize each post individually — abort immediately if any fail.
-        // Admins can operate on any post; regular users only their own.
+        $canAny = $request->user()->can('edit any post');
         foreach ($posts as $post) {
-            if (! ($post->user_id === $request->user()->id || $request->user()->hasRole('administrator'))) {
+            if (! ($post->user_id === $request->user()->id || $canAny)) {
                 abort(403, 'You are not authorised to perform this action on one or more selected posts.');
             }
+        }
+
+        if ($validated['action'] === 'publish' && ! $request->user()->can('publish posts')) {
+            abort(403, 'You do not have permission to publish posts.');
         }
 
         // Use ->each() to fire Eloquent model events on every record

@@ -18,6 +18,8 @@ class BanController extends Controller
 
     public function ban(Request $request, User $user): \Illuminate\Http\RedirectResponse
     {
+        abort_if(! $request->user()->can('ban users'), 403);
+
         // Guard: cannot ban yourself or another admin
         if ($user->id === $request->user()->id || $user->hasRole('administrator')) {
             return redirect()->route('users.index')

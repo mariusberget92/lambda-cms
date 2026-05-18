@@ -135,7 +135,7 @@
 import { ref, computed, watch } from 'vue'
 import { useDropZone } from '@vueuse/core'
 import axios from 'axios'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogContent } from '@/Components/ui/dialog'
 import SelectBox from '@/Components/SelectBox.vue'
 import { useNotifications } from '@/composables/useNotifications'
 

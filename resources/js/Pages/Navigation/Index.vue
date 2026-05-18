@@ -1,7 +1,7 @@
 <!-- resources/js/Pages/Navigation/Index.vue -->
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
-import PageHeader from '@/components/PageHeader.vue'
+import PageHeader from '@/Components/PageHeader.vue'
 import { useForm, router } from '@inertiajs/vue3'
 import { ref, computed } from 'vue'
 import { GripVertical, Plus, Pencil, Trash2, X, Check, ExternalLink } from 'lucide-vue-next'

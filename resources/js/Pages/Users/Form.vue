@@ -72,8 +72,8 @@
             placeholder="— Select a role —"
           />
           <p class="text-xs text-muted-foreground">
-            <strong>Administrator</strong> — full access.
-            <strong>User</strong> — can manage posts, categories and tags.
+            Roles and their permissions are managed in
+            <a :href="route('roles.index')" class="underline hover:text-foreground">Roles</a>.
           </p>
           <p v-if="isLastAdmin" class="text-xs text-status-warning-fg flex items-center gap-1">
             <svg aria-hidden="true" class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -189,7 +189,7 @@ const isLastAdmin = computed(
 
 const roleOptions = computed(() => props.roles.map(r => ({
   value: r,
-  label: r === 'administrator' ? 'Administrator' : 'User',
+  label: r.charAt(0).toUpperCase() + r.slice(1),
 })))
 
 const form = useForm({

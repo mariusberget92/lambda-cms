@@ -47,10 +47,12 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        abort_if(! $request->user()->can('create users'), 403);
+
         $validated = $request->validate([
             'name'  => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'role'  => ['required', 'string', Rule::in(['administrator', 'user'])],
+            'role'  => ['required', 'string', Rule::in(Role::pluck('name')->toArray())],
         ]);
 
         $user = User::create([
@@ -86,10 +88,12 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
+        abort_if(! $request->user()->can('edit users'), 403);
+
         $validated = $request->validate([
             'name'  => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
-            'role'  => ['required', 'string', Rule::in(['administrator', 'user'])],
+            'role'  => ['required', 'string', Rule::in(Role::pluck('name')->toArray())],
         ]);
 
         if (
@@ -121,6 +125,8 @@ class UserController extends Controller
 
     public function destroy(Request $request, User $user)
     {
+        abort_if(! $request->user()->can('delete users'), 403);
+
         if ($user->id === $request->user()->id) {
             return redirect()
                 ->route('users.index')

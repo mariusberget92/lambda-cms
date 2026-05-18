@@ -42,7 +42,7 @@
         </SidebarLink>
 
         <SidebarLink
-          v-if="user.role === 'administrator'"
+          v-if="can('view pages')"
           :href="route('pages.index')"
           :active="currentRoute?.startsWith('pages.')"
         >
@@ -55,7 +55,7 @@
         </SidebarLink>
 
         <SidebarLink
-          v-if="user.role === 'administrator'"
+          v-if="can('view templates')"
           :href="route('templates.index')"
           :active="currentRoute?.startsWith('templates.')"
         >
@@ -93,7 +93,7 @@
         </SidebarLink>
 
         <SidebarLink
-          v-if="user.role === 'administrator'"
+          v-if="can('view comments')"
           :href="route('comments.index')"
           :active="currentRoute?.startsWith('comments.')"
         >
@@ -120,7 +120,7 @@
         </SidebarLink>
 
         <SidebarLink
-          v-if="user.role === 'administrator'"
+          v-if="can('view users')"
           :href="route('users.index')"
           :active="currentRoute?.startsWith('users.')"
         >
@@ -133,7 +133,20 @@
         </SidebarLink>
 
         <SidebarLink
-          v-if="user.role === 'administrator'"
+          v-if="can('manage roles')"
+          :href="route('roles.index')"
+          :active="currentRoute?.startsWith('roles.')"
+        >
+          <template #icon>
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+          </template>
+          Roles
+        </SidebarLink>
+
+        <SidebarLink
+          v-if="can('manage navigation')"
           :href="route('navigation.index')"
           :active="currentRoute?.startsWith('navigation.')"
         >
@@ -146,7 +159,7 @@
         </SidebarLink>
 
         <SidebarLink
-          v-if="user.role === 'administrator'"
+          v-if="can('manage settings')"
           :href="route('settings.index')"
           :active="currentRoute?.startsWith('settings.')"
         >
@@ -159,7 +172,7 @@
         </SidebarLink>
 
         <SidebarLink
-          v-if="user.role === 'administrator'"
+          v-if="can('manage webhooks')"
           :href="route('webhooks.index')"
           :active="currentRoute?.startsWith('webhooks.')"
         >
@@ -254,6 +267,7 @@ const page = usePage();
 const user = computed(() => page.props.auth?.user ?? { name: "", email: "" });
 const currentRoute = computed(() => page.props.currentRoute ?? "");
 const pendingCommentsCount = computed(() => page.props.pendingCommentsCount ?? 0);
+const can = (permission) => user.value.permissions?.includes(permission) ?? false;
 const userInitials = computed(() =>
   user.value.name
     .split(" ")

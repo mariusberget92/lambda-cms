@@ -25,6 +25,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\BanController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PreviewController;
 use App\Http\Controllers\NavigationController;
 use App\Http\Controllers\WebhookController;
@@ -134,51 +135,72 @@ Route::middleware('installed')->group(function () {
         Route::delete('/media/{media}',         [MediaController::class, 'destroy'])->name('media.destroy');
     });
 
-    // ── Auth + verified + administrator role ─────────────────────────────────
-    Route::middleware(['auth', 'verified', 'role:administrator'])->group(function () {
+    // ── Pages ────────────────────────────────────────────────────────────────
+    Route::middleware(['auth', 'verified', 'permission:view pages'])->group(function () {
         Route::resource('pages', PageController::class)->except(['show']);
         Route::post('/pages/{page}/autosave',   [AutosaveController::class, 'storePage'])->name('pages.autosave');
         Route::delete('/pages/{page}/autosave', [AutosaveController::class, 'destroyPage'])->name('pages.autosave.destroy');
         Route::get('/pages/{page}/revisions',   [RevisionController::class, 'indexPage'])->name('pages.revisions');
+    });
 
+    // ── Templates ────────────────────────────────────────────────────────────
+    Route::middleware(['auth', 'verified', 'permission:view templates'])->group(function () {
         Route::resource('templates', TemplateController::class)->except(['show']);
         Route::post('/templates/{template}/autosave',   [AutosaveController::class, 'storeTemplate'])->name('templates.autosave');
         Route::delete('/templates/{template}/autosave', [AutosaveController::class, 'destroyTemplate'])->name('templates.autosave.destroy');
         Route::get('/templates/{template}/revisions',   [RevisionController::class, 'indexTemplate'])->name('templates.revisions');
+    });
 
+    // ── Users ─────────────────────────────────────────────────────────────────
+    Route::middleware(['auth', 'verified', 'permission:view users'])->group(function () {
         Route::resource('users', UserController::class)->except(['show']);
-
         Route::post('/users/{user}/ban',   [BanController::class, 'ban'])->name('users.ban');
         Route::delete('/users/{user}/ban', [BanController::class, 'unban'])->name('users.unban');
+    });
 
+    // ── Roles (manage roles permission = admin only by default) ──────────────
+    Route::middleware(['auth', 'verified', 'permission:manage roles'])->group(function () {
+        Route::resource('roles', RoleController::class)->except(['show']);
+    });
+
+    // ── Comments ─────────────────────────────────────────────────────────────
+    Route::middleware(['auth', 'verified', 'permission:view comments'])->group(function () {
         Route::get('/comments',                     [CommentController::class, 'index'])->name('comments.index');
         Route::patch('/comments/{comment}/approve', [CommentController::class, 'approve'])->name('comments.approve');
         Route::patch('/comments/{comment}/reject',  [CommentController::class, 'reject'])->name('comments.reject');
         Route::delete('/comments/{comment}',        [CommentController::class, 'destroy'])->name('comments.destroy');
         Route::post('/comments/bulk',               [CommentController::class, 'bulk'])->name('comments.bulk');
         Route::post('/comments/{comment}/reply',    [CommentController::class, 'reply'])->name('comments.reply');
+    });
 
+    // ── Settings (administrator only) ────────────────────────────────────────
+    Route::middleware(['auth', 'verified', 'permission:manage settings'])->group(function () {
         Route::get('/settings',             [SettingsController::class, 'index'])->name('settings.index');
         Route::put('/settings/{group}',     [SettingsController::class, 'update'])->name('settings.update');
         Route::post('/settings/test-email', [SettingsController::class, 'testEmail'])->name('settings.test-email');
+    });
 
-        Route::get('/navigation',                      [NavigationController::class, 'index'])->name('navigation.index');
-        Route::post('/navigation',                     [NavigationController::class, 'store'])->name('navigation.store');
-        Route::put('/navigation/{navItem}',            [NavigationController::class, 'update'])->name('navigation.update');
-        Route::delete('/navigation/{navItem}',         [NavigationController::class, 'destroy'])->name('navigation.destroy');
-        Route::post('/navigation/reorder',             [NavigationController::class, 'reorder'])->name('navigation.reorder');
+    // ── Navigation ────────────────────────────────────────────────────────────
+    Route::middleware(['auth', 'verified', 'permission:manage navigation'])->group(function () {
+        Route::get('/navigation',              [NavigationController::class, 'index'])->name('navigation.index');
+        Route::post('/navigation',             [NavigationController::class, 'store'])->name('navigation.store');
+        Route::put('/navigation/{navItem}',    [NavigationController::class, 'update'])->name('navigation.update');
+        Route::delete('/navigation/{navItem}', [NavigationController::class, 'destroy'])->name('navigation.destroy');
+        Route::post('/navigation/reorder',     [NavigationController::class, 'reorder'])->name('navigation.reorder');
+    });
 
-        Route::get('/webhooks',                    [WebhookController::class, 'index'])->name('webhooks.index');
-        Route::post('/webhooks',                   [WebhookController::class, 'store'])->name('webhooks.store');
-        Route::put('/webhooks/{webhook}',          [WebhookController::class, 'update'])->name('webhooks.update');
-        Route::delete('/webhooks/{webhook}',       [WebhookController::class, 'destroy'])->name('webhooks.destroy');
-
+    // ── Webhooks ──────────────────────────────────────────────────────────────
+    Route::middleware(['auth', 'verified', 'permission:manage webhooks'])->group(function () {
+        Route::get('/webhooks',              [WebhookController::class, 'index'])->name('webhooks.index');
+        Route::post('/webhooks',             [WebhookController::class, 'store'])->name('webhooks.store');
+        Route::put('/webhooks/{webhook}',    [WebhookController::class, 'update'])->name('webhooks.update');
+        Route::delete('/webhooks/{webhook}', [WebhookController::class, 'destroy'])->name('webhooks.destroy');
     });
     Route::get('/search', [SearchController::class, 'index'])->name('search');
 
     // ── Public custom pages (catch-all — must be last inside this group) ─────
     Route::get('/{slug}', [PublicPageController::class, 'show'])
-        ->where('slug', '^(?!login|logout|dashboard|blog|feed|sitemap\.xml|posts|categories|tags|users|profile|settings|media|comments|pages|templates|calendar|password|register|verify|install|email|forgot-password|reset-password|search).*$')
+        ->where('slug', '^(?!login|logout|dashboard|blog|feed|sitemap\.xml|posts|categories|tags|users|roles|profile|settings|media|comments|pages|templates|calendar|password|register|verify|install|email|forgot-password|reset-password|search).*$')
         ->name('pages.show');
 
 });

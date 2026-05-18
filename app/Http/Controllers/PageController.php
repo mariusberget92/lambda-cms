@@ -39,6 +39,8 @@ class PageController extends Controller
 
     public function store(Request $request)
     {
+        abort_if(! $request->user()->can('create pages'), 403);
+
         $validated = $request->validate([
             'title'            => ['required', 'string', 'max:255'],
             'slug'             => ['required', 'string', 'max:255', 'unique:pages,slug'],
@@ -84,6 +86,8 @@ class PageController extends Controller
 
     public function update(Request $request, Page $page)
     {
+        abort_if(! $request->user()->can('edit pages'), 403);
+
         $validated = $request->validate([
             'title'            => ['required', 'string', 'max:255'],
             'slug'             => ['required', 'string', 'max:255', Rule::unique('pages', 'slug')->ignore($page->id)],
@@ -109,6 +113,8 @@ class PageController extends Controller
 
     public function destroy(Page $page)
     {
+        abort_if(! request()->user()->can('delete pages'), 403);
+
         $page->delete();
 
         return redirect()->route('pages.index')->with('status', 'Page deleted.');

@@ -22,7 +22,7 @@ class MediaController extends Controller
             ->when($request->input('search'), fn ($q, $search) => $q->where('original_filename', 'like', "%{$search}%"))
             ->latest();
 
-        if (! $request->user()->hasRole('administrator')) {
+        if (! $request->user()->can('view media')) {
             $query->where('user_id', $request->user()->id);
         }
 
@@ -131,7 +131,7 @@ class MediaController extends Controller
 
     public function update(Request $request, Media $media): JsonResponse
     {
-        if ($media->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
+        if ($media->user_id !== $request->user()->id && ! $request->user()->can('edit any media')) {
             abort(403);
         }
 
@@ -147,7 +147,7 @@ class MediaController extends Controller
 
     public function destroy(Request $request, Media $media): JsonResponse
     {
-        if ($media->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
+        if ($media->user_id !== $request->user()->id && ! $request->user()->can('delete any media')) {
             abort(403);
         }
 
@@ -159,7 +159,7 @@ class MediaController extends Controller
 
     public function usage(Request $request, Media $media): JsonResponse
     {
-        if ($media->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
+        if ($media->user_id !== $request->user()->id && ! $request->user()->can('edit any media')) {
             abort(403);
         }
 
@@ -179,7 +179,7 @@ class MediaController extends Controller
 
         $query = Media::whereIn('id', $request->input('ids'));
 
-        if (! $request->user()->hasRole('administrator')) {
+        if (! $request->user()->can('delete any media')) {
             $query->where('user_id', $request->user()->id);
         }
 

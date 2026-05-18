@@ -51,7 +51,7 @@ class CalendarController extends Controller
     private function buildMonthData(Request $request, string $month): array
     {
         $user    = $request->user();
-        $isAdmin = $user->hasRole('administrator');
+        $isAdmin = $user->can('edit any post');
         $start   = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
         $end     = $start->copy()->endOfMonth();
 

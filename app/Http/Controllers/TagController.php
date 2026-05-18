@@ -32,6 +32,8 @@ class TagController extends Controller
 
     public function store(Request $request)
     {
+        abort_if(! $request->user()->can('create tags'), 403);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:60'],
         ]);
@@ -58,6 +60,8 @@ class TagController extends Controller
 
     public function update(Request $request, Tag $tag)
     {
+        abort_if(! $request->user()->can('edit tags'), 403);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:60'],
         ]);
@@ -73,6 +77,8 @@ class TagController extends Controller
 
     public function destroy(Tag $tag)
     {
+        abort_if(! request()->user()->can('delete tags'), 403);
+
         $tag->delete();
 
         return redirect()
