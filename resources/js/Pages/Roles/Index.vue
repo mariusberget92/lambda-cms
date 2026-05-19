@@ -66,7 +66,7 @@
               </svg>
             </a>
             <button
-              v-if="!role.is_system"
+              v-if="role.deletable"
               type="button"
               :disabled="role.users_count > 0"
               :title="role.users_count > 0 ? 'Cannot delete a role that has users assigned' : 'Delete'"

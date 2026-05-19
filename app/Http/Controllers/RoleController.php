@@ -10,6 +10,8 @@ use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
+    private const DEFAULT_ROLES = ['administrator', 'editor', 'author', 'contributor', 'user'];
+
     public function index()
     {
         $roles = Role::withCount('users')
@@ -20,6 +22,7 @@ class RoleController extends Controller
                 'id'          => $role->id,
                 'name'        => $role->name,
                 'is_system'   => $role->name === 'administrator',
+                'deletable'   => ! in_array($role->name, self::DEFAULT_ROLES),
                 'permissions' => $role->permissions->pluck('name')->sort()->values(),
                 'users_count' => $role->users_count,
             ]);
@@ -90,10 +93,10 @@ class RoleController extends Controller
 
     public function destroy(Role $role)
     {
-        if ($role->name === 'administrator') {
+        if (in_array($role->name, self::DEFAULT_ROLES)) {
             return redirect()
                 ->route('roles.index')
-                ->with('error', 'The administrator role cannot be deleted.');
+                ->with('error', "The \"{$role->name}\" role is a default role and cannot be deleted.");
         }
 
         $role->delete();
