@@ -96,7 +96,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
-const CHILD_CAPABLE = new Set(['container', 'section', 'loop', 'archive-loop', 'accordion', 'accordion-item', 'tabs', 'tab-item'])
+const CHILD_CAPABLE = new Set(['container', 'section', 'loop', 'archive-loop', 'accordion', 'accordion-item', 'tabs', 'tab-item', 'columns'])
 
 // ── Internal state ────────────────────────────────────────────────────────────
 

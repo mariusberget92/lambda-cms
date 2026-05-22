@@ -186,6 +186,9 @@ import EmbedSettings          from './blocks/EmbedSettings.vue'
 import PaginationSettings     from './blocks/PaginationSettings.vue'
 import NavigationSettings     from './blocks/NavigationSettings.vue'
 import TableSettings         from './blocks/TableSettings.vue'
+import ButtonSettings        from './blocks/ButtonSettings.vue'
+import IconListSettings      from './blocks/IconListSettings.vue'
+import ColumnsSettings       from './blocks/ColumnsSettings.vue'
 
 const props = defineProps({
   blocks:        { type: Array,   default: () => [] },
@@ -239,6 +242,8 @@ const STYLE_BLOCKS = new Set([
   'filter-link', 'navigation', 'search',
   'post-title', 'post-meta', 'post-author', 'post-taxonomy',
   'archive-title',
+  // New blocks
+  'button', 'icon-list', 'columns',
 ])
 
 // Block types where Style should be the default active tab
@@ -268,6 +273,7 @@ const LABELS = {
   link: 'Link', 'filter-link': 'Filter Link', 'template': 'Template', accordion: 'Accordion', 'accordion-item': 'Accordion Item',
   tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
   navigation: 'Navigation', table: 'Table',
+  button: 'Button', 'icon-list': 'Icon List', columns: 'Columns',
 }
 
 const COMPONENT_MAP = {
@@ -297,6 +303,9 @@ const COMPONENT_MAP = {
   pagination:            PaginationSettings,
   navigation:            NavigationSettings,
   table:                 TableSettings,
+  button:                ButtonSettings,
+  'icon-list':           IconListSettings,
+  columns:               ColumnsSettings,
 }
 
 const settingsComponent = computed(() =>
