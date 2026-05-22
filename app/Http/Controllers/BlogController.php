@@ -86,7 +86,7 @@ class BlogController extends Controller
                     'featured_image_url' => $post->featuredImage?->url,
                     'featured_image_alt' => $post->featuredImage?->alt,
                     'author'             => ['name' => $post->author?->name ?? 'Deleted User', 'avatar_url' => $post->author?->avatar_url],
-                    'categories'         => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug])->values(),
+                    'categories'         => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug, 'color' => $c->color ?? null])->values(),
                     'tags'               => $post->tags->map(fn ($t) => ['name' => $t->name, 'slug' => $t->slug]),
                 ],
                 'commentsData' => [
@@ -115,7 +115,7 @@ class BlogController extends Controller
                     'name'       => $post->author?->name ?? 'Deleted User',
                     'avatar_url' => $post->author?->avatar_url,
                 ],
-                'categories'          => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug])->values(),
+                'categories'          => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug, 'color' => $c->color ?? null])->values(),
                 'tags'                => $post->tags->map(fn ($t) => [
                     'name' => $t->name,
                     'slug' => $t->slug,
@@ -321,7 +321,7 @@ class BlogController extends Controller
                 'avatar_url' => $post->author?->avatar_url,
             ],
             'categories' => $post->categories
-                ->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug])
+                ->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug, 'color' => $c->color ?? null])
                 ->values(),
             'tags'       => $post->tags
                 ->map(fn ($t) => ['name' => $t->name, 'slug' => $t->slug]),
@@ -336,11 +336,12 @@ class BlogController extends Controller
         return [
             'categories'   => Category::withCount(['posts' => fn ($q) => $q->published()])
                 ->orderByDesc('posts_count')
-                ->get(['id', 'name', 'slug'])
+                ->get(['id', 'name', 'slug', 'color'])
                 ->map(fn ($c) => [
                     'name'        => $c->name,
                     'slug'        => $c->slug,
                     'posts_count' => $c->posts_count,
+                    'color'       => $c->color ?? null,
                 ]),
             'tags'         => Tag::withCount(['posts' => fn ($q) => $q->published()])
                 ->orderByDesc('posts_count')

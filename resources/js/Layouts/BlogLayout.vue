@@ -1,20 +1,24 @@
 <script setup>
-import { Head, usePage, Link } from '@inertiajs/vue3'
-import { computed, onMounted, onBeforeUnmount } from 'vue'
-import { LayoutDashboard, PenSquare, LogOut } from '@lucide/vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { Head, Link, usePage } from '@inertiajs/vue3'
+import { LayoutDashboard, PenSquare, LogOut, Menu, X } from '@lucide/vue'
 
 defineOptions({ layout: null })
 
-const authUser  = computed(() => usePage().props.auth?.user)
+const page      = usePage()
+const authUser  = computed(() => page.props.auth?.user)
+const appName   = computed(() => page.props.appName ?? 'Blog')
+const navItems  = computed(() => page.props.navItems ?? [])
 const csrfToken = computed(() => document.querySelector('meta[name="csrf-token"]')?.content ?? '')
+const year      = new Date().getFullYear()
 
-// Public frontend always renders in light mode — strip the admin dark class while here.
+const mobileOpen = ref(false)
+
+// Public frontend always renders in light mode
 onMounted(() => {
   document.documentElement.classList.remove('dark')
 })
-
 onBeforeUnmount(() => {
-  // Restore the admin theme preference when navigating back to the dashboard.
   const saved = localStorage.getItem('lambda-cms-theme')
   if (saved === 'dark') document.documentElement.classList.add('dark')
 })
@@ -29,19 +33,17 @@ onBeforeUnmount(() => {
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
   </Head>
 
-  <div class="min-h-screen flex flex-col bg-white text-gray-900">
+  <div class="min-h-screen flex flex-col bg-background text-foreground">
 
-    <!-- Admin bar — only visible when signed in -->
-    <div v-if="authUser" data-theme="dark" class="bg-sidebar text-sidebar-foreground border-b border-sidebar-border">
-      <div class="max-w-6xl mx-auto px-6 h-9 flex items-center justify-between gap-4">
-        <!-- Left: Lambda logo + label -->
+    <!-- Admin bar -->
+    <div v-if="authUser" data-theme="dark" class="bg-sidebar text-sidebar-foreground border-b border-sidebar-border shrink-0">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 h-9 flex items-center justify-between gap-4">
         <div class="flex items-center gap-2 shrink-0">
-          <div class="w-10 h-10 rounded flex items-center justify-center shrink-0">
-            <img :src="'/storage/assets/logo-light.png'" />
+          <div class="w-5 h-5 rounded flex items-center justify-center shrink-0 bg-sidebar-primary">
+            <span class="text-sidebar-primary-foreground font-bold text-xs leading-none select-none">Λ</span>
           </div>
+          <span class="text-xs text-sidebar-foreground/60 hidden sm:inline">Admin</span>
         </div>
-
-        <!-- Right: quick actions -->
         <nav class="flex items-center gap-1 ml-auto">
           <Link
             :href="route('dashboard')"
@@ -50,7 +52,6 @@ onBeforeUnmount(() => {
             <LayoutDashboard class="w-3.5 h-3.5" />
             <span class="hidden sm:inline">Dashboard</span>
           </Link>
-
           <Link
             :href="route('posts.create')"
             class="flex items-center gap-1.5 px-2 py-1 rounded text-xs text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
@@ -58,17 +59,11 @@ onBeforeUnmount(() => {
             <PenSquare class="w-3.5 h-3.5" />
             <span class="hidden sm:inline">New post</span>
           </Link>
-
           <div class="w-px h-4 bg-sidebar-border mx-1 shrink-0" />
           <span class="text-xs text-sidebar-foreground/50 hidden sm:inline">{{ authUser.name }}</span>
-
           <form method="POST" :action="route('logout')" class="inline">
             <input type="hidden" name="_token" :value="csrfToken" />
-            <button
-              type="submit"
-              class="flex items-center gap-1.5 px-2 py-1 rounded text-xs text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
-              title="Sign out"
-            >
+            <button type="submit" class="flex items-center gap-1.5 px-2 py-1 rounded text-xs text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors" title="Sign out">
               <LogOut class="w-3.5 h-3.5" />
               <span class="hidden sm:inline">Sign out</span>
             </button>
@@ -77,10 +72,66 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
+    <!-- Site header -->
+    <header class="sticky top-0 z-40 shrink-0 bg-white/95 border-b border-border backdrop-blur-sm">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+        <!-- Site name / logo -->
+        <Link href="/" class="font-editorial text-xl font-bold text-foreground hover:text-primary transition-colors shrink-0">
+          {{ appName }}
+        </Link>
+
+        <!-- Desktop nav -->
+        <nav v-if="navItems.length" class="hidden md:flex items-center gap-7 ml-10">
+          <Link
+            v-for="item in navItems"
+            :key="item.url"
+            :href="item.url"
+            class="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium"
+          >{{ item.label }}</Link>
+        </nav>
+
+        <!-- Mobile hamburger -->
+        <button
+          v-if="navItems.length"
+          class="md:hidden p-2 -mr-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+          :aria-label="mobileOpen ? 'Close menu' : 'Open menu'"
+          @click="mobileOpen = !mobileOpen"
+        >
+          <X v-if="mobileOpen" class="w-5 h-5" />
+          <Menu v-else class="w-5 h-5" />
+        </button>
+      </div>
+
+      <!-- Mobile nav dropdown -->
+      <div v-if="mobileOpen && navItems.length" class="md:hidden border-t border-border bg-white px-4 pb-3 pt-2 space-y-0.5">
+        <Link
+          v-for="item in navItems"
+          :key="item.url"
+          :href="item.url"
+          class="block py-2 px-2 rounded-md text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-muted/50 transition-colors"
+          @click="mobileOpen = false"
+        >{{ item.label }}</Link>
+      </div>
+    </header>
+
     <!-- Main content -->
-    <main class="flex-1 w-full max-w-6xl mx-auto">
+    <main class="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6">
       <slot />
     </main>
+
+    <!-- Footer -->
+    <footer class="shrink-0 border-t border-border mt-16">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+        <span class="font-editorial font-semibold text-foreground/70">{{ appName }}</span>
+        <div class="flex items-center gap-1 text-muted-foreground/70">
+          <span>© {{ year }}</span>
+          <span class="mx-2">·</span>
+          <a href="/feed" class="hover:text-primary transition-colors">RSS</a>
+          <span class="mx-2">·</span>
+          <a href="/sitemap.xml" class="hover:text-primary transition-colors">Sitemap</a>
+        </div>
+      </div>
+    </footer>
 
   </div>
 </template>
