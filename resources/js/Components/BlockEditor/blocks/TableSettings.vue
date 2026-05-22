@@ -198,7 +198,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
-import { GripVertical, X } from 'lucide-vue-next'
+import { GripVertical, X } from '@lucide/vue'
 import SelectBox  from '@/Components/SelectBox.vue'
 import NumberInput from '@/Components/NumberInput.vue'
 import { SOURCES, SOURCE_FIELDS, SORT_FIELDS, FILTER_OPS } from '@/lib/loopSources.js'

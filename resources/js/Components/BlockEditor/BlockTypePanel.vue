@@ -70,7 +70,7 @@ import {
   Navigation2,
   Table2,
   Filter,
-} from 'lucide-vue-next'
+} from '@lucide/vue'
 
 const props = defineProps({
   isAdmin: { type: Boolean, default: false },

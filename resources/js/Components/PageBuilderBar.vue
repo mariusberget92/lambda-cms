@@ -176,7 +176,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { ArrowLeft, ChevronDown, ExternalLink } from 'lucide-vue-next'
+import { ArrowLeft, ChevronDown, ExternalLink } from '@lucide/vue'
 
 const props = defineProps({
   backHref:         { type: String,  required: true },

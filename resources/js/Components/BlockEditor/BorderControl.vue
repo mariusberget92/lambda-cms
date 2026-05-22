@@ -106,7 +106,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { Link2, Link2Off } from 'lucide-vue-next'
+import { Link2, Link2Off } from '@lucide/vue'
 import SelectBox    from '@/Components/SelectBox.vue'
 import DimensionInput from './DimensionInput.vue'
 import ColorPicker  from './ColorPicker.vue'

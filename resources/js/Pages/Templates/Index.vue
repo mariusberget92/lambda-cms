@@ -4,7 +4,7 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import { Head, router } from '@inertiajs/vue3'
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import StatusBadge from '@/Components/StatusBadge.vue'
-import { LayoutTemplate, Plus, Pencil, Trash2, ChevronDown, Lock } from 'lucide-vue-next'
+import { LayoutTemplate, Plus, Pencil, Trash2, ChevronDown, Lock } from '@lucide/vue'
 import { formatDate } from '@/lib/utils.js'
 
 const props = defineProps({

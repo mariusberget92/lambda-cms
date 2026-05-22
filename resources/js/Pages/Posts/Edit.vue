@@ -337,10 +337,10 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { Head, useForm } from "@inertiajs/vue3";
 import axios from 'axios'
-import { ChevronDown, ArrowLeft, X, ExternalLink } from 'lucide-vue-next'
+import { ChevronDown, ArrowLeft, X, ExternalLink } from '@lucide/vue'
 import AppLayout from "@/Layouts/AppLayout.vue";
-import TiptapEditor from "@/Components/TiptapEditor.vue";
-import MediaPicker from '@/Components/MediaPicker.vue'
+import TiptapEditor from "@/components/TiptapEditor.vue";
+import MediaPicker from '@/components/MediaPicker.vue'
 import DateTimePicker from '@/Components/DateTimePicker.vue'
 import TagInput from '@/Components/TagInput.vue'
 import CategoryInput from '@/Components/CategoryInput.vue'

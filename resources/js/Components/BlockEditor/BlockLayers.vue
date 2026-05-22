@@ -145,8 +145,8 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { RotateCcw, RotateCw } from 'lucide-vue-next'
+import { Tabs, TabsList, TabsTrigger } from '@/Components/ui/tabs'
+import { RotateCcw, RotateCw } from '@lucide/vue'
 import { VueDraggable } from 'vue-draggable-plus'
 import LayerItem from './LayerItem.vue'
 import AdvancedSettings  from './blocks/AdvancedSettings.vue'

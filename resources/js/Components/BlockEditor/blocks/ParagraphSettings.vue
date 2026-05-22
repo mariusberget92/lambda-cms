@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import TiptapEditor      from '@/Components/TiptapEditor.vue'
+import TiptapEditor      from '@/components/TiptapEditor.vue'
 import DynamicField      from './DynamicField.vue'
 import TypographyControl from '../TypographyControl.vue'
 import IconSettings      from './IconSettings.vue'

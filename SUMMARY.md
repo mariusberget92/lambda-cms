@@ -8,13 +8,13 @@
 
 | Layer | Technology |
 |---|---|
-| Backend | Laravel 12.28, PHP 8.2+ |
-| Frontend | Vue 3 (Composition API, `<script setup>`), Inertia 2 |
-| Build | Vite 7 |
-| CSS | Tailwind CSS 4 (`@import "tailwindcss"` in `resources/css/app.css`) |
-| UI Components | shadcn-vue / reka-ui / lucide-vue-next |
+| Backend | Laravel 12.60, PHP 8.2+ |
+| Frontend | Vue 3 (Composition API, `<script setup>`), Inertia 2.3 |
+| Build | Vite 7.3 |
+| CSS | Tailwind CSS 4.3 (`@import "tailwindcss"` in `resources/css/app.css`) |
+| UI Components | shadcn-vue 2.7 / reka-ui 2.9 / @lucide/vue 1.16 |
 | Database | SQLite (default), MySQL supported |
-| Auth | Laravel built-in + Spatie Permission (roles: `administrator`, `user`) |
+| Auth | Laravel built-in + Spatie Permission 7.4 (roles: `administrator`, `user`) |
 
 **Path aliases:** `@/` → `resources/js/`
 
@@ -336,6 +336,12 @@ Potential future improvements:
 - User-configurable accent color (Nord aurora palette)
 - Import/export pages and templates
 
+### Pending major-version upgrades (deferred — require additional review)
+- `inertia-laravel` 2 → 3 + `@inertiajs/vue3` 2 → 3 (coupled upgrade)
+- `@vueuse/core` 13 → 14
+- `intervention/image` 3 → 4 (may require image-processing code changes)
+- `laravel/framework` 12 → 13 (full framework upgrade)
+
 ---
 
-*Last updated: 2026-04-19 — pushed at commit `017aaea`*
+*Last updated: 2026-05-22 — package update + import case fixes + BlogSidebar component + lucide-vue-next → @lucide/vue migration*

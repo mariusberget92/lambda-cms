@@ -138,7 +138,7 @@
 <script setup>
 import { ref, watch, computed, nextTick } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
-import { GripVertical, X, CopyPlus, Copy, Clipboard } from 'lucide-vue-next'
+import { GripVertical, X, CopyPlus, Copy, Clipboard } from '@lucide/vue'
 
 defineOptions({ name: 'LayerItem' })
 

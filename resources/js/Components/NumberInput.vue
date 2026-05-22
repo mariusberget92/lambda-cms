@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { ChevronUp, ChevronDown } from 'lucide-vue-next'
+import { ChevronUp, ChevronDown } from '@lucide/vue'
 
 defineOptions({ inheritAttrs: false })
 

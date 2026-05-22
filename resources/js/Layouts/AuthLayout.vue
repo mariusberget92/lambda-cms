@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { Sun, Moon } from 'lucide-vue-next'
+import { Sun, Moon } from '@lucide/vue'
 import { useTheme } from '@/composables/useTheme.js'
 import { useParticleCanvas } from '@/composables/useParticleCanvas.js'
 import Notifications from '@/Components/Notifications.vue'

@@ -74,7 +74,7 @@
 <script setup>
 import { ref, computed, watch, reactive } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
-import { GripVertical, ChevronDown, Plus } from 'lucide-vue-next'
+import { GripVertical, ChevronDown, Plus } from '@lucide/vue'
 
 const LABELS = {
   paragraph: 'Paragraph', heading: 'Heading', image: 'Image',
