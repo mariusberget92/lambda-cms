@@ -1,6 +1,6 @@
 <script setup>
 import BlogLayout from '@/Layouts/BlogLayout.vue'
-import BlogSidebar from '@/Components/BlogSidebar.vue'
+import BlogSidebar from '@/components/BlogSidebar.vue'
 import PostCard from '@/Components/PostCard.vue'
 import SeoHead from '@/Components/SeoHead.vue'
 import { Link } from '@inertiajs/vue3'

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, watch, nextTick } from 'vue'
 import { onClickOutside } from '@vueuse/core'
-import { ChevronDown, X } from 'lucide-vue-next'
+import { ChevronDown, X } from '@lucide/vue'
 
 defineOptions({ inheritAttrs: false })
 

@@ -47,7 +47,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
-import { GripVertical, Link as LinkIcon } from 'lucide-vue-next'
+import { GripVertical, Link as LinkIcon } from '@lucide/vue'
 
 const LABELS = {
   paragraph: 'Paragraph', heading: 'Heading', image: 'Image',

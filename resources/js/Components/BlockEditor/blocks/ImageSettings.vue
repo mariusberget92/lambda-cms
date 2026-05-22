@@ -139,7 +139,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import MediaPicker    from '@/Components/MediaPicker.vue'
+import MediaPicker    from '@/components/MediaPicker.vue'
 import DynamicField   from './DynamicField.vue'
 import DimensionInput from '../DimensionInput.vue'
 

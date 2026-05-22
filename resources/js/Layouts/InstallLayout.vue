@@ -1,5 +1,5 @@
 <script setup>
-import { Sun, Moon } from 'lucide-vue-next'
+import { Sun, Moon } from '@lucide/vue'
 import { useTheme } from '@/composables/useTheme.js'
 import Notifications from '@/Components/Notifications.vue'
 

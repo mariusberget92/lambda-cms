@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, watch, nextTick } from 'vue'
 import { onClickOutside } from '@vueuse/core'
-import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { CalendarDays, ChevronLeft, ChevronRight } from '@lucide/vue'
 import {
   CalendarRoot, CalendarHeader, CalendarHeading,
   CalendarGrid, CalendarGridHead, CalendarGridBody,

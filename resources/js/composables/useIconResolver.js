@@ -1,5 +1,5 @@
 // Resolves a Lucide icon name string to a Vue component
-import * as LucideIcons from 'lucide-vue-next'
+import * as LucideIcons from '@lucide/vue'
 import { computed } from 'vue'
 
 const SIZE_MAP = { xs: '12px', sm: '16px', md: '20px', lg: '24px', xl: '32px' }

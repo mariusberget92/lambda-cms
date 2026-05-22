@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { onClickOutside } from '@vueuse/core'
-import { X } from 'lucide-vue-next'
+import { X } from '@lucide/vue'
 
 const props = defineProps({
   tags:         { type: Array, default: () => [] }, // [{ id, name }]

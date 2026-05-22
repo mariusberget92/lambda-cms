@@ -532,7 +532,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { Loader2 } from 'lucide-vue-next'
+import { Loader2 } from '@lucide/vue'
 import { Head, useForm, usePage } from "@inertiajs/vue3";
 import { useNotifications } from '@/composables/useNotifications.js'
 import AppLayout from "@/Layouts/AppLayout.vue";

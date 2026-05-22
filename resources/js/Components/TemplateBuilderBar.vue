@@ -169,7 +169,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { ArrowLeft, ChevronDown } from 'lucide-vue-next'
+import { ArrowLeft, ChevronDown } from '@lucide/vue'
 import { SOURCES } from '@/lib/loopSources.js'
 
 defineProps({

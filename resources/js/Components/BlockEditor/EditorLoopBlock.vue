@@ -120,7 +120,7 @@
 <script setup>
 import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
-import { GripVertical } from 'lucide-vue-next'
+import { GripVertical } from '@lucide/vue'
 
 defineOptions({ name: 'EditorLoopBlock' })
 

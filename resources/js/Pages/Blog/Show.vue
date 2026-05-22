@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { Link, useForm } from '@inertiajs/vue3'
 import BlogLayout from '@/Layouts/BlogLayout.vue'
-import BlogSidebar from '@/Components/BlogSidebar.vue'
+import BlogSidebar from '@/components/BlogSidebar.vue'
 import SeoHead from '@/Components/SeoHead.vue'
 import BlockRenderer from '@/Components/BlockRenderer.vue'
 import { formatDateTime } from '@/lib/utils.js'

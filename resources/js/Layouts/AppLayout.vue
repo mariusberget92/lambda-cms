@@ -238,8 +238,8 @@
 <script setup>
 import { computed, onMounted, watchEffect } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
-import { Sun, Moon, Calendar, ExternalLink, LayoutTemplate } from "lucide-vue-next";
-import SidebarLink from "@/Components/SidebarLink.vue";
+import { Sun, Moon, Calendar, ExternalLink, LayoutTemplate } from '@lucide/vue';
+import SidebarLink from "@/components/SidebarLink.vue";
 import { useTheme } from "@/composables/useTheme.js";
 import Notifications from "@/Components/Notifications.vue";
 

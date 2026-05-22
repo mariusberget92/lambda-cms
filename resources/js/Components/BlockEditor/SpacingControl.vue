@@ -2,7 +2,7 @@
 <!-- Box-model 4-side spacing control with link/unlink toggle -->
 <script setup>
 import { ref, computed } from 'vue'
-import { Link2, Link2Off } from 'lucide-vue-next'
+import { Link2, Link2Off } from '@lucide/vue'
 import DimensionInput from './DimensionInput.vue'
 
 const props = defineProps({
