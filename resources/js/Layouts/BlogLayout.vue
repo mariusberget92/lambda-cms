@@ -115,7 +115,7 @@ onBeforeUnmount(() => {
     </header>
 
     <!-- Main content -->
-    <main class="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6">
+    <main class="flex-1 w-full max-w-6xl mx-auto">
       <slot />
     </main>
 

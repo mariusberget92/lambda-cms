@@ -64,7 +64,7 @@ class TemplateSeeder extends Seeder
         return [
             $this->section(1, [
                 'paddingY'  => ['default' => 16],
-                'paddingX'  => ['default' => 8],
+                'paddingX'  => ['default' => 0],
                 'fullWidth' => true,
                 'minHeight' => 'auto',
             ], [
@@ -175,7 +175,7 @@ class TemplateSeeder extends Seeder
     private function archiveBlocks(): array
     {
         return [
-            $this->section(200, ['paddingY' => ['default' => 16], 'paddingX' => ['default' => 8], 'fullWidth' => true, 'minHeight' => 'auto'], [
+            $this->section(200, ['paddingY' => ['default' => 16], 'paddingX' => ['default' => 0], 'fullWidth' => true, 'minHeight' => 'auto'], [
                 $this->block(201, 'archive-title', ['tag' => 'h1']),
                 $this->block(202, 'loop', [
                     'source'  => 'posts',
@@ -192,7 +192,7 @@ class TemplateSeeder extends Seeder
     private function searchBlocks(): array
     {
         return [
-            $this->section(300, ['paddingY' => ['default' => 16], 'paddingX' => ['default' => 8], 'fullWidth' => true, 'minHeight' => 'auto'], [
+            $this->section(300, ['paddingY' => ['default' => 16], 'paddingX' => ['default' => 0], 'fullWidth' => true, 'minHeight' => 'auto'], [
                 $this->block(301, 'heading', ['level' => 2, 'text' => 'Search']),
                 $this->block(302, 'search',  ['placeholder' => 'Search posts…', 'buttonLabel' => 'Search']),
                 $this->block(303, 'loop', [
