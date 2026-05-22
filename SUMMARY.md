@@ -34,10 +34,10 @@ resources/js/Layouts/BlogLayout.vue    — Public blog layout
 resources/js/Layouts/InstallLayout.vue — 5-step install wizard layout
 resources/js/Layouts/PageBuilderLayout.vue — Full-screen block editor layout
 resources/js/Components/              — Shared components (PascalCase dir)
-resources/js/components/              — Block renderer + UI primitives (lowercase dir)
-resources/js/components/BlockRenderer.vue — Renders blocks on the public frontend
+resources/js/components/              — Public blog + UI primitives (lowercase dir)
+resources/js/Components/BlockRenderer.vue — Renders published blocks on the public frontend (BLOCK_MAP)
 resources/js/Components/BlockEditor/  — Block editor (admin canvas + layers panel)
-resources/js/components/Blocks/       — Individual block render components
+resources/js/Components/Blocks/       — Individual block render components
 resources/js/lib/utils.js             — cn() helper
 resources/js/composables/useLoopBinding.js — Dynamic field binding composable
 resources/js/lib/loopSources.js       — Loop source field definitions
@@ -87,21 +87,37 @@ resources/js/lib/loopSources.js       — Loop source field definitions
 
 ### 🧱 Block Editor
 Block types available:
-`container`, `section`, `heading`, `paragraph`, `image`, `video`, `gallery`, `code`, `quote`, `divider`, `spacer`, `cta`, `html`, `loop`, `post-list`, `post-title`, `post-body`, `post-featured-image`, `post-meta`, `post-author`, `post-taxonomy`, `post-comments`, `archive-title`, `archive-loop`, `search`, `navigation`, `link`, `filter-link`, `template`, `table`
+
+| Group | Types | Public Renderer |
+|---|---|---|
+| Content | `paragraph`, `heading`, `image`, `video`, `gallery`, `code`, `quote` | ✓ |
+| Content | `accordion`, `tabs`, `embed` | Editor-only (no public render) |
+| Layout | `container`, `section`, `divider`, `spacer`, `navigation` | ✓ |
+| Interactive | `cta`, `search`, `loop`, `link`, `filter-link`, `template`, `pagination`, `table` | ✓ |
+| Developer | `html` (admin-only) | ✓ |
+| Post | `post-title`, `post-body`, `post-featured-image`, `post-meta`, `post-author`, `post-taxonomy`, `post-comments` | ✓ |
+| Archive | `archive-title`, `archive-loop` | ✓ |
+
+> `accordion-item` and `tab-item` are auto-inserted children of their parent blocks, hidden from the palette.
 
 **Canvas features:**
 - Drag-and-drop with cross-list nesting
 - Block labels / `blockName` (shown in canvas + layers panel)
 - Layers panel with infinite depth nesting
 - Real-time preview in canvas
+- **Undo / Redo** via the layers panel toolbar
 
-**Settings panels (Style tab — shared for all blocks):**
-- Font family
-- Display (flex/grid/inline-flex mode, direction, wrap, justify, align, gap, max-width)
-- Spacing (padding, margin — per-side via SpacingControl)
-- **Border & Shadow** — per-corner radius, stroke style/width/color, box-shadow presets
-- Background (color, gradient with direction, image with position/size/parallax + dynamic binding)
-- Effects (opacity, cursor, overflow, z-index, transition)
+**Settings tabs (per block):**
+- **Content tab** — block-type-specific fields (text, URLs, media, etc.). Many text-rendering blocks also include a `TypographyControl` (font-size, weight, line-height, letter-spacing, text decoration, transform, text-shadow, alignment, color).
+- **Style tab** — shared `StyleSettings.vue` for all blocks:
+  - Font family
+  - Display (flex/grid/inline-flex mode, direction, wrap, justify, align, gap, max-width)
+  - Spacing (padding, margin — per-side via SpacingControl)
+  - Border & Shadow — per-corner radius, stroke style/width/color, box-shadow presets
+  - Background (color, gradient with direction, image with position/size/parallax + dynamic binding)
+  - Effects (opacity, cursor, overflow, z-index, transition)
+- **Advanced tab** — block label, custom HTML ID, custom CSS classes, custom CSS (CodeMirror editor, scoped automatically)
+- **Conditions tab** — conditional visibility: show/hide block based on a field/operator/value rule (evaluated against loop context)
 
 **Dynamic field binding:**
 - Loop fields (post title, slug, excerpt, featured image URL, author, URL, etc.)
@@ -156,6 +172,7 @@ Block types available:
 
 ### ⚙️ Settings (admin-only)
 - Site name & URL
+- **Accent color** — Nord aurora palette swatches; applies via CSS custom properties (`--primary`, `--sidebar-primary`, etc.)
 - Locale: timezone, date_format
 - Media: max_upload_mb, resize_max_width
 - Mail: driver (smtp/log/mailgun), host, port, username, password, encryption, from/name; test email send
@@ -174,9 +191,10 @@ Block types available:
 - Recent posts (last 5 updated)
 
 ### 🌐 Public Frontend
-- Blog index: paginated published posts, sidebar (categories, tags, recent posts)
-- Single post: full content, featured image, author, categories/tags, comments
+- Blog index: paginated published posts, sidebar (search, categories, tags, recent posts)
+- Single post: full content, featured image, author, categories/tags, comments with load-more
 - Category + tag archive pages
+- Full-text search page (`/search`)
 - RSS feed (`/feed`) — 20 most recent published posts
 - Sitemap XML (`/sitemap.xml`)
 - Admin bar visible to authenticated users (hidden from public visitors)
@@ -229,18 +247,20 @@ Spatie: roles, permissions, model_has_roles, ...
 
 ## Routes Reference
 
-### Public
+### Public (no auth required)
 ```
-GET  /                          blog index
-GET  /blog/{slug}               single post
-GET  /blog/category/{slug}      category archive
-GET  /blog/tag/{slug}           tag archive
-POST /blog/{post:slug}/comments submit comment (rate-limited)
-GET  /feed                      RSS feed
-GET  /sitemap.xml               sitemap
-GET  /preview/posts/{token}     draft post preview
-GET  /preview/pages/{token}     draft page preview
-GET  /{slug}                    public page (catch-all)
+GET  /                               blog index
+GET  /blog/{slug}                    single post
+GET  /blog/category/{slug}           category archive
+GET  /blog/tag/{slug}                tag archive
+GET  /blog/{post:slug}/comments      paginated approved comments (JSON)
+POST /blog/{post:slug}/comments      submit comment (rate-limited, honeypot)
+GET  /search                         full-text search results
+GET  /feed                           RSS feed
+GET  /sitemap.xml                    sitemap
+GET  /preview/posts/{token}          draft post preview (token-based)
+GET  /preview/pages/{token}          draft page preview (token-based)
+GET  /{slug}                         public page (catch-all)
 ```
 
 ### Guest-only
@@ -248,6 +268,14 @@ GET  /{slug}                    public page (catch-all)
 GET/POST /login
 GET/POST /forgot-password
 GET/POST /reset-password/{token}
+```
+
+### Auth only
+```
+GET  /email/verify                        verification notice
+GET  /email/verify/{id}/{hash}            verification link (signed)
+POST /email/verification-notification     resend verification email
+POST /logout
 ```
 
 ### Auth + verified
@@ -259,8 +287,6 @@ GET  /dashboard
 /profile    (info, password, avatar)
 /media      (resource + bulk-destroy + usage)
 /calendar   (index + data)
-GET  /search
-POST /logout
 ```
 
 ### Admin only (auth + verified + administrator role)
@@ -302,9 +328,15 @@ Available on every page via `usePage().props`:
 
 | Prop | Type | Description |
 |---|---|---|
-| `auth.user` | `{id,name,email,role,avatar}` or `null` | Authenticated user |
-| `flash.status` | `string` or `null` | Session flash message |
+| `appName` | `string` | Site name from `config('app.name')` |
+| `auth.user` | `{id,name,email,role,avatar_url,email_verified}` or `null` | Authenticated user |
+| `flash.status` | `string\|null` | Generic success flash |
+| `flash.error` | `string\|null` | Generic error flash |
+| `flash.mail_status` | `string\|null` | Mail test success message |
+| `flash.mail_error` | `string\|null` | Mail test error message |
 | `currentRoute` | `string` | Current Laravel route name |
+| `pendingCommentsCount` | `number\|null` | Pending comment count (admins only) |
+| `accentColor` | `string\|null` | Hex accent color from site settings |
 | `navItems` | `Array<{label,url}>` | Published nav items |
 | `sharedTemplates` | `Array<Template>` | All templates (for block editor) |
 
@@ -312,12 +344,13 @@ Available on every page via `usePage().props`:
 
 ## Conventions & Patterns
 
-- **Block data**: stored as JSON in `blocks` column; each block has `{id, type, data, bindings?, children?, blockName?, fontFamily?, ...}`
+- **Block data**: stored as JSON in `blocks` column; each block has `{id, type, data, bindings?, children?, blockName?, fontFamily?, customId?, customClasses?, customCss?, condition?, ...}`
 - **Dynamic bindings**: `block.bindings[fieldName] = 'loop:field'` or `'post:field'`; resolved in `useLoopBinding.js` composable
 - **Block rendering**: `BlockRenderer.vue` (public) maps type → component; `blockWrapperStyle()` computes inline styles from block data
-- **Block settings**: per-type Settings component for Content tab; shared `StyleSettings.vue` always shown in Style tab
+- **Block settings**: per-type Settings component for Content tab; shared `StyleSettings.vue` for Style tab; `AdvancedSettings.vue` for Advanced tab; `ConditionSettings.vue` for Conditions tab
 - **Notifications**: `useNotifications()` composable → `Notifications.vue` component
 - **Theming**: dark/light via `useTheme()` composable; `data-theme` attribute on root
+- **Accent color**: `accentColor` shared prop → `watchEffect` in AppLayout sets `--primary` and related CSS vars
 - **Media URLs**: `Media::getUrlAttribute()` handles both `Storage::disk()` and `disk='external'` (returns `path` directly as full URL)
 - **System templates**: `is_system = true` blocks deletion; `TemplateSeeder` marks them
 - **Preview tokens**: auto-generated 64-char random string on Post/Page create; routes are public
@@ -327,13 +360,9 @@ Available on every page via `usePage().props`:
 
 ## Open Issues / TODOs
 
-All items in `FIX.txt` are marked `[done]`. No open tracked issues at time of last push (`017aaea`).
-
 Potential future improvements:
 - Add more genres to GenreSeeder (interior, daily life, crypto, writing, etc.)
 - VLOG / video-focused genre template
-- Pagination block in the public frontend
-- User-configurable accent color (Nord aurora palette)
 - Import/export pages and templates
 
 ### Pending major-version upgrades (deferred — require additional review)
@@ -344,4 +373,4 @@ Potential future improvements:
 
 ---
 
-*Last updated: 2026-05-22 — package update + import case fixes + BlogSidebar component + lucide-vue-next → @lucide/vue migration*
+*Last updated: 2026-05-22 — full documentation audit and correction*
