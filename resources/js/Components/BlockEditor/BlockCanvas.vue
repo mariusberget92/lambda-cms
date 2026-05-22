@@ -91,7 +91,7 @@
             <div class="flex-1 min-w-0">
 
               <EditorContainerBlock
-                v-if="block.type === 'container'"
+                v-if="block.type === 'container' || block.type === 'columns'"
                 :block="block"
                 :selected-id="selectedId"
                 @select="$emit('select', $event)"
@@ -239,6 +239,7 @@ const LABELS = {
   link: 'Link', accordion: 'Accordion', 'accordion-item': 'Acc. Item',
   tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
   navigation: 'Navigation', table: 'Table',
+  button: 'Button', 'icon-list': 'Icon List', columns: 'Columns',
 }
 
 const props = defineProps({

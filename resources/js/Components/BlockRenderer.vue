@@ -56,6 +56,11 @@ import PaginationBlock        from '@/Components/Blocks/PaginationBlock.vue'
 import PostListBlock          from '@/Components/Blocks/PostListBlock.vue'
 import TemplateBlock          from '@/Components/Blocks/TemplateBlock.vue'
 import TableBlock             from '@/Components/Blocks/TableBlock.vue'
+import AccordionBlock         from '@/Components/Blocks/AccordionBlock.vue'
+import TabsBlock              from '@/Components/Blocks/TabsBlock.vue'
+import EmbedBlock             from '@/Components/Blocks/EmbedBlock.vue'
+import ButtonBlock            from '@/Components/Blocks/ButtonBlock.vue'
+import IconListBlock          from '@/Components/Blocks/IconListBlock.vue'
 
 const props = defineProps({
   blocks:       { type: Array,  default: () => [] },
@@ -238,6 +243,14 @@ const BLOCK_MAP = {
   pagination:            PaginationBlock,
   'template':            TemplateBlock,
   table:                 TableBlock,
+  accordion:             AccordionBlock,
+  'accordion-item':      AccordionBlock,
+  tabs:                  TabsBlock,
+  'tab-item':            TabsBlock,
+  embed:                 EmbedBlock,
+  button:               ButtonBlock,
+  'icon-list':          IconListBlock,
+  columns:              ContainerBlock,
 }
 
 // Injected by LoopItemProvider when this renderer is inside a loop iteration

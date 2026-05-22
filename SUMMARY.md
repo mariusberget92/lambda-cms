@@ -91,14 +91,15 @@ Block types available:
 | Group | Types | Public Renderer |
 |---|---|---|
 | Content | `paragraph`, `heading`, `image`, `video`, `gallery`, `code`, `quote` | ✓ |
-| Content | `accordion`, `tabs`, `embed` | Editor-only (no public render) |
-| Layout | `container`, `section`, `divider`, `spacer`, `navigation` | ✓ |
-| Interactive | `cta`, `search`, `loop`, `link`, `filter-link`, `template`, `pagination`, `table` | ✓ |
+| Content | `accordion`, `tabs`, `embed` | ✓ |
+| Layout | `container`, `columns`, `section`, `divider`, `spacer`, `navigation` | ✓ |
+| Interactive | `button`, `icon-list`, `cta`, `search`, `loop`, `link`, `filter-link`, `template`, `pagination`, `table` | ✓ |
 | Developer | `html` (admin-only) | ✓ |
 | Post | `post-title`, `post-body`, `post-featured-image`, `post-meta`, `post-author`, `post-taxonomy`, `post-comments` | ✓ |
 | Archive | `archive-title`, `archive-loop` | ✓ |
 
 > `accordion-item` and `tab-item` are auto-inserted children of their parent blocks, hidden from the palette.
+> `columns` is a preset of `container` with a column-count control; it maps to `ContainerBlock` for rendering.
 
 **Canvas features:**
 - Drag-and-drop with cross-list nesting
@@ -373,4 +374,4 @@ Potential future improvements:
 
 ---
 
-*Last updated: 2026-05-22 — full documentation audit and correction*
+*Last updated: 2026-05-22 — added AccordionBlock, TabsBlock, EmbedBlock public renderers; Button, Icon List, and Columns blocks*

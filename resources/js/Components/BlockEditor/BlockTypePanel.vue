@@ -70,6 +70,9 @@ import {
   Navigation2,
   Table2,
   Filter,
+  RectangleHorizontal,
+  ListChecks,
+  Columns2,
 } from '@lucide/vue'
 
 const props = defineProps({
@@ -91,12 +94,15 @@ const ALL_TYPES = [
   { type: 'tab-item',       label: 'Tab',       icon: LayoutPanelTop,  group: 'Content', hiddenFromPalette: true },
   { type: 'embed',          label: 'Embed',     icon: PlayCircle,      group: 'Content' },
   // ── Layout ───────────────────────────────────────────────────────────────
+  { type: 'columns',   label: 'Columns',   icon: Columns2,          group: 'Layout' },
   { type: 'container', label: 'Container', icon: LayoutTemplate,    group: 'Layout' },
   { type: 'section',   label: 'Section',   icon: Rows2,             group: 'Layout' },
   { type: 'divider',   label: 'Divider',   icon: Minus,             group: 'Layout' },
   { type: 'spacer',      label: 'Spacer',     icon: ArrowUpDown,       group: 'Layout' },
   { type: 'navigation', label: 'Navigation', icon: Navigation2,       group: 'Layout' },
   // ── Interactive ──────────────────────────────────────────────────────────
+  { type: 'button',    label: 'Button',    icon: RectangleHorizontal, group: 'Interactive' },
+  { type: 'icon-list', label: 'Icon List', icon: ListChecks,        group: 'Interactive' },
   { type: 'cta',       label: 'CTA',       icon: MousePointerClick, group: 'Interactive' },
   { type: 'search',    label: 'Search',    icon: Search,            group: 'Interactive' },
   { type: 'loop',      label: 'Loop',      icon: Repeat2,           group: 'Interactive' },
@@ -151,6 +157,42 @@ const DEFAULT_DATA = {
   divider:   { style: 'line' },
   cta:       { headline: '', text: '', button_label: '', button_url: '' },
   html:      { content: '' },
+  button: {
+    label: 'Click here',
+    url: '',
+    target: '_self',
+    rel: '',
+    variant: 'filled',
+    size: 'md',
+    alignment: 'left',
+    fullWidth: false,
+    bgColor: null,
+    textColor: null,
+    radius: null,
+    icon: { name: null, position: 'prefix', size: '1.1em', color: null, gap: '0.5em' },
+  },
+  'icon-list': {
+    items: [
+      { icon: 'lucide:check', text: 'Feature one' },
+      { icon: 'lucide:check', text: 'Feature two' },
+      { icon: 'lucide:check', text: 'Feature three' },
+    ],
+    direction: 'vertical',
+    gap: '0.75rem',
+    iconGap: '0.6em',
+    iconSize: '1.1em',
+    iconColor: null,
+  },
+  columns: {
+    direction: 'row',
+    wrap: true,
+    gap: '1rem',
+    justify: 'start',
+    align: 'start',
+    maxWidth: 'full',
+    columns: '2',
+    padding: { top: '1rem', right: '1rem', bottom: '1rem', left: '1rem' },
+  },
   container: {
     direction: 'row', wrap: true,
     gap: '1rem',
@@ -260,7 +302,7 @@ function cloneBlock(typeDef) {
     customClasses: '',
     customCss: '',
     fontFamily: '',
-    ...(['container', 'section', 'loop', 'archive-loop', 'link', 'accordion', 'tabs', 'accordion-item', 'tab-item'].includes(typeDef.type)
+    ...(['container', 'section', 'loop', 'archive-loop', 'link', 'accordion', 'tabs', 'accordion-item', 'tab-item', 'columns'].includes(typeDef.type)
       ? { children: [] }
       : {}),
   }
@@ -271,6 +313,22 @@ function cloneBlock(typeDef) {
       id: makeId(),
       type: 'accordion-item',
       data: { title: `Item ${i}` },
+      customId: '', customClasses: '', customCss: '', fontFamily: '',
+      children: [],
+    }))
+  }
+
+  // Auto-populate columns with equal-width container children
+  if (typeDef.type === 'columns') {
+    const n = parseInt(block.data.columns ?? '2')
+    block.children = Array.from({ length: n }, () => ({
+      id: makeId(),
+      type: 'container',
+      data: {
+        direction: 'column', wrap: false,
+        gap: '0.5rem', justify: 'start', align: 'start', maxWidth: 'full',
+        padding: { top: '0.5rem', right: '0.5rem', bottom: '0.5rem', left: '0.5rem' },
+      },
       customId: '', customClasses: '', customCss: '', fontFamily: '',
       children: [],
     }))
