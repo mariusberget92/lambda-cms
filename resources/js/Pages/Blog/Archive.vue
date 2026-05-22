@@ -18,46 +18,54 @@ defineProps({
 
 <template>
   <SeoHead :seo="seo" />
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+  <div class="py-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
     <div class="lg:col-span-2">
 
       <!-- Archive heading -->
-      <div class="mb-10">
-        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">
+      <div class="mb-10 pb-8 border-b border-border">
+        <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-primary/70 mb-2">
           {{ heading.type === 'category' ? 'Category' : 'Tag' }}
         </p>
-        <h1 class="font-editorial text-3xl font-bold text-gray-900">{{ heading.name }}</h1>
-        <p class="text-sm text-gray-500 mt-1">
+        <h1 class="font-editorial text-4xl font-bold text-foreground">{{ heading.name }}</h1>
+        <p class="text-sm text-muted-foreground mt-2">
           {{ heading.postsCount }} {{ heading.postsCount === 1 ? 'post' : 'posts' }}
         </p>
       </div>
 
       <!-- Empty state -->
-      <div v-if="!posts.data.length" class="text-center py-20 text-gray-400">
+      <div v-if="!posts.data.length" class="text-center py-20 text-muted-foreground">
         <p class="text-sm">No posts found.</p>
       </div>
 
-      <!-- Post list with dividers -->
-      <div v-else class="divide-y divide-gray-200">
+      <!-- Post list -->
+      <div v-else class="divide-y divide-border">
         <div v-for="post in posts.data" :key="post.id" class="py-10 first:pt-0">
           <PostCard :post="post" />
         </div>
       </div>
 
       <!-- Pagination -->
-      <div v-if="posts.links?.length > 3" class="flex items-center justify-center gap-3 mt-12 pt-8 border-t border-gray-200">
+      <nav v-if="posts.links?.length > 3" class="flex items-center justify-center gap-1 mt-12 pt-8 border-t border-border">
         <template v-for="link in posts.links" :key="link.label">
           <Link
             v-if="link.url"
             :href="link.url"
-            class="text-sm transition-colors"
-            :class="link.active ? 'font-semibold text-gray-900 underline underline-offset-2' : 'text-gray-500 hover:text-gray-900'"
+            class="min-w-9 h-9 flex items-center justify-center rounded-md text-sm transition-colors"
+            :class="link.active
+              ? 'bg-primary text-primary-foreground font-semibold'
+              : 'text-muted-foreground hover:text-foreground hover:bg-muted'"
           >{{ decodeHtmlEntities(link.label) }}</Link>
-          <span v-else class="text-sm text-gray-300 cursor-not-allowed">{{ decodeHtmlEntities(link.label) }}</span>
+          <span
+            v-else
+            class="min-w-9 h-9 flex items-center justify-center rounded-md text-sm text-muted-foreground/30 cursor-not-allowed"
+          >{{ decodeHtmlEntities(link.label) }}</span>
         </template>
-      </div>
+      </nav>
     </div>
 
-    <BlogSidebar :sidebar="sidebar" />
+    <!-- Sidebar -->
+    <div class="lg:border-l lg:border-border lg:pl-12 pt-4 lg:pt-0">
+      <BlogSidebar :sidebar="sidebar" />
+    </div>
   </div>
 </template>
