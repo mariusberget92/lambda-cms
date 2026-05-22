@@ -75,7 +75,7 @@ function submitComment() {
 
 <template>
   <SeoHead :seo="seo" />
-  <div class="py-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
+  <div class="px-4 sm:px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
 
     <!-- Main article -->
     <div class="lg:col-span-2 min-w-0">

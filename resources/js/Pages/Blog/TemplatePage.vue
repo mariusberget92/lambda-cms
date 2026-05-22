@@ -27,6 +27,8 @@ provide('commentsData',   props.commentsData)
   <Head :title="seo.title ?? ''" />
   <SeoHead v-if="seo.title" :seo="seo" />
 
-  <BlockRenderer v-if="blocks.length" :blocks="blocks" />
-  <p v-else class="text-muted-foreground">This template has no content yet.</p>
+  <div class="py-10">
+    <BlockRenderer v-if="blocks.length" :blocks="blocks" />
+    <p v-else class="px-4 sm:px-6 text-muted-foreground">This template has no content yet.</p>
+  </div>
 </template>

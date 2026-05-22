@@ -18,6 +18,8 @@ const props = defineProps({
   <Head :title="seo.title ?? page.title" />
   <SeoHead v-if="seo.title" :seo="seo" />
 
-  <BlockRenderer v-if="page.blocks?.length" :blocks="page.blocks" />
-  <p v-else class="text-center py-10 text-muted-foreground">This page has no content yet.</p>
+  <div class="py-10">
+    <BlockRenderer v-if="page.blocks?.length" :blocks="page.blocks" />
+    <p v-else class="px-4 sm:px-6 text-center text-muted-foreground">This page has no content yet.</p>
+  </div>
 </template>
