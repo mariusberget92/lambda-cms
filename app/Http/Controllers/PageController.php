@@ -47,6 +47,7 @@ class PageController extends Controller
             'meta_title'       => ['nullable', 'string', 'max:100'],
             'meta_description' => ['nullable', 'string', 'max:300'],
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
+            'custom_js'        => ['nullable', 'string'],
         ]);
 
         Page::create([
@@ -70,6 +71,7 @@ class PageController extends Controller
                 'meta_title'       => $page->meta_title,
                 'meta_description' => $page->meta_description,
                 'meta_keywords'    => $page->meta_keywords,
+                'custom_js'        => $page->custom_js,
                 'preview_token'    => $page->preview_token,
             ],
             'categories' => Category::orderBy('name')->get(['id', 'name']),
@@ -92,6 +94,7 @@ class PageController extends Controller
             'meta_title'       => ['nullable', 'string', 'max:100'],
             'meta_description' => ['nullable', 'string', 'max:300'],
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
+            'custom_js'        => ['nullable', 'string'],
         ]);
 
         $page->update($validated);
