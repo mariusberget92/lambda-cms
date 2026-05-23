@@ -74,6 +74,7 @@ class BlogController extends Controller
         if ($template = $this->templates->resolve('single-post')) {
             return Inertia::render('Blog/TemplatePage', [
                 'blocks'      => $template->blocks ?? [],
+                'customJs'    => $post->custom_js,
                 'postContext' => [
                     'id'                 => $post->id,
                     'title'              => $post->title,
