@@ -65,7 +65,7 @@ class QueryBuilder
     private function resolvePosts(array $filters, array $sort, int $limit, int $offset, string $filterLogic = 'and'): array
     {
         $query = Post::query()
-            ->with(['author:id,name', 'featuredImage:id,path,disk', 'categories:id,name,slug,color', 'tags:id,name,slug'])
+            ->with(['author:id,name,avatar', 'featuredImage:id,path,disk', 'categories:id,name,slug,color', 'tags:id,name,slug'])
             ->where('status', 'published')
             ->where('published_at', '<=', now());
 
@@ -88,6 +88,7 @@ class QueryBuilder
             'published_at'           => $post->published_at?->toIso8601String(),
             'published_at_formatted' => $post->published_at?->format('M j, Y'),
             'author_name'        => $post->author->name ?? '',
+            'author_avatar_url'  => $post->author?->avatar_url ?? null,
             'featured_image_url' => $post->featuredImage?->url,
             'url'                => url("/blog/{$post->slug}"),
             'categories'         => $post->categories->map(fn ($c) => ['name' => $c->name, 'slug' => $c->slug, 'color' => $c->color])->values()->all(),
