@@ -33,7 +33,7 @@ onBeforeUnmount(() => {
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
   </Head>
 
-  <div class="min-h-screen flex flex-col bg-background text-foreground">
+  <div class="min-h-screen flex flex-col text-foreground" style="background:#eef2f9;">
 
     <!-- Admin bar -->
     <div v-if="authUser" data-theme="dark" class="bg-sidebar text-sidebar-foreground border-b border-sidebar-border shrink-0">
@@ -73,10 +73,13 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- Site header -->
-    <header class="sticky top-0 z-40 shrink-0 bg-white/95 border-b border-border backdrop-blur-sm">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+    <header class="sticky top-0 z-40 shrink-0 shadow-sm" style="background:rgba(255,255,255,0.97); backdrop-filter:blur(8px);">
+      <!-- Colorful gradient accent strip -->
+      <div class="h-[3px]" style="background:linear-gradient(90deg,#5e81ac,#88c0d0,#a3be8c,#ebcb8b,#d08770);" />
+
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-15">
         <!-- Site name / logo -->
-        <Link href="/" class="font-editorial text-xl font-bold text-foreground hover:text-primary transition-colors shrink-0">
+        <Link href="/" class="font-editorial text-xl font-bold shrink-0 hover:opacity-80 transition-opacity" style="color:#5e81ac;">
           {{ appName }}
         </Link>
 
@@ -86,14 +89,19 @@ onBeforeUnmount(() => {
             v-for="item in navItems"
             :key="item.url"
             :href="item.url"
-            class="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium"
-          >{{ item.label }}</Link>
+            class="text-sm font-medium transition-colors relative group"
+            style="color:#4c566a;"
+          >
+            {{ item.label }}
+            <span class="absolute -bottom-0.5 left-0 right-0 h-[2px] rounded-full scale-x-0 group-hover:scale-x-100 transition-transform origin-left" style="background:#5e81ac;" />
+          </Link>
         </nav>
 
         <!-- Mobile hamburger -->
         <button
           v-if="navItems.length"
-          class="md:hidden p-2 -mr-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+          class="md:hidden p-2 -mr-1 rounded-md transition-colors"
+          style="color:#4c566a;"
           :aria-label="mobileOpen ? 'Close menu' : 'Open menu'"
           @click="mobileOpen = !mobileOpen"
         >
@@ -108,7 +116,7 @@ onBeforeUnmount(() => {
           v-for="item in navItems"
           :key="item.url"
           :href="item.url"
-          class="block py-2 px-2 rounded-md text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-muted/50 transition-colors"
+          class="block py-2 px-2 rounded-md text-sm font-medium text-foreground/80 hover:text-primary hover:bg-primary/5 transition-colors"
           @click="mobileOpen = false"
         >{{ item.label }}</Link>
       </div>
@@ -120,14 +128,14 @@ onBeforeUnmount(() => {
     </main>
 
     <!-- Footer -->
-    <footer class="shrink-0 border-t border-border mt-16">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-        <span class="font-editorial font-semibold text-foreground/70">{{ appName }}</span>
-        <div class="flex items-center gap-1 text-muted-foreground/70">
+    <footer class="shrink-0 mt-16" style="background:rgba(255,255,255,0.7); border-top:1px solid #dde3ee;">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <span class="font-editorial font-bold text-base" style="color:#5e81ac;">{{ appName }}</span>
+        <div class="flex items-center gap-1 text-sm" style="color:#6b7a96;">
           <span>© {{ year }}</span>
-          <span class="mx-2">·</span>
+          <span class="mx-2 opacity-40">·</span>
           <a href="/feed" class="hover:text-primary transition-colors">RSS</a>
-          <span class="mx-2">·</span>
+          <span class="mx-2 opacity-40">·</span>
           <a href="/sitemap.xml" class="hover:text-primary transition-colors">Sitemap</a>
         </div>
       </div>

@@ -37,13 +37,18 @@ class TemplateSeeder extends Seeder
                 ->where('title', $def['title'])
                 ->first();
 
-            if ($existing) {
-                $existing->update(['is_system' => true]);
-                continue;
-            }
-
             // Resolve blocks lazily so postCardTemplateId() can find the Post Card row
             $blocks = is_callable($def['blocks']) ? ($def['blocks'])() : $def['blocks'];
+
+            if ($existing) {
+                // Force-update system template blocks to keep design current
+                $existing->update([
+                    'is_system'   => true,
+                    'blocks'      => $blocks,
+                    'loop_source' => $def['loop_source'] ?? $existing->loop_source,
+                ]);
+                continue;
+            }
 
             Template::create([
                 'user_id'     => $admin->id,
@@ -63,7 +68,7 @@ class TemplateSeeder extends Seeder
     {
         return [
             $this->section(1, [
-                'paddingY'  => ['default' => 16],
+                'paddingY'  => ['default' => 10],
                 'paddingX'  => ['default' => 0],
                 'fullWidth' => true,
                 'minHeight' => 'auto',
@@ -73,7 +78,7 @@ class TemplateSeeder extends Seeder
                     'mode'      => 'flex',
                     'direction' => 'row',
                     'wrap'      => false,
-                    'gap'       => '2rem',
+                    'gap'       => '2.5rem',
                     'padding'   => 0,
                     'align'     => 'start',
                     'maxWidth'  => 'full',
@@ -82,7 +87,7 @@ class TemplateSeeder extends Seeder
                     $this->block(3, 'container', [
                         'mode'      => 'flex',
                         'direction' => 'column',
-                        'gap'       => '1.5rem',
+                        'gap'       => '1.25rem',
                         'padding'   => 0,
                         'maxWidth'  => 'full',
                     ], [
@@ -95,9 +100,9 @@ class TemplateSeeder extends Seeder
                             ],
                             'filter_logic' => 'and',
                             'sort'         => ['field' => 'published_at', 'direction' => 'desc'],
-                            'limit'        => 9,
-                            'columns'      => 1,
-                            'gap'          => 'md',
+                            'limit'        => 8,
+                            'columns'      => 2,
+                            'gap'          => 'lg',
                             'pageParam'    => 'page',
                         ], [$this->templateBlock(10, $this->postCardTemplateId() ?? 0)]),
                         $this->block(6, 'pagination', [
@@ -112,7 +117,7 @@ class TemplateSeeder extends Seeder
                     $this->block(20, 'container', [
                         'mode'      => 'flex',
                         'direction' => 'column',
-                        'gap'       => '1rem',
+                        'gap'       => '1.25rem',
                         'padding'   => 0,
                         'maxWidth'  => 'full',
                     ], [
@@ -159,7 +164,7 @@ class TemplateSeeder extends Seeder
     private function singlePostBlocks(): array
     {
         return [
-            $this->section(100, ['paddingY' => ['default' => 16], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => '2xl', 'minHeight' => 'auto'], [
+            $this->section(100, ['paddingY' => ['default' => 10], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => '2xl', 'minHeight' => 'auto'], [
                 $this->block(101, 'post-featured-image', ['aspectRatio' => '16/9', 'maxWidth' => '100%']),
                 $this->block(102, 'post-title',    ['tag' => 'h1']),
                 $this->block(103, 'post-meta',     ['showDate' => true, 'showAuthor' => true, 'showReadTime' => true]),
@@ -175,15 +180,15 @@ class TemplateSeeder extends Seeder
     private function archiveBlocks(): array
     {
         return [
-            $this->section(200, ['paddingY' => ['default' => 16], 'paddingX' => ['default' => 0], 'fullWidth' => true, 'minHeight' => 'auto'], [
+            $this->section(200, ['paddingY' => ['default' => 10], 'paddingX' => ['default' => 0], 'fullWidth' => true, 'minHeight' => 'auto'], [
                 $this->block(201, 'archive-title', ['tag' => 'h1']),
                 $this->block(202, 'loop', [
                     'source'  => 'posts',
                     'filters' => [],
                     'sort'    => ['field' => 'published_at', 'direction' => 'desc'],
-                    'limit'   => 9,
-                    'columns' => 1,
-                    'gap'     => 'md',
+                    'limit'   => 8,
+                    'columns' => 2,
+                    'gap'     => 'lg',
                 ], [$this->templateBlock(210, $this->postCardTemplateId() ?? 0)]),
             ]),
         ];
@@ -192,7 +197,7 @@ class TemplateSeeder extends Seeder
     private function searchBlocks(): array
     {
         return [
-            $this->section(300, ['paddingY' => ['default' => 16], 'paddingX' => ['default' => 0], 'fullWidth' => true, 'minHeight' => 'auto'], [
+            $this->section(300, ['paddingY' => ['default' => 10], 'paddingX' => ['default' => 0], 'fullWidth' => true, 'minHeight' => 'auto'], [
                 $this->block(301, 'heading', ['level' => 2, 'text' => 'Search']),
                 $this->block(302, 'search',  ['placeholder' => 'Search posts…', 'buttonLabel' => 'Search']),
                 $this->block(303, 'loop', [
@@ -200,8 +205,8 @@ class TemplateSeeder extends Seeder
                     'filters' => [['field' => 'title', 'op' => 'contains', 'urlParam' => 'q', 'value' => '']],
                     'sort'    => ['field' => 'published_at', 'direction' => 'desc'],
                     'limit'   => 10,
-                    'columns' => 1,
-                    'gap'     => 'md',
+                    'columns' => 2,
+                    'gap'     => 'lg',
                 ], [$this->templateBlock(310, $this->postCardTemplateId() ?? 0)]),
             ]),
         ];
@@ -223,20 +228,20 @@ class TemplateSeeder extends Seeder
                     'maxWidth'  => 'full',
                 ],
                 [
-                    // Featured image — 200px max height, full width, object-cover
+                    // Featured image — aspect-video, full width, object-cover
                     $this->block(501, 'image',
-                        ['url' => '', 'alt' => '', 'maxHeight' => '200px'],
+                        ['url' => '', 'alt' => '', 'maxHeight' => '220px'],
                         [], ['url' => 'loop:featured_image_url', 'alt' => 'loop:title']
                     ),
 
-                    // Inner content area — stretch so children fill the card width
+                    // Inner content area
                     $this->block(502, 'container',
                         [
                             'mode'      => 'flex',
                             'direction' => 'column',
                             'align'     => 'stretch',
                             'gap'       => '0.5rem',
-                            'padding'   => 4,
+                            'padding'   => 5,
                             'maxWidth'  => 'full',
                         ],
                         [
@@ -251,16 +256,16 @@ class TemplateSeeder extends Seeder
                             $this->block(504, 'paragraph',
                                 ['content' => ''],
                                 [], ['content' => 'loop:excerpt'],
-                                'line-clamp-2 text-sm text-left',
-                                'color: #6b7280;'
+                                'line-clamp-3 text-sm text-left',
+                                'color:#6b7a96;'
                             ),
 
-                            // Meta + Read more — full-width flex row, date left / link right
+                            // Meta row — date left / read more right
                             $this->block(507, 'container',
                                 [
                                     'mode'      => 'flex',
                                     'direction' => 'row',
-                                    'gap'       => '0.75rem',
+                                    'gap'       => '0.5rem',
                                     'padding'   => 0,
                                     'align'     => 'center',
                                     'justify'   => 'between',
@@ -271,23 +276,23 @@ class TemplateSeeder extends Seeder
                                         ['content' => ''],
                                         [], ['content' => 'loop:published_at_formatted'],
                                         'text-xs',
-                                        'color: #9ca3af;'
+                                        'color:#8896b0;'
                                     ),
 
                                     // Read more link
                                     $this->block(506, 'link',
                                         ['label' => 'Read more →', 'url' => '#', 'target' => '_self'],
                                         [], ['url' => 'loop:url'],
-                                        'text-sm font-medium hover:underline shrink-0',
-                                        'color: #6366f1;'
+                                        'text-sm font-semibold hover:underline shrink-0',
+                                        'color:#5e81ac;'
                                     ),
                                 ]
                             ),
                         ]
                     ),
                 ],
-                [], 'rounded-xl overflow-hidden',
-                'background:#ffffff; box-shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.06); font-family: Inter, sans-serif;'
+                [], 'rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1',
+                'background:#ffffff; box-shadow:0 2px 10px rgba(94,129,172,0.1), 0 1px 3px rgba(94,129,172,0.06); border-top:3px solid #5e81ac; font-family: Inter, sans-serif;'
             ),
         ];
     }

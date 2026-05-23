@@ -18,53 +18,52 @@ defineProps({
 
 <template>
   <SeoHead :seo="seo" />
-  <div class="px-4 sm:px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
+  <div class="px-4 sm:px-6 py-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
     <div class="lg:col-span-2">
 
-      <!-- Search heading -->
-      <div class="mb-10 pb-8 border-b border-border">
-        <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-primary/70 mb-2">Search results</p>
-        <h1 class="font-editorial text-4xl font-bold text-foreground">
+      <!-- Search heading card -->
+      <div class="rounded-2xl p-7 mb-8 relative overflow-hidden" style="background:linear-gradient(135deg,#b48ead 0%,#88c0d0 100%); box-shadow:0 6px 20px rgba(136,192,208,0.3);">
+        <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-white/60 mb-1.5">Search results</p>
+        <h1 class="font-editorial text-3xl font-bold text-white mb-1">
           {{ query ? `"${query}"` : 'Search' }}
         </h1>
-        <p class="text-sm text-muted-foreground mt-2">
+        <p class="text-sm text-white/70">
           {{ results.total }} {{ results.total === 1 ? 'result' : 'results' }}
         </p>
       </div>
 
       <!-- Empty state -->
-      <div v-if="!results.data.length" class="text-center py-20 text-muted-foreground">
+      <div v-if="!results.data.length" class="text-center py-20" style="color:#8896b0;">
         <p class="text-sm">No posts found for your search.</p>
       </div>
 
-      <!-- Post list -->
-      <div v-else class="divide-y divide-border">
-        <div v-for="post in results.data" :key="post.id" class="py-10 first:pt-0">
-          <PostCard :post="post" />
-        </div>
+      <!-- Card grid -->
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <PostCard v-for="post in results.data" :key="post.id" :post="post" />
       </div>
 
       <!-- Pagination -->
-      <nav v-if="results.links?.length > 3" class="flex items-center justify-center gap-1 mt-12 pt-8 border-t border-border">
+      <nav v-if="results.links?.length > 3" class="flex items-center justify-center gap-1 mt-10 pt-8" style="border-top:1px solid #dde3ee;">
         <template v-for="link in results.links" :key="link.label">
           <Link
             v-if="link.url"
             :href="link.url"
-            class="min-w-9 h-9 flex items-center justify-center rounded-md text-sm transition-colors"
-            :class="link.active
-              ? 'bg-primary text-primary-foreground font-semibold'
-              : 'text-muted-foreground hover:text-foreground hover:bg-muted'"
+            class="min-w-9 h-9 flex items-center justify-center rounded-full text-sm font-medium transition-all duration-200"
+            :style="link.active
+              ? 'background:#5e81ac; color:#fff; box-shadow:0 2px 8px rgba(94,129,172,0.4);'
+              : 'color:#6b7a96; background:white;'"
           >{{ decodeHtmlEntities(link.label) }}</Link>
           <span
             v-else
-            class="min-w-9 h-9 flex items-center justify-center rounded-md text-sm text-muted-foreground/30 cursor-not-allowed"
+            class="min-w-9 h-9 flex items-center justify-center rounded-full text-sm cursor-not-allowed"
+            style="color:#b8c4d8;"
           >{{ decodeHtmlEntities(link.label) }}</span>
         </template>
       </nav>
     </div>
 
     <!-- Sidebar -->
-    <div class="lg:border-l lg:border-border lg:pl-12 pt-4 lg:pt-0">
+    <div class="lg:pl-2 pt-0">
       <BlogSidebar :sidebar="sidebar" :query="query" />
     </div>
   </div>
