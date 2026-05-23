@@ -81,6 +81,9 @@ class SettingsController extends Controller
             'appearance' => $request->validate([
                 'site\\.accent_color' => ['nullable', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
             ]),
+            'code' => $request->validate([
+                'code\\.custom_js' => ['nullable', 'string'],
+            ]),
             default  => abort(404),
         };
 

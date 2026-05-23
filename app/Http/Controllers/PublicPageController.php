@@ -31,9 +31,10 @@ class PublicPageController extends Controller
 
         return Inertia::render('Blog/Page', [
             'page' => [
-                'title'  => $page->title,
-                'slug'   => $page->slug,
-                'blocks' => $this->resolveBlocks($page->blocks ?? [], $request->query()),
+                'title'     => $page->title,
+                'slug'      => $page->slug,
+                'blocks'    => $this->resolveBlocks($page->blocks ?? [], $request->query()),
+                'custom_js' => $page->custom_js,
             ],
             'seo' => $seo,
         ]);

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { Link, useForm } from '@inertiajs/vue3'
 import BlogLayout from '@/Layouts/BlogLayout.vue'
 import BlogSidebar from '@/components/BlogSidebar.vue'
@@ -19,6 +19,21 @@ const props = defineProps({
   commentsEnabled: { type: Boolean, default: true },
   authUser:        { type: Object,  default: null },
   seo:             { type: Object,  required: true },
+})
+
+const SCRIPT_ATTR = 'data-lambda-post-js'
+
+onMounted(() => {
+  const code = props.post?.custom_js
+  if (!code) return
+  const el = document.createElement('script')
+  el.setAttribute(SCRIPT_ATTR, '1')
+  el.textContent = code
+  document.head.appendChild(el)
+})
+
+onUnmounted(() => {
+  document.querySelectorAll(`[${SCRIPT_ATTR}]`).forEach(el => el.remove())
 })
 
 const AURORA = ['#5e81ac','#88c0d0','#a3be8c','#ebcb8b','#d08770','#bf616a','#b48ead']
