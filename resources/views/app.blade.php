@@ -35,5 +35,9 @@
 </head>
 <body class="antialiased">
     @inertia
+@php $globalCustomJs = \App\Models\Setting::get('code.custom_js'); @endphp
+@if($globalCustomJs)
+<script>{!! $globalCustomJs !!}</script>
+@endif
 </body>
 </html>

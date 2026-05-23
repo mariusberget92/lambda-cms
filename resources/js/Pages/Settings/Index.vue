@@ -478,6 +478,34 @@
 
       </div>
 
+      <!-- Custom Code -->
+      <div v-show="activeTab === 'custom-code'">
+        <form @submit.prevent="submitCode">
+          <ContentCard
+            title="Custom Code"
+            description="JavaScript injected globally on every public page."
+          >
+            <div class="space-y-3">
+              <div class="space-y-1">
+                <label class="text-sm font-medium">Global Custom JS</label>
+                <p class="text-xs text-muted-foreground">Runs on every public page. Be careful with untrusted code.</p>
+                <JsEditor v-model="codeForm['code.custom_js']" />
+              </div>
+            </div>
+
+            <template #footer>
+              <button
+                type="submit"
+                :disabled="codeForm.processing"
+                class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)] disabled:opacity-50"
+              >
+                {{ codeForm.processing ? 'Saving...' : 'Save changes' }}
+              </button>
+            </template>
+          </ContentCard>
+        </form>
+      </div>
+
       <!-- Appearance -->
       <div v-show="activeTab === 'appearance'">
         <form @submit.prevent="submitAppearance">
@@ -540,6 +568,7 @@ import PageHeader from '@/Components/PageHeader.vue'
 import ContentCard from '@/Components/ContentCard.vue'
 import SelectBox from '@/Components/SelectBox.vue'
 import NumberInput from '@/Components/NumberInput.vue'
+import JsEditor from '@/Components/JsEditor.vue'
 
 const props = defineProps({
   settings: {
@@ -552,12 +581,13 @@ const props = defineProps({
 const activeTab = ref('general')
 
 const tabs = [
-  { key: 'general',    label: 'General'    },
-  { key: 'mail',       label: 'Mail'       },
-  { key: 'media',      label: 'Media'      },
-  { key: 'comments',   label: 'Comments'   },
-  { key: 'seo',        label: 'SEO'        },
-  { key: 'appearance', label: 'Appearance' },
+  { key: 'general',     label: 'General'      },
+  { key: 'mail',        label: 'Mail'         },
+  { key: 'media',       label: 'Media'        },
+  { key: 'comments',    label: 'Comments'     },
+  { key: 'seo',         label: 'SEO'          },
+  { key: 'appearance',  label: 'Appearance'   },
+  { key: 'custom-code', label: 'Custom Code'  },
 ]
 
 // ── Auto-switch to mail tab when mail flash messages appear ───────────────────
@@ -752,6 +782,19 @@ function submitAppearance() {
         document.documentElement.style.setProperty('--sidebar-ring', color)
       }
     },
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+  })
+}
+
+// ── Code form ─────────────────────────────────────────────────────────────────
+const codeForm = useForm({
+  'code.custom_js': props.settings['code.custom_js'] ?? '',
+})
+
+function submitCode() {
+  codeForm.put(route('settings.update', 'code'), {
+    preserveScroll: true,
+    onSuccess: () => notify('Settings saved.', 'success'),
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   })
 }

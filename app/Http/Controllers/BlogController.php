@@ -120,6 +120,7 @@ class BlogController extends Controller
                     'name' => $t->name,
                     'slug' => $t->slug,
                 ]),
+                'custom_js'           => $post->custom_js,
             ],
             'sidebar'         => $this->sidebarData(),
             'comments'        => $firstPage->map(fn (Comment $c) => [

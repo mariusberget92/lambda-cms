@@ -63,6 +63,7 @@ class PreviewController extends Controller
                 ],
                 'categories' => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug])->values(),
                 'tags'       => $post->tags->map(fn ($t) => ['name' => $t->name, 'slug' => $t->slug]),
+                'custom_js'  => $post->custom_js,
             ],
             'sidebar'         => [],
             'comments'        => $firstPage->map(fn (Comment $c) => [
@@ -100,9 +101,10 @@ class PreviewController extends Controller
 
         return Inertia::render('Blog/Page', [
             'page' => [
-                'title'  => $page->title,
-                'slug'   => $page->slug,
-                'blocks' => $this->resolveBlocks($page->blocks ?? [], $request->query()),
+                'title'     => $page->title,
+                'slug'      => $page->slug,
+                'blocks'    => $this->resolveBlocks($page->blocks ?? [], $request->query()),
+                'custom_js' => $page->custom_js,
             ],
             'seo'       => $seo,
             'isPreview' => true,

@@ -252,6 +252,22 @@
             </div>
           </div>
 
+          <!-- Custom JS -->
+          <div class="rounded-lg border bg-card">
+            <button
+              type="button"
+              class="flex w-full items-center justify-between px-4 py-3 text-sm font-medium"
+              @click="customJsOpen = !customJsOpen"
+            >
+              <span>Custom JS</span>
+              <ChevronDown class="w-4 h-4 transition-transform" :class="{ 'rotate-180': customJsOpen }" />
+            </button>
+            <div v-if="customJsOpen" class="border-t px-4 py-3">
+              <p class="text-xs text-muted-foreground mb-2">JavaScript injected on this post's page only.</p>
+              <JsEditor v-model="form.custom_js" />
+            </div>
+          </div>
+
           <!-- Details -->
           <div class="rounded-lg border bg-card p-4 text-sm space-y-1.5">
             <h3 class="font-medium mb-2">Details</h3>
@@ -345,6 +361,7 @@ import DateTimePicker from '@/Components/DateTimePicker.vue'
 import TagInput from '@/Components/TagInput.vue'
 import CategoryInput from '@/Components/CategoryInput.vue'
 import { useNotifications } from '@/composables/useNotifications.js'
+import JsEditor from '@/Components/JsEditor.vue'
 
 const { notify, dismiss } = useNotifications()
 let autosaveToastId = null
@@ -371,6 +388,7 @@ const form = useForm({
   meta_title:        props.post.meta_title ?? null,
   meta_description:  props.post.meta_description ?? null,
   meta_keywords:     props.post.meta_keywords ?? null,
+  custom_js:         props.post.custom_js ?? null,
 });
 
 // Autosave
@@ -491,6 +509,7 @@ function onStatusChange(newStatus) {
   }
 }
 
+const customJsOpen    = ref(false)
 const showMediaPicker = ref(false)
 const featuredImage   = ref(props.post.featured_image ?? null)
 

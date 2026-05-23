@@ -240,6 +240,24 @@
               </div>
             </div>
           </div>
+
+          <!-- Custom JS -->
+          <div class="rounded-lg border bg-card">
+            <button
+              type="button"
+              class="flex w-full items-center justify-between px-4 py-3 text-sm font-medium"
+              @click="customJsOpen = !customJsOpen"
+            >
+              <span>Custom JS</span>
+              <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': customJsOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div v-if="customJsOpen" class="border-t px-4 py-3">
+              <p class="text-xs text-muted-foreground mb-2">JavaScript injected on this post's page only.</p>
+              <JsEditor v-model="form.custom_js" />
+            </div>
+          </div>
         </div>
       </div>
     </form>
@@ -255,6 +273,7 @@ import MediaPicker from '@/components/MediaPicker.vue'
 import DateTimePicker from '@/Components/DateTimePicker.vue'
 import TagInput from '@/Components/TagInput.vue'
 import CategoryInput from '@/Components/CategoryInput.vue'
+import JsEditor from '@/Components/JsEditor.vue'
 import { useNotifications } from '@/composables/useNotifications.js'
 const { notify } = useNotifications()
 
@@ -278,7 +297,10 @@ const form = useForm({
   meta_title:        null,
   meta_description:  null,
   meta_keywords:     null,
+  custom_js:         null,
 });
+
+const customJsOpen = ref(false)
 
 const daysUntilPublish = computed(() => {
   if (!form.published_at) return null
