@@ -64,10 +64,12 @@
     <div class="relative shrink-0" ref="customJsRef">
       <button
         type="button"
-        class="flex items-center gap-1 px-2 py-1 rounded text-xs text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+        class="flex items-center gap-1.5 px-2 py-1 rounded text-xs transition-colors"
+        :class="customJs ? 'text-primary hover:text-primary/80 hover:bg-white/10' : 'text-white/50 hover:text-white hover:bg-white/10'"
         @click="customJsOpen = !customJsOpen"
       >
-        JS
+        <Code2 class="w-3.5 h-3.5" />
+        Custom JS
         <ChevronDown class="w-3 h-3 transition-transform" :class="{ 'rotate-180': customJsOpen }" />
       </button>
       <Transition name="popover">
@@ -201,7 +203,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { ArrowLeft, ChevronDown, ExternalLink } from '@lucide/vue'
+import { ArrowLeft, ChevronDown, Code2, ExternalLink } from '@lucide/vue'
 import JsEditor from '@/Components/JsEditor.vue'
 
 const props = defineProps({
