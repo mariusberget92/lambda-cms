@@ -84,6 +84,7 @@ class PostController extends Controller
             'meta_title'       => ['nullable', 'string', 'max:100'],
             'meta_description' => ['nullable', 'string', 'max:300'],
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
+            'custom_js'        => ['nullable', 'string'],
             'use_block_editor' => ['nullable', 'boolean'],
             'blocks'           => ['nullable', 'array'],
         ]);
@@ -158,6 +159,7 @@ class PostController extends Controller
                 'meta_title'        => $post->meta_title,
                 'meta_description'  => $post->meta_description,
                 'meta_keywords'     => $post->meta_keywords,
+                'custom_js'         => $post->custom_js,
                 'use_block_editor'  => (bool) $post->use_block_editor,
                 'blocks'            => $post->blocks,
                 'preview_token'     => $post->preview_token,
@@ -199,6 +201,7 @@ class PostController extends Controller
             'meta_title'       => ['nullable', 'string', 'max:100'],
             'meta_description' => ['nullable', 'string', 'max:300'],
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
+            'custom_js'        => ['nullable', 'string'],
             'use_block_editor' => ['nullable', 'boolean'],
             'blocks'           => ['nullable', 'array'],
         ]);
