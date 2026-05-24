@@ -12,35 +12,38 @@
   >
     <!-- Prev -->
     <button
-      :class="[btnClass, currentPage <= 1 ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer']"
+      :class="[btnBase, currentPage <= 1 ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer']"
+      :style="currentPage <= 1 ? inactiveStyle : hoverReadyStyle"
       :disabled="currentPage <= 1"
+      @mouseenter="e => currentPage > 1 && applyHover(e)"
+      @mouseleave="e => currentPage > 1 && removeHover(e)"
       @click="go(currentPage - 1)"
-    >
-      {{ prevLabel }}
-    </button>
+    >{{ prevLabel }}</button>
 
     <!-- Numbered pages -->
     <template v-if="style === 'numbered'">
       <template v-for="p in visiblePages" :key="p">
-        <span v-if="p === '...'" class="px-1 text-sm text-muted-foreground select-none">…</span>
+        <span v-if="p === '...'" class="px-1 text-sm select-none" style="color:#94a3b8;">…</span>
         <button
           v-else
-          :class="[btnClass, p === currentPage ? activeClass : '', 'cursor-pointer']"
+          :class="[btnBase, 'cursor-pointer']"
+          :style="p === currentPage ? activeStyle : hoverReadyStyle"
+          @mouseenter="e => p !== currentPage && applyHover(e)"
+          @mouseleave="e => p !== currentPage && removeHover(e)"
           @click="go(p)"
-        >
-          {{ p }}
-        </button>
+        >{{ p }}</button>
       </template>
     </template>
 
     <!-- Next -->
     <button
-      :class="[btnClass, currentPage >= lastPage ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer']"
+      :class="[btnBase, currentPage >= lastPage ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer']"
+      :style="currentPage >= lastPage ? inactiveStyle : hoverReadyStyle"
       :disabled="currentPage >= lastPage"
+      @mouseenter="e => currentPage < lastPage && applyHover(e)"
+      @mouseleave="e => currentPage < lastPage && removeHover(e)"
       @click="go(currentPage + 1)"
-    >
-      {{ nextLabel }}
-    </button>
+    >{{ nextLabel }}</button>
   </nav>
 </template>
 
@@ -81,7 +84,6 @@ function go(p) {
   router.get(pageUrl(p), {}, { preserveScroll: true })
 }
 
-// Visible page numbers with ellipsis — always show first, last, and ±2 around current
 const visiblePages = computed(() => {
   const total = lastPage.value
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
@@ -98,16 +100,16 @@ const visiblePages = computed(() => {
   return result
 })
 
-const btnClass = computed(() => {
-  const base = 'px-3 py-1.5 rounded text-sm font-medium transition-colors min-w-[2rem] text-center'
-  if (buttonStyle.value === 'solid')   return `${base} bg-primary text-primary-foreground hover:opacity-90`
-  if (buttonStyle.value === 'ghost')   return `${base} text-foreground hover:bg-muted`
-  return `${base} border border-border bg-background text-foreground hover:bg-muted`
-})
+const btnBase = 'px-3 py-1.5 rounded-xl text-sm font-medium transition-all min-w-[2.25rem] text-center'
 
-const activeClass = computed(() => {
-  if (buttonStyle.value === 'solid')  return 'ring-2 ring-offset-1 ring-primary'
-  if (buttonStyle.value === 'ghost')  return 'bg-muted font-bold'
-  return 'border-primary text-primary font-bold'
-})
+const activeStyle    = 'background:#6366f1; color:white; box-shadow:0 2px 8px rgba(99,102,241,0.35);'
+const inactiveStyle  = 'background:white; color:#94a3b8; border:1.5px solid #e2e8f0;'
+const hoverReadyStyle = 'background:white; color:#374151; border:1.5px solid #e2e8f0;'
+
+function applyHover(e) {
+  e.currentTarget.style.cssText = 'background:#eef2ff; color:#6366f1; border:1.5px solid #c7d2fe;'
+}
+function removeHover(e) {
+  e.currentTarget.style.cssText = hoverReadyStyle
+}
 </script>

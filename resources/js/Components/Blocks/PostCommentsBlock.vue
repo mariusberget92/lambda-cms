@@ -22,7 +22,6 @@ function hexToRgba(hex, alpha) {
 
 const accentColor = computed(() => post?.categories?.[0] ? catColor(post.categories[0]) : AURORA[0])
 
-// Comment list state
 const commentList    = ref([])
 const hasMore        = ref(false)
 const currentPage    = ref(1)
@@ -63,7 +62,6 @@ async function loadMore() {
   }
 }
 
-// Comment form
 const form = useForm({
   author_name:  '',
   author_email: '',
@@ -86,8 +84,12 @@ function submitComment() {
 </script>
 
 <template>
-  <section v-if="post" class="pt-10" style="border-top:2px solid #e8eaff;">
-
+  <section
+    v-if="post"
+    class="rounded-2xl p-6 sm:p-8 bg-white"
+    style="box-shadow:0 2px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.03);"
+  >
+    <p class="text-[10px] font-bold uppercase tracking-[0.14em] mb-1" style="color:#94a3b8;">Discussion</p>
     <h2 class="font-editorial text-2xl font-bold text-foreground mb-8">
       {{ commentsData?.total ? commentsData.total + ' Comment' + (commentsData.total !== 1 ? 's' : '') : 'Comments' }}
     </h2>
@@ -138,7 +140,7 @@ function submitComment() {
       <button
         type="button"
         :disabled="loadingMore"
-        class="text-sm font-medium transition-colors disabled:opacity-40"
+        class="text-sm font-semibold transition-colors disabled:opacity-40"
         :style="{ color: accentColor }"
         @click="loadMore"
       >{{ loadingMore ? 'Loading…' : (loadError ? 'Retry' : 'Load more comments') }}</button>
@@ -146,8 +148,13 @@ function submitComment() {
     <div v-else class="mb-10" />
 
     <!-- Comment form -->
-    <div v-if="commentsData?.enabled !== false" class="rounded-2xl p-6 sm:p-8" style="background:linear-gradient(135deg,#f0f1ff 0%,#f4f6ff 100%); border:1.5px solid #e0e2ff;">
-      <h3 class="font-editorial text-lg font-bold text-foreground mb-6">Leave a comment</h3>
+    <div
+      v-if="commentsData?.enabled !== false"
+      class="rounded-2xl p-5 sm:p-6"
+      style="background:#f8f9ff; border:1.5px solid #e8eaff;"
+    >
+      <p class="text-[10px] font-bold uppercase tracking-[0.14em] mb-1" style="color:#94a3b8;">Leave a reply</p>
+      <h3 class="font-editorial text-lg font-bold text-foreground mb-5">Share your thoughts</h3>
 
       <div v-if="submitSuccess" class="mb-5 rounded-xl px-4 py-3 text-sm font-medium" style="background:rgba(34,197,94,0.12); border:1.5px solid rgba(34,197,94,0.3); color:#16a34a;">
         Your comment has been submitted and is awaiting moderation. Thank you!
@@ -224,7 +231,7 @@ function submitComment() {
       </form>
     </div>
 
-    <div v-else class="rounded-2xl px-6 py-5 text-sm text-center" style="border:1.5px solid #e2e8f0; color:#94a3b8;">
+    <div v-else class="rounded-2xl px-6 py-5 text-sm text-center" style="border:1.5px solid #e8eaff; color:#94a3b8;">
       Comments are closed for this post.
     </div>
   </section>

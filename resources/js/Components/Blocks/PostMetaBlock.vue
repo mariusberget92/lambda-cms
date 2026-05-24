@@ -37,43 +37,49 @@ const readingTime = computed(() => {
 <template>
   <div
     v-if="post"
-    class="flex items-center gap-3 py-5"
-    style="border-bottom: 2px solid #e8eaff;"
+    class="rounded-2xl p-5 bg-white"
+    style="box-shadow:0 2px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.03);"
   >
-    <div
-      class="w-11 h-11 rounded-full overflow-hidden shrink-0"
-      :style="{ outline: `3px solid ${hexToRgba(accentColor, 0.3)}`, outlineOffset: '2px' }"
-    >
-      <img
-        v-if="post.author?.avatar_url"
-        :src="post.author.avatar_url"
-        :alt="post.author.name"
-        class="w-full h-full object-cover"
-      />
+    <p class="text-[10px] font-bold uppercase tracking-[0.14em] mb-3" style="color:#94a3b8;">Written by</p>
+    <div class="flex items-center gap-3">
       <div
-        v-else
-        class="w-full h-full flex items-center justify-center text-sm font-bold text-white"
-        :style="{ backgroundColor: accentColor }"
-      >{{ post.author?.name?.charAt(0)?.toUpperCase() ?? '?' }}</div>
-    </div>
+        class="w-11 h-11 rounded-full overflow-hidden shrink-0"
+        :style="{ outline: `3px solid ${hexToRgba(accentColor, 0.3)}`, outlineOffset: '2px' }"
+      >
+        <img
+          v-if="post.author?.avatar_url"
+          :src="post.author.avatar_url"
+          :alt="post.author.name"
+          class="w-full h-full object-cover"
+        />
+        <div
+          v-else
+          class="w-full h-full flex items-center justify-center text-sm font-bold text-white"
+          :style="{ backgroundColor: accentColor }"
+        >{{ post.author?.name?.charAt(0)?.toUpperCase() ?? '?' }}</div>
+      </div>
 
-    <div class="flex-1 min-w-0">
-      <p class="text-sm font-bold text-foreground">{{ post.author?.name ?? 'Unknown' }}</p>
-      <p class="text-xs" style="color:#94a3b8;">{{ formatDate(post.published_at) }}</p>
-    </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-bold text-foreground">{{ post.author?.name ?? 'Unknown' }}</p>
+        <p class="text-xs" style="color:#94a3b8;">{{ formatDate(post.published_at) }}</p>
+      </div>
 
-    <span
-      v-if="readingTime"
-      class="shrink-0 px-3 py-1 rounded-full text-xs font-semibold"
-      :style="{ background: hexToRgba(accentColor, 0.10), color: accentColor }"
-    >{{ readingTime }} min read</span>
+      <span
+        v-if="readingTime"
+        class="shrink-0 px-3 py-1 rounded-full text-xs font-semibold"
+        :style="{ background: hexToRgba(accentColor, 0.10), color: accentColor }"
+      >{{ readingTime }} min read</span>
+    </div>
   </div>
 
-  <div v-else class="flex items-center gap-3 py-5">
-    <div class="w-11 h-11 rounded-full bg-muted/40 animate-pulse shrink-0" />
-    <div class="space-y-1.5">
-      <div class="h-4 w-28 rounded bg-muted/40 animate-pulse" />
-      <div class="h-3 w-20 rounded bg-muted/40 animate-pulse" />
+  <div v-else class="rounded-2xl p-5 bg-white" style="box-shadow:0 2px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.03);">
+    <div class="h-3 w-16 rounded bg-muted/40 animate-pulse mb-3" />
+    <div class="flex items-center gap-3">
+      <div class="w-11 h-11 rounded-full bg-muted/40 animate-pulse shrink-0" />
+      <div class="space-y-1.5">
+        <div class="h-4 w-28 rounded bg-muted/40 animate-pulse" />
+        <div class="h-3 w-20 rounded bg-muted/40 animate-pulse" />
+      </div>
     </div>
   </div>
 </template>
