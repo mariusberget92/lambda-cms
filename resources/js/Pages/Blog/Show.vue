@@ -36,7 +36,7 @@ onUnmounted(() => {
   document.querySelectorAll(`[${SCRIPT_ATTR}]`).forEach(el => el.remove())
 })
 
-const AURORA = ['#5e81ac','#88c0d0','#a3be8c','#ebcb8b','#d08770','#bf616a','#b48ead']
+const AURORA = ['#6366f1','#0ea5e9','#22c55e','#f59e0b','#f97316','#ef4444','#a855f7']
 
 function catColor(cat) {
   if (cat?.color) return cat.color
@@ -102,7 +102,7 @@ function submitComment() {
   })
 }
 
-const primaryCatColor = props.post.categories?.[0] ? catColor(props.post.categories[0]) : '#5e81ac'
+const primaryCatColor = props.post.categories?.[0] ? catColor(props.post.categories[0]) : '#6366f1'
 </script>
 
 <template>
@@ -113,9 +113,9 @@ const primaryCatColor = props.post.categories?.[0] ? catColor(props.post.categor
     <div class="lg:col-span-2 min-w-0">
 
       <!-- Back link -->
-      <Link href="/" class="inline-flex items-center gap-1.5 text-sm font-medium mb-8 transition-colors" style="color:#8896b0;"
-        @mouseenter="$event.currentTarget.style.color='#5e81ac'"
-        @mouseleave="$event.currentTarget.style.color='#8896b0'"
+      <Link href="/" class="inline-flex items-center gap-1.5 text-sm font-medium mb-8 transition-colors" style="color:#94a3b8;"
+        @mouseenter="$event.currentTarget.style.color='#6366f1'"
+        @mouseleave="$event.currentTarget.style.color='#94a3b8'"
       >
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
@@ -140,7 +140,7 @@ const primaryCatColor = props.post.categories?.[0] ? catColor(props.post.categor
       </h1>
 
       <!-- Author + date -->
-      <div class="flex items-center gap-3 mb-8 pb-8" style="border-bottom:2px solid #eef2f9;">
+      <div class="flex items-center gap-3 mb-8 pb-8" style="border-bottom:2px solid #e8eaff;">
         <div class="w-11 h-11 rounded-full overflow-hidden shrink-0 ring-2" :style="{ '--tw-ring-color': hexToRgba(primaryCatColor, 0.3) }">
           <img
             v-if="post.author?.avatar_url"
@@ -156,12 +156,12 @@ const primaryCatColor = props.post.categories?.[0] ? catColor(props.post.categor
         </div>
         <div>
           <p class="text-sm font-bold text-foreground">{{ post.author?.name ?? 'Unknown' }}</p>
-          <p class="text-xs" style="color:#8896b0;">{{ formatDate(post.published_at) }}</p>
+          <p class="text-xs" style="color:#94a3b8;">{{ formatDate(post.published_at) }}</p>
         </div>
       </div>
 
       <!-- Featured image -->
-      <div v-if="post.featured_image_url" class="mb-10 overflow-hidden rounded-2xl" style="box-shadow:0 4px 20px rgba(94,129,172,0.12);">
+      <div v-if="post.featured_image_url" class="mb-10 overflow-hidden rounded-2xl" style="box-shadow:0 4px 20px rgba(0,0,0,0.10);">
         <img
           :src="post.featured_image_url"
           :alt="post.featured_image_alt ?? post.title"
@@ -176,7 +176,7 @@ const primaryCatColor = props.post.categories?.[0] ? catColor(props.post.categor
       </div>
 
       <!-- Tags -->
-      <div v-if="post.tags?.length" class="mt-10 pt-8 flex flex-wrap gap-2" style="border-top:1px solid #dde3ee;">
+      <div v-if="post.tags?.length" class="mt-10 pt-8 flex flex-wrap gap-2" style="border-top:1px solid #e2e8f0;">
         <Link
           v-for="(tag, idx) in post.tags"
           :key="tag.slug"
@@ -192,7 +192,7 @@ const primaryCatColor = props.post.categories?.[0] ? catColor(props.post.categor
       </div>
 
       <!-- Comments section -->
-      <section class="mt-16 pt-10" style="border-top:2px solid #eef2f9;">
+      <section class="mt-16 pt-10" style="border-top:2px solid #e8eaff;">
         <h2 class="font-editorial text-2xl font-bold text-foreground mb-8">
           {{ commentsTotal ? commentsTotal + ' Comment' + (commentsTotal !== 1 ? 's' : '') : 'Comments' }}
         </h2>
@@ -200,20 +200,20 @@ const primaryCatColor = props.post.categories?.[0] ? catColor(props.post.categor
         <!-- Comment list -->
         <div v-if="commentList.length" class="space-y-6 mb-10">
           <div v-for="comment in commentList" :key="comment.id" class="flex gap-4">
-            <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0 overflow-hidden" style="background:#5e81ac;">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0 overflow-hidden" style="background:#6366f1;">
               <img v-if="comment.avatar_url" :src="comment.avatar_url" :alt="comment.author_name" class="w-full h-full object-cover" />
               <span v-else>{{ comment.author_name.charAt(0).toUpperCase() }}</span>
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex items-baseline gap-2 mb-1.5">
                 <span class="text-sm font-bold text-foreground">{{ comment.author_name }}</span>
-                <span class="text-xs" style="color:#8896b0;">{{ formatDateTime(comment.created_at) }}</span>
+                <span class="text-xs" style="color:#94a3b8;">{{ formatDateTime(comment.created_at) }}</span>
               </div>
-              <p class="text-sm leading-relaxed whitespace-pre-line" style="color:#4c566a;">{{ comment.body }}</p>
+              <p class="text-sm leading-relaxed whitespace-pre-line" style="color:#475569;">{{ comment.body }}</p>
             </div>
           </div>
         </div>
-        <p v-else class="text-sm mb-8" style="color:#8896b0;">No comments yet. Be the first!</p>
+        <p v-else class="text-sm mb-8" style="color:#94a3b8;">No comments yet. Be the first!</p>
 
         <!-- Load more -->
         <div v-if="hasMore || loadError" class="mb-10 text-center">
@@ -222,14 +222,14 @@ const primaryCatColor = props.post.categories?.[0] ? catColor(props.post.categor
             type="button"
             :disabled="loadingMore"
             class="text-sm font-medium transition-colors disabled:opacity-40"
-            style="color:#5e81ac;"
+            style="color:#6366f1;"
             @click="loadMore"
           >{{ loadingMore ? 'Loading…' : (loadError ? 'Retry' : 'Load more comments') }}</button>
         </div>
         <div v-else class="mb-10" />
 
         <!-- Comment form -->
-        <div v-if="commentsEnabled" class="rounded-2xl p-6 sm:p-8" style="background:linear-gradient(135deg, #f0f4fa 0%, #eef2f9 100%); border:1.5px solid #dde3ee;">
+        <div v-if="commentsEnabled" class="rounded-2xl p-6 sm:p-8" style="background:linear-gradient(135deg, #f0f1ff 0%, #f4f6ff 100%); border:1.5px solid #e0e2ff;">
           <h3 class="font-editorial text-lg font-bold text-foreground mb-6">Leave a comment</h3>
 
           <div v-if="submitSuccess" class="mb-5 rounded-xl px-4 py-3 text-sm font-medium" style="background:rgba(163,190,140,0.15); border:1.5px solid rgba(163,190,140,0.4); color:#5a8a3f;">
@@ -244,32 +244,32 @@ const primaryCatColor = props.post.categories?.[0] ? catColor(props.post.categor
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color:#6b7a96;">
+                <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color:#64748b;">
                   Name <span class="text-destructive">*</span>
                 </label>
                 <input
                   v-model="form.author_name"
                   type="text"
                   class="w-full rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none transition-all bg-white"
-                  :style="form.errors.author_name ? 'border:1.5px solid #bf616a;' : 'border:1.5px solid #dde3ee;'"
+                  :style="form.errors.author_name ? 'border:1.5px solid #bf616a;' : 'border:1.5px solid #e2e8f0;'"
                   placeholder="Your name"
                   required
-                  @focus="e => { if (!form.errors.author_name) e.target.style.borderColor='#5e81ac'; e.target.style.boxShadow='0 0 0 3px rgba(94,129,172,0.15)'; }"
+                  @focus="e => { if (!form.errors.author_name) e.target.style.borderColor='#6366f1'; e.target.style.boxShadow='0 0 0 3px rgba(99,102,241,0.15)'; }"
                   @blur="e => { e.target.style.borderColor=form.errors.author_name?'#bf616a':'#dde3ee'; e.target.style.boxShadow='none'; }"
                 />
                 <p v-if="form.errors.author_name" class="mt-1.5 text-xs text-destructive">{{ form.errors.author_name }}</p>
               </div>
               <div>
-                <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color:#6b7a96;">
+                <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color:#64748b;">
                   Email <span class="text-xs font-normal normal-case tracking-normal" style="color:#8896b0;">(optional)</span>
                 </label>
                 <input
                   v-model="form.author_email"
                   type="email"
                   class="w-full rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none transition-all bg-white"
-                  :style="form.errors.author_email ? 'border:1.5px solid #bf616a;' : 'border:1.5px solid #dde3ee;'"
+                  :style="form.errors.author_email ? 'border:1.5px solid #bf616a;' : 'border:1.5px solid #e2e8f0;'"
                   placeholder="you@example.com"
-                  @focus="e => { if (!form.errors.author_email) e.target.style.borderColor='#5e81ac'; e.target.style.boxShadow='0 0 0 3px rgba(94,129,172,0.15)'; }"
+                  @focus="e => { if (!form.errors.author_email) e.target.style.borderColor='#6366f1'; e.target.style.boxShadow='0 0 0 3px rgba(99,102,241,0.15)'; }"
                   @blur="e => { e.target.style.borderColor=form.errors.author_email?'#bf616a':'#dde3ee'; e.target.style.boxShadow='none'; }"
                 />
                 <p v-if="form.errors.author_email" class="mt-1.5 text-xs text-destructive">{{ form.errors.author_email }}</p>
@@ -277,17 +277,17 @@ const primaryCatColor = props.post.categories?.[0] ? catColor(props.post.categor
             </div>
 
             <div>
-              <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color:#6b7a96;">
+              <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color:#64748b;">
                 Comment <span class="text-destructive">*</span>
               </label>
               <textarea
                 v-model="form.body"
                 rows="4"
                 class="w-full rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none transition-all resize-y bg-white"
-                :style="form.errors.body ? 'border:1.5px solid #bf616a;' : 'border:1.5px solid #dde3ee;'"
+                :style="form.errors.body ? 'border:1.5px solid #bf616a;' : 'border:1.5px solid #e2e8f0;'"
                 placeholder="Share your thoughts…"
                 required
-                @focus="e => { if (!form.errors.body) e.target.style.borderColor='#5e81ac'; e.target.style.boxShadow='0 0 0 3px rgba(94,129,172,0.15)'; }"
+                @focus="e => { if (!form.errors.body) e.target.style.borderColor='#6366f1'; e.target.style.boxShadow='0 0 0 3px rgba(99,102,241,0.15)'; }"
                 @blur="e => { e.target.style.borderColor=form.errors.body?'#bf616a':'#dde3ee'; e.target.style.boxShadow='none'; }"
               />
               <p v-if="form.errors.body" class="mt-1.5 text-xs text-destructive">{{ form.errors.body }}</p>
@@ -299,16 +299,16 @@ const primaryCatColor = props.post.categories?.[0] ? catColor(props.post.categor
                 type="submit"
                 :disabled="form.processing"
                 class="shrink-0 text-white px-6 py-2.5 text-sm font-bold rounded-xl transition-all duration-200 disabled:opacity-60"
-                style="background:#5e81ac; box-shadow:0 2px 8px rgba(94,129,172,0.35);"
-                @mouseenter="e => { e.currentTarget.style.background='#4a6d92'; e.currentTarget.style.boxShadow='0 4px 12px rgba(94,129,172,0.45)'; }"
-                @mouseleave="e => { e.currentTarget.style.background='#5e81ac'; e.currentTarget.style.boxShadow='0 2px 8px rgba(94,129,172,0.35)'; }"
+                style="background:#6366f1; box-shadow:0 2px 8px rgba(99,102,241,0.35);"
+                @mouseenter="e => { e.currentTarget.style.background='#4f46e5'; e.currentTarget.style.boxShadow='0 4px 12px rgba(99,102,241,0.45)'; }"
+                @mouseleave="e => { e.currentTarget.style.background='#6366f1'; e.currentTarget.style.boxShadow='0 2px 8px rgba(99,102,241,0.35)'; }"
               >{{ form.processing ? 'Submitting…' : 'Post comment' }}</button>
             </div>
           </form>
         </div>
 
         <!-- Comments disabled -->
-        <div v-else class="rounded-2xl px-6 py-5 text-sm text-center" style="border:1.5px solid #dde3ee; color:#8896b0;">
+        <div v-else class="rounded-2xl px-6 py-5 text-sm text-center" style="border:1.5px solid #e2e8f0; color:#94a3b8;">
           Comments are closed for this post.
         </div>
       </section>

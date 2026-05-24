@@ -15,7 +15,7 @@ const props = defineProps({
   seo:     { type: Object, required: true },
 })
 
-const AURORA = ['#5e81ac','#88c0d0','#a3be8c','#ebcb8b','#d08770','#bf616a','#b48ead']
+const AURORA = ['#6366f1','#0ea5e9','#22c55e','#f59e0b','#f97316','#ef4444','#a855f7']
 
 function catColor(cat) {
   if (cat?.color) return cat.color
@@ -36,13 +36,13 @@ const remainingPosts = computed(() => props.posts?.data?.slice(1) ?? [])
 
       <!-- Empty state -->
       <div v-if="!posts.data.length" class="flex flex-col items-center justify-center py-24 text-center gap-3">
-        <div class="w-16 h-16 rounded-full flex items-center justify-center mb-2" style="background:rgba(94,129,172,0.1);">
-          <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#5e81ac">
+        <div class="w-16 h-16 rounded-full flex items-center justify-center mb-2" style="background:rgba(99,102,241,0.1);">
+          <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#6366f1">
             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
           </svg>
         </div>
-        <p class="text-base font-medium" style="color:#4c566a;">No posts published yet.</p>
-        <p class="text-sm" style="color:#8896b0;">Check back soon for new content.</p>
+        <p class="text-base font-medium" style="color:#475569;">No posts published yet.</p>
+        <p class="text-sm" style="color:#94a3b8;">Check back soon for new content.</p>
       </div>
 
       <template v-else>
@@ -50,9 +50,9 @@ const remainingPosts = computed(() => props.posts?.data?.slice(1) ?? [])
         <article
           v-if="heroPost"
           class="group relative mb-8 rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-0.5"
-          style="box-shadow:0 4px 20px rgba(94,129,172,0.14), 0 1px 4px rgba(94,129,172,0.08);"
-          @mouseenter="$event.currentTarget.style.boxShadow='0 16px 36px rgba(94,129,172,0.22), 0 4px 8px rgba(94,129,172,0.10)'"
-          @mouseleave="$event.currentTarget.style.boxShadow='0 4px 20px rgba(94,129,172,0.14), 0 1px 4px rgba(94,129,172,0.08)'"
+          style="box-shadow:0 4px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);"
+          @mouseenter="$event.currentTarget.style.boxShadow='0 20px 40px rgba(0,0,0,0.16), 0 4px 8px rgba(0,0,0,0.08)'"
+          @mouseleave="$event.currentTarget.style.boxShadow='0 4px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06)'"
         >
           <Link :href="`/blog/${heroPost.slug}`" class="block">
             <!-- Image with gradient overlay -->
@@ -128,20 +128,20 @@ const remainingPosts = computed(() => props.posts?.data?.slice(1) ?? [])
       </template>
 
       <!-- Pagination -->
-      <nav v-if="posts.links?.length > 3" class="flex items-center justify-center gap-1 mt-10 pt-8" style="border-top:1px solid #dde3ee;">
+      <nav v-if="posts.links?.length > 3" class="flex items-center justify-center gap-1 mt-10 pt-8" style="border-top:1px solid #e2e8f0;">
         <template v-for="link in posts.links" :key="link.label">
           <Link
             v-if="link.url"
             :href="link.url"
             class="min-w-9 h-9 flex items-center justify-center rounded-full text-sm font-medium transition-all duration-200"
             :style="link.active
-              ? 'background:#5e81ac; color:#fff; box-shadow:0 2px 8px rgba(94,129,172,0.4);'
-              : 'color:#6b7a96; background:white;'"
+              ? 'background:#6366f1; color:#fff; box-shadow:0 2px 8px rgba(99,102,241,0.4);'
+              : 'color:#64748b; background:white;'"
           >{{ decodeHtmlEntities(link.label) }}</Link>
           <span
             v-else
             class="min-w-9 h-9 flex items-center justify-center rounded-full text-sm cursor-not-allowed"
-            style="color:#b8c4d8;"
+            style="color:#cbd5e1;"
           >{{ decodeHtmlEntities(link.label) }}</span>
         </template>
       </nav>
