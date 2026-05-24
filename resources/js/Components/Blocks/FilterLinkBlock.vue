@@ -31,33 +31,32 @@ function navigate(e) {
 </script>
 
 <template>
-  <!-- List variant: compact row, full-width, subtle hover -->
+  <!-- List variant: compact row, full-width -->
   <a
     v-if="variant === 'list'"
     :href="filterUrl"
-    class="flex items-center justify-between w-full px-2 py-1.5 rounded-md text-sm transition-colors"
+    class="flex items-center justify-between w-full px-2.5 py-1.5 rounded-xl text-sm transition-all duration-150"
     :style="isActive
-      ? 'color:#4f46e5; background:#ede9fe; font-weight:600;'
+      ? 'color:#6366f1; background:#eef2ff; font-weight:600;'
       : 'color:#4b5563;'"
-    style_hover="background:#f3f4f6"
-    @mouseenter="e => !isActive && (e.target.style.background='#f3f4f6')"
-    @mouseleave="e => !isActive && (e.target.style.background='')"
+    @mouseenter="e => !isActive && (e.currentTarget.style.cssText += 'background:#f5f3ff; color:#6366f1;')"
+    @mouseleave="e => !isActive && (e.currentTarget.style.cssText = 'color:#4b5563;')"
     @click="navigate"
   >
     <span>{{ label || slug }}</span>
-    <span style="color:#9ca3af; font-size:10px;">›</span>
+    <span class="text-[11px] font-bold" style="color:#c4b5fd;">›</span>
   </a>
 
-  <!-- Pill variant: compact rounded badge -->
+  <!-- Pill variant: rounded badge -->
   <a
     v-else-if="variant === 'pill'"
     :href="filterUrl"
-    class="inline-flex items-center rounded-full text-xs font-medium transition-colors cursor-pointer"
+    class="inline-flex items-center rounded-full text-xs font-semibold transition-all duration-150 cursor-pointer"
     :style="isActive
-      ? 'padding:3px 10px; background:#ede9fe; color:#4f46e5; border:1px solid #c4b5fd;'
-      : 'padding:3px 10px; background:#f9fafb; color:#374151; border:1px solid #e5e7eb;'"
-    @mouseenter="e => !isActive && (e.target.style.background='#f3f4f6')"
-    @mouseleave="e => !isActive && (e.target.style.background= isActive ? '#ede9fe' : '#f9fafb')"
+      ? 'padding:4px 14px; background:#6366f1; color:white; box-shadow:0 2px 8px rgba(99,102,241,0.35);'
+      : 'padding:4px 14px; background:#eef2ff; color:#6366f1;'"
+    @mouseenter="e => !isActive && (e.currentTarget.style.cssText = 'padding:4px 14px; background:#6366f1; color:white; box-shadow:0 2px 8px rgba(99,102,241,0.35);')"
+    @mouseleave="e => !isActive && (e.currentTarget.style.cssText = 'padding:4px 14px; background:#eef2ff; color:#6366f1;')"
     @click="navigate"
   >
     {{ label || slug }}

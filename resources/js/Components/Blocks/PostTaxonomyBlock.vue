@@ -21,33 +21,43 @@ function hexToRgba(hex, alpha) {
 </script>
 
 <template>
-  <div v-if="post" class="flex flex-wrap gap-2">
-    <template v-if="props.block.data?.showCategories !== false">
-      <a
-        v-for="cat in post.categories"
-        :key="cat.id"
-        :href="`/blog/category/${cat.slug}`"
-        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide text-white transition-opacity hover:opacity-85"
-        :style="{ backgroundColor: catColor(cat) }"
-      >{{ cat.name }}</a>
-    </template>
-    <template v-if="props.block.data?.showTags !== false">
-      <a
-        v-for="(tag, idx) in post.tags"
-        :key="tag.slug"
-        :href="`/blog/tag/${tag.slug}`"
-        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-all duration-200"
-        :style="{
-          backgroundColor: hexToRgba(AURORA[idx % AURORA.length], 0.12),
-          color: AURORA[idx % AURORA.length],
-        }"
-        @mouseenter="e => { e.currentTarget.style.backgroundColor = AURORA[idx % AURORA.length]; e.currentTarget.style.color = '#fff'; }"
-        @mouseleave="e => { e.currentTarget.style.backgroundColor = hexToRgba(AURORA[idx % AURORA.length], 0.12); e.currentTarget.style.color = AURORA[idx % AURORA.length]; }"
-      >#{{ tag.name }}</a>
-    </template>
+  <div
+    v-if="post"
+    class="rounded-2xl p-5 bg-white"
+    style="box-shadow:0 2px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.03);"
+  >
+    <p class="text-[10px] font-bold uppercase tracking-[0.14em] mb-3" style="color:#94a3b8;">Topics</p>
+    <div class="flex flex-wrap gap-2">
+      <template v-if="props.block.data?.showCategories !== false">
+        <a
+          v-for="cat in post.categories"
+          :key="cat.id"
+          :href="`/blog/category/${cat.slug}`"
+          class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide text-white transition-opacity hover:opacity-85"
+          :style="{ backgroundColor: catColor(cat) }"
+        >{{ cat.name }}</a>
+      </template>
+      <template v-if="props.block.data?.showTags !== false">
+        <a
+          v-for="(tag, idx) in post.tags"
+          :key="tag.slug"
+          :href="`/blog/tag/${tag.slug}`"
+          class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-all duration-200"
+          :style="{
+            backgroundColor: hexToRgba(AURORA[idx % AURORA.length], 0.12),
+            color: AURORA[idx % AURORA.length],
+          }"
+          @mouseenter="e => { e.currentTarget.style.backgroundColor = AURORA[idx % AURORA.length]; e.currentTarget.style.color = '#fff'; }"
+          @mouseleave="e => { e.currentTarget.style.backgroundColor = hexToRgba(AURORA[idx % AURORA.length], 0.12); e.currentTarget.style.color = AURORA[idx % AURORA.length]; }"
+        >#{{ tag.name }}</a>
+      </template>
+    </div>
   </div>
-  <div v-else class="flex gap-2">
-    <div class="h-6 w-16 rounded-full bg-muted/40 animate-pulse" />
-    <div class="h-6 w-20 rounded-full bg-muted/40 animate-pulse" />
+  <div v-else class="rounded-2xl p-5 bg-white" style="box-shadow:0 2px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.03);">
+    <div class="h-3 w-12 rounded bg-muted/40 animate-pulse mb-3" />
+    <div class="flex gap-2">
+      <div class="h-6 w-16 rounded-full bg-muted/40 animate-pulse" />
+      <div class="h-6 w-20 rounded-full bg-muted/40 animate-pulse" />
+    </div>
   </div>
 </template>
