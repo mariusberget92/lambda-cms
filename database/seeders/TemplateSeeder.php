@@ -121,40 +121,61 @@ class TemplateSeeder extends Seeder
                         'padding'   => 0,
                         'maxWidth'  => 'full',
                     ], [
+                        // Search widget (SearchBlock renders its own card)
                         $this->block(21, 'search', [
                             'placeholder' => 'Search posts…',
                             'buttonLabel' => 'Search',
                             'scope'       => 'posts',
                         ]),
-                        $this->block(22, 'heading', ['level' => 3, 'text' => 'Categories']),
-                        $this->block(23, 'loop', [
-                            'source'  => 'categories',
-                            'filters' => [],
-                            'sort'    => ['field' => 'posts_count', 'direction' => 'desc'],
-                            'limit'   => 20,
-                            'columns' => 1,
-                            'gap'     => 0,
+
+                        // Categories card
+                        $this->block(36, 'container', [
+                            'mode'      => 'flex',
+                            'direction' => 'column',
+                            'gap'       => '0.5rem',
+                            'padding'   => 0,
+                            'maxWidth'  => 'full',
                         ], [
-                            $this->block(30, 'filter-link',
-                                ['paramName' => 'category', 'label' => '', 'variant' => 'list'],
-                                [], ['label' => 'loop:name']
-                            ),
-                        ]),
-                        $this->block(24, 'heading', ['level' => 3, 'text' => 'Tags']),
-                        $this->block(25, 'loop', [
-                            'source'   => 'tags',
-                            'filters'  => [],
-                            'sort'     => ['field' => 'posts_count', 'direction' => 'desc'],
-                            'limit'    => 30,
-                            'columns'  => 'flex',
-                            'flexWrap' => true,
-                            'gap'      => 'sm',
+                            $this->block(22, 'heading', ['level' => 3, 'text' => 'Categories']),
+                            $this->block(23, 'loop', [
+                                'source'  => 'categories',
+                                'filters' => [],
+                                'sort'    => ['field' => 'posts_count', 'direction' => 'desc'],
+                                'limit'   => 20,
+                                'columns' => 1,
+                                'gap'     => 0,
+                            ], [
+                                $this->block(30, 'filter-link',
+                                    ['paramName' => 'category', 'label' => '', 'variant' => 'list'],
+                                    [], ['label' => 'loop:name']
+                                ),
+                            ]),
+                        ], [], '', 'background:white;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06),0 1px 4px rgba(0,0,0,0.03)'),
+
+                        // Tags card
+                        $this->block(37, 'container', [
+                            'mode'      => 'flex',
+                            'direction' => 'column',
+                            'gap'       => '0.75rem',
+                            'padding'   => 0,
+                            'maxWidth'  => 'full',
                         ], [
-                            $this->block(31, 'filter-link',
-                                ['paramName' => 'tag', 'label' => '', 'variant' => 'pill'],
-                                [], ['label' => 'loop:name']
-                            ),
-                        ]),
+                            $this->block(24, 'heading', ['level' => 3, 'text' => 'Tags']),
+                            $this->block(25, 'loop', [
+                                'source'   => 'tags',
+                                'filters'  => [],
+                                'sort'     => ['field' => 'posts_count', 'direction' => 'desc'],
+                                'limit'    => 30,
+                                'columns'  => 'flex',
+                                'flexWrap' => true,
+                                'gap'      => 'sm',
+                            ], [
+                                $this->block(31, 'filter-link',
+                                    ['paramName' => 'tag', 'label' => '', 'variant' => 'pill'],
+                                    [], ['label' => 'loop:name']
+                                ),
+                            ]),
+                        ], [], '', 'background:white;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06),0 1px 4px rgba(0,0,0,0.03)'),
                     ], [], '', 'flex:1;min-width:0'),
                 ]),
             ]),
@@ -198,8 +219,17 @@ class TemplateSeeder extends Seeder
     {
         return [
             $this->section(300, ['paddingY' => ['default' => 10], 'paddingX' => ['default' => 0], 'fullWidth' => true, 'minHeight' => 'auto'], [
-                $this->block(301, 'heading', ['level' => 2, 'text' => 'Search']),
-                $this->block(302, 'search',  ['placeholder' => 'Search posts…', 'buttonLabel' => 'Search']),
+                // Styled search banner
+                $this->block(304, 'container', [
+                    'mode'      => 'flex',
+                    'direction' => 'column',
+                    'gap'       => '1rem',
+                    'padding'   => 0,
+                    'maxWidth'  => 'full',
+                ], [
+                    $this->block(311, 'heading', ['level' => 1, 'text' => 'Search'], [], [], '', 'color:white'),
+                    $this->block(302, 'search', ['placeholder' => 'Search posts…', 'buttonLabel' => 'Search', 'scope' => 'posts']),
+                ], [], '', 'background:linear-gradient(135deg,#a855f7 0%,#818cf8 55%,#0ea5e9 100%);border-radius:16px;padding:28px;margin-bottom:8px;box-shadow:0 6px 24px rgba(168,85,247,0.3)'),
                 $this->block(303, 'loop', [
                     'source'  => 'posts',
                     'filters' => [['field' => 'title', 'op' => 'contains', 'urlParam' => 'q', 'value' => '']],
