@@ -6,7 +6,7 @@ const props = defineProps({
   post: { type: Object, required: true },
 })
 
-const AURORA = ['#5e81ac','#88c0d0','#a3be8c','#ebcb8b','#d08770','#bf616a','#b48ead']
+const AURORA = ['#6366f1','#0ea5e9','#22c55e','#f59e0b','#f97316','#ef4444','#a855f7']
 
 function catColor(cat) {
   if (cat?.color) return cat.color
@@ -41,13 +41,19 @@ function formatDate(date) {
   <article
     class="group flex flex-col h-full bg-white rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
     :style="{
-      borderTop: `3px solid ${accentColor}`,
-      boxShadow: '0 2px 8px rgba(94,129,172,0.08), 0 1px 3px rgba(94,129,172,0.05)',
+      borderTop: `4px solid ${accentColor}`,
+      boxShadow: '0 2px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.03)',
     }"
-    style="--hover-shadow: 0 12px 28px rgba(94,129,172,0.18), 0 4px 8px rgba(94,129,172,0.08);"
-    @mouseenter="$event.currentTarget.style.boxShadow = '0 12px 28px rgba(94,129,172,0.18), 0 4px 8px rgba(94,129,172,0.08)'"
-    @mouseleave="$event.currentTarget.style.boxShadow = '0 2px 8px rgba(94,129,172,0.08), 0 1px 3px rgba(94,129,172,0.05)'"
+    @mouseenter="$event.currentTarget.style.boxShadow = `0 16px 32px ${hexToRgba(accentColor, 0.22)}, 0 4px 8px ${hexToRgba(accentColor, 0.10)}`"
+    @mouseleave="$event.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.03)'"
   >
+    <!-- Colorful gradient strip for image-less cards -->
+    <div
+      v-if="!post.featured_image_url"
+      class="h-14 shrink-0"
+      :style="{ background: `linear-gradient(135deg, ${hexToRgba(accentColor, 0.28)} 0%, ${hexToRgba(accentColor, 0.06)} 100%)` }"
+    />
+
     <!-- Featured image -->
     <div v-if="post.featured_image_url" class="overflow-hidden shrink-0">
       <Link :href="`/blog/${post.slug}`" tabindex="-1" aria-hidden="true">
@@ -83,13 +89,13 @@ function formatDate(date) {
       </h2>
 
       <!-- Excerpt -->
-      <p v-if="post.excerpt" class="text-sm leading-relaxed line-clamp-3 mb-4 flex-1" style="color:#6b7a96;">
+      <p v-if="post.excerpt" class="text-sm leading-relaxed line-clamp-3 mb-4 flex-1" style="color:#64748b;">
         {{ post.excerpt }}
       </p>
       <div v-else class="flex-1" />
 
       <!-- Meta row -->
-      <div class="flex items-center gap-2 text-xs pt-3 mt-auto" style="border-top:1px solid #eaeffa; color:#8896b0;">
+      <div class="flex items-center gap-2 text-xs pt-3 mt-auto" style="border-top:1px solid #e2e8f0; color:#94a3b8;">
         <div
           v-if="post.author?.avatar_url"
           class="w-5 h-5 rounded-full overflow-hidden shrink-0"
@@ -101,7 +107,7 @@ function formatDate(date) {
           class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0"
           :style="{ backgroundColor: accentColor }"
         >{{ post.author?.name?.charAt(0)?.toUpperCase() ?? '?' }}</div>
-        <span class="font-medium truncate" style="color:#4c566a;">{{ post.author?.name ?? 'Unknown' }}</span>
+        <span class="font-medium truncate" style="color:#475569;">{{ post.author?.name ?? 'Unknown' }}</span>
         <span class="opacity-30 select-none shrink-0">·</span>
         <span class="shrink-0">{{ formatDate(post.published_at) }}</span>
         <span class="opacity-30 select-none shrink-0">·</span>

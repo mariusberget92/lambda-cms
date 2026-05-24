@@ -10,7 +10,7 @@ const props = defineProps({
 const searchQuery = ref(props.query)
 watch(() => props.query, (v) => { searchQuery.value = v })
 
-const AURORA = ['#5e81ac','#88c0d0','#a3be8c','#ebcb8b','#d08770','#bf616a','#b48ead']
+const AURORA = ['#6366f1','#0ea5e9','#22c55e','#f59e0b','#f97316','#ef4444','#a855f7']
 
 function catColor(cat) {
   if (cat?.color) return cat.color
@@ -42,25 +42,25 @@ function formatDate(date) {
   <aside class="space-y-5">
 
     <!-- Search card -->
-    <div class="bg-white rounded-2xl p-5" style="box-shadow:0 2px 8px rgba(94,129,172,0.08), 0 1px 3px rgba(94,129,172,0.05);">
-      <h3 class="text-[10px] font-bold uppercase tracking-[0.14em] mb-3" style="color:#8896b0;">Search</h3>
+    <div class="bg-white rounded-2xl p-5" style="box-shadow:0 2px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.03);">
+      <h3 class="text-[10px] font-bold uppercase tracking-[0.14em] mb-3" style="color:#94a3b8;">Search</h3>
       <form @submit.prevent="submitSearch" class="relative">
         <input
           v-model="searchQuery"
           type="search"
           placeholder="Search posts…"
           class="w-full rounded-xl px-4 py-2.5 pr-10 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none transition-all"
-          style="background:#f0f4fa; border:1.5px solid #dde3ee;"
-          @focus="$event.target.style.borderColor='#5e81ac'; $event.target.style.boxShadow='0 0 0 3px rgba(94,129,172,0.15)'"
-          @blur="$event.target.style.borderColor='#dde3ee'; $event.target.style.boxShadow='none'"
+          style="background:#f1f5f9; border:1.5px solid #e2e8f0;"
+          @focus="$event.target.style.borderColor='#6366f1'; $event.target.style.boxShadow='0 0 0 3px rgba(99,102,241,0.15)'"
+          @blur="$event.target.style.borderColor='#e2e8f0'; $event.target.style.boxShadow='none'"
         />
         <button
           type="submit"
           class="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
-          style="color:#8896b0;"
+          style="color:#94a3b8;"
           aria-label="Search"
-          @mouseenter="$event.currentTarget.style.color='#5e81ac'"
-          @mouseleave="$event.currentTarget.style.color='#8896b0'"
+          @mouseenter="$event.currentTarget.style.color='#6366f1'"
+          @mouseleave="$event.currentTarget.style.color='#94a3b8'"
         >
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
@@ -70,8 +70,8 @@ function formatDate(date) {
     </div>
 
     <!-- Categories card -->
-    <div v-if="sidebar.categories?.length" class="bg-white rounded-2xl p-5" style="box-shadow:0 2px 8px rgba(94,129,172,0.08), 0 1px 3px rgba(94,129,172,0.05);">
-      <h3 class="text-[10px] font-bold uppercase tracking-[0.14em] mb-4" style="color:#8896b0;">Categories</h3>
+    <div v-if="sidebar.categories?.length" class="bg-white rounded-2xl p-5" style="box-shadow:0 2px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.03);">
+      <h3 class="text-[10px] font-bold uppercase tracking-[0.14em] mb-4" style="color:#94a3b8;">Categories</h3>
       <ul class="space-y-1.5">
         <li
           v-for="cat in sidebar.categories"
@@ -81,9 +81,9 @@ function formatDate(date) {
           <Link
             :href="`/blog/category/${cat.slug}`"
             class="flex items-center gap-2.5 text-sm font-medium py-0.5 flex-1 min-w-0 truncate transition-colors"
-            style="color:#4c566a;"
+            style="color:#475569;"
             @mouseenter="$event.currentTarget.style.color=catColor(cat)"
-            @mouseleave="$event.currentTarget.style.color='#4c566a'"
+            @mouseleave="$event.currentTarget.style.color='#475569'"
           >
             <span
               class="w-2.5 h-2.5 rounded-full shrink-0"
@@ -100,8 +100,8 @@ function formatDate(date) {
     </div>
 
     <!-- Tags card -->
-    <div v-if="sidebar.tags?.length" class="bg-white rounded-2xl p-5" style="box-shadow:0 2px 8px rgba(94,129,172,0.08), 0 1px 3px rgba(94,129,172,0.05);">
-      <h3 class="text-[10px] font-bold uppercase tracking-[0.14em] mb-4" style="color:#8896b0;">Tags</h3>
+    <div v-if="sidebar.tags?.length" class="bg-white rounded-2xl p-5" style="box-shadow:0 2px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.03);">
+      <h3 class="text-[10px] font-bold uppercase tracking-[0.14em] mb-4" style="color:#94a3b8;">Tags</h3>
       <div class="flex flex-wrap gap-1.5">
         <Link
           v-for="(tag, idx) in sidebar.tags"
@@ -120,18 +120,18 @@ function formatDate(date) {
     </div>
 
     <!-- Recent posts card -->
-    <div v-if="sidebar.recentPosts?.length" class="bg-white rounded-2xl p-5" style="box-shadow:0 2px 8px rgba(94,129,172,0.08), 0 1px 3px rgba(94,129,172,0.05);">
-      <h3 class="text-[10px] font-bold uppercase tracking-[0.14em] mb-4" style="color:#8896b0;">Recent Posts</h3>
+    <div v-if="sidebar.recentPosts?.length" class="bg-white rounded-2xl p-5" style="box-shadow:0 2px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.03);">
+      <h3 class="text-[10px] font-bold uppercase tracking-[0.14em] mb-4" style="color:#94a3b8;">Recent Posts</h3>
       <ul class="space-y-4">
         <li v-for="post in sidebar.recentPosts" :key="post.slug">
           <Link
             :href="`/blog/${post.slug}`"
             class="block text-sm font-medium leading-snug line-clamp-2 transition-colors"
-            style="color:#2e3440;"
-            @mouseenter="$event.currentTarget.style.color='#5e81ac'"
-            @mouseleave="$event.currentTarget.style.color='#2e3440'"
+            style="color:#1e293b;"
+            @mouseenter="$event.currentTarget.style.color='#6366f1'"
+            @mouseleave="$event.currentTarget.style.color='#1e293b'"
           >{{ post.title }}</Link>
-          <p class="text-xs mt-1" style="color:#8896b0;">{{ formatDate(post.published_at) }}</p>
+          <p class="text-xs mt-1" style="color:#94a3b8;">{{ formatDate(post.published_at) }}</p>
         </li>
       </ul>
     </div>
