@@ -21,9 +21,8 @@ function hexToRgba(hex, alpha) {
   return `rgba(${r},${g},${b},${alpha})`
 }
 
-const primaryCat   = computed(() => props.post.categories?.[0] ?? null)
-const accentColor  = computed(() => catColor(primaryCat.value))
-const accentBg     = computed(() => hexToRgba(accentColor.value, 0.1))
+const primaryCat  = computed(() => props.post.categories?.[0] ?? null)
+const accentColor = computed(() => catColor(primaryCat.value))
 
 const readingTime = computed(() => {
   const text = props.post?.excerpt || props.post?.body || ''
@@ -40,22 +39,38 @@ function formatDate(date) {
 <template>
   <article
     class="group flex flex-col h-full bg-white rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
-    :style="{
-      borderTop: `4px solid ${accentColor}`,
-      boxShadow: '0 2px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.03)',
-    }"
-    @mouseenter="$event.currentTarget.style.boxShadow = `0 16px 32px ${hexToRgba(accentColor, 0.22)}, 0 4px 8px ${hexToRgba(accentColor, 0.10)}`"
+    :style="{ boxShadow: '0 2px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.03)' }"
+    @mouseenter="$event.currentTarget.style.boxShadow = `0 20px 40px ${hexToRgba(accentColor, 0.22)}, 0 4px 12px ${hexToRgba(accentColor, 0.10)}`"
     @mouseleave="$event.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.03)'"
   >
-    <!-- Colorful gradient strip for image-less cards -->
+
+    <!-- Bold colorful header for image-less cards -->
     <div
       v-if="!post.featured_image_url"
-      class="h-14 shrink-0"
-      :style="{ background: `linear-gradient(135deg, ${hexToRgba(accentColor, 0.28)} 0%, ${hexToRgba(accentColor, 0.06)} 100%)` }"
-    />
+      class="relative h-28 shrink-0 overflow-hidden"
+      :style="{ background: `linear-gradient(135deg, ${accentColor} 0%, ${hexToRgba(accentColor, 0.65)} 100%)` }"
+    >
+      <!-- Decorative blobs -->
+      <div class="absolute -right-6 -top-6 w-28 h-28 rounded-full bg-white/20" />
+      <div class="absolute right-10 -bottom-10 w-20 h-20 rounded-full bg-white/10" />
+      <div class="absolute -left-4 -bottom-6 w-16 h-16 rounded-full bg-white/15" />
+
+      <!-- Category pills inside header -->
+      <div v-if="post.categories?.length" class="absolute bottom-3.5 left-4 flex flex-wrap gap-1.5">
+        <Link
+          v-for="cat in post.categories"
+          :key="cat.slug"
+          :href="`/blog/category/${cat.slug}`"
+          class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wide text-white transition-all"
+          style="background:rgba(255,255,255,0.22);"
+          @mouseenter="$event.currentTarget.style.background='rgba(255,255,255,0.38)'"
+          @mouseleave="$event.currentTarget.style.background='rgba(255,255,255,0.22)'"
+        >{{ cat.name }}</Link>
+      </div>
+    </div>
 
     <!-- Featured image -->
-    <div v-if="post.featured_image_url" class="overflow-hidden shrink-0">
+    <div v-else class="relative overflow-hidden shrink-0">
       <Link :href="`/blog/${post.slug}`" tabindex="-1" aria-hidden="true">
         <img
           :src="post.featured_image_url"
@@ -64,13 +79,10 @@ function formatDate(date) {
           loading="lazy"
         />
       </Link>
-    </div>
-
-    <!-- Card body -->
-    <div class="flex-1 flex flex-col p-5">
-
-      <!-- Categories -->
-      <div v-if="post.categories?.length" class="mb-3 flex flex-wrap gap-1.5">
+      <!-- Accent stripe at base of image -->
+      <div class="absolute bottom-0 left-0 right-0 h-[3px]" :style="{ background: accentColor }" />
+      <!-- Category pills overlaid on image -->
+      <div v-if="post.categories?.length" class="absolute top-3 left-3 flex flex-wrap gap-1.5">
         <Link
           v-for="cat in post.categories"
           :key="cat.slug"
@@ -79,12 +91,19 @@ function formatDate(date) {
           :style="{ backgroundColor: catColor(cat) }"
         >{{ cat.name }}</Link>
       </div>
+    </div>
+
+    <!-- Card body -->
+    <div class="flex-1 flex flex-col p-5">
 
       <!-- Title -->
       <h2 class="font-editorial text-xl font-bold leading-snug mb-2.5">
         <Link
           :href="`/blog/${post.slug}`"
-          class="text-foreground hover:underline decoration-primary/40 underline-offset-2 transition-colors"
+          class="transition-colors duration-200"
+          style="color:#1e293b;"
+          @mouseenter="$event.currentTarget.style.color = accentColor"
+          @mouseleave="$event.currentTarget.style.color = '#1e293b'"
         >{{ post.title }}</Link>
       </h2>
 
@@ -95,23 +114,29 @@ function formatDate(date) {
       <div v-else class="flex-1" />
 
       <!-- Meta row -->
-      <div class="flex items-center gap-2 text-xs pt-3 mt-auto" style="border-top:1px solid #e2e8f0; color:#94a3b8;">
+      <div class="flex items-center gap-2 text-xs pt-3 mt-auto" style="border-top:1px solid #f1f5f9; color:#94a3b8;">
         <div
           v-if="post.author?.avatar_url"
-          class="w-5 h-5 rounded-full overflow-hidden shrink-0"
+          class="w-6 h-6 rounded-full overflow-hidden shrink-0"
+          :style="{ outline: `2px solid ${hexToRgba(accentColor, 0.35)}`, outlineOffset: '1px' }"
         >
           <img :src="post.author.avatar_url" :alt="post.author.name" class="w-full h-full object-cover" />
         </div>
         <div
           v-else
-          class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0"
+          class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0"
           :style="{ backgroundColor: accentColor }"
         >{{ post.author?.name?.charAt(0)?.toUpperCase() ?? '?' }}</div>
+
         <span class="font-medium truncate" style="color:#475569;">{{ post.author?.name ?? 'Unknown' }}</span>
         <span class="opacity-30 select-none shrink-0">·</span>
         <span class="shrink-0">{{ formatDate(post.published_at) }}</span>
-        <span class="opacity-30 select-none shrink-0">·</span>
-        <span class="shrink-0">{{ readingTime }} min</span>
+
+        <!-- Reading time badge -->
+        <span
+          class="ml-auto shrink-0 px-2 py-0.5 rounded-full text-[10px] font-semibold"
+          :style="{ background: hexToRgba(accentColor, 0.10), color: accentColor }"
+        >{{ readingTime }} min</span>
       </div>
 
       <!-- Tags -->
@@ -125,6 +150,8 @@ function formatDate(date) {
             backgroundColor: hexToRgba(AURORA[idx % AURORA.length], 0.12),
             color: AURORA[idx % AURORA.length],
           }"
+          @mouseenter="e => { e.currentTarget.style.backgroundColor = AURORA[idx % AURORA.length]; e.currentTarget.style.color = '#fff'; }"
+          @mouseleave="e => { e.currentTarget.style.backgroundColor = hexToRgba(AURORA[idx % AURORA.length], 0.12); e.currentTarget.style.color = AURORA[idx % AURORA.length]; }"
         >{{ tag.name }}</Link>
       </div>
     </div>
