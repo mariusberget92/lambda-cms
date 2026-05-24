@@ -17,8 +17,7 @@ const filterUrl = computed(() => slug.value ? `/?${paramName.value}=${slug.value
 const isActive = computed(() => {
   if (!slug.value) return false
   try {
-    const params = new URLSearchParams(window.location.search)
-    return params.get(paramName.value) === slug.value
+    return new URLSearchParams(window.location.search).get(paramName.value) === slug.value
   } catch {
     return false
   }
@@ -28,6 +27,39 @@ function navigate(e) {
   e.preventDefault()
   router.get(filterUrl.value, {}, { preserveScroll: true })
 }
+
+const listStyle = computed(() => isActive.value
+  ? { color: '#6366f1', background: '#eef2ff', fontWeight: '600' }
+  : { color: '#4b5563' }
+)
+
+const pillStyle = computed(() => isActive.value
+  ? { padding: '4px 14px', background: '#6366f1', color: 'white', borderRadius: '20px', boxShadow: '0 2px 8px rgba(99,102,241,0.35)' }
+  : { padding: '4px 14px', background: '#eef2ff', color: '#6366f1', borderRadius: '20px' }
+)
+
+function onListEnter(e) {
+  if (isActive.value) return
+  e.currentTarget.style.background = '#f5f3ff'
+  e.currentTarget.style.color = '#6366f1'
+}
+function onListLeave(e) {
+  if (isActive.value) return
+  e.currentTarget.style.background = ''
+  e.currentTarget.style.color = '#4b5563'
+}
+function onPillEnter(e) {
+  if (isActive.value) return
+  e.currentTarget.style.background = '#6366f1'
+  e.currentTarget.style.color = 'white'
+  e.currentTarget.style.boxShadow = '0 2px 8px rgba(99,102,241,0.35)'
+}
+function onPillLeave(e) {
+  if (isActive.value) return
+  e.currentTarget.style.background = '#eef2ff'
+  e.currentTarget.style.color = '#6366f1'
+  e.currentTarget.style.boxShadow = ''
+}
 </script>
 
 <template>
@@ -36,11 +68,9 @@ function navigate(e) {
     v-if="variant === 'list'"
     :href="filterUrl"
     class="flex items-center justify-between w-full px-2.5 py-1.5 rounded-xl text-sm transition-all duration-150"
-    :style="isActive
-      ? 'color:#6366f1; background:#eef2ff; font-weight:600;'
-      : 'color:#4b5563;'"
-    @mouseenter="e => !isActive && (e.currentTarget.style.cssText += 'background:#f5f3ff; color:#6366f1;')"
-    @mouseleave="e => !isActive && (e.currentTarget.style.cssText = 'color:#4b5563;')"
+    :style="listStyle"
+    @mouseenter="onListEnter"
+    @mouseleave="onListLeave"
     @click="navigate"
   >
     <span>{{ label || slug }}</span>
@@ -52,11 +82,9 @@ function navigate(e) {
     v-else-if="variant === 'pill'"
     :href="filterUrl"
     class="inline-flex items-center rounded-full text-xs font-semibold transition-all duration-150 cursor-pointer"
-    :style="isActive
-      ? 'padding:4px 14px; background:#6366f1; color:white; box-shadow:0 2px 8px rgba(99,102,241,0.35);'
-      : 'padding:4px 14px; background:#eef2ff; color:#6366f1;'"
-    @mouseenter="e => !isActive && (e.currentTarget.style.cssText = 'padding:4px 14px; background:#6366f1; color:white; box-shadow:0 2px 8px rgba(99,102,241,0.35);')"
-    @mouseleave="e => !isActive && (e.currentTarget.style.cssText = 'padding:4px 14px; background:#eef2ff; color:#6366f1;')"
+    :style="pillStyle"
+    @mouseenter="onPillEnter"
+    @mouseleave="onPillLeave"
     @click="navigate"
   >
     {{ label || slug }}
