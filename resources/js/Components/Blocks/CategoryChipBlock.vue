@@ -5,10 +5,6 @@ const props = defineProps({ block: { type: Object, required: true } })
 
 const loopItem = inject('loopItem', null)
 
-const hue  = computed(() => {
-  const h = loopItem?.value?.hue ?? loopItem?.value?.categories?.[0]?.hue ?? props.block.data?.hue ?? 220
-  return h
-})
 const name = computed(() => {
   return loopItem?.value?.name
     ?? loopItem?.value?.categories?.[0]?.name
@@ -21,10 +17,8 @@ const slug = computed(() => {
     ?? props.block.data?.slug
     ?? null
 })
-const href = computed(() => slug.value ? `/blog/category/${slug.value}` : null)
-
-const chipColor  = computed(() => `oklch(0.62 0.16 ${hue.value})`)
-const isActive   = computed(() => props.block.data?.active ?? false)
+const href     = computed(() => slug.value ? `/blog/category/${slug.value}` : null)
+const isActive = computed(() => props.block.data?.active ?? false)
 </script>
 
 <template>
@@ -33,9 +27,9 @@ const isActive   = computed(() => props.block.data?.active ?? false)
     :href="href || undefined"
     class="inline-flex items-center font-mono-blog text-[11px] px-3 py-1 rounded-full transition-all duration-150"
     :style="isActive
-      ? { background: chipColor, color: 'var(--accent-ink)', border: `1px solid ${chipColor}` }
-      : { background: 'transparent', color: chipColor, border: `1px solid ${chipColor}` }"
-    @mouseenter="e => { if (!isActive) { e.currentTarget.style.background = chipColor; e.currentTarget.style.color = 'var(--accent-ink)'; } }"
-    @mouseleave="e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = chipColor; } }"
+      ? { background: 'var(--accent)', color: 'var(--accent-ink)', border: '1px solid var(--accent)' }
+      : { background: 'transparent', color: 'var(--soft)', border: '1px solid var(--line-strong)' }"
+    @mouseenter="e => { if (!isActive) { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; } }"
+    @mouseleave="e => { if (!isActive) { e.currentTarget.style.borderColor = 'var(--line-strong)'; e.currentTarget.style.color = 'var(--soft)'; } }"
   >{{ name }}</component>
 </template>
