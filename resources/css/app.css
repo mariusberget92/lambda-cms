@@ -261,6 +261,74 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* ─── LambdaCMS Blog Design System ──────────────────────────────────────────
+   Scoped to .lambda-blog-root so it never bleeds into the admin panel.
+   Three palette variants: system (default), terminal, synth.
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Display font — Space Grotesk */
+.lambda-blog-root { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
+.font-display      { font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif; }
+.font-mono-blog    { font-family: 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace; }
+
+/* ── system palette (light slate + cobalt) — default ── */
+.lambda-blog-root {
+  --bg:          #f4f6fa;
+  --panel:       #ffffff;
+  --ink:         #0f172a;
+  --soft:        #64748b;
+  --rule:        #e2e8f0;
+  --line:        rgba(0,0,0,0.06);
+  --line-strong: rgba(0,0,0,0.14);
+  --accent:      #2563eb;
+  --accent-ink:  #ffffff;
+  --code:        #0f1117;
+  --code-ink:    #cbd5e1;
+  --gutter:      32px;
+  --blog-radius: 6px;
+}
+
+/* ── terminal palette (dark + phosphor green) ── */
+.lambda-blog-root[data-palette="terminal"] {
+  --bg:          #0a0e14;
+  --panel:       #0f1419;
+  --ink:         #e2f0e8;
+  --soft:        #4b6657;
+  --rule:        #1a2a20;
+  --line:        rgba(255,255,255,0.05);
+  --line-strong: rgba(255,255,255,0.12);
+  --accent:      #22c55e;
+  --accent-ink:  #0a0e14;
+  --code:        #06080d;
+  --code-ink:    #86efac;
+  --gutter:      32px;
+  --blog-radius: 6px;
+}
+
+/* ── synth palette (dark + violet) ── */
+.lambda-blog-root[data-palette="synth"] {
+  --bg:          #0d0814;
+  --panel:       #130d1f;
+  --ink:         #e9d5ff;
+  --soft:        #7c5ab8;
+  --rule:        #2e1065;
+  --line:        rgba(255,255,255,0.05);
+  --line-strong: rgba(255,255,255,0.12);
+  --accent:      #9333ea;
+  --accent-ink:  #ffffff;
+  --code:        #07040e;
+  --code-ink:    #c4b5fd;
+  --gutter:      32px;
+  --blog-radius: 6px;
+}
+
+/* Base resets inside blog scope */
+.lambda-blog-root {
+  background-color: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
 /* Status dot pulse animation */
 @keyframes status-dot-pulse {
   0%, 100% { opacity: 1; }

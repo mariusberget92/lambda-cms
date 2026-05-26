@@ -189,6 +189,11 @@ import TableSettings         from './blocks/TableSettings.vue'
 import ButtonSettings        from './blocks/ButtonSettings.vue'
 import IconListSettings      from './blocks/IconListSettings.vue'
 import ColumnsSettings       from './blocks/ColumnsSettings.vue'
+import CoverSettings         from './blocks/CoverSettings.vue'
+import StatCardSettings      from './blocks/StatCardSettings.vue'
+import CategoryChipSettings  from './blocks/CategoryChipSettings.vue'
+import BandSettings          from './blocks/BandSettings.vue'
+import SectionHeaderSettings from './blocks/SectionHeaderSettings.vue'
 
 const props = defineProps({
   blocks:        { type: Array,   default: () => [] },
@@ -244,6 +249,8 @@ const STYLE_BLOCKS = new Set([
   'archive-title',
   // New blocks
   'button', 'icon-list', 'columns',
+  // Design system blocks
+  'cover', 'stat-card', 'category-chip', 'band', 'section-header',
 ])
 
 // Block types where Style should be the default active tab
@@ -274,6 +281,8 @@ const LABELS = {
   tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
   navigation: 'Navigation', table: 'Table',
   button: 'Button', 'icon-list': 'Icon List', columns: 'Columns',
+  cover: 'Cover', 'stat-card': 'Stat Card', 'category-chip': 'Category Chip',
+  band: 'Band', 'section-header': 'Section Header',
 }
 
 const COMPONENT_MAP = {
@@ -306,6 +315,11 @@ const COMPONENT_MAP = {
   button:                ButtonSettings,
   'icon-list':           IconListSettings,
   columns:               ColumnsSettings,
+  cover:                 CoverSettings,
+  'stat-card':           StatCardSettings,
+  'category-chip':       CategoryChipSettings,
+  band:                  BandSettings,
+  'section-header':      SectionHeaderSettings,
 }
 
 const settingsComponent = computed(() =>

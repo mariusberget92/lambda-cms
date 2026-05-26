@@ -63,7 +63,7 @@ class BlogController extends Controller
                 'featured_image_url' => $post->featuredImage?->url,
                 'featured_image_alt' => $post->featuredImage?->alt,
                 'author'             => ['name' => $post->author?->name ?? 'Deleted User', 'avatar_url' => $post->author?->avatar_url],
-                'categories'         => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug, 'color' => $c->color ?? null])->values(),
+                'categories'         => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug, 'color' => $c->color ?? null, 'hue' => $c->hue ?? null])->values(),
                 'tags'               => $post->tags->map(fn ($t) => ['name' => $t->name, 'slug' => $t->slug]),
             ],
             'commentsData' => [
@@ -216,7 +216,7 @@ class BlogController extends Controller
                 'avatar_url' => $post->author?->avatar_url,
             ],
             'categories' => $post->categories
-                ->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug, 'color' => $c->color ?? null])
+                ->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug, 'color' => $c->color ?? null, 'hue' => $c->hue ?? null])
                 ->values(),
             'tags' => $post->tags
                 ->map(fn ($t) => ['name' => $t->name, 'slug' => $t->slug]),
