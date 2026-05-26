@@ -67,6 +67,7 @@ import StatCardBlock          from '@/Components/Blocks/StatCardBlock.vue'
 import CategoryChipBlock      from '@/Components/Blocks/CategoryChipBlock.vue'
 import BandBlock              from '@/Components/Blocks/BandBlock.vue'
 import SectionHeaderBlock     from '@/Components/Blocks/SectionHeaderBlock.vue'
+import MastheadBlock          from '@/Components/Blocks/MastheadBlock.vue'
 
 const props = defineProps({
   blocks:       { type: Array,  default: () => [] },
@@ -263,6 +264,7 @@ const BLOCK_MAP = {
   'category-chip':      CategoryChipBlock,
   band:                 BandBlock,
   'section-header':     SectionHeaderBlock,
+  masthead:             MastheadBlock,
 }
 
 // Injected by LoopItemProvider when this renderer is inside a loop iteration

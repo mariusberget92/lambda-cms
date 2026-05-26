@@ -123,6 +123,7 @@ const ALL_TYPES = [
   { type: 'category-chip',  label: 'Cat. Chip',   icon: Hash,              group: 'Design' },
   { type: 'band',           label: 'Band',        icon: Sparkles,          group: 'Design' },
   { type: 'section-header', label: 'Sec. Header', icon: SeparatorHorizontal, group: 'Design' },
+  { type: 'masthead',       label: 'Masthead',    icon: Heading2,          group: 'Design' },
   // ── Post (hidden from palette — only used inside loop blocks) ───────────
   { type: 'post-title',          label: 'Post Title',  icon: Heading1,      group: 'Post', hiddenFromPalette: true },
   { type: 'post-body',           label: 'Post Body',   icon: AlignLeft,     group: 'Post', hiddenFromPalette: true },
@@ -311,6 +312,17 @@ const DEFAULT_DATA = {
     title: 'Section Title',
     meta: '',
     showRule: false,
+  },
+  masthead: {
+    eyebrow: '// engineering-notes',
+    title: 'Engineering notes from a ||runtime||',
+    subtitle: 'Modern tooling, architecture, and the craft of building at scale.',
+    accentWord: 'v1.0.0',
+    stats: [
+      { value: '0', label: 'articles' },
+      { value: '0', label: 'categories' },
+      { value: '0', label: 'tags' },
+    ],
   },
   table: {
     mode: 'static',

@@ -12,6 +12,10 @@ const paramName = computed(() => props.block.data?.paramName || 'category')
 const slug      = computed(() => loopItem?.value?.slug ?? '')
 const label     = useFieldBinding(() => props.block, 'label')
 
+// Category hue → OKLCH accent for this item
+const hue         = computed(() => loopItem?.value?.hue ?? null)
+const itemAccent  = computed(() => hue.value != null ? `oklch(0.62 0.16 ${hue.value})` : 'var(--accent)')
+
 const filterUrl = computed(() => slug.value ? `/?${paramName.value}=${slug.value}` : '/')
 
 const isActive = computed(() => {
@@ -27,64 +31,35 @@ function navigate(e) {
   e.preventDefault()
   router.get(filterUrl.value, {}, { preserveScroll: true })
 }
-
-const listStyle = computed(() => isActive.value
-  ? { color: '#6366f1', background: '#eef2ff', fontWeight: '600' }
-  : { color: '#4b5563' }
-)
-
-const pillStyle = computed(() => isActive.value
-  ? { padding: '4px 14px', background: '#6366f1', color: 'white', borderRadius: '20px', boxShadow: '0 2px 8px rgba(99,102,241,0.35)' }
-  : { padding: '4px 14px', background: '#eef2ff', color: '#6366f1', borderRadius: '20px' }
-)
-
-function onListEnter(e) {
-  if (isActive.value) return
-  e.currentTarget.style.background = '#f5f3ff'
-  e.currentTarget.style.color = '#6366f1'
-}
-function onListLeave(e) {
-  if (isActive.value) return
-  e.currentTarget.style.background = ''
-  e.currentTarget.style.color = '#4b5563'
-}
-function onPillEnter(e) {
-  if (isActive.value) return
-  e.currentTarget.style.background = '#6366f1'
-  e.currentTarget.style.color = 'white'
-  e.currentTarget.style.boxShadow = '0 2px 8px rgba(99,102,241,0.35)'
-}
-function onPillLeave(e) {
-  if (isActive.value) return
-  e.currentTarget.style.background = '#eef2ff'
-  e.currentTarget.style.color = '#6366f1'
-  e.currentTarget.style.boxShadow = ''
-}
 </script>
 
 <template>
-  <!-- List variant: compact row, full-width -->
+  <!-- List variant -->
   <a
     v-if="variant === 'list'"
     :href="filterUrl"
-    class="flex items-center justify-between w-full px-2.5 py-1.5 rounded-xl text-sm transition-all duration-150"
-    :style="listStyle"
-    @mouseenter="onListEnter"
-    @mouseleave="onListLeave"
+    class="flex items-center justify-between w-full px-2.5 py-1.5 rounded transition-all duration-150 font-sans text-sm"
+    :style="isActive
+      ? { color: itemAccent, background: 'var(--bg)', fontWeight: '600', borderRadius: 'var(--blog-radius, 6px)' }
+      : { color: 'var(--soft)', borderRadius: 'var(--blog-radius, 6px)' }"
+    @mouseenter="e => { if (!isActive) { e.currentTarget.style.color = itemAccent; e.currentTarget.style.background = 'var(--bg)'; } }"
+    @mouseleave="e => { if (!isActive) { e.currentTarget.style.color = 'var(--soft)'; e.currentTarget.style.background = 'transparent'; } }"
     @click="navigate"
   >
     <span>{{ label || slug }}</span>
-    <span class="text-[11px] font-bold" style="color:#c4b5fd;">›</span>
+    <span class="font-mono-blog text-[11px]" :style="{ color: isActive ? itemAccent : 'var(--line-strong)' }">›</span>
   </a>
 
-  <!-- Pill variant: rounded badge -->
+  <!-- Pill variant -->
   <a
     v-else-if="variant === 'pill'"
     :href="filterUrl"
-    class="inline-flex items-center rounded-full text-xs font-semibold transition-all duration-150 cursor-pointer"
-    :style="pillStyle"
-    @mouseenter="onPillEnter"
-    @mouseleave="onPillLeave"
+    class="inline-flex items-center font-mono-blog text-[11px] px-3 py-1 rounded-full transition-all duration-150 cursor-pointer"
+    :style="isActive
+      ? { background: itemAccent, color: 'var(--accent-ink)', border: `1px solid ${itemAccent}` }
+      : { background: 'transparent', color: itemAccent, border: `1px solid ${itemAccent}` }"
+    @mouseenter="e => { if (!isActive) { e.currentTarget.style.background = itemAccent; e.currentTarget.style.color = 'var(--accent-ink)'; } }"
+    @mouseleave="e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = itemAccent; } }"
     @click="navigate"
   >
     {{ label || slug }}
