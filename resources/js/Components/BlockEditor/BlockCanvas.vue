@@ -213,6 +213,11 @@ import PaginationBlock  from '@/Components/Blocks/PaginationBlock.vue'
 import NavigationBlock  from '@/Components/Blocks/NavigationBlock.vue'
 import TableBlock       from '@/Components/Blocks/TableBlock.vue'
 import EditorNavigationBlock from './EditorNavigationBlock.vue'
+import CoverBlock        from '@/Components/Blocks/CoverBlock.vue'
+import StatCardBlock     from '@/Components/Blocks/StatCardBlock.vue'
+import CategoryChipBlock from '@/Components/Blocks/CategoryChipBlock.vue'
+import BandBlock         from '@/Components/Blocks/BandBlock.vue'
+import SectionHeaderBlock from '@/Components/Blocks/SectionHeaderBlock.vue'
 
 const BLOCK_MAP = {
   paragraph: ParagraphBlock,
@@ -229,6 +234,11 @@ const BLOCK_MAP = {
   pagination: PaginationBlock,
   navigation: EditorNavigationBlock,
   table:      TableBlock,
+  cover:          CoverBlock,
+  'stat-card':    StatCardBlock,
+  'category-chip': CategoryChipBlock,
+  band:           BandBlock,
+  'section-header': SectionHeaderBlock,
 }
 
 const LABELS = {
@@ -240,6 +250,8 @@ const LABELS = {
   tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
   navigation: 'Navigation', table: 'Table',
   button: 'Button', 'icon-list': 'Icon List', columns: 'Columns',
+  cover: 'Cover', 'stat-card': 'Stat Card', 'category-chip': 'Category Chip',
+  band: 'Band', 'section-header': 'Section Header',
 }
 
 const props = defineProps({

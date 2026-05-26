@@ -73,6 +73,11 @@ import {
   RectangleHorizontal,
   ListChecks,
   Columns2,
+  Terminal,
+  BarChart3,
+  Hash,
+  Sparkles,
+  SeparatorHorizontal,
 } from '@lucide/vue'
 
 const props = defineProps({
@@ -112,6 +117,12 @@ const ALL_TYPES = [
   { type: 'pagination',  label: 'Pagination',  icon: ChevronRightIcon,  group: 'Interactive' },
   { type: 'table',     label: 'Table',     icon: Table2,            group: 'Interactive' },
   { type: 'html',      label: 'HTML',      icon: FileCode,          group: 'Developer', adminOnly: true },
+  // ── Design (Lambda design system blocks) ─────────────────────────────────
+  { type: 'cover',          label: 'Cover',       icon: Terminal,          group: 'Design' },
+  { type: 'stat-card',      label: 'Stat Card',   icon: BarChart3,         group: 'Design' },
+  { type: 'category-chip',  label: 'Cat. Chip',   icon: Hash,              group: 'Design' },
+  { type: 'band',           label: 'Band',        icon: Sparkles,          group: 'Design' },
+  { type: 'section-header', label: 'Sec. Header', icon: SeparatorHorizontal, group: 'Design' },
   // ── Post (hidden from palette — only used inside loop blocks) ───────────
   { type: 'post-title',          label: 'Post Title',  icon: Heading1,      group: 'Post', hiddenFromPalette: true },
   { type: 'post-body',           label: 'Post Body',   icon: AlignLeft,     group: 'Post', hiddenFromPalette: true },
@@ -132,9 +143,10 @@ const GROUP_COLORS = {
   'Developer':   'text-[var(--chart-4)]',
   'Post':        'text-[var(--chart-5)]',
   'Archive':     'text-[var(--chart-1)]',
+  'Design':      'text-[var(--chart-2)]',
 }
 
-const GROUP_ORDER = ['Content', 'Layout', 'Interactive', 'Developer', 'Post', 'Archive']
+const GROUP_ORDER = ['Content', 'Layout', 'Interactive', 'Developer', 'Post', 'Archive', 'Design']
 
 const visibleGroups = computed(() => {
   const visible = ALL_TYPES.filter(t =>
@@ -267,6 +279,38 @@ const DEFAULT_DATA = {
     nextLabel: 'Next →',
     alignment: 'center',
     buttonStyle: 'outline',
+  },
+  cover: {
+    variant: 'flat',
+    filepath: '~/lambdacms/posts/slug.md',
+    callsign: 'λ.01',
+    glyph: 'essays',
+    issueNo: '№ 01',
+    hue: 220,
+    statusOk: true,
+  },
+  'stat-card': {
+    value: '2.4K',
+    label: 'articles',
+    trend: '↑ +12%',
+    trendTone: 'positive',
+  },
+  'category-chip': {
+    label: 'Category',
+    slug: '',
+    hue: 220,
+    active: false,
+  },
+  band: {
+    label: 'All Topics',
+    limit: 30,
+    showCount: false,
+  },
+  'section-header': {
+    number: '01',
+    title: 'Section Title',
+    meta: '',
+    showRule: false,
   },
   table: {
     mode: 'static',

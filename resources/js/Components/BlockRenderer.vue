@@ -62,6 +62,11 @@ import EmbedBlock             from '@/Components/Blocks/EmbedBlock.vue'
 import ButtonBlock            from '@/Components/Blocks/ButtonBlock.vue'
 import IconListBlock          from '@/Components/Blocks/IconListBlock.vue'
 import PostCardBlock          from '@/Components/Blocks/PostCardBlock.vue'
+import CoverBlock             from '@/Components/Blocks/CoverBlock.vue'
+import StatCardBlock          from '@/Components/Blocks/StatCardBlock.vue'
+import CategoryChipBlock      from '@/Components/Blocks/CategoryChipBlock.vue'
+import BandBlock              from '@/Components/Blocks/BandBlock.vue'
+import SectionHeaderBlock     from '@/Components/Blocks/SectionHeaderBlock.vue'
 
 const props = defineProps({
   blocks:       { type: Array,  default: () => [] },
@@ -253,6 +258,11 @@ const BLOCK_MAP = {
   'icon-list':          IconListBlock,
   columns:              ContainerBlock,
   'post-card':          PostCardBlock,
+  cover:                CoverBlock,
+  'stat-card':          StatCardBlock,
+  'category-chip':      CategoryChipBlock,
+  band:                 BandBlock,
+  'section-header':     SectionHeaderBlock,
 }
 
 // Injected by LoopItemProvider when this renderer is inside a loop iteration

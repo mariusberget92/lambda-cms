@@ -42,6 +42,26 @@
           <ColorPickerPopover v-model="form.color" />
           <p class="text-xs text-muted-foreground">Optional accent color for this category.</p>
         </div>
+
+        <div class="space-y-1.5">
+          <label class="text-sm font-medium">Hue <span class="text-muted-foreground font-normal">(0–360, for OKLCH design system)</span></label>
+          <div class="flex items-center gap-3">
+            <input
+              type="range"
+              min="0" max="360"
+              :value="form.hue ?? 220"
+              class="flex-1 h-2 rounded appearance-none cursor-pointer"
+              @input="form.hue = Number($event.target.value)"
+            />
+            <div
+              class="w-8 h-8 rounded-full border border-border shrink-0"
+              :style="{ background: `oklch(0.62 0.16 ${form.hue ?? 220})` }"
+            />
+            <span class="font-mono text-sm text-muted-foreground w-10 text-right">{{ form.hue ?? 220 }}</span>
+          </div>
+          <p class="text-xs text-muted-foreground">Used by Cover blocks and Category Chips to generate a perceptually-uniform accent color.</p>
+          <p v-if="form.errors.hue" class="text-xs text-destructive">{{ form.errors.hue }}</p>
+        </div>
       </div>
 
       <div class="flex gap-3 mt-4 justify-end">
@@ -78,6 +98,7 @@ const form = useForm({
   name:        props.category?.name        ?? "",
   description: props.category?.description ?? "",
   color:       props.category?.color       ?? null,
+  hue:         props.category?.hue         ?? 220,
 });
 
 function submit() {
