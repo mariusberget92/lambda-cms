@@ -29,15 +29,7 @@ const issueNo = computed(() => {
 })
 
 const statusOk = computed(() => props.block.data?.statusOk !== false)
-
-// Accent from category hue (OKLCH)
-const catHue = computed(() => {
-  const h = post.value?.categories?.[0]?.hue ?? props.block.data?.hue ?? 220
-  return h
-})
-const accentColor = computed(() => `oklch(0.62 0.16 ${catHue.value})`)
-
-const variant = computed(() => props.block.data?.variant || 'flat')
+const variant  = computed(() => props.block.data?.variant || 'flat')
 
 // Stripe pattern for 'stripe' variant
 const stripeStyle = computed(() => {
@@ -52,9 +44,6 @@ const stripeStyle = computed(() => {
     )`,
   }
 })
-
-// Frame extra border for 'frame' variant
-const frameClass = computed(() => variant.value === 'frame' ? 'ring-inset' : '')
 </script>
 
 <template>
@@ -63,14 +52,14 @@ const frameClass = computed(() => variant.value === 'frame' ? 'ring-inset' : '')
     :style="{
       background: 'var(--code)',
       borderRadius: 'var(--blog-radius, 6px)',
+      ...(variant === 'frame' ? { outline: '2px solid var(--accent)', outlineOffset: '-4px' } : {}),
       ...stripeStyle,
-      ...(variant === 'frame' ? { outline: `2px solid ${accentColor}`, outlineOffset: '-4px' } : {}),
     }"
   >
     <!-- Top bar: filepath + callsign -->
     <div class="flex items-center justify-between px-4 pt-3 pb-2" style="border-bottom:1px solid rgba(255,255,255,0.06);">
       <span class="font-mono-blog text-[11px] truncate" style="color:var(--code-ink); opacity:0.5;">{{ filepath }}</span>
-      <span class="font-mono-blog text-[11px] shrink-0 ml-4" :style="{ color: accentColor }">{{ callsign }}</span>
+      <span class="font-mono-blog text-[11px] shrink-0 ml-4" style="color:var(--code-ink); opacity:0.55;">{{ callsign }}</span>
     </div>
 
     <!-- Main body -->
@@ -84,18 +73,19 @@ const frameClass = computed(() => variant.value === 'frame' ? 'ring-inset' : '')
         :style="{
           fontFamily: '\'Space Grotesk\', sans-serif',
           fontSize: 'clamp(2rem, 6vw, 3.5rem)',
-          color: accentColor,
+          color: 'var(--code-ink)',
+          opacity: '0.8',
           letterSpacing: '-0.04em',
         }"
       >{{ glyph }}</div>
 
-      <!-- Accent rule -->
-      <div class="mt-2 h-px w-12" :style="{ background: accentColor, opacity: '0.4' }" />
+      <!-- Accent rule — single accent color -->
+      <div class="mt-2 h-px w-12" style="background:var(--accent); opacity:0.6;" />
     </div>
 
     <!-- Status footer -->
     <div v-if="statusOk" class="flex items-center gap-2 px-4 py-2" style="border-top:1px solid rgba(255,255,255,0.06);">
-      <span class="w-1.5 h-1.5 rounded-full inline-block" :style="{ background: accentColor }"></span>
+      <span class="w-1.5 h-1.5 rounded-full inline-block" style="background:var(--accent); opacity:0.8;"></span>
       <span class="font-mono-blog text-[10px]" style="color:var(--code-ink); opacity:0.4;">build · ok</span>
     </div>
   </div>

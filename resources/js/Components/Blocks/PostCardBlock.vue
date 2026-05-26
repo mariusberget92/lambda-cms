@@ -6,16 +6,12 @@ defineProps({ block: { type: Object, required: true } })
 const loopItem = inject('loopItem', null)
 const post     = computed(() => loopItem?.value ?? null)
 
-// Category accent via OKLCH from hue field
-const primaryCat  = computed(() => post.value?.categories?.[0] ?? null)
-const catHue      = computed(() => primaryCat.value?.hue ?? 220)
-const accentColor = computed(() => `oklch(0.62 0.16 ${catHue.value})`)
-
 // Derived cover fields
-const filepath = computed(() => post.value?.slug ? `~/lambdacms/posts/${post.value.slug}.md` : '~/lambdacms/posts/untitled.md')
-const callsign = computed(() => post.value?.id ? `λ.${post.value.id}` : 'λ.—')
-const glyph    = computed(() => primaryCat.value?.name?.toLowerCase() || 'posts')
-const issueNo  = computed(() => post.value?.id ? `№ ${post.value.id}` : '№ —')
+const primaryCat = computed(() => post.value?.categories?.[0] ?? null)
+const filepath   = computed(() => post.value?.slug ? `~/lambdacms/posts/${post.value.slug}.md` : '~/lambdacms/posts/untitled.md')
+const callsign   = computed(() => post.value?.id ? `λ.${post.value.id}` : 'λ.—')
+const glyph      = computed(() => primaryCat.value?.name?.toLowerCase() || 'posts')
+const issueNo    = computed(() => post.value?.id ? `№ ${post.value.id}` : '№ —')
 
 const readingTime = computed(() => {
   const text  = post.value?.excerpt || post.value?.body || ''
@@ -34,7 +30,7 @@ const readingTime = computed(() => {
       borderRadius: 'var(--blog-radius, 6px)',
       overflow: 'hidden',
     }"
-    @mouseenter="$event.currentTarget.style.borderColor = accentColor"
+    @mouseenter="$event.currentTarget.style.borderColor = 'var(--accent)'"
     @mouseleave="$event.currentTarget.style.borderColor = 'var(--line-strong)'"
   >
     <!-- Terminal cover -->
@@ -42,7 +38,7 @@ const readingTime = computed(() => {
       <!-- Filepath + callsign -->
       <div class="flex items-center justify-between px-4 pt-3 pb-2" style="border-bottom:1px solid rgba(255,255,255,0.06);">
         <span class="font-mono-blog text-[10px] truncate" style="color:var(--code-ink); opacity:0.45;">{{ filepath }}</span>
-        <span class="font-mono-blog text-[10px] shrink-0 ml-3" :style="{ color: accentColor }">{{ callsign }}</span>
+        <span class="font-mono-blog text-[10px] shrink-0 ml-3" style="color:var(--code-ink); opacity:0.55;">{{ callsign }}</span>
       </div>
 
       <!-- Glyph body -->
@@ -53,7 +49,8 @@ const readingTime = computed(() => {
           :style="{
             fontFamily: '\'Space Grotesk\', sans-serif',
             fontSize: 'clamp(1.4rem, 3.5vw, 2rem)',
-            color: accentColor,
+            color: 'var(--code-ink)',
+            opacity: '0.75',
             letterSpacing: '-0.04em',
           }"
         >{{ glyph }}</div>
@@ -61,7 +58,7 @@ const readingTime = computed(() => {
 
       <!-- Status bar -->
       <div class="absolute bottom-0 left-0 right-0 flex items-center gap-2 px-4 py-1.5" style="border-top:1px solid rgba(255,255,255,0.06);">
-        <span class="w-1.5 h-1.5 rounded-full inline-block" :style="{ background: accentColor }"></span>
+        <span class="w-1.5 h-1.5 rounded-full inline-block" style="background:var(--accent); opacity:0.8;"></span>
         <span class="font-mono-blog text-[9px]" style="color:var(--code-ink); opacity:0.35;">build · ok</span>
       </div>
     </a>
@@ -74,9 +71,9 @@ const readingTime = computed(() => {
         <a
           :href="`/blog/category/${primaryCat.slug}`"
           class="font-mono-blog text-[10px] px-2.5 py-1 rounded-full inline-flex transition-all duration-150"
-          :style="{ border: `1px solid ${accentColor}`, color: accentColor }"
-          @mouseenter="e => { e.currentTarget.style.background = accentColor; e.currentTarget.style.color = 'var(--accent-ink)'; }"
-          @mouseleave="e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = accentColor; }"
+          style="border:1px solid var(--line-strong); color:var(--soft);"
+          @mouseenter="e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; }"
+          @mouseleave="e => { e.currentTarget.style.borderColor = 'var(--line-strong)'; e.currentTarget.style.color = 'var(--soft)'; }"
         >{{ primaryCat.name }}</a>
       </div>
 
@@ -86,7 +83,7 @@ const readingTime = computed(() => {
           :href="post.url"
           class="transition-colors duration-150"
           style="color:var(--ink); font-size:clamp(1rem, 2vw, 1.15rem);"
-          @mouseenter="e => e.currentTarget.style.color = accentColor"
+          @mouseenter="e => e.currentTarget.style.color = 'var(--accent)'"
           @mouseleave="e => e.currentTarget.style.color = 'var(--ink)'"
         >{{ post.title }}</a>
       </h2>
