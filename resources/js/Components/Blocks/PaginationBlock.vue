@@ -10,38 +10,26 @@
     }"
     aria-label="Pagination"
   >
-    <!-- Prev -->
     <button
-      :class="[btnBase, currentPage <= 1 ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer']"
-      :style="currentPage <= 1 ? inactiveStyle : hoverReadyStyle"
+      :class="['pg-btn', currentPage <= 1 ? 'pg-btn--disabled' : '']"
       :disabled="currentPage <= 1"
-      @mouseenter="e => currentPage > 1 && applyHover(e)"
-      @mouseleave="e => currentPage > 1 && removeHover(e)"
       @click="go(currentPage - 1)"
     >{{ prevLabel }}</button>
 
-    <!-- Numbered pages -->
     <template v-if="style === 'numbered'">
       <template v-for="p in visiblePages" :key="p">
-        <span v-if="p === '...'" class="px-1 text-sm select-none" style="color:#94a3b8;">…</span>
+        <span v-if="p === '...'" class="px-1 text-sm select-none pg-ellipsis">…</span>
         <button
           v-else
-          :class="[btnBase, 'cursor-pointer']"
-          :style="p === currentPage ? activeStyle : hoverReadyStyle"
-          @mouseenter="e => p !== currentPage && applyHover(e)"
-          @mouseleave="e => p !== currentPage && removeHover(e)"
+          :class="['pg-btn', p === currentPage ? 'pg-btn--active' : '']"
           @click="go(p)"
         >{{ p }}</button>
       </template>
     </template>
 
-    <!-- Next -->
     <button
-      :class="[btnBase, currentPage >= lastPage ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer']"
-      :style="currentPage >= lastPage ? inactiveStyle : hoverReadyStyle"
+      :class="['pg-btn', currentPage >= lastPage ? 'pg-btn--disabled' : '']"
       :disabled="currentPage >= lastPage"
-      @mouseenter="e => currentPage < lastPage && applyHover(e)"
-      @mouseleave="e => currentPage < lastPage && removeHover(e)"
       @click="go(currentPage + 1)"
     >{{ nextLabel }}</button>
   </nav>
@@ -59,7 +47,6 @@ const { getPagination } = useLoopPagination()
 const pageParam   = computed(() => props.block.data?.pageParam ?? 'page')
 const style       = computed(() => props.block.data?.style ?? 'prev-next')
 const alignment   = computed(() => props.block.data?.alignment ?? 'center')
-const buttonStyle = computed(() => props.block.data?.buttonStyle ?? 'outline')
 const prevLabel   = computed(() => props.block.data?.prevLabel ?? '← Previous')
 const nextLabel   = computed(() => props.block.data?.nextLabel ?? 'Next →')
 
@@ -99,17 +86,36 @@ const visiblePages = computed(() => {
   }
   return result
 })
-
-const btnBase = 'px-3 py-1.5 rounded-xl text-sm font-medium transition-all min-w-[2.25rem] text-center'
-
-const activeStyle    = 'background:#6366f1; color:white; box-shadow:0 2px 8px rgba(99,102,241,0.35);'
-const inactiveStyle  = 'background:white; color:#94a3b8; border:1.5px solid #e2e8f0;'
-const hoverReadyStyle = 'background:white; color:#374151; border:1.5px solid #e2e8f0;'
-
-function applyHover(e) {
-  e.currentTarget.style.cssText = 'background:#eef2ff; color:#6366f1; border:1.5px solid #c7d2fe;'
-}
-function removeHover(e) {
-  e.currentTarget.style.cssText = hoverReadyStyle
-}
 </script>
+
+<style scoped>
+.pg-btn {
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--blog-radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  min-width: 2.25rem;
+  text-align: center;
+  transition: all 150ms;
+  cursor: pointer;
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+}
+.pg-btn:hover:not(:disabled) {
+  background: var(--bg);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.pg-btn--active {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+.pg-btn--active:hover { opacity: 0.88; }
+.pg-btn--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.pg-ellipsis { color: var(--soft); }
+</style>
