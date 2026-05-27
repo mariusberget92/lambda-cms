@@ -1,26 +1,9 @@
 <script setup>
-import { inject, ref, computed, onMounted } from 'vue'
+import { inject, ref } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 
 const post         = inject('postContext', null)
 const commentsData = inject('commentsData', null)
-
-const AURORA = ['#6366f1','#0ea5e9','#22c55e','#f59e0b','#f97316','#ef4444','#a855f7']
-
-function catColor(cat) {
-  if (cat?.color) return cat.color
-  if (!cat?.name) return AURORA[0]
-  return AURORA[[...cat.name].reduce((s, c) => s + c.charCodeAt(0), 0) % AURORA.length]
-}
-
-function hexToRgba(hex, alpha) {
-  const r = parseInt(hex.slice(1,3), 16)
-  const g = parseInt(hex.slice(3,5), 16)
-  const b = parseInt(hex.slice(5,7), 16)
-  return `rgba(${r},${g},${b},${alpha})`
-}
-
-const accentColor = computed(() => post?.categories?.[0] ? catColor(post.categories[0]) : AURORA[0])
 
 const commentList    = ref([])
 const hasMore        = ref(false)
@@ -29,6 +12,7 @@ const loadingMore    = ref(false)
 const loadError      = ref(false)
 const initialLoading = ref(true)
 
+import { onMounted } from 'vue'
 onMounted(async () => {
   if (!post?.slug) { initialLoading.value = false; return }
   try {
@@ -62,13 +46,7 @@ async function loadMore() {
   }
 }
 
-const form = useForm({
-  author_name:  '',
-  author_email: '',
-  body:         '',
-  website:      '',
-})
-
+const form = useForm({ author_name: '', author_email: '', body: '', website: '' })
 const submitSuccess = ref(false)
 const submitError   = ref('')
 
@@ -84,24 +62,20 @@ function submitComment() {
 </script>
 
 <template>
-  <section
-    v-if="post"
-    class="rounded-2xl p-6 sm:p-8 bg-white"
-    style="box-shadow:0 2px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.03);"
-  >
-    <p class="text-[10px] font-bold uppercase tracking-[0.14em] mb-1" style="color:#94a3b8;">Discussion</p>
-    <h2 class="font-editorial text-2xl font-bold text-foreground mb-8">
+  <section v-if="post" class="comments-section">
+    <p class="font-mono-blog text-[10px] uppercase tracking-widest mb-1 comments-soft">Discussion</p>
+    <h2 class="font-display font-bold mb-8 comments-heading" style="font-family:'Space Grotesk',sans-serif; font-size:1.5rem; letter-spacing:-0.02em;">
       {{ commentsData?.total ? commentsData.total + ' Comment' + (commentsData.total !== 1 ? 's' : '') : 'Comments' }}
     </h2>
 
     <!-- Loading skeleton -->
     <div v-if="initialLoading" class="space-y-6 mb-10">
       <div v-for="i in 3" :key="i" class="flex gap-4">
-        <div class="w-9 h-9 rounded-full bg-muted/40 animate-pulse shrink-0" />
+        <div class="w-9 h-9 rounded-full comments-skel shrink-0" />
         <div class="flex-1 space-y-2">
-          <div class="h-4 w-32 rounded bg-muted/40 animate-pulse" />
-          <div class="h-3 w-full rounded bg-muted/40 animate-pulse" />
-          <div class="h-3 w-4/5 rounded bg-muted/40 animate-pulse" />
+          <div class="h-4 w-32 rounded comments-skel" />
+          <div class="h-3 w-full rounded comments-skel" />
+          <div class="h-3 w-4/5 rounded comments-skel" />
         </div>
       </div>
     </div>
@@ -109,130 +83,148 @@ function submitComment() {
     <!-- Comment list -->
     <div v-else-if="commentList.length" class="space-y-6 mb-10">
       <div v-for="comment in commentList" :key="comment.id" class="flex gap-4">
-        <div
-          class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0 overflow-hidden"
-          :style="{ backgroundColor: accentColor }"
-        >
-          <img
-            v-if="comment.avatar_url"
-            :src="comment.avatar_url"
-            :alt="comment.author_name"
-            class="w-full h-full object-cover"
-          />
+        <div class="comment-avatar w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 overflow-hidden">
+          <img v-if="comment.avatar_url" :src="comment.avatar_url" :alt="comment.author_name" class="w-full h-full object-cover" />
           <span v-else>{{ comment.author_name?.charAt(0)?.toUpperCase() }}</span>
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-baseline gap-2 mb-1.5">
-            <span class="text-sm font-bold text-foreground">{{ comment.author_name }}</span>
-            <span class="text-xs" style="color:#94a3b8;">{{ comment.created_at }}</span>
+            <span class="text-sm font-semibold comments-ink">{{ comment.author_name }}</span>
+            <span class="font-mono-blog text-[11px] comments-soft">{{ comment.created_at }}</span>
           </div>
-          <p class="text-sm leading-relaxed whitespace-pre-line" style="color:#475569;">{{ comment.body }}</p>
+          <p class="text-sm leading-relaxed whitespace-pre-line comments-body">{{ comment.body }}</p>
         </div>
       </div>
     </div>
-    <p v-else-if="!initialLoading" class="text-sm mb-8" style="color:#94a3b8;">
-      No comments yet. Be the first!
-    </p>
+    <p v-else-if="!initialLoading" class="text-sm mb-8 comments-soft">No comments yet. Be the first!</p>
 
     <!-- Load more -->
     <div v-if="hasMore || loadError" class="mb-10 text-center">
       <p v-if="loadError" class="text-sm text-destructive mb-2">Failed to load comments.</p>
-      <button
-        type="button"
-        :disabled="loadingMore"
-        class="text-sm font-semibold transition-colors disabled:opacity-40"
-        :style="{ color: accentColor }"
-        @click="loadMore"
-      >{{ loadingMore ? 'Loading…' : (loadError ? 'Retry' : 'Load more comments') }}</button>
+      <button type="button" :disabled="loadingMore" class="comments-load-more text-sm font-semibold transition-colors disabled:opacity-40" @click="loadMore">
+        {{ loadingMore ? 'Loading…' : (loadError ? 'Retry' : 'Load more comments') }}
+      </button>
     </div>
     <div v-else class="mb-10" />
 
     <!-- Comment form -->
-    <div
-      v-if="commentsData?.enabled !== false"
-      class="rounded-2xl p-5 sm:p-6"
-      style="background:#f8f9ff; border:1.5px solid #e8eaff;"
-    >
-      <p class="text-[10px] font-bold uppercase tracking-[0.14em] mb-1" style="color:#94a3b8;">Leave a reply</p>
-      <h3 class="font-editorial text-lg font-bold text-foreground mb-5">Share your thoughts</h3>
+    <div v-if="commentsData?.enabled !== false" class="comments-form-wrap">
+      <p class="font-mono-blog text-[10px] uppercase tracking-widest mb-1 comments-soft">Leave a reply</p>
+      <h3 class="font-display font-semibold mb-5 comments-ink" style="font-family:'Space Grotesk',sans-serif; font-size:1.125rem;">Share your thoughts</h3>
 
-      <div v-if="submitSuccess" class="mb-5 rounded-xl px-4 py-3 text-sm font-medium" style="background:rgba(34,197,94,0.12); border:1.5px solid rgba(34,197,94,0.3); color:#16a34a;">
-        Your comment has been submitted and is awaiting moderation. Thank you!
-      </div>
-      <div v-if="submitError" class="mb-5 rounded-xl px-4 py-3 text-sm font-medium" style="background:rgba(239,68,68,0.10); border:1.5px solid rgba(239,68,68,0.25); color:#ef4444;">
-        {{ submitError }}
-      </div>
+      <div v-if="submitSuccess" class="mb-5 rounded px-4 py-3 text-sm font-medium comments-success">Your comment has been submitted and is awaiting moderation. Thank you!</div>
+      <div v-if="submitError"   class="mb-5 rounded px-4 py-3 text-sm font-medium comments-error">{{ submitError }}</div>
 
       <form @submit.prevent="submitComment" class="space-y-5">
         <input v-model="form.website" type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color:#64748b;">
-              Name <span class="text-destructive">*</span>
-            </label>
+            <label class="font-mono-blog text-[10px] uppercase tracking-widest block mb-2 comments-soft">Name <span class="text-destructive">*</span></label>
             <input
               v-model="form.author_name"
               type="text"
-              class="w-full rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none transition-all bg-white"
-              :style="form.errors.author_name ? 'border:1.5px solid #ef4444;' : 'border:1.5px solid #e2e8f0;'"
+              class="comment-field w-full px-3 py-2.5 text-sm focus:outline-none transition-all"
+              :class="{ 'comment-field--error': form.errors.author_name }"
               placeholder="Your name"
               required
-              @focus="e => { if (!form.errors.author_name) e.target.style.borderColor='#6366f1'; e.target.style.boxShadow='0 0 0 3px rgba(99,102,241,0.15)'; }"
-              @blur="e => { e.target.style.borderColor=form.errors.author_name?'#ef4444':'#e2e8f0'; e.target.style.boxShadow='none'; }"
             />
             <p v-if="form.errors.author_name" class="mt-1.5 text-xs text-destructive">{{ form.errors.author_name }}</p>
           </div>
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color:#64748b;">
-              Email <span class="text-xs font-normal normal-case tracking-normal" style="color:#94a3b8;">(optional)</span>
-            </label>
+            <label class="font-mono-blog text-[10px] uppercase tracking-widest block mb-2 comments-soft">Email <span class="font-normal normal-case tracking-normal comments-soft text-xs">(optional)</span></label>
             <input
               v-model="form.author_email"
               type="email"
-              class="w-full rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none transition-all bg-white"
-              :style="form.errors.author_email ? 'border:1.5px solid #ef4444;' : 'border:1.5px solid #e2e8f0;'"
+              class="comment-field w-full px-3 py-2.5 text-sm focus:outline-none transition-all"
+              :class="{ 'comment-field--error': form.errors.author_email }"
               placeholder="you@example.com"
-              @focus="e => { if (!form.errors.author_email) e.target.style.borderColor='#6366f1'; e.target.style.boxShadow='0 0 0 3px rgba(99,102,241,0.15)'; }"
-              @blur="e => { e.target.style.borderColor=form.errors.author_email?'#ef4444':'#e2e8f0'; e.target.style.boxShadow='none'; }"
             />
             <p v-if="form.errors.author_email" class="mt-1.5 text-xs text-destructive">{{ form.errors.author_email }}</p>
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wide mb-2" style="color:#64748b;">
-            Comment <span class="text-destructive">*</span>
-          </label>
+          <label class="font-mono-blog text-[10px] uppercase tracking-widest block mb-2 comments-soft">Comment <span class="text-destructive">*</span></label>
           <textarea
             v-model="form.body"
             rows="4"
-            class="w-full rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none transition-all resize-y bg-white"
-            :style="form.errors.body ? 'border:1.5px solid #ef4444;' : 'border:1.5px solid #e2e8f0;'"
+            class="comment-field w-full px-3 py-2.5 text-sm focus:outline-none transition-all resize-y"
+            :class="{ 'comment-field--error': form.errors.body }"
             placeholder="Share your thoughts…"
             required
-            @focus="e => { if (!form.errors.body) e.target.style.borderColor='#6366f1'; e.target.style.boxShadow='0 0 0 3px rgba(99,102,241,0.15)'; }"
-            @blur="e => { e.target.style.borderColor=form.errors.body?'#ef4444':'#e2e8f0'; e.target.style.boxShadow='none'; }"
           />
           <p v-if="form.errors.body" class="mt-1.5 text-xs text-destructive">{{ form.errors.body }}</p>
         </div>
 
         <div class="flex items-center justify-between gap-4 pt-1">
-          <p class="text-xs" style="color:#94a3b8;">Comments are moderated before appearing.</p>
-          <button
-            type="submit"
-            :disabled="form.processing"
-            class="shrink-0 text-white px-6 py-2.5 text-sm font-bold rounded-xl transition-all duration-200 disabled:opacity-60"
-            style="background:#6366f1; box-shadow:0 2px 8px rgba(99,102,241,0.35);"
-            @mouseenter="e => { e.currentTarget.style.background='#4f46e5'; e.currentTarget.style.boxShadow='0 4px 12px rgba(99,102,241,0.45)'; }"
-            @mouseleave="e => { e.currentTarget.style.background='#6366f1'; e.currentTarget.style.boxShadow='0 2px 8px rgba(99,102,241,0.35)'; }"
-          >{{ form.processing ? 'Submitting…' : 'Post comment' }}</button>
+          <p class="text-xs comments-soft">Comments are moderated before appearing.</p>
+          <button type="submit" :disabled="form.processing" class="comment-submit shrink-0 px-6 py-2.5 text-sm font-semibold rounded transition-all duration-150 disabled:opacity-60">
+            {{ form.processing ? 'Submitting…' : 'Post comment' }}
+          </button>
         </div>
       </form>
     </div>
-
-    <div v-else class="rounded-2xl px-6 py-5 text-sm text-center" style="border:1.5px solid #e8eaff; color:#94a3b8;">
-      Comments are closed for this post.
-    </div>
+    <div v-else class="rounded px-6 py-5 text-sm text-center comments-closed">Comments are closed for this post.</div>
   </section>
 </template>
+
+<style scoped>
+.comments-section {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--blog-radius);
+  padding: 1.5rem 2rem;
+}
+.comments-soft    { color: var(--soft); }
+.comments-ink     { color: var(--ink); }
+.comments-body    { color: var(--ink); opacity: 0.8; }
+.comments-heading { color: var(--ink); }
+.comments-skel    { background: var(--line-strong); }
+.comments-load-more { color: var(--accent); }
+.comments-load-more:hover { opacity: 0.75; }
+
+.comment-avatar {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.comment-field {
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--blog-radius);
+}
+.comment-field:focus { border-color: var(--accent); }
+.comment-field--error { border-color: var(--destructive, #ef4444); }
+
+.comments-form-wrap {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--blog-radius);
+  padding: 1.25rem 1.5rem;
+}
+
+.comments-success {
+  background: rgba(0,0,0,0.04);
+  border: 1px solid var(--line-strong);
+  color: var(--ink);
+}
+.comments-error {
+  background: rgba(239,68,68,0.06);
+  border: 1px solid rgba(239,68,68,0.25);
+  color: #ef4444;
+}
+
+.comment-submit {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: 1px solid var(--accent);
+}
+.comment-submit:hover:not(:disabled) { opacity: 0.88; }
+
+.comments-closed {
+  border: 1px solid var(--line);
+  color: var(--soft);
+}
+</style>

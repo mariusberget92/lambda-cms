@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Head, Link, usePage } from '@inertiajs/vue3'
-import { LayoutDashboard, PenSquare, LogOut, Menu, X, Search, Command } from '@lucide/vue'
+import { LayoutDashboard, PenSquare, LogOut, Menu, X, Search } from '@lucide/vue'
 import axios from 'axios'
 
 defineOptions({ layout: null })
@@ -13,21 +13,14 @@ const navItems  = computed(() => page.props.navItems ?? [])
 const csrfToken = computed(() => document.querySelector('meta[name="csrf-token"]')?.content ?? '')
 const year      = new Date().getFullYear()
 
-const mobileOpen   = ref(false)
-const searchOpen   = ref(false)
-const searchQuery  = ref('')
-const searchResult = ref([])
+const mobileOpen    = ref(false)
+const searchOpen    = ref(false)
+const searchQuery   = ref('')
+const searchResult  = ref([])
 const searchLoading = ref(false)
 
-// Theme palette — stored in localStorage
-const palette = ref('system')
-const PALETTES = ['system', 'terminal', 'synth']
-
-// Blog frontend always renders in light mode (admin dark mode handled via .dark class)
 onMounted(() => {
   document.documentElement.classList.remove('dark')
-  const saved = localStorage.getItem('lambda-blog-palette')
-  if (PALETTES.includes(saved)) palette.value = saved
   document.addEventListener('keydown', onKeyDown)
 })
 onBeforeUnmount(() => {
@@ -36,12 +29,6 @@ onBeforeUnmount(() => {
   document.removeEventListener('keydown', onKeyDown)
 })
 
-function setPalette(p) {
-  palette.value = p
-  localStorage.setItem('lambda-blog-palette', p)
-}
-
-// ⌘K / Ctrl+K search shortcut
 function onKeyDown(e) {
   if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
     e.preventDefault()
@@ -51,9 +38,7 @@ function onKeyDown(e) {
       searchResult.value = []
     }
   }
-  if (e.key === 'Escape') {
-    searchOpen.value = false
-  }
+  if (e.key === 'Escape') searchOpen.value = false
 }
 
 let searchTimer = null
@@ -94,7 +79,7 @@ function closeSearch() {
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
   </Head>
 
-  <div class="lambda-blog-root" :data-palette="palette">
+  <div class="lambda-blog-root">
 
     <!-- Admin bar -->
     <div v-if="authUser" data-theme="dark" class="bg-sidebar text-sidebar-foreground border-b border-sidebar-border shrink-0 relative z-50">
@@ -126,50 +111,16 @@ function closeSearch() {
       </div>
     </div>
 
-    <!-- BuildStrip — site-level status chrome -->
-    <div class="build-strip" style="background:var(--code); border-bottom:1px solid var(--line-strong);">
-      <div class="max-w-[1320px] mx-auto px-8 h-7 flex items-center justify-between gap-4">
-        <div class="flex items-center gap-3">
-          <span class="font-mono-blog text-[10px] tracking-widest uppercase" style="color:var(--code-ink); opacity:0.5;">λ cms</span>
-          <span style="color:var(--line-strong);">·</span>
-          <span class="font-mono-blog text-[10px]" style="color:var(--code-ink); opacity:0.4;">v1.0.0</span>
-        </div>
-        <div class="flex items-center gap-3">
-          <!-- Theme switcher -->
-          <div class="flex items-center gap-1">
-            <button
-              v-for="p in PALETTES"
-              :key="p"
-              class="font-mono-blog text-[9px] uppercase tracking-widest px-1.5 py-0.5 rounded transition-all"
-              :style="palette === p
-                ? 'color:var(--accent-ink); background:var(--accent);'
-                : 'color:var(--code-ink); opacity:0.4;'"
-              @click="setPalette(p)"
-            >{{ p }}</button>
-          </div>
-          <span style="color:var(--line-strong);">·</span>
-          <!-- Live status dot -->
-          <div class="flex items-center gap-1.5">
-            <span class="status-dot w-1.5 h-1.5 rounded-full inline-block" style="background:var(--accent);"></span>
-            <span class="font-mono-blog text-[10px]" style="color:var(--code-ink); opacity:0.5;">live</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- NavBar — sticky -->
-    <header class="sticky top-0 z-40" style="background:var(--panel); border-bottom:1px solid var(--line-strong);">
+    <header class="blog-navbar sticky top-0 z-40">
       <div class="max-w-[1320px] mx-auto px-8 h-14 flex items-center justify-between gap-8">
 
         <!-- Brand mark -->
-        <Link href="/" class="flex items-center gap-2.5 shrink-0 group">
-          <div class="w-8 h-8 rounded flex items-center justify-center transition-colors"
-               style="border:1px solid var(--line-strong);"
-               @mouseenter="$event.currentTarget.style.borderColor='var(--accent)'"
-               @mouseleave="$event.currentTarget.style.borderColor='var(--line-strong)'">
-            <span class="font-mono-blog text-sm font-medium" style="color:var(--ink);">λ</span>
+        <Link href="/" class="blog-brand flex items-center gap-2.5 shrink-0">
+          <div class="blog-brand__mark w-8 h-8 rounded flex items-center justify-center">
+            <span class="font-mono-blog text-sm font-medium">λ</span>
           </div>
-          <span class="font-display font-600 text-sm tracking-tight" style="color:var(--ink); font-family:'Space Grotesk', sans-serif; font-weight:600; letter-spacing:-0.025em;">
+          <span class="font-display font-semibold text-sm" style="font-family:'Space Grotesk', sans-serif; letter-spacing:-0.025em;">
             {{ appName }}
           </span>
         </Link>
@@ -180,37 +131,25 @@ function closeSearch() {
             v-for="item in navItems"
             :key="item.url"
             :href="item.url"
-            class="text-sm font-medium transition-colors duration-150"
-            style="color:var(--soft); font-family:'Inter', sans-serif;"
-            @mouseenter="$event.currentTarget.style.color='var(--ink)'"
-            @mouseleave="$event.currentTarget.style.color='var(--soft)'"
+            class="blog-nav-link text-sm font-medium transition-colors duration-150"
           >{{ item.label }}</Link>
         </nav>
 
         <!-- Search pill + mobile hamburger -->
         <div class="flex items-center gap-3 ml-auto">
-          <!-- Search pill (⌘K) -->
           <button
-            class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded transition-colors duration-150"
-            style="border:1px solid var(--line-strong); color:var(--soft);"
-            @mouseenter="$event.currentTarget.style.borderColor='var(--accent)'; $event.currentTarget.style.color='var(--ink)'"
-            @mouseleave="$event.currentTarget.style.borderColor='var(--line-strong)'; $event.currentTarget.style.color='var(--soft)'"
+            class="blog-search-pill hidden sm:flex items-center gap-2 px-3 py-1.5 rounded transition-colors duration-150"
             @click="searchOpen = true"
-            aria-label="Search"
+            aria-label="Search (Ctrl+K)"
           >
             <Search class="w-3.5 h-3.5" />
             <span class="font-mono-blog text-xs">Search</span>
-            <span
-              class="font-mono-blog text-[10px] px-1 py-0.5 rounded"
-              style="border:1px solid var(--line-strong); color:var(--soft);"
-            >⌘K</span>
+            <span class="font-mono-blog text-[10px] px-1 py-0.5 rounded blog-kbd">⌘K</span>
           </button>
 
-          <!-- Mobile hamburger -->
           <button
             v-if="navItems.length"
-            class="md:hidden p-2 -mr-1 rounded-md transition-colors"
-            style="color:var(--soft);"
+            class="blog-icon-btn md:hidden p-2 -mr-1 rounded-md transition-colors"
             :aria-label="mobileOpen ? 'Close menu' : 'Open menu'"
             @click="mobileOpen = !mobileOpen"
           >
@@ -221,13 +160,12 @@ function closeSearch() {
       </div>
 
       <!-- Mobile nav -->
-      <div v-if="mobileOpen && navItems.length" class="md:hidden px-8 pb-4 pt-2 space-y-1" style="border-top:1px solid var(--line-strong);">
+      <div v-if="mobileOpen && navItems.length" class="md:hidden px-8 pb-4 pt-2 space-y-1 blog-mobile-nav">
         <Link
           v-for="item in navItems"
           :key="item.url"
           :href="item.url"
-          class="block py-2 px-2 rounded text-sm font-medium transition-colors"
-          style="color:var(--soft);"
+          class="blog-nav-link block py-2 px-2 rounded text-sm font-medium transition-colors"
           @click="mobileOpen = false"
         >{{ item.label }}</Link>
       </div>
@@ -239,37 +177,33 @@ function closeSearch() {
     </main>
 
     <!-- Footer -->
-    <footer style="background:var(--panel); border-top:1px solid var(--line-strong); margin-top:5rem;">
+    <footer class="blog-footer" style="margin-top:5rem;">
       <div class="max-w-[1320px] mx-auto px-8 py-10">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
-          <!-- Brand column -->
           <div class="col-span-2 md:col-span-1">
             <div class="flex items-center gap-2 mb-3">
-              <div class="w-7 h-7 rounded flex items-center justify-center" style="border:1px solid var(--line-strong);">
-                <span class="font-mono-blog text-xs" style="color:var(--ink);">λ</span>
+              <div class="blog-brand__mark w-7 h-7 rounded flex items-center justify-center">
+                <span class="font-mono-blog text-xs">λ</span>
               </div>
-              <span class="font-display text-sm font-semibold" style="color:var(--ink); font-family:'Space Grotesk', sans-serif;">{{ appName }}</span>
+              <span class="font-display text-sm font-semibold" style="font-family:'Space Grotesk', sans-serif;">{{ appName }}</span>
             </div>
-            <p class="text-xs leading-relaxed" style="color:var(--soft);">Engineering notes from a content runtime.</p>
+            <p class="text-xs leading-relaxed blog-soft">A content runtime.</p>
           </div>
-          <!-- Links columns -->
           <div>
-            <p class="font-mono-blog text-[10px] uppercase tracking-widest mb-3" style="color:var(--soft);">Content</p>
+            <p class="font-mono-blog text-[10px] uppercase tracking-widest mb-3 blog-soft">Content</p>
             <div class="space-y-2">
-              <a href="/" class="block text-sm transition-colors" style="color:var(--soft);" @mouseenter="$event.currentTarget.style.color='var(--ink)'" @mouseleave="$event.currentTarget.style.color='var(--soft)'">Home</a>
-              <a href="/feed" class="block text-sm transition-colors" style="color:var(--soft);" @mouseenter="$event.currentTarget.style.color='var(--ink)'" @mouseleave="$event.currentTarget.style.color='var(--soft)'">RSS Feed</a>
-              <a href="/sitemap.xml" class="block text-sm transition-colors" style="color:var(--soft);" @mouseenter="$event.currentTarget.style.color='var(--ink)'" @mouseleave="$event.currentTarget.style.color='var(--soft)'">Sitemap</a>
+              <a href="/" class="blog-footer-link block text-sm transition-colors">Home</a>
+              <a href="/feed" class="blog-footer-link block text-sm transition-colors">RSS Feed</a>
+              <a href="/sitemap.xml" class="blog-footer-link block text-sm transition-colors">Sitemap</a>
             </div>
           </div>
         </div>
-
-        <!-- Bottom row -->
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6" style="border-top:1px solid var(--line);">
-          <span class="font-mono-blog text-xs" style="color:var(--soft);">© {{ year }} {{ appName }}</span>
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 blog-footer-bottom">
+          <span class="font-mono-blog text-xs blog-soft">© {{ year }} {{ appName }}</span>
           <div class="flex items-center gap-4">
-            <a href="/feed" class="font-mono-blog text-xs transition-colors" style="color:var(--soft);" @mouseenter="$event.currentTarget.style.color='var(--accent)'" @mouseleave="$event.currentTarget.style.color='var(--soft)'">RSS</a>
-            <span style="color:var(--line-strong);">·</span>
-            <a href="/sitemap.xml" class="font-mono-blog text-xs transition-colors" style="color:var(--soft);" @mouseenter="$event.currentTarget.style.color='var(--accent)'" @mouseleave="$event.currentTarget.style.color='var(--soft)'">Sitemap</a>
+            <a href="/feed" class="blog-footer-link font-mono-blog text-xs transition-colors">RSS</a>
+            <span class="blog-rule-char">·</span>
+            <a href="/sitemap.xml" class="blog-footer-link font-mono-blog text-xs transition-colors">Sitemap</a>
           </div>
         </div>
       </div>
@@ -279,62 +213,45 @@ function closeSearch() {
     <Transition name="search-fade">
       <div
         v-if="searchOpen"
-        class="fixed inset-0 z-[100] flex flex-col items-center pt-[12vh] px-4"
-        style="background:rgba(0,0,0,0.55); backdrop-filter:blur(4px);"
+        class="fixed inset-0 z-[100] flex flex-col items-center pt-[12vh] px-4 blog-search-backdrop"
         @click.self="closeSearch"
       >
-        <div class="w-full max-w-xl" style="border-radius:var(--blog-radius); background:var(--panel); border:1px solid var(--line-strong); overflow:hidden;">
-          <!-- Search input -->
-          <div class="flex items-center gap-3 px-4 py-3" style="border-bottom:1px solid var(--line);">
-            <Search class="w-4 h-4 shrink-0" style="color:var(--soft);" />
+        <div class="w-full max-w-xl blog-search-panel">
+          <div class="flex items-center gap-3 px-4 py-3 blog-search-input-row">
+            <Search class="w-4 h-4 shrink-0 blog-soft" />
             <input
-              ref="searchInputRef"
               type="text"
               placeholder="Search posts…"
-              class="flex-1 bg-transparent outline-none text-sm"
-              style="color:var(--ink);"
+              class="flex-1 bg-transparent outline-none text-sm blog-ink"
               :value="searchQuery"
               @input="onSearchInput($event.target.value)"
               autofocus
             />
-            <kbd class="font-mono-blog text-[10px] px-1.5 py-0.5 rounded" style="border:1px solid var(--line-strong); color:var(--soft);">Esc</kbd>
+            <kbd class="font-mono-blog text-[10px] px-1.5 py-0.5 rounded blog-kbd">Esc</kbd>
           </div>
-
-          <!-- Results -->
           <div class="max-h-80 overflow-y-auto">
-            <!-- Loading -->
             <div v-if="searchLoading" class="px-4 py-6 text-center">
-              <span class="font-mono-blog text-xs" style="color:var(--soft);">searching…</span>
+              <span class="font-mono-blog text-xs blog-soft">searching…</span>
             </div>
-
-            <!-- No query -->
             <div v-else-if="!searchQuery.trim()" class="px-4 py-6 text-center">
-              <span class="font-mono-blog text-xs" style="color:var(--soft);">Type to search posts</span>
+              <span class="font-mono-blog text-xs blog-soft">Type to search posts</span>
             </div>
-
-            <!-- No results -->
             <div v-else-if="!searchResult.length" class="px-4 py-6 text-center">
-              <span class="font-mono-blog text-xs" style="color:var(--soft);">No results for "{{ searchQuery }}"</span>
+              <span class="font-mono-blog text-xs blog-soft">No results for "{{ searchQuery }}"</span>
             </div>
-
-            <!-- Result list -->
             <a
-              v-for="(item, idx) in searchResult"
+              v-for="item in searchResult"
               :key="item.slug"
               :href="item.url"
-              class="flex items-start gap-3 px-4 py-3 transition-colors duration-100"
-              style="border-bottom:1px solid var(--line);"
-              :style="{ background: 'transparent' }"
-              @mouseenter="$event.currentTarget.style.background='var(--bg)'"
-              @mouseleave="$event.currentTarget.style.background='transparent'"
+              class="blog-search-result flex items-start gap-3 px-4 py-3 transition-colors duration-100"
               @click="closeSearch"
             >
-              <span class="font-mono-blog text-[10px] shrink-0 mt-0.5 tabular-nums" style="color:var(--soft);">{{ String(item.id).padStart(2, '0') }}</span>
+              <span class="font-mono-blog text-[10px] shrink-0 mt-0.5 tabular-nums blog-soft">{{ String(item.id).padStart(2, '0') }}</span>
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium truncate" style="color:var(--ink); font-family:'Space Grotesk', sans-serif;">{{ item.title }}</p>
-                <p v-if="item.category_name" class="font-mono-blog text-[10px] mt-0.5" style="color:var(--soft);">{{ item.category_name }}</p>
+                <p class="text-sm font-medium truncate blog-ink" style="font-family:'Space Grotesk', sans-serif;">{{ item.title }}</p>
+                <p v-if="item.category_name" class="font-mono-blog text-[10px] mt-0.5 blog-soft">{{ item.category_name }}</p>
               </div>
-              <span class="font-mono-blog text-[10px] shrink-0" style="color:var(--soft);">{{ item.published_at_formatted }}</span>
+              <span class="font-mono-blog text-[10px] shrink-0 blog-soft">{{ item.published_at_formatted }}</span>
             </a>
           </div>
         </div>
@@ -345,6 +262,71 @@ function closeSearch() {
 </template>
 
 <style scoped>
+/* All blog layout styles reference CSS custom properties from .lambda-blog-root */
+
+.blog-navbar {
+  background: var(--panel);
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.blog-brand__mark {
+  border: 1px solid var(--line-strong);
+  color: var(--ink);
+  transition: border-color 150ms;
+}
+.blog-brand:hover .blog-brand__mark {
+  border-color: var(--accent);
+}
+
+.blog-nav-link {
+  color: var(--soft);
+  font-family: 'Inter', sans-serif;
+}
+.blog-nav-link:hover { color: var(--ink); }
+
+.blog-search-pill {
+  border: 1px solid var(--line-strong);
+  color: var(--soft);
+}
+.blog-search-pill:hover {
+  border-color: var(--accent);
+  color: var(--ink);
+}
+
+.blog-icon-btn { color: var(--soft); }
+.blog-icon-btn:hover { color: var(--ink); }
+
+.blog-kbd {
+  border: 1px solid var(--line-strong);
+  color: var(--soft);
+}
+
+.blog-mobile-nav { border-top: 1px solid var(--line-strong); }
+
+.blog-footer {
+  background: var(--panel);
+  border-top: 1px solid var(--line-strong);
+}
+.blog-footer-bottom { border-top: 1px solid var(--line); }
+.blog-footer-link   { color: var(--soft); }
+.blog-footer-link:hover { color: var(--ink); }
+.blog-soft      { color: var(--soft); }
+.blog-ink       { color: var(--ink); }
+.blog-rule-char { color: var(--line-strong); }
+
+.blog-search-backdrop { background: rgba(0,0,0,0.45); backdrop-filter: blur(4px); }
+
+.blog-search-panel {
+  border-radius: var(--blog-radius);
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  overflow: hidden;
+}
+.blog-search-input-row { border-bottom: 1px solid var(--line); }
+
+.blog-search-result { border-bottom: 1px solid var(--line); }
+.blog-search-result:hover { background: var(--bg); }
+
 .search-fade-enter-active { transition: opacity 140ms ease; }
 .search-fade-leave-active { transition: opacity 100ms ease; }
 .search-fade-enter-from,

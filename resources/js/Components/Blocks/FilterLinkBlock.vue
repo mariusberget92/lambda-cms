@@ -30,34 +30,54 @@ function navigate(e) {
 </script>
 
 <template>
-  <!-- List variant -->
   <a
     v-if="variant === 'list'"
     :href="filterUrl"
-    class="flex items-center justify-between w-full px-2.5 py-1.5 rounded transition-all duration-150 font-sans text-sm"
-    :style="isActive
-      ? { color: 'var(--accent)', background: 'var(--bg)', fontWeight: '600', borderRadius: 'var(--blog-radius, 6px)' }
-      : { color: 'var(--soft)', borderRadius: 'var(--blog-radius, 6px)' }"
-    @mouseenter="e => { if (!isActive) { e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'var(--bg)'; } }"
-    @mouseleave="e => { if (!isActive) { e.currentTarget.style.color = 'var(--soft)'; e.currentTarget.style.background = 'transparent'; } }"
+    class="filter-list-link flex items-center justify-between w-full px-2.5 py-1.5 rounded transition-all duration-150 font-sans text-sm"
+    :class="{ 'filter-list-link--active': isActive }"
     @click="navigate"
   >
     <span>{{ label || slug }}</span>
-    <span class="font-mono-blog text-[11px]" :style="{ color: isActive ? 'var(--accent)' : 'var(--line-strong)' }">›</span>
+    <span class="font-mono-blog text-[11px] filter-list-link__arrow">›</span>
   </a>
 
-  <!-- Pill variant -->
   <a
     v-else-if="variant === 'pill'"
     :href="filterUrl"
-    class="inline-flex items-center font-mono-blog text-[11px] px-3 py-1 rounded-full transition-all duration-150 cursor-pointer"
-    :style="isActive
-      ? { background: 'var(--accent)', color: 'var(--accent-ink)', border: '1px solid var(--accent)' }
-      : { background: 'transparent', color: 'var(--soft)', border: '1px solid var(--line-strong)' }"
-    @mouseenter="e => { if (!isActive) { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; } }"
-    @mouseleave="e => { if (!isActive) { e.currentTarget.style.borderColor = 'var(--line-strong)'; e.currentTarget.style.color = 'var(--soft)'; } }"
+    class="filter-pill inline-flex items-center font-mono-blog text-[11px] px-3 py-1 rounded-full transition-all duration-150 cursor-pointer"
+    :class="{ 'filter-pill--active': isActive }"
     @click="navigate"
   >
     {{ label || slug }}
   </a>
 </template>
+
+<style scoped>
+.filter-list-link {
+  color: var(--soft);
+  border-radius: var(--blog-radius);
+}
+.filter-list-link:hover,
+.filter-list-link--active {
+  color: var(--accent);
+  background: var(--bg);
+  font-weight: 600;
+}
+.filter-list-link__arrow { color: var(--line-strong); }
+.filter-list-link:hover .filter-list-link__arrow,
+.filter-list-link--active .filter-list-link__arrow {
+  color: var(--accent);
+}
+
+.filter-pill {
+  color: var(--soft);
+  border: 1px solid var(--line-strong);
+  background: transparent;
+}
+.filter-pill:hover,
+.filter-pill--active {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+</style>
