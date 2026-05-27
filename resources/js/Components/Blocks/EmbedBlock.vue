@@ -1,9 +1,8 @@
-<!-- resources/js/components/Blocks/EmbedBlock.vue -->
 <template>
-  <figure class="my-4" :style="block.data.maxWidth ? { maxWidth: block.data.maxWidth + 'px', margin: '1rem auto' } : {}">
+  <figure class="embed-block" :style="block.data.maxWidth ? { maxWidth: block.data.maxWidth + 'px', margin: '1rem auto' } : {}">
     <div
       v-if="block.data.url"
-      class="relative overflow-hidden rounded-lg border border-border"
+      class="embed-block__frame"
       :style="{ aspectRatio: block.data.aspectRatio || '16/9' }"
     >
       <iframe
@@ -17,16 +16,37 @@
     </div>
     <div
       v-else
-      class="flex items-center justify-center rounded-lg border-2 border-dashed border-border text-sm text-muted-foreground"
+      class="embed-block__empty"
       :style="{ aspectRatio: block.data.aspectRatio || '16/9' }"
     >
       No embed URL set
     </div>
-    <figcaption v-if="block.data.caption" class="mt-2 text-center text-sm text-muted-foreground">
+    <figcaption v-if="block.data.caption" class="embed-block__caption">
       {{ block.data.caption }}
     </figcaption>
   </figure>
 </template>
+
 <script setup>
 defineProps({ block: { type: Object, required: true } })
 </script>
+
+<style scoped>
+.embed-block { margin: 1rem 0; }
+.embed-block__frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--blog-radius);
+  border: 1px solid var(--line-strong);
+}
+.embed-block__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--blog-radius);
+  border: 2px dashed var(--line-strong);
+  font-size: 0.875rem;
+  color: var(--soft);
+}
+.embed-block__caption { margin-top: 0.5rem; text-align: center; font-size: 0.875rem; color: var(--soft); }
+</style>

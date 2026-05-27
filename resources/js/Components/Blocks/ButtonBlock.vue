@@ -1,10 +1,10 @@
-<!-- resources/js/Components/Blocks/ButtonBlock.vue -->
 <template>
   <div :style="wrapperStyle">
     <component
       :is="resolvedUrl ? 'a' : 'span'"
       v-bind="resolvedUrl ? { href: resolvedUrl, target: block.data.target || '_self', rel: block.data.rel || undefined } : {}"
-      :class="buttonClass"
+      class="btn-block"
+      :class="[`btn-block--${variant}`, `btn-block--${size}`, fullWidth ? 'btn-block--full' : '']"
       :style="buttonStyle"
     >
       <Icon
@@ -56,25 +56,9 @@ const iconStyle = computed(() => {
   return s
 })
 
-const sizeClasses = { sm: 'px-3 py-1.5 text-xs', md: 'px-5 py-2 text-sm', lg: 'px-7 py-3 text-base' }
-
-const buttonClass = computed(() => {
-  const base = [
-    'inline-flex items-center justify-center gap-2 font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-    sizeClasses[size.value] ?? sizeClasses.md,
-    fullWidth.value ? 'w-full' : '',
-  ]
-  if (!bgColor.value) {
-    if (variant.value === 'filled') base.push('bg-primary text-primary-foreground hover:bg-[var(--primary-hover)]')
-    else if (variant.value === 'outline') base.push('border border-primary text-primary hover:bg-primary/10')
-    else base.push('text-primary hover:bg-primary/10')
-  }
-  return base
-})
-
 const buttonStyle = computed(() => {
   const s = {}
-  if (radius.value)  s.borderRadius = radius.value
+  if (radius.value)    s.borderRadius = radius.value
   if (bgColor.value) {
     if (variant.value === 'filled') {
       s.backgroundColor = bgColor.value
@@ -92,3 +76,35 @@ const wrapperStyle = computed(() => {
   return { display: 'flex', justifyContent: map[alignment.value] ?? 'flex-start' }
 })
 </script>
+
+<style scoped>
+.btn-block {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  transition: opacity 150ms, background 150ms, border-color 150ms, color 150ms;
+  cursor: pointer;
+  text-decoration: none;
+  border-radius: var(--blog-radius);
+}
+.btn-block--full { width: 100%; }
+
+/* Sizes */
+.btn-block--sm { padding: 0.375rem 0.75rem; font-size: 0.75rem; }
+.btn-block--md { padding: 0.5rem 1.25rem; font-size: 0.875rem; }
+.btn-block--lg { padding: 0.75rem 1.75rem; font-size: 1rem; }
+
+/* Filled */
+.btn-block--filled { background: var(--accent); color: var(--accent-ink); border: 1px solid transparent; }
+.btn-block--filled:hover { opacity: 0.85; }
+
+/* Outline */
+.btn-block--outline { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+.btn-block--outline:hover { background: var(--accent); color: var(--accent-ink); }
+
+/* Ghost */
+.btn-block--ghost { background: transparent; color: var(--ink); border: 1px solid transparent; }
+.btn-block--ghost:hover { background: var(--bg); }
+</style>
