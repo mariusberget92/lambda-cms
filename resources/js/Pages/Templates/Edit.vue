@@ -24,6 +24,8 @@ const TYPE_LABELS = {
   'archive':        'Archive',
   'search-results': 'Search Results',
   'partial':        'Partial',
+  'header':         'Header',
+  'footer':         'Footer',
 }
 
 const typeLabel = TYPE_LABELS[props.template.type] ?? props.template.type
@@ -40,7 +42,8 @@ const form = useForm({
 })
 
 const isSinglePost      = computed(() => props.template.type === 'single-post')
-const defaultLoopSource = computed(() => isSinglePost.value ? null : form.loop_source)
+const hasNoLoopSource   = computed(() => ['single-post', 'header', 'footer'].includes(props.template.type))
+const defaultLoopSource = computed(() => hasNoLoopSource.value ? null : form.loop_source)
 
 function submit() {
   form.blocks = filterEmptyBlocks(form.blocks)
@@ -144,7 +147,7 @@ async function confirmRestore() {
         :title="form.title"
         :type-label="typeLabel"
         :loop-source="form.loop_source"
-        :show-loop-source="!isSinglePost"
+        :show-loop-source="!hasNoLoopSource"
         :status="form.status"
         :meta-title="form.meta_title"
         :meta-description="form.meta_description"
@@ -171,7 +174,7 @@ async function confirmRestore() {
       :model-value="form.blocks"
       :is-admin="authUser?.role === 'administrator'"
       :context-fields="isSinglePost ? POST_CONTEXT_FIELDS : []"
-      :default-loop-source="defaultLoopSource"
+      :default-loop-source="hasNoLoopSource ? null : defaultLoopSource"
       @update:model-value="form.blocks = $event"
     />
 
