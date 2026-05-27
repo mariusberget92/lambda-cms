@@ -286,7 +286,7 @@ const LABELS = {
   button: 'Button', 'icon-list': 'Icon List', columns: 'Columns',
   cover: 'Cover', 'stat-card': 'Stat Card', 'category-chip': 'Category Chip',
   band: 'Band', 'section-header': 'Section Header', masthead: 'Masthead',
-  'nav-header': 'Nav Header', 'site-footer': 'Site Footer',
+  'nav-header': 'Nav Header', 'site-footer': 'Site Footer', 'active-filter': 'Active Filter',
 }
 
 const COMPONENT_MAP = {
@@ -327,6 +327,7 @@ const COMPONENT_MAP = {
   masthead:              MastheadSettings,
   'nav-header':          NavHeaderSettings,
   'site-footer':         SiteFooterSettings,
+  'active-filter':       null,
 }
 
 const settingsComponent = computed(() =>
