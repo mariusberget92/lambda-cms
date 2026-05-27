@@ -277,17 +277,9 @@ class TemplateSeeder extends Seeder
     {
         return [
             $this->section(300, ['paddingY' => ['default' => 10], 'paddingX' => ['default' => 0], 'fullWidth' => true, 'minHeight' => 'auto'], [
-                // Search banner — design token card
-                $this->block(304, 'container', [
-                    'mode'      => 'flex',
-                    'direction' => 'column',
-                    'gap'       => '1rem',
-                    'padding'   => 0,
-                    'maxWidth'  => 'full',
-                ], [
-                    $this->block(311, 'heading', ['level' => 1, 'text' => 'Search']),
-                    $this->block(302, 'search', ['placeholder' => 'Search posts…', 'buttonLabel' => 'Search', 'scope' => 'posts']),
-                ], [], 'sidebar-card', ''),
+                $this->block(311, 'heading', ['level' => 1, 'text' => 'Search']),
+                // SearchBlock with its own card — heading hidden since H1 above provides the title
+                $this->block(302, 'search', ['placeholder' => 'Search posts…', 'buttonLabel' => 'Search', 'scope' => 'posts', 'showHeading' => false]),
                 $this->block(303, 'loop', [
                     'source'  => 'posts',
                     'filters' => [['field' => 'title', 'op' => 'contains', 'urlParam' => 'q', 'value' => '']],

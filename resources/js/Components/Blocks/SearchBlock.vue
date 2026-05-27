@@ -7,7 +7,7 @@ const currentQ = typeof window !== 'undefined'
 
 <template>
   <div class="search-block">
-    <h3 class="font-bold leading-tight mb-3 search-block__heading">Search</h3>
+    <h3 v-if="block.data?.showHeading !== false" class="font-bold leading-tight mb-3 search-block__heading">Search</h3>
     <form method="GET" action="/search" class="relative">
       <input
         type="text"
