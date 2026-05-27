@@ -2,7 +2,7 @@
 <template>
   <nav
     v-if="lastPage > 1"
-    class="my-6 flex flex-wrap items-center gap-2"
+    class="my-6 flex flex-wrap items-center gap-2 w-full"
     :class="{
       'justify-start':  alignment === 'left',
       'justify-center': alignment === 'center',
