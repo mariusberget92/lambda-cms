@@ -172,7 +172,7 @@ function submitComment() {
 <style scoped>
 .comments-section {
   background: var(--panel);
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: var(--blog-radius);
   padding: 1.5rem 2rem;
 }

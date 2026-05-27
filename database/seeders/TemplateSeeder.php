@@ -186,15 +186,20 @@ class TemplateSeeder extends Seeder
     private function singlePostBlocks(): array
     {
         return [
-            $this->section(100, ['paddingY' => ['default' => 10], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => '2xl', 'minHeight' => 'auto'], [
-                $this->block(101, 'post-featured-image', ['aspectRatio' => '16/9', 'maxWidth' => '100%']),
-                $this->block(102, 'post-title',    ['tag' => 'h1']),
-                $this->block(103, 'post-meta',     ['showDate' => true, 'showAuthor' => true, 'showReadTime' => true]),
-                $this->block(104, 'post-taxonomy', ['showCategories' => true, 'showTags' => true]),
-                $this->block(105, 'divider',       []),
-                $this->block(106, 'post-body',     []),
-                $this->block(107, 'divider',       []),
-                $this->block(108, 'post-comments', []),
+            // Hero image — full-bleed, no padding, cinematic 21:9 with gradient fade
+            $this->section(110, ['paddingY' => ['default' => 0], 'paddingX' => ['default' => 0], 'fullWidth' => true, 'minHeight' => 'auto'], [
+                $this->block(111, 'post-featured-image', ['variant' => 'hero', 'aspectRatio' => '21/9', 'maxWidth' => '100%']),
+            ]),
+
+            // Content — constrained readable width
+            $this->section(112, ['paddingY' => ['default' => 10], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => '2xl', 'minHeight' => 'auto'], [
+                $this->block(113, 'post-title',    ['tag' => 'h1']),
+                $this->block(114, 'post-meta',     ['showDate' => true, 'showAuthor' => true, 'showReadTime' => true]),
+                $this->block(115, 'post-taxonomy', ['showCategories' => true, 'showTags' => true]),
+                $this->block(116, 'divider',       []),
+                $this->block(117, 'post-body',     []),
+                $this->block(118, 'divider',       []),
+                $this->block(119, 'post-comments', []),
             ]),
         ];
     }
