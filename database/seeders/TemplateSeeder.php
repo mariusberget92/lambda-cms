@@ -193,12 +193,22 @@ class TemplateSeeder extends Seeder
 
             // Content — constrained readable width
             $this->section(112, ['paddingY' => ['default' => 10], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => '2xl', 'minHeight' => 'auto'], [
-                $this->block(113, 'post-title',    ['tag' => 'h1']),
-                $this->block(114, 'post-meta',     ['showDate' => true, 'showAuthor' => true, 'showReadTime' => true]),
-                $this->block(115, 'post-taxonomy', ['showCategories' => true, 'showTags' => true]),
-                $this->block(116, 'divider',       []),
-                $this->block(117, 'post-body',     []),
-                $this->block(118, 'divider',       []),
+                $this->block(113, 'post-title', ['tag' => 'h1']),
+
+                // Unified white card: Written by + Topics + body with token-based dividers
+                $this->block(120, 'container', [
+                    'mode'      => 'flex',
+                    'direction' => 'column',
+                    'gap'       => '0',
+                    'padding'   => 0,
+                    'maxWidth'  => 'full',
+                ], [
+                    $this->block(114, 'post-meta',     ['showDate' => true, 'showAuthor' => true, 'showReadTime' => true]),
+                    $this->block(115, 'post-taxonomy', ['showCategories' => true, 'showTags' => true]),
+                    $this->block(117, 'post-body',     []),
+                ], [], 'post-content-card', ''),
+
+                $this->block(118, 'divider', []),
                 $this->block(119, 'post-comments', []),
             ]),
         ];
