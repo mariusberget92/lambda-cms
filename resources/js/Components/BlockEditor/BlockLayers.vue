@@ -195,6 +195,8 @@ import CategoryChipSettings  from './blocks/CategoryChipSettings.vue'
 import BandSettings          from './blocks/BandSettings.vue'
 import SectionHeaderSettings from './blocks/SectionHeaderSettings.vue'
 import MastheadSettings      from './blocks/MastheadSettings.vue'
+import NavHeaderSettings     from './blocks/NavHeaderSettings.vue'
+import SiteFooterSettings    from './blocks/SiteFooterSettings.vue'
 
 const props = defineProps({
   blocks:        { type: Array,   default: () => [] },
@@ -284,6 +286,7 @@ const LABELS = {
   button: 'Button', 'icon-list': 'Icon List', columns: 'Columns',
   cover: 'Cover', 'stat-card': 'Stat Card', 'category-chip': 'Category Chip',
   band: 'Band', 'section-header': 'Section Header', masthead: 'Masthead',
+  'nav-header': 'Nav Header', 'site-footer': 'Site Footer',
 }
 
 const COMPONENT_MAP = {
@@ -322,6 +325,8 @@ const COMPONENT_MAP = {
   band:                  BandSettings,
   'section-header':      SectionHeaderSettings,
   masthead:              MastheadSettings,
+  'nav-header':          NavHeaderSettings,
+  'site-footer':         SiteFooterSettings,
 }
 
 const settingsComponent = computed(() =>
