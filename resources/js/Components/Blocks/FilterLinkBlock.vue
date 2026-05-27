@@ -37,7 +37,7 @@ function navigate(e) {
     :class="{ 'filter-list-link--active': isActive }"
     @click="navigate"
   >
-    <span>{{ label || slug }}</span>
+    <span class="flex items-center gap-1.5"><span class="filter-list-link__dot">·</span>{{ label || slug }}</span>
     <span class="font-mono-blog text-[11px] filter-list-link__arrow">›</span>
   </a>
 
@@ -63,9 +63,14 @@ function navigate(e) {
   background: var(--bg);
   font-weight: 600;
 }
+.filter-list-link__dot   { color: var(--line-strong); }
 .filter-list-link__arrow { color: var(--line-strong); }
 .filter-list-link:hover .filter-list-link__arrow,
 .filter-list-link--active .filter-list-link__arrow {
+  color: var(--accent);
+}
+.filter-list-link:hover .filter-list-link__dot,
+.filter-list-link--active .filter-list-link__dot {
   color: var(--accent);
 }
 

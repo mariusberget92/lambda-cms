@@ -117,6 +117,7 @@ class TemplateSeeder extends Seeder
                     $this->block(20, 'container', [
                         'mode'      => 'flex',
                         'direction' => 'column',
+                        'align'     => 'stretch',
                         'gap'       => '1.25rem',
                         'padding'   => 0,
                         'maxWidth'  => 'full',
@@ -132,7 +133,7 @@ class TemplateSeeder extends Seeder
                         $this->block(36, 'container', [
                             'mode'      => 'flex',
                             'direction' => 'column',
-                            'gap'       => '0.5rem',
+                            'gap'       => '0.25rem',
                             'padding'   => 0,
                             'maxWidth'  => 'full',
                         ], [
@@ -150,7 +151,7 @@ class TemplateSeeder extends Seeder
                                     [], ['label' => 'loop:name']
                                 ),
                             ]),
-                        ], [], '', 'background:white;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06),0 1px 4px rgba(0,0,0,0.03)'),
+                        ], [], 'sidebar-card', ''),
 
                         // Tags card
                         $this->block(37, 'container', [
@@ -175,7 +176,7 @@ class TemplateSeeder extends Seeder
                                     [], ['label' => 'loop:name']
                                 ),
                             ]),
-                        ], [], '', 'background:white;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.06),0 1px 4px rgba(0,0,0,0.03)'),
+                        ], [], 'sidebar-card', ''),
                     ], [], '', 'flex:1;min-width:0'),
                 ]),
             ]),
