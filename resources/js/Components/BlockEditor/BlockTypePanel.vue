@@ -127,8 +127,9 @@ const ALL_TYPES = [
   { type: 'section-header', label: 'Sec. Header', icon: SeparatorHorizontal, group: 'Design' },
   { type: 'masthead',       label: 'Masthead',    icon: Heading2,          group: 'Design' },
   // ── Global (header / footer templates) ───────────────────────────────────
-  { type: 'nav-header',  label: 'Nav Header',  icon: PanelTop,    group: 'Global' },
-  { type: 'site-footer', label: 'Site Footer', icon: PanelBottom, group: 'Global' },
+  { type: 'nav-header',    label: 'Nav Header',    icon: PanelTop,    group: 'Global' },
+  { type: 'site-footer',  label: 'Site Footer',  icon: PanelBottom, group: 'Global' },
+  { type: 'active-filter', label: 'Active Filter', icon: Filter,     group: 'Interactive' },
   // ── Post (hidden from palette — only used inside loop blocks) ───────────
   { type: 'post-title',          label: 'Post Title',  icon: Heading1,      group: 'Post', hiddenFromPalette: true },
   { type: 'post-body',           label: 'Post Body',   icon: AlignLeft,     group: 'Post', hiddenFromPalette: true },
@@ -323,6 +324,9 @@ const DEFAULT_DATA = {
     logoText:   '',
     showSearch: true,
     sticky:     true,
+  },
+  'active-filter': {
+    defaultTitle: 'Latest Posts',
   },
   'site-footer': {
     tagline:   '',
