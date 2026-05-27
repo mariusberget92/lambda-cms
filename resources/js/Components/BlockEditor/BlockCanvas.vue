@@ -219,6 +219,8 @@ import CategoryChipBlock from '@/Components/Blocks/CategoryChipBlock.vue'
 import BandBlock         from '@/Components/Blocks/BandBlock.vue'
 import SectionHeaderBlock from '@/Components/Blocks/SectionHeaderBlock.vue'
 import MastheadBlock     from '@/Components/Blocks/MastheadBlock.vue'
+import NavHeaderBlock    from '@/Components/Blocks/NavHeaderBlock.vue'
+import SiteFooterBlock   from '@/Components/Blocks/SiteFooterBlock.vue'
 
 const BLOCK_MAP = {
   paragraph: ParagraphBlock,
@@ -240,7 +242,9 @@ const BLOCK_MAP = {
   'category-chip': CategoryChipBlock,
   band:           BandBlock,
   'section-header': SectionHeaderBlock,
-  masthead:       MastheadBlock,
+  masthead:        MastheadBlock,
+  'nav-header':    NavHeaderBlock,
+  'site-footer':   SiteFooterBlock,
 }
 
 const LABELS = {
@@ -254,6 +258,7 @@ const LABELS = {
   button: 'Button', 'icon-list': 'Icon List', columns: 'Columns',
   cover: 'Cover', 'stat-card': 'Stat Card', 'category-chip': 'Category Chip',
   band: 'Band', 'section-header': 'Section Header', masthead: 'Masthead',
+  'nav-header': 'Nav Header', 'site-footer': 'Site Footer',
 }
 
 const props = defineProps({

@@ -78,6 +78,8 @@ import {
   Hash,
   Sparkles,
   SeparatorHorizontal,
+  PanelTop,
+  PanelBottom,
 } from '@lucide/vue'
 
 const props = defineProps({
@@ -124,6 +126,9 @@ const ALL_TYPES = [
   { type: 'band',           label: 'Band',        icon: Sparkles,          group: 'Design' },
   { type: 'section-header', label: 'Sec. Header', icon: SeparatorHorizontal, group: 'Design' },
   { type: 'masthead',       label: 'Masthead',    icon: Heading2,          group: 'Design' },
+  // ── Global (header / footer templates) ───────────────────────────────────
+  { type: 'nav-header',  label: 'Nav Header',  icon: PanelTop,    group: 'Global' },
+  { type: 'site-footer', label: 'Site Footer', icon: PanelBottom, group: 'Global' },
   // ── Post (hidden from palette — only used inside loop blocks) ───────────
   { type: 'post-title',          label: 'Post Title',  icon: Heading1,      group: 'Post', hiddenFromPalette: true },
   { type: 'post-body',           label: 'Post Body',   icon: AlignLeft,     group: 'Post', hiddenFromPalette: true },
@@ -145,9 +150,10 @@ const GROUP_COLORS = {
   'Post':        'text-[var(--chart-5)]',
   'Archive':     'text-[var(--chart-1)]',
   'Design':      'text-[var(--chart-2)]',
+  'Global':      'text-[var(--chart-3)]',
 }
 
-const GROUP_ORDER = ['Content', 'Layout', 'Interactive', 'Developer', 'Post', 'Archive', 'Design']
+const GROUP_ORDER = ['Content', 'Layout', 'Interactive', 'Developer', 'Post', 'Archive', 'Design', 'Global']
 
 const visibleGroups = computed(() => {
   const visible = ALL_TYPES.filter(t =>
@@ -312,6 +318,19 @@ const DEFAULT_DATA = {
     title: 'Section Title',
     meta: '',
     showRule: false,
+  },
+  'nav-header': {
+    logoText:   '',
+    showSearch: true,
+    sticky:     true,
+  },
+  'site-footer': {
+    tagline:   '',
+    copyright: '',
+    showRss:   true,
+    columns:   [
+      { heading: 'Content', links: [{ label: 'Home', url: '/' }, { label: 'RSS Feed', url: '/feed' }] },
+    ],
   },
   masthead: {
     eyebrow: '// engineering-notes',

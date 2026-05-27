@@ -45,6 +45,8 @@ class HandleInertiaRequests extends Middleware
             'sharedTemplates' => fn () => Template::published()
                 ->get(['id', 'title', 'type', 'blocks'])
                 ->toArray(),
+            'headerBlocks' => fn () => Template::activeFor('header')?->blocks ?? [],
+            'footerBlocks' => fn () => Template::activeFor('footer')?->blocks ?? [],
             'navItems' => fn () => NavItem::with('page:id,slug')
                 ->orderBy('sort_order')
                 ->get()
