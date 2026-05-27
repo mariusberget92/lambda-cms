@@ -17,9 +17,11 @@ const TYPE_LABELS = {
   'archive':        'Archive',
   'search-results': 'Search Results',
   'partial':        'Partial',
+  'header':         'Header',
+  'footer':         'Footer',
 }
 
-const ALL_TYPES = ['blog-index', 'single-post', 'archive', 'search-results', 'partial']
+const ALL_TYPES = ['blog-index', 'single-post', 'archive', 'search-results', 'partial', 'header', 'footer']
 
 // Flatten all templates into one sorted list
 const allTemplates = computed(() => {

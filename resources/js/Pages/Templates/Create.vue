@@ -22,6 +22,8 @@ const TYPE_LABELS = {
   'archive':        'Archive',
   'search-results': 'Search Results',
   'partial':        'Partial',
+  'header':         'Header',
+  'footer':         'Footer',
 }
 
 const typeLabel = TYPE_LABELS[props.type] ?? props.type
@@ -39,8 +41,9 @@ const form = useForm({
 
 // For single-post templates: use post context fields.
 // For all others: expose the selected loop source's fields as binding targets.
-const isSinglePost     = computed(() => props.type === 'single-post')
-const defaultLoopSource = computed(() => isSinglePost.value ? null : form.loop_source)
+const isSinglePost      = computed(() => props.type === 'single-post')
+const hasNoLoopSource   = computed(() => ['single-post', 'header', 'footer'].includes(props.type))
+const defaultLoopSource = computed(() => hasNoLoopSource.value ? null : form.loop_source)
 
 function submit() {
   form.blocks = filterEmptyBlocks(form.blocks)
@@ -60,7 +63,7 @@ function submit() {
         :title="form.title"
         :type-label="typeLabel"
         :loop-source="form.loop_source"
-        :show-loop-source="!isSinglePost"
+        :show-loop-source="!hasNoLoopSource"
         :status="form.status"
         :meta-title="form.meta_title"
         :meta-description="form.meta_description"
@@ -82,7 +85,7 @@ function submit() {
       :model-value="form.blocks"
       :is-admin="authUser?.role === 'administrator'"
       :context-fields="isSinglePost ? POST_CONTEXT_FIELDS : []"
-      :default-loop-source="defaultLoopSource"
+      :default-loop-source="hasNoLoopSource ? null : defaultLoopSource"
       @update:model-value="form.blocks = $event"
     />
 
