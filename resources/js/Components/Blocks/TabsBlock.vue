@@ -1,12 +1,11 @@
-<!-- resources/js/Components/Blocks/TabsBlock.vue -->
 <template>
   <div>
     <!-- Tab bar -->
     <div
+      class="tabs-bar flex flex-wrap gap-1"
       :class="[
-        'flex flex-wrap gap-1',
         alignment === 'center' ? 'justify-center' : alignment === 'right' ? 'justify-end' : 'justify-start',
-        tabStyle === 'underline' ? 'border-b border-border' : '',
+        tabStyle === 'underline' ? 'tabs-bar--underline' : '',
       ]"
     >
       <button
@@ -32,7 +31,7 @@
         :blocks="item.children"
         wrapper-class="space-y-4"
       />
-      <p v-else class="text-sm text-muted-foreground italic">Empty tab</p>
+      <p v-else class="tabs-empty">Empty tab</p>
     </div>
   </div>
 </template>
@@ -49,33 +48,39 @@ const alignment = computed(() => props.block.data?.alignment ?? 'left')
 
 function tabButtonClass(i) {
   const active = activeIdx.value === i
-  const base   = 'px-4 py-2 text-sm font-medium transition-colors focus:outline-none'
+  const base   = ['tab-btn', 'px-4', 'py-2', 'text-sm', 'font-medium', 'transition-colors', 'focus:outline-none']
 
   if (tabStyle.value === 'underline') {
-    return [
-      base,
-      '-mb-px border-b-2',
-      active
-        ? 'border-primary text-primary'
-        : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border',
-    ]
+    return [...base, '-mb-px', 'tab-btn--underline', active ? 'tab-btn--underline-active' : 'tab-btn--underline-inactive']
   }
   if (tabStyle.value === 'pills') {
-    return [
-      base,
-      'rounded-full',
-      active
-        ? 'bg-primary text-primary-foreground'
-        : 'text-muted-foreground hover:text-foreground hover:bg-muted',
-    ]
+    return [...base, 'tab-btn--pill', active ? 'tab-btn--pill-active' : 'tab-btn--pill-inactive']
   }
-  // buttons
-  return [
-    base,
-    'rounded-md border',
-    active
-      ? 'bg-primary border-primary text-primary-foreground'
-      : 'border-border text-muted-foreground hover:text-foreground hover:bg-muted',
-  ]
+  return [...base, 'tab-btn--button', active ? 'tab-btn--button-active' : 'tab-btn--button-inactive']
 }
 </script>
+
+<style scoped>
+.tabs-bar--underline { border-bottom: 1px solid var(--line-strong); }
+.tabs-empty { font-size: 0.875rem; color: var(--soft); font-style: italic; }
+
+.tab-btn { background: transparent; border: none; cursor: pointer; }
+
+/* Underline style */
+.tab-btn--underline { border-bottom: 2px solid transparent; }
+.tab-btn--underline-active  { border-bottom-color: var(--accent); color: var(--accent); }
+.tab-btn--underline-inactive { color: var(--soft); }
+.tab-btn--underline-inactive:hover { color: var(--ink); border-bottom-color: var(--line-strong); }
+
+/* Pills style */
+.tab-btn--pill { border-radius: 9999px; }
+.tab-btn--pill-active   { background: var(--accent); color: var(--accent-ink); }
+.tab-btn--pill-inactive { color: var(--soft); }
+.tab-btn--pill-inactive:hover { color: var(--ink); background: var(--bg); }
+
+/* Button style */
+.tab-btn--button { border-radius: var(--blog-radius); border: 1px solid transparent; }
+.tab-btn--button-active   { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.tab-btn--button-inactive { border-color: var(--line-strong); color: var(--soft); }
+.tab-btn--button-inactive:hover { color: var(--ink); background: var(--bg); }
+</style>
