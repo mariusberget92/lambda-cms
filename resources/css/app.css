@@ -295,6 +295,16 @@
   min-height: 100vh;
 }
 
+/* Sidebar widget card — used by Categories and Tags blocks */
+.lambda-blog-root .sidebar-card {
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--blog-radius);
+  padding: 1.25rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
 /* Status dot pulse animation */
 @keyframes status-dot-pulse {
   0%, 100% { opacity: 1; }

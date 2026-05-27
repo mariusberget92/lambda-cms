@@ -7,6 +7,7 @@ const currentQ = typeof window !== 'undefined'
 
 <template>
   <div class="search-block">
+    <p class="search-block__label font-mono-blog text-[10px] uppercase tracking-widest mb-3">Search</p>
     <form method="GET" action="/search" class="relative">
       <input
         type="text"
@@ -31,7 +32,9 @@ const currentQ = typeof window !== 'undefined'
   border: 1px solid var(--line-strong);
   border-radius: var(--blog-radius);
   padding: 1.25rem;
+  box-sizing: border-box;
 }
+.search-block__label { color: var(--soft); }
 .search-block__input {
   width: 100%;
   background: var(--bg);
@@ -40,13 +43,7 @@ const currentQ = typeof window !== 'undefined'
   border-radius: var(--blog-radius);
   padding: 0.5rem 2.5rem 0.5rem 0.875rem;
 }
-.search-block__input:focus {
-  border-color: var(--accent);
-  outline: none;
-}
-.search-block__btn {
-  color: var(--soft);
-  transition: color 150ms;
-}
+.search-block__input:focus { border-color: var(--accent); outline: none; }
+.search-block__btn { color: var(--soft); transition: color 150ms; }
 .search-block__btn:hover { color: var(--accent); }
 </style>
