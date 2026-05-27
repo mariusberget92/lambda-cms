@@ -125,7 +125,7 @@ function onSearchInput(v) {
     <Transition name="search-fade">
       <div
         v-if="searchOpen"
-        class="fixed inset-0 z-[200] flex flex-col items-center pt-[12vh] px-4 nav-search-backdrop"
+        class="lambda-blog-tokens fixed inset-0 z-[200] flex flex-col items-center pt-[12vh] px-4 nav-search-backdrop"
         @click.self="searchOpen = false"
       >
         <div class="w-full max-w-xl nav-search-panel">

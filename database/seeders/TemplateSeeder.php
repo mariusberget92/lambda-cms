@@ -99,6 +99,16 @@ class TemplateSeeder extends Seeder
     private function blogIndexBlocks(): array
     {
         return [
+            // Hero masthead — dark full-width panel with title and subtitle
+            $this->section(40, ['paddingY' => ['default' => 0], 'paddingX' => ['default' => 0], 'fullWidth' => true, 'minHeight' => 'auto'], [
+                $this->block(41, 'masthead', [
+                    'eyebrow'  => 'Open Source Blog',
+                    'title'    => 'Share your ideas ||with the world||',
+                    'subtitle' => 'A fast, beautiful blog built on Lambda CMS. Write, publish, and connect with your audience.',
+                    'stats'    => [],
+                ]),
+            ]),
+
             $this->section(1, [
                 'paddingY'  => ['default' => 10],
                 'paddingX'  => ['default' => 0],
