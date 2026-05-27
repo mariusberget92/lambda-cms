@@ -6,7 +6,7 @@ const post = inject('postContext', null)
 </script>
 
 <template>
-  <div v-if="post" class="taxonomy-panel p-4">
+  <div v-if="post" class="taxonomy-content">
     <p class="font-mono-blog text-[10px] uppercase tracking-widest mb-3 taxonomy-soft">Topics</p>
     <div class="flex flex-wrap gap-1.5">
       <template v-if="props.block.data?.showCategories !== false">
@@ -27,8 +27,8 @@ const post = inject('postContext', null)
       </template>
     </div>
   </div>
-  <div v-else class="taxonomy-panel p-4">
-    <div class="h-3 w-12 rounded mb-3 taxonomy-skel-label" />
+  <div v-else class="taxonomy-content">
+    <div class="h-3 w-12 rounded mb-3 taxonomy-skel" />
     <div class="flex gap-1.5">
       <div class="h-6 w-16 rounded-full taxonomy-skel" />
       <div class="h-6 w-20 rounded-full taxonomy-skel taxonomy-skel--dim" />
@@ -37,10 +37,9 @@ const post = inject('postContext', null)
 </template>
 
 <style scoped>
-.taxonomy-panel {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: var(--blog-radius);
+.taxonomy-content {
+  padding: 1.25rem 2rem;
+  border-bottom: 1px solid var(--line);
 }
 .taxonomy-soft { color: var(--soft); }
 
@@ -56,12 +55,8 @@ const post = inject('postContext', null)
   color: var(--soft);
   border: 1px solid var(--line-strong);
 }
-.tax-tag:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
+.tax-tag:hover { border-color: var(--accent); color: var(--accent); }
 
-.taxonomy-skel-label { background: var(--line-strong); }
-.taxonomy-skel       { background: var(--line-strong); }
-.taxonomy-skel--dim  { background: var(--line); }
+.taxonomy-skel     { background: var(--line-strong); }
+.taxonomy-skel--dim { background: var(--line); }
 </style>

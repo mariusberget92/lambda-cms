@@ -295,6 +295,14 @@
   min-height: 100vh;
 }
 
+/* Unified post content card — wraps Written by, Topics and body in one shell */
+.lambda-blog-root .post-content-card {
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--blog-radius);
+  overflow: hidden;
+}
+
 /* Sidebar widget card — used by Categories and Tags blocks */
 .lambda-blog-root .sidebar-card {
   background: var(--panel);

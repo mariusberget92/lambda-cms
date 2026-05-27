@@ -7,7 +7,7 @@ const currentQ = typeof window !== 'undefined'
 
 <template>
   <div class="search-block">
-    <p class="search-block__label font-mono-blog text-[10px] uppercase tracking-widest mb-3">Search</p>
+    <h3 class="font-bold leading-tight mb-3 search-block__heading">Search</h3>
     <form method="GET" action="/search" class="relative">
       <input
         type="text"
@@ -34,7 +34,7 @@ const currentQ = typeof window !== 'undefined'
   padding: 1.25rem;
   box-sizing: border-box;
 }
-.search-block__label { color: var(--soft); }
+.search-block__heading { color: var(--ink); }
 .search-block__input {
   width: 100%;
   background: var(--bg);
