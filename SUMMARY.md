@@ -91,12 +91,13 @@ Block types available:
 | Group | Types | Public Renderer |
 |---|---|---|
 | Content | `paragraph`, `heading`, `image`, `video`, `gallery`, `code`, `quote` | ✓ |
-| Content | `accordion`, `tabs`, `embed` | ✓ |
-| Layout | `container`, `columns`, `section`, `divider`, `spacer`, `navigation` | ✓ |
-| Interactive | `button`, `icon-list`, `cta`, `search`, `loop`, `link`, `filter-link`, `template`, `pagination`, `table` | ✓ |
+| Content | `accordion`, `tabs`, `embed`, `divider`, `spacer` | ✓ |
+| Layout | `container`, `columns`, `section`, `navigation` | ✓ |
+| Interactive | `button`, `icon-list`, `cta`, `search`, `loop`, `link`, `filter-link`, `active-filter`, `template`, `pagination`, `table` | ✓ |
 | Developer | `html` (admin-only) | ✓ |
-| Post | `post-title`, `post-body`, `post-featured-image`, `post-meta`, `post-author`, `post-taxonomy`, `post-comments` | ✓ |
-| Archive | `archive-title`, `archive-loop` | ✓ |
+| Post | `post-title`, `post-body`, `post-featured-image`, `post-meta`, `post-author`, `post-taxonomy`, `post-comments`, `post-card` | ✓ |
+| Archive | `archive-title` | ✓ |
+| Site | `nav-header`, `site-footer`, `masthead`, `band` | ✓ |
 
 > `accordion-item` and `tab-item` are auto-inserted children of their parent blocks, hidden from the palette.
 > `columns` is a preset of `container` with a column-count control; it maps to `ContainerBlock` for rendering.
@@ -173,7 +174,7 @@ Block types available:
 
 ### ⚙️ Settings (admin-only)
 - Site name & URL
-- **Accent color** — Nord aurora palette swatches; applies via CSS custom properties (`--primary`, `--sidebar-primary`, etc.)
+- **Accent color** — Nord aurora palette swatches; applies to admin via `--primary`/`--sidebar-primary` and to blog frontend via `--accent`/`--accent-ink`
 - Locale: timezone, date_format
 - Media: max_upload_mb, resize_max_width
 - Mail: driver (smtp/log/mailgun), host, port, username, password, encryption, from/name; test email send
@@ -218,9 +219,10 @@ Block types available:
 
 ### 🧩 Templates
 - CRUD at `/templates` (admin-only)
-- Types: `partial`, `blog-index`, `single-post`, `archive`, `search-results`
+- Types: `partial`, `blog-index`, `single-post`, `archive`, `search-results`, `header`, `footer`
 - System templates (`is_system = true`) cannot be deleted
-- `TemplateSeeder` seeds 5 system templates on fresh install
+- `TemplateSeeder` seeds 7 system templates on fresh install: Post Card, Default Blog Index, Default Single Post, Default Archive, Default Search Results, Default Header, Default Footer
+- `header` and `footer` templates are shared as `headerBlocks`/`footerBlocks` via Inertia middleware and rendered by `BlogLayout.vue`
 - Shared as `sharedTemplates` prop via Inertia middleware
 
 ### 🎨 Installation Wizard
@@ -340,6 +342,8 @@ Available on every page via `usePage().props`:
 | `accentColor` | `string\|null` | Hex accent color from site settings |
 | `navItems` | `Array<{label,url}>` | Published nav items |
 | `sharedTemplates` | `Array<Template>` | All templates (for block editor) |
+| `headerBlocks` | `Array` | Blocks from the active `header` template |
+| `footerBlocks` | `Array` | Blocks from the active `footer` template |
 
 ---
 
@@ -351,7 +355,7 @@ Available on every page via `usePage().props`:
 - **Block settings**: per-type Settings component for Content tab; shared `StyleSettings.vue` for Style tab; `AdvancedSettings.vue` for Advanced tab; `ConditionSettings.vue` for Conditions tab
 - **Notifications**: `useNotifications()` composable → `Notifications.vue` component
 - **Theming**: dark/light via `useTheme()` composable; `data-theme` attribute on root
-- **Accent color**: `accentColor` shared prop → `watchEffect` in AppLayout sets `--primary` and related CSS vars
+- **Accent color**: `accentColor` shared prop → `watchEffect` in `AppLayout` sets `--primary` and related admin CSS vars; `watchEffect` in `BlogLayout` sets `--accent`/`--accent-ink` blog tokens
 - **Media URLs**: `Media::getUrlAttribute()` handles both `Storage::disk()` and `disk='external'` (returns `path` directly as full URL)
 - **System templates**: `is_system = true` blocks deletion; `TemplateSeeder` marks them
 - **Preview tokens**: auto-generated 64-char random string on Post/Page create; routes are public
@@ -365,6 +369,10 @@ Potential future improvements:
 - Add more genres to GenreSeeder (interior, daily life, crypto, writing, etc.)
 - VLOG / video-focused genre template
 - Import/export pages and templates
+- Two-factor authentication (TOTP)
+- API write access (token-based)
+- Multi-language / i18n support
+- In-browser featured image cropping
 
 ### Pending major-version upgrades (deferred — require additional review)
 - `inertia-laravel` 2 → 3 + `@inertiajs/vue3` 2 → 3 (coupled upgrade)
@@ -374,4 +382,4 @@ Potential future improvements:
 
 ---
 
-*Last updated: 2026-05-22 — added AccordionBlock, TabsBlock, EmbedBlock public renderers; Button, Icon List, and Columns blocks*
+*Last updated: 2026-05-28 — added header/footer template types; blog design token system; active-filter, masthead, band, nav-header, site-footer, post-card blocks; accent color applied to blog frontend; scheduled post publisher registered in scheduler; LambdaContentSeeder with real launch posts*
