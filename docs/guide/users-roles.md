@@ -43,3 +43,9 @@ Online status is tracked via `last_seen_at` — users active in the last 5 minut
 ## Email Verification
 
 New accounts require email verification before accessing the dashboard. The verification link expires after 60 minutes. Admins can resend the verification email from the user list.
+
+## Two-Factor Authentication
+
+Each user can independently enable TOTP-based two-factor authentication from their Profile page. When enabled, signing in requires a 6-digit code from an authenticator app after the password step.
+
+See the [Two-Factor Authentication guide](./two-factor-authentication) for setup instructions, recovery codes, and troubleshooting.

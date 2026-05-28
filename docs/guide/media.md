@@ -25,6 +25,15 @@ Each file has an `alt` field (used when the image is inserted into a block) and 
 
 Select one or more files and click **Delete**. Deleting a file from the library does not automatically remove it from posts or blocks that reference it — those will show a broken image. Clean up references before deleting.
 
+## Image Editor
+
+Images can be cropped, filtered, and adjusted directly in the browser — both during upload and for files already in the library.
+
+- **On upload**: the editor opens for each JPEG, PNG, WebP, or GIF before the file is sent. Click **Skip** to upload the original unchanged.
+- **On an existing image**: open its detail panel and click **Edit image** to replace the stored file with an edited version.
+
+See the [Image Editor guide](./image-editor) for a full walkthrough of all tools.
+
 ## External Files
 
 Lambda CMS supports external media records (e.g. images hosted on a CDN). Set `disk = external` and store the full URL in `path`. These files are never uploaded to or served from local storage.

@@ -58,6 +58,7 @@ resources/js/lib/loopSources.js       — Loop source field definitions
 - **Profile**: name/email edit, password change, avatar upload/delete
 - Online status (`last_seen_at` + `isOnline()`)
 - User banning (`BanController`, ban/unban with reason)
+- **Two-factor authentication** (TOTP, RFC 6238): per-user opt-in from Profile; challenge page at `/two-factor-challenge`; 8 single-use recovery codes stored encrypted; `pragmarx/google2fa` library; compatible with any TOTP app (Google Authenticator, Authy, 1Password, etc.)
 
 ### 📝 Posts
 - Full CRUD, author-scoped (owner OR admin can edit/delete)
@@ -157,6 +158,13 @@ Block types available:
 - Update alt text / description; delete single or bulk
 - UUID-based filenames; dimension tracking
 - External disk support (`disk='external'` → stores full URL in `path`)
+- **In-browser image editor** (`ImageEditor.vue`): opens before upload for JPEG/PNG/WebP/GIF; also available via "Edit image" button on existing library items
+  - Crop with 9 aspect ratio presets; rotate 90° CW/CCW; flip H/V
+  - Output size controls (W × H, lockable aspect ratio)
+  - 8 one-click filter presets (Normal, Vivid, Muted, B&W, Warm, Cool, Fade, Drama)
+  - Manual adjustments: brightness, contrast, saturation, blur
+  - Uses `cropperjs` v1 for crop interaction; CSS `ctx.filter` on canvas for export
+  - `POST /media/{media}/replace` replaces the stored file and updates DB dimensions/size
 
 ### 💬 Comments
 - Public submission (rate-limited + honeypot)
@@ -271,6 +279,7 @@ GET  /{slug}                         public page (catch-all)
 GET/POST /login
 GET/POST /forgot-password
 GET/POST /reset-password/{token}
+GET/POST /two-factor-challenge      2FA step after successful password auth
 ```
 
 ### Auth only
@@ -287,8 +296,8 @@ GET  /dashboard
 /posts     (resource + bulk + autosave + revisions)
 /categories (resource)
 /tags       (resource)
-/profile    (info, password, avatar)
-/media      (resource + bulk-destroy + usage)
+/profile    (info, password, avatar, two-factor enable/confirm/disable/recovery-codes)
+/media      (resource + bulk-destroy + usage + replace)
 /calendar   (index + data)
 ```
 
@@ -332,7 +341,7 @@ Available on every page via `usePage().props`:
 | Prop | Type | Description |
 |---|---|---|
 | `appName` | `string` | Site name from `config('app.name')` |
-| `auth.user` | `{id,name,email,role,avatar_url,email_verified}` or `null` | Authenticated user |
+| `auth.user` | `{id,name,email,role,avatar_url,email_verified,two_factor_enabled}` or `null` | Authenticated user |
 | `flash.status` | `string\|null` | Generic success flash |
 | `flash.error` | `string\|null` | Generic error flash |
 | `flash.mail_status` | `string\|null` | Mail test success message |
@@ -369,10 +378,8 @@ Potential future improvements:
 - Add more genres to GenreSeeder (interior, daily life, crypto, writing, etc.)
 - VLOG / video-focused genre template
 - Import/export pages and templates
-- Two-factor authentication (TOTP)
 - API write access (token-based)
 - Multi-language / i18n support
-- In-browser featured image cropping
 
 ### Pending major-version upgrades (deferred — require additional review)
 - `inertia-laravel` 2 → 3 + `@inertiajs/vue3` 2 → 3 (coupled upgrade)
@@ -382,4 +389,4 @@ Potential future improvements:
 
 ---
 
-*Last updated: 2026-05-28 — added header/footer template types; blog design token system; active-filter, masthead, band, nav-header, site-footer, post-card blocks; accent color applied to blog frontend; scheduled post publisher registered in scheduler; LambdaContentSeeder with real launch posts*
+*Last updated: 2026-05-28 — added header/footer template types; blog design token system; active-filter, masthead, band, nav-header, site-footer, post-card blocks; accent color applied to blog frontend; scheduled post publisher registered in scheduler; LambdaContentSeeder with real launch posts; in-browser image editor (crop, filters, adjust, replace endpoint); TOTP two-factor authentication with recovery codes*
