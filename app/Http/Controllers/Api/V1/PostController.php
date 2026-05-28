@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Post;
+use App\Services\MarkdownService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -57,7 +58,12 @@ class PostController extends Controller
         ];
 
         if ($full) {
-            $data['body'] = $post->body;
+            $body = $post->body_format === 'markdown'
+                ? app(MarkdownService::class)->toHtml($post->body ?? '')
+                : $post->body;
+
+            $data['body']        = $body;
+            $data['body_format'] = $post->body_format ?? 'html';
         }
 
         return $data;

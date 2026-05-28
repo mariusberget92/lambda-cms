@@ -82,9 +82,39 @@
           </div>
 
           <!-- Editor -->
-          <div>
+          <div class="space-y-2">
+            <!-- Mode switcher -->
+            <div class="flex items-center gap-1 rounded-lg border border-border bg-muted/40 p-1 w-fit">
+              <button
+                v-for="mode in editorModes"
+                :key="mode.value"
+                type="button"
+                class="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors"
+                :class="editorMode === mode.value
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'"
+                @click="editorMode = mode.value"
+              >
+                <Icon :icon="mode.icon" width="12" height="12" />
+                {{ mode.label }}
+              </button>
+            </div>
+
             <div class="rounded-lg border overflow-hidden">
-              <TiptapEditor v-model="form.body" />
+              <TiptapEditor v-if="editorMode === 'wysiwyg'" v-model="form.body" />
+              <MarkdownEditor v-else v-model="form.body" />
+            </div>
+
+            <!-- .md file upload (markdown mode only) -->
+            <div v-if="editorMode === 'markdown'" class="flex items-center gap-2">
+              <label
+                class="inline-flex items-center gap-1.5 cursor-pointer rounded-md border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+              >
+                <Icon icon="lucide:upload" width="12" height="12" />
+                Import .md file
+                <input type="file" accept=".md,text/markdown" class="sr-only" @change="importMarkdownFile" />
+              </label>
+              <span class="text-xs text-muted-foreground">CommonMark + GFM supported</span>
             </div>
           </div>
         </div>
@@ -362,6 +392,7 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { Head, useForm, usePage, Link } from "@inertiajs/vue3";
 import { Icon } from '@iconify/vue'
+import MarkdownEditor from "@/Components/MarkdownEditor.vue";
 import axios from 'axios'
 import { ChevronDown, ArrowLeft, X, ExternalLink } from '@lucide/vue'
 import AppLayout from "@/Layouts/AppLayout.vue";
@@ -379,6 +410,12 @@ let autosaveToastId = null
 const page = usePage()
 const isPro = computed(() => page.props.isPro ?? false)
 
+// ── Editor mode ──────────────────────────────────────────────────────────────
+const editorModes = [
+  { value: 'wysiwyg',  label: 'Rich Text', icon: 'lucide:pilcrow' },
+  { value: 'markdown', label: 'Markdown',  icon: 'lucide:file-text' },
+]
+
 const props = defineProps({
   post:       Object,
   categories: { type: Array, default: () => [] },
@@ -386,10 +423,26 @@ const props = defineProps({
   autosave:   { type: Object, default: null },
 });
 
+const editorMode = ref(props.post.body_format === 'markdown' ? 'markdown' : 'wysiwyg')
+
+watch(editorMode, (mode) => {
+  form.body_format = mode === 'markdown' ? 'markdown' : 'html'
+})
+
+function importMarkdownFile(event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (e) => { form.body = e.target.result ?? '' }
+  reader.readAsText(file)
+  event.target.value = ''
+}
+
 const form = useForm({
   title:             props.post.title,
   excerpt:           props.post.excerpt ?? "",
   body:              props.post.body ?? "",
+  body_format:       props.post.body_format ?? "html",
   status:            props.post.status,
   published_at:      props.post.published_at ?? '',
   category_ids:      props.post.category_ids ?? [],
