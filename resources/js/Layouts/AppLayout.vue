@@ -254,7 +254,6 @@ const page = usePage();
 const user = computed(() => page.props.auth?.user ?? { name: "", email: "" });
 const currentRoute = computed(() => page.props.currentRoute ?? "");
 const pendingCommentsCount = computed(() => page.props.pendingCommentsCount ?? 0);
-const isPro = computed(() => page.props.isPro ?? false);
 const userInitials = computed(() =>
   user.value.name
     .split(" ")

@@ -591,7 +591,7 @@ const tabs = [
   { key: 'custom-code', label: 'Custom Code'  },
 ]
 
-// Jump to tab from URL query param (e.g., ?tab=license)
+// Jump to tab from URL query param (e.g., ?tab=mail)
 onMounted(() => {
   const params = new URLSearchParams(window.location.search)
   const tab    = params.get('tab')

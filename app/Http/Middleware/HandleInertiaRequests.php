@@ -6,7 +6,6 @@ use App\Models\Comment;
 use App\Models\NavItem;
 use App\Models\Setting;
 use App\Models\Template;
-use App\Services\LicenseService;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -43,7 +42,6 @@ class HandleInertiaRequests extends Middleware
             "pendingCommentsCount" => fn () => $request->user()?->hasRole('administrator')
                 ? Comment::pending()->count()
                 : null,
-            'isPro'       => fn () => app(LicenseService::class)->isPro(),
             'accentColor' => fn () => Setting::get('site.accent_color') ?: null,
             'sharedTemplates' => fn () => Template::published()
                 ->get(['id', 'title', 'type', 'blocks'])

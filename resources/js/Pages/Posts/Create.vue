@@ -119,19 +119,10 @@
                   <p class="text-xs text-muted-foreground">Only visible to you</p>
                 </div>
               </label>
-              <label class="flex items-center gap-3" :class="isPro ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'">
-                <input type="radio" v-model="form.status" value="scheduled" class="accent-primary" :disabled="!isPro" />
+              <label class="flex items-center gap-3 cursor-pointer">
+                <input type="radio" v-model="form.status" value="scheduled" class="accent-primary" />
                 <div class="flex-1 min-w-0">
-                  <span class="text-sm font-medium flex items-center gap-1.5">
-                    Scheduled
-                    <Link
-                      v-if="!isPro"
-                      :href="route('settings.index') + '?tab=license'"
-                      class="inline-flex items-center gap-0.5 rounded-full bg-primary/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary leading-none hover:bg-primary/25 transition-colors"
-                    >
-                      <Icon icon="lucide:zap" width="9" height="9" />Pro
-                    </Link>
-                  </span>
+                  <span class="text-sm font-medium">Scheduled</span>
                   <p class="text-xs text-muted-foreground">Auto-publishes at a set time</p>
                 </div>
               </label>
@@ -318,7 +309,6 @@ import JsEditor from '@/Components/JsEditor.vue'
 import { useNotifications } from '@/composables/useNotifications.js'
 const { notify } = useNotifications()
 const page = usePage()
-const isPro = computed(() => page.props.isPro ?? false)
 
 // ── Editor mode ──────────────────────────────────────────────────────────────
 const editorModes = [

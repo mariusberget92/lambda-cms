@@ -6,7 +6,6 @@ use App\Models\Autosave;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
-use App\Services\LicenseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
@@ -114,10 +113,6 @@ class PostController extends Controller
 
         $validated['slug']    = Post::generateSlug($validated['title']);
         $validated['user_id'] = $request->user()->id;
-
-        if ($validated['status'] === 'scheduled' && ! app(LicenseService::class)->isPro()) {
-            return back()->withErrors(['status' => 'Scheduled publishing requires a Pro license.']);
-        }
 
         if ($validated['status'] === 'published') {
             $validated['published_at'] = Carbon::now();
@@ -234,10 +229,6 @@ class PostController extends Controller
         $validated['meta_title']       = $validated['meta_title']       ?? $post->meta_title;
         $validated['meta_description'] = $validated['meta_description'] ?? $post->meta_description;
         $validated['meta_keywords']    = $validated['meta_keywords']    ?? $post->meta_keywords;
-
-        if ($validated['status'] === 'scheduled' && ! app(LicenseService::class)->isPro()) {
-            return back()->withErrors(['status' => 'Scheduled publishing requires a Pro license.']);
-        }
 
         $validated['slug'] = Post::generateSlug($validated['title'], $post->id);
 

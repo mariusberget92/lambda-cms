@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Mail\TestMail;
 use App\Models\Setting;
-use App\Services\LicenseService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -82,14 +81,9 @@ class SettingsController extends Controller
             'appearance' => $request->validate([
                 'site\\.accent_color' => ['nullable', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
             ]),
-            'code' => (function () use ($request): array {
-                if (! app(LicenseService::class)->isPro()) {
-                    abort(403, 'Custom JS injection requires a Pro license.');
-                }
-                return $request->validate([
-                    'code\\.custom_js' => ['nullable', 'string'],
-                ]);
-            })(),
+            'code' => $request->validate([
+                'code\\.custom_js' => ['nullable', 'string'],
+            ]),
             default  => abort(404),
         };
 
@@ -98,26 +92,6 @@ class SettingsController extends Controller
         }
 
         return back()->with('status', 'Settings saved.');
-    }
-
-    public function activateLicense(Request $request): RedirectResponse
-    {
-        $request->validate(['key' => ['required', 'string', 'max:100']]);
-
-        $result = app(LicenseService::class)->activate($request->input('key'));
-
-        if ($result['success']) {
-            return back()->with('status', $result['message']);
-        }
-
-        return back()->withErrors(['license_key' => $result['message']]);
-    }
-
-    public function deactivateLicense(): RedirectResponse
-    {
-        app(LicenseService::class)->deactivate();
-
-        return back()->with('status', 'License deactivated.');
     }
 
     public function testEmail(Request $request): RedirectResponse
