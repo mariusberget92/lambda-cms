@@ -166,6 +166,7 @@
           @save="saveDetail"
           @delete="confirmSingleDelete"
           @close="closeDetail"
+          @edit="openEditorForExisting"
           @lightbox="openLightbox"
           @update:alt="detailForm.alt = $event"
           @update:description="detailForm.description = $event"
@@ -279,6 +280,17 @@
       </DialogContent>
     </Dialog>
     <MediaLightbox v-model="lightboxIndex" :images="lightboxImages" />
+
+    <!-- Image editor -->
+    <ImageEditor
+      v-model="editorOpen"
+      :src="editorSrc"
+      :original-filename="editorFilename"
+      :allow-skip="editorAllowSkip"
+      @apply="onEditorApply"
+      @skip="onEditorSkip"
+      @cancel="onEditorCancel"
+    />
   </AppLayout>
 </template>
 
@@ -295,6 +307,7 @@ import { decodeHtmlEntities } from '@/lib/utils.js'
 import { useNotifications } from '@/composables/useNotifications'
 import MediaLightbox from './MediaLightbox.vue'
 import MediaDetailContent from './MediaDetailContent.vue'
+import ImageEditor from '@/components/ImageEditor.vue'
 
 const { notify } = useNotifications()
 
@@ -440,6 +453,17 @@ async function doSingleDelete() {
   }
 }
 
+// ── Image editor ─────────────────────────────────────────────────────────────
+const EDITABLE_MIME_SET = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+
+const editorOpen       = ref(false)
+const editorSrc        = ref('')
+const editorFilename   = ref('')
+const editorAllowSkip  = ref(false)
+const editingMediaItem = ref(null)   // set when editing an existing media item
+const uploadQueue      = ref([])     // pending File objects waiting for editor
+let   queueObjUrl      = null        // current object URL to revoke after use
+
 function onFileInput(event) {
   uploadFiles(Array.from(event.target.files))
   event.target.value = ''
@@ -447,37 +471,129 @@ function onFileInput(event) {
 
 async function uploadFiles(files) {
   if (!files?.length) return
-
   const maxBytes = props.maxUploadMb * 1024 * 1024
+  const toQueue  = []
 
   for (const file of files) {
     if (file.size > maxBytes) {
       notify(`"${file.name}" exceeds the ${props.maxUploadMb} MB limit.`, 'error')
       continue
     }
-
-    uploading.value      = true
-    uploadProgress.value = 0
-    uploadingName.value  = file.name
-
-    const formData = new FormData()
-    formData.append('file', file)
-
-    try {
-      const { data } = await axios.post(route('media.store'), formData, {
-        headers: {
-          'Accept': 'application/json',
-        },
-        onUploadProgress: (e) => {
-          uploadProgress.value = e.total ? Math.round((e.loaded * 100) / e.total) : 0
-        },
-      })
-      localItems.value.unshift(data)
-    } catch (err) {
-      notify(err.response?.data?.message ?? 'Upload failed. Check file type and size.', 'error')
-    } finally {
-      uploading.value = false
+    if (EDITABLE_MIME_SET.has(file.type)) {
+      toQueue.push(file)
+    } else {
+      await doUpload(file)
     }
+  }
+
+  if (toQueue.length) {
+    uploadQueue.value.push(...toQueue)
+    if (!editorOpen.value) processNextInQueue()
+  }
+}
+
+function processNextInQueue() {
+  if (!uploadQueue.value.length) return
+  const file = uploadQueue.value[0]
+  queueObjUrl         = URL.createObjectURL(file)
+  editorSrc.value     = queueObjUrl
+  editorFilename.value = file.name
+  editorAllowSkip.value = true
+  editorOpen.value    = true
+}
+
+async function onEditorApply(blob) {
+  editorOpen.value = false
+
+  if (editingMediaItem.value) {
+    await doReplaceExisting(blob)
+    editingMediaItem.value = null
+    return
+  }
+
+  if (!uploadQueue.value.length) return
+  const original = uploadQueue.value[0]
+  revokeQueueUrl()
+  const edited = new File([blob], original.name, { type: blob.type })
+  await doUpload(edited)
+  uploadQueue.value.shift()
+  processNextInQueue()
+}
+
+async function onEditorSkip() {
+  editorOpen.value = false
+  if (!uploadQueue.value.length) return
+  const original = uploadQueue.value[0]
+  revokeQueueUrl()
+  await doUpload(original)
+  uploadQueue.value.shift()
+  processNextInQueue()
+}
+
+function onEditorCancel() {
+  editorOpen.value = false
+  if (editingMediaItem.value) {
+    editingMediaItem.value = null
+    return
+  }
+  revokeQueueUrl()
+  uploadQueue.value.shift()
+  processNextInQueue()
+}
+
+function revokeQueueUrl() {
+  if (queueObjUrl) {
+    URL.revokeObjectURL(queueObjUrl)
+    queueObjUrl = null
+  }
+}
+
+function openEditorForExisting(item) {
+  editingMediaItem.value = item ?? activeItem.value
+  editorSrc.value        = editingMediaItem.value.url
+  editorFilename.value   = editingMediaItem.value.original_filename
+  editorAllowSkip.value  = false
+  editorOpen.value       = true
+}
+
+async function doReplaceExisting(blob) {
+  const item = editingMediaItem.value
+  if (!item) return
+  const formData = new FormData()
+  formData.append('file', blob, item.original_filename)
+  try {
+    const { data } = await axios.post(route('media.replace', item.id), formData, {
+      headers: { Accept: 'application/json' },
+    })
+    const idx = localItems.value.findIndex(i => i.id === data.id)
+    if (idx !== -1) localItems.value[idx] = data
+    if (activeItem.value?.id === data.id) activeItem.value = data
+    notify('Image updated.', 'success')
+  } catch (err) {
+    notify(err.response?.data?.message ?? 'Failed to save edited image.', 'error')
+  }
+}
+
+async function doUpload(file) {
+  uploading.value      = true
+  uploadProgress.value = 0
+  uploadingName.value  = file.name
+
+  const formData = new FormData()
+  formData.append('file', file)
+
+  try {
+    const { data } = await axios.post(route('media.store'), formData, {
+      headers: { Accept: 'application/json' },
+      onUploadProgress: (e) => {
+        uploadProgress.value = e.total ? Math.round((e.loaded * 100) / e.total) : 0
+      },
+    })
+    localItems.value.unshift(data)
+  } catch (err) {
+    notify(err.response?.data?.message ?? 'Upload failed. Check file type and size.', 'error')
+  } finally {
+    uploading.value = false
   }
 }
 
