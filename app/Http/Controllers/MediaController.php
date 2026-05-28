@@ -170,6 +170,52 @@ class MediaController extends Controller
         return response()->json(['posts' => $posts]);
     }
 
+    public function replace(Request $request, Media $media): JsonResponse
+    {
+        if ($media->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
+            abort(403);
+        }
+
+        if ($media->type !== 'image') {
+            abort(422, 'Only image files can be edited.');
+        }
+
+        $maxKb = (int) (config('media.max_upload_mb', 10) * 1024);
+
+        $request->validate([
+            'file' => ['required', 'file', "max:{$maxKb}", 'mimetypes:image/jpeg,image/png,image/webp,image/gif'],
+        ]);
+
+        $file     = $request->file('file');
+        $mimeType = $file->getMimeType();
+        $ext      = $file->guessExtension() ?? 'jpg';
+        $uuid     = Str::uuid()->toString();
+        $filename = "{$uuid}.{$ext}";
+        $folder   = dirname($media->path);
+        $path     = "{$folder}/{$filename}";
+
+        $file->storeAs($folder, $filename, 'public');
+
+        if ($media->disk === 'public' && Storage::disk('public')->exists($media->path)) {
+            Storage::disk('public')->delete($media->path);
+        }
+
+        $fullPath = Storage::disk('public')->path($path);
+        $manager  = new ImageManager(new Driver());
+        $img      = $manager->read($fullPath);
+
+        $media->update([
+            'filename'  => $filename,
+            'path'      => $path,
+            'mime_type' => $mimeType,
+            'size'      => Storage::disk('public')->size($path),
+            'width'     => $img->width(),
+            'height'    => $img->height(),
+        ]);
+
+        return response()->json($this->toArray($media->fresh()));
+    }
+
     public function bulkDestroy(Request $request): JsonResponse
     {
         $request->validate([

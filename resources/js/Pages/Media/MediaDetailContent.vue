@@ -114,6 +114,14 @@
         {{ saving ? 'Saving...' : 'Save changes' }}
       </button>
       <button
+        v-if="isEditableImage"
+        type="button"
+        class="w-full rounded-md border px-4 py-2 text-sm hover:bg-accent transition-colors"
+        @click="emit('edit')"
+      >
+        Edit image
+      </button>
+      <button
         type="button"
         class="w-full rounded-md border border-destructive/50 px-4 py-2 text-sm text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors"
         @click="emit('delete')"
@@ -132,9 +140,10 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { formatDateTime } from '@/lib/utils.js'
 
-defineProps({
+const props = defineProps({
   activeItem:     { type: Object, required: true },
   detailForm:     { type: Object, required: true },
   usedIn:         { type: [Array, null], default: null },
@@ -143,5 +152,12 @@ defineProps({
   saving:         { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['copy', 'save', 'delete', 'close', 'lightbox', 'update:alt', 'update:description'])
+const EDITABLE_MIMES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+
+const isEditableImage = computed(() =>
+  props.activeItem.type === 'image' &&
+  EDITABLE_MIMES.includes(props.activeItem.mime_type),
+)
+
+const emit = defineEmits(['copy', 'save', 'delete', 'close', 'edit', 'lightbox', 'update:alt', 'update:description'])
 </script>
