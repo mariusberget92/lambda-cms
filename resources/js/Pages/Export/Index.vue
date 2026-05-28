@@ -105,7 +105,7 @@ const props = defineProps({
   counts: Object,
 })
 
-const selectedEntities = ref(['posts', 'categories', 'tags', 'media'])
+const selectedEntities = ref(['posts', 'categories', 'tags', 'media', 'templates'])
 const includeMediaFiles = ref(false)
 
 const entityOptions = [
@@ -113,6 +113,7 @@ const entityOptions = [
   { value: 'categories', label: 'Categories', description: 'Category names, slugs, descriptions, and colors.' },
   { value: 'tags',       label: 'Tags',       description: 'Tag names and slugs.' },
   { value: 'media',      label: 'Media',      description: 'Media library metadata (alt text, descriptions, file info).' },
+  { value: 'templates',  label: 'Templates',  description: 'Block editor templates and their content. System templates are exported but reimported as non-system.' },
 ]
 
 function startExport() {

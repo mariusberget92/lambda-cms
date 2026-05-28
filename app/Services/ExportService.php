@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Media;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Models\Template;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use ZipArchive;
@@ -63,6 +64,12 @@ class ExportService
             }
         }
 
+        if (in_array('templates', $entities)) {
+            $data = $this->exportTemplates();
+            $manifest['counts']['templates'] = count($data);
+            $zip->addFromString('templates.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        }
+
         if (in_array('posts', $entities)) {
             $data = $this->exportPosts();
             $manifest['counts']['posts'] = count($data);
@@ -109,6 +116,20 @@ class ExportService
             'height'            => $m->height,
             'alt'               => $m->alt,
             'description'       => $m->description,
+        ])->values()->toArray();
+    }
+
+    private function exportTemplates(): array
+    {
+        return Template::all()->map(fn ($t) => [
+            'title'            => $t->title,
+            'type'             => $t->type,
+            'loop_source'      => $t->loop_source,
+            'status'           => $t->status,
+            'blocks'           => $t->blocks ?? [],
+            'meta_title'       => $t->meta_title,
+            'meta_description' => $t->meta_description,
+            'meta_keywords'    => $t->meta_keywords,
         ])->values()->toArray();
     }
 

@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Media;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Models\Template;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use ZipArchive;
@@ -33,7 +34,7 @@ class ImportService
         }
 
         $available = [];
-        foreach (['categories', 'tags', 'media', 'posts'] as $entity) {
+        foreach (['categories', 'tags', 'media', 'templates', 'posts'] as $entity) {
             if ($zip->locateName("{$entity}.json") !== false) {
                 $data = json_decode($zip->getFromName("{$entity}.json"), true);
                 $available[$entity] = count($data ?? []);
@@ -72,6 +73,11 @@ class ImportService
         if (in_array('media', $entities) && $zip->locateName('media.json') !== false) {
             $data = json_decode($zip->getFromName('media.json'), true) ?? [];
             $results['media'] = $this->importMedia($data, $zip, $conflictStrategy, $userId);
+        }
+
+        if (in_array('templates', $entities) && $zip->locateName('templates.json') !== false) {
+            $data = json_decode($zip->getFromName('templates.json'), true) ?? [];
+            $results['templates'] = $this->importTemplates($data, $conflictStrategy, $userId);
         }
 
         if (in_array('posts', $entities) && $zip->locateName('posts.json') !== false) {
@@ -216,6 +222,74 @@ class ImportService
         }
 
         return compact('created', 'updated', 'skipped', 'failed');
+    }
+
+    private function importTemplates(array $data, string $strategy, int $userId): array
+    {
+        $created = $updated = $skipped = $failed = 0;
+
+        foreach ($data as $item) {
+            try {
+                $existing = Template::where('title', $item['title'])
+                    ->where('type', $item['type'])
+                    ->first();
+
+                if ($existing) {
+                    if ($strategy === 'skip') {
+                        $skipped++;
+                    } elseif ($strategy === 'overwrite') {
+                        // Demote any other published template of this type before overwriting
+                        if (($item['status'] ?? 'draft') === 'published' && $item['type'] !== 'partial') {
+                            Template::where('type', $item['type'])
+                                ->where('id', '!=', $existing->id)
+                                ->where('status', 'published')
+                                ->update(['status' => 'draft']);
+                        }
+                        $existing->update([
+                            'loop_source'      => $item['loop_source'] ?? null,
+                            'status'           => $item['status'] ?? 'draft',
+                            'blocks'           => $item['blocks'] ?? [],
+                            'meta_title'       => $item['meta_title'] ?? null,
+                            'meta_description' => $item['meta_description'] ?? null,
+                            'meta_keywords'    => $item['meta_keywords'] ?? null,
+                        ]);
+                        $updated++;
+                    } elseif ($strategy === 'duplicate') {
+                        Template::create($this->templateFields($item, $userId, $item['title'] . ' (imported)'));
+                        $created++;
+                    }
+                } else {
+                    // Demote any existing published template of this type before creating a published one
+                    if (($item['status'] ?? 'draft') === 'published' && $item['type'] !== 'partial') {
+                        Template::where('type', $item['type'])
+                            ->where('status', 'published')
+                            ->update(['status' => 'draft']);
+                    }
+                    Template::create($this->templateFields($item, $userId, $item['title']));
+                    $created++;
+                }
+            } catch (\Throwable) {
+                $failed++;
+            }
+        }
+
+        return compact('created', 'updated', 'skipped', 'failed');
+    }
+
+    private function templateFields(array $item, int $userId, string $title): array
+    {
+        return [
+            'user_id'          => $userId,
+            'title'            => $title,
+            'type'             => $item['type'],
+            'loop_source'      => $item['loop_source'] ?? null,
+            'is_system'        => false,
+            'status'           => $item['status'] ?? 'draft',
+            'blocks'           => $item['blocks'] ?? [],
+            'meta_title'       => $item['meta_title'] ?? null,
+            'meta_description' => $item['meta_description'] ?? null,
+            'meta_keywords'    => $item['meta_keywords'] ?? null,
+        ];
     }
 
     private function importPosts(array $data, string $strategy, int $userId): array

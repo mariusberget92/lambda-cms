@@ -48,7 +48,7 @@ class ImportController extends Controller
         $request->validate([
             'tmp_path'          => 'required|string',
             'entities'          => 'required|array|min:1',
-            'entities.*'        => 'in:posts,categories,tags,media',
+            'entities.*'        => 'in:posts,categories,tags,media,templates',
             'conflict_strategy' => 'required|in:skip,overwrite,duplicate',
         ]);
 

@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Media;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Models\Template;
 use App\Services\ExportService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -20,6 +21,7 @@ class ExportController extends Controller
                 'categories' => Category::count(),
                 'tags'       => Tag::count(),
                 'media'      => Media::count(),
+                'templates'  => Template::count(),
             ],
         ]);
     }
@@ -28,7 +30,7 @@ class ExportController extends Controller
     {
         $request->validate([
             'entities'            => 'required|array|min:1',
-            'entities.*'          => 'in:posts,categories,tags,media',
+            'entities.*'          => 'in:posts,categories,tags,media,templates',
             'include_media_files' => 'nullable|boolean',
         ]);
 
