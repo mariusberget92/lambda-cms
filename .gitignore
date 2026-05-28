@@ -27,3 +27,4 @@ nul
 .superpowers/
 docs/.vitepress/dist
 docs/.vitepress/cache
+.vitepress/
