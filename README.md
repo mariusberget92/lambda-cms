@@ -151,10 +151,9 @@ POST /api/v1/query        ← block editor loop data source
 
 ### 🧙 Installer
 
-- 5-step browser wizard: **Database → Site → Admin → Mail → Genre**
+- 4-step browser wizard: **Database → Site → Admin → Mail**
 - Supports SQLite and MySQL; tests the DB connection before writing `.env`
 - Runs migrations, seeds system templates, and creates the first admin account
-- 20 genre/theme options to pre-seed themed demo posts, or start completely empty
 
 ---
 
