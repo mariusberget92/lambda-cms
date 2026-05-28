@@ -91,7 +91,7 @@
             <div class="flex-1 min-w-0">
 
               <EditorContainerBlock
-                v-if="block.type === 'container'"
+                v-if="block.type === 'container' || block.type === 'columns'"
                 :block="block"
                 :selected-id="selectedId"
                 @select="$emit('select', $event)"
@@ -189,7 +189,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { VueDraggable }  from 'vue-draggable-plus'
-import { GripVertical, Eye, ChevronRight, LayoutTemplate } from 'lucide-vue-next'
+import { GripVertical, Eye, ChevronRight, LayoutTemplate } from '@lucide/vue'
 import EditorContainerBlock from './EditorContainerBlock.vue'
 import EditorSectionBlock   from './EditorSectionBlock.vue'
 import EditorLoopBlock      from './EditorLoopBlock.vue'
@@ -197,7 +197,7 @@ import EditorLinkBlock      from './EditorLinkBlock.vue'
 import EditorAccordionBlock from './EditorAccordionBlock.vue'
 import EditorTabsBlock      from './EditorTabsBlock.vue'
 import EditorTableBlock     from './EditorTableBlock.vue'
-import BlockRenderer from '@/components/BlockRenderer.vue'
+import BlockRenderer from '@/Components/BlockRenderer.vue'
 import ParagraphBlock from '@/Components/Blocks/ParagraphBlock.vue'
 import HeadingBlock   from '@/Components/Blocks/HeadingBlock.vue'
 import ImageBlock     from '@/Components/Blocks/ImageBlock.vue'
@@ -208,11 +208,20 @@ import VideoBlock     from '@/Components/Blocks/VideoBlock.vue'
 import DividerBlock   from '@/Components/Blocks/DividerBlock.vue'
 import CtaBlock       from '@/Components/Blocks/CtaBlock.vue'
 import HtmlBlock      from '@/Components/Blocks/HtmlBlock.vue'
-import EmbedBlock       from '@/components/Blocks/EmbedBlock.vue'
-import PaginationBlock  from '@/components/Blocks/PaginationBlock.vue'
-import NavigationBlock  from '@/components/Blocks/NavigationBlock.vue'
+import EmbedBlock       from '@/Components/Blocks/EmbedBlock.vue'
+import PaginationBlock  from '@/Components/Blocks/PaginationBlock.vue'
+import NavigationBlock  from '@/Components/Blocks/NavigationBlock.vue'
 import TableBlock       from '@/Components/Blocks/TableBlock.vue'
 import EditorNavigationBlock from './EditorNavigationBlock.vue'
+import CoverBlock        from '@/Components/Blocks/CoverBlock.vue'
+import StatCardBlock     from '@/Components/Blocks/StatCardBlock.vue'
+import CategoryChipBlock from '@/Components/Blocks/CategoryChipBlock.vue'
+import BandBlock         from '@/Components/Blocks/BandBlock.vue'
+import SectionHeaderBlock from '@/Components/Blocks/SectionHeaderBlock.vue'
+import MastheadBlock     from '@/Components/Blocks/MastheadBlock.vue'
+import NavHeaderBlock          from '@/Components/Blocks/NavHeaderBlock.vue'
+import SiteFooterBlock         from '@/Components/Blocks/SiteFooterBlock.vue'
+import ActiveFilterBannerBlock from '@/Components/Blocks/ActiveFilterBannerBlock.vue'
 
 const BLOCK_MAP = {
   paragraph: ParagraphBlock,
@@ -229,6 +238,15 @@ const BLOCK_MAP = {
   pagination: PaginationBlock,
   navigation: EditorNavigationBlock,
   table:      TableBlock,
+  cover:          CoverBlock,
+  'stat-card':    StatCardBlock,
+  'category-chip': CategoryChipBlock,
+  band:           BandBlock,
+  'section-header': SectionHeaderBlock,
+  masthead:        MastheadBlock,
+  'nav-header':          NavHeaderBlock,
+  'site-footer':         SiteFooterBlock,
+  'active-filter':       ActiveFilterBannerBlock,
 }
 
 const LABELS = {
@@ -239,6 +257,10 @@ const LABELS = {
   link: 'Link', accordion: 'Accordion', 'accordion-item': 'Acc. Item',
   tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
   navigation: 'Navigation', table: 'Table',
+  button: 'Button', 'icon-list': 'Icon List', columns: 'Columns',
+  cover: 'Cover', 'stat-card': 'Stat Card', 'category-chip': 'Category Chip',
+  band: 'Band', 'section-header': 'Section Header', masthead: 'Masthead',
+  'nav-header': 'Nav Header', 'site-footer': 'Site Footer', 'active-filter': 'Active Filter',
 }
 
 const props = defineProps({

@@ -69,9 +69,39 @@
           </div>
 
           <!-- Editor -->
-          <div>
+          <div class="space-y-2">
+            <!-- Mode switcher -->
+            <div class="flex items-center gap-1 rounded-lg border border-border bg-muted/40 p-1 w-fit">
+              <button
+                v-for="mode in editorModes"
+                :key="mode.value"
+                type="button"
+                class="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors"
+                :class="editorMode === mode.value
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'"
+                @click="editorMode = mode.value"
+              >
+                <Icon :icon="mode.icon" width="12" height="12" />
+                {{ mode.label }}
+              </button>
+            </div>
+
             <div class="rounded-lg border overflow-hidden">
-              <TiptapEditor v-model="form.body" />
+              <TiptapEditor v-if="editorMode === 'wysiwyg'" v-model="form.body" />
+              <MarkdownEditor v-else v-model="form.body" />
+            </div>
+
+            <!-- .md file upload (markdown mode only) -->
+            <div v-if="editorMode === 'markdown'" class="flex items-center gap-2">
+              <label
+                class="inline-flex items-center gap-1.5 cursor-pointer rounded-md border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+              >
+                <Icon icon="lucide:upload" width="12" height="12" />
+                Import .md file
+                <input type="file" accept=".md,text/markdown" class="sr-only" @change="importMarkdownFile" />
+              </label>
+              <span class="text-xs text-muted-foreground">CommonMark + GFM supported</span>
             </div>
           </div>
         </div>
@@ -89,10 +119,19 @@
                   <p class="text-xs text-muted-foreground">Only visible to you</p>
                 </div>
               </label>
-              <label class="flex items-center gap-3 cursor-pointer">
-                <input type="radio" v-model="form.status" value="scheduled" class="accent-primary" />
-                <div>
-                  <span class="text-sm font-medium">Scheduled</span>
+              <label class="flex items-center gap-3" :class="isPro ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'">
+                <input type="radio" v-model="form.status" value="scheduled" class="accent-primary" :disabled="!isPro" />
+                <div class="flex-1 min-w-0">
+                  <span class="text-sm font-medium flex items-center gap-1.5">
+                    Scheduled
+                    <Link
+                      v-if="!isPro"
+                      :href="route('settings.index') + '?tab=license'"
+                      class="inline-flex items-center gap-0.5 rounded-full bg-primary/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary leading-none hover:bg-primary/25 transition-colors"
+                    >
+                      <Icon icon="lucide:zap" width="9" height="9" />Pro
+                    </Link>
+                  </span>
                   <p class="text-xs text-muted-foreground">Auto-publishes at a set time</p>
                 </div>
               </label>
@@ -240,6 +279,24 @@
               </div>
             </div>
           </div>
+
+          <!-- Custom JS -->
+          <div class="rounded-lg border bg-card">
+            <button
+              type="button"
+              class="flex w-full items-center justify-between px-4 py-3 text-sm font-medium"
+              @click="customJsOpen = !customJsOpen"
+            >
+              <span>Custom JS</span>
+              <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': customJsOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div v-if="customJsOpen" class="border-t px-4 py-3">
+              <p class="text-xs text-muted-foreground mb-2">JavaScript injected on this post's page only.</p>
+              <JsEditor v-model="form.custom_js" />
+            </div>
+          </div>
         </div>
       </div>
     </form>
@@ -247,16 +304,41 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { Head, useForm } from "@inertiajs/vue3";
+import { ref, computed, watch } from 'vue'
+import { Head, useForm, usePage, Link } from "@inertiajs/vue3";
+import { Icon } from '@iconify/vue'
 import AppLayout from "@/Layouts/AppLayout.vue";
-import TiptapEditor from "@/Components/TiptapEditor.vue";
-import MediaPicker from '@/Components/MediaPicker.vue'
+import TiptapEditor from "@/components/TiptapEditor.vue";
+import MarkdownEditor from "@/Components/MarkdownEditor.vue";
+import MediaPicker from '@/components/MediaPicker.vue'
 import DateTimePicker from '@/Components/DateTimePicker.vue'
 import TagInput from '@/Components/TagInput.vue'
 import CategoryInput from '@/Components/CategoryInput.vue'
+import JsEditor from '@/Components/JsEditor.vue'
 import { useNotifications } from '@/composables/useNotifications.js'
 const { notify } = useNotifications()
+const page = usePage()
+const isPro = computed(() => page.props.isPro ?? false)
+
+// ── Editor mode ──────────────────────────────────────────────────────────────
+const editorModes = [
+  { value: 'wysiwyg',   label: 'Rich Text', icon: 'lucide:pilcrow' },
+  { value: 'markdown',  label: 'Markdown',  icon: 'lucide:file-text' },
+]
+const editorMode = ref('wysiwyg')
+
+watch(editorMode, (mode) => {
+  form.body_format = mode === 'markdown' ? 'markdown' : 'html'
+})
+
+function importMarkdownFile(event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (e) => { form.body = e.target.result ?? '' }
+  reader.readAsText(file)
+  event.target.value = ''
+}
 
 defineProps({
   categories: { type: Array, default: () => [] },
@@ -267,6 +349,7 @@ const form = useForm({
   title:             "",
   excerpt:           "",
   body:              "",
+  body_format:       "html",
   status:            "draft",
   published_at:      '',
   category_ids:      [],
@@ -278,7 +361,10 @@ const form = useForm({
   meta_title:        null,
   meta_description:  null,
   meta_keywords:     null,
+  custom_js:         null,
 });
+
+const customJsOpen = ref(false)
 
 const daysUntilPublish = computed(() => {
   if (!form.published_at) return null

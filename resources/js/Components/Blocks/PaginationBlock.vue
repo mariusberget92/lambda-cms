@@ -2,7 +2,7 @@
 <template>
   <nav
     v-if="lastPage > 1"
-    class="my-6 flex flex-wrap items-center gap-2"
+    class="my-6 flex flex-wrap items-center gap-2 w-full"
     :class="{
       'justify-start':  alignment === 'left',
       'justify-center': alignment === 'center',
@@ -10,37 +10,28 @@
     }"
     aria-label="Pagination"
   >
-    <!-- Prev -->
     <button
-      :class="[btnClass, currentPage <= 1 ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer']"
+      :class="['pg-btn', currentPage <= 1 ? 'pg-btn--disabled' : '']"
       :disabled="currentPage <= 1"
       @click="go(currentPage - 1)"
-    >
-      {{ prevLabel }}
-    </button>
+    >{{ prevLabel }}</button>
 
-    <!-- Numbered pages -->
     <template v-if="style === 'numbered'">
       <template v-for="p in visiblePages" :key="p">
-        <span v-if="p === '...'" class="px-1 text-sm text-muted-foreground select-none">…</span>
+        <span v-if="p === '...'" class="px-1 text-sm select-none pg-ellipsis">…</span>
         <button
           v-else
-          :class="[btnClass, p === currentPage ? activeClass : '', 'cursor-pointer']"
+          :class="['pg-btn', p === currentPage ? 'pg-btn--active' : '']"
           @click="go(p)"
-        >
-          {{ p }}
-        </button>
+        >{{ p }}</button>
       </template>
     </template>
 
-    <!-- Next -->
     <button
-      :class="[btnClass, currentPage >= lastPage ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer']"
+      :class="['pg-btn', currentPage >= lastPage ? 'pg-btn--disabled' : '']"
       :disabled="currentPage >= lastPage"
       @click="go(currentPage + 1)"
-    >
-      {{ nextLabel }}
-    </button>
+    >{{ nextLabel }}</button>
   </nav>
 </template>
 
@@ -56,7 +47,6 @@ const { getPagination } = useLoopPagination()
 const pageParam   = computed(() => props.block.data?.pageParam ?? 'page')
 const style       = computed(() => props.block.data?.style ?? 'prev-next')
 const alignment   = computed(() => props.block.data?.alignment ?? 'center')
-const buttonStyle = computed(() => props.block.data?.buttonStyle ?? 'outline')
 const prevLabel   = computed(() => props.block.data?.prevLabel ?? '← Previous')
 const nextLabel   = computed(() => props.block.data?.nextLabel ?? 'Next →')
 
@@ -81,7 +71,6 @@ function go(p) {
   router.get(pageUrl(p), {}, { preserveScroll: true })
 }
 
-// Visible page numbers with ellipsis — always show first, last, and ±2 around current
 const visiblePages = computed(() => {
   const total = lastPage.value
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
@@ -97,17 +86,36 @@ const visiblePages = computed(() => {
   }
   return result
 })
-
-const btnClass = computed(() => {
-  const base = 'px-3 py-1.5 rounded text-sm font-medium transition-colors min-w-[2rem] text-center'
-  if (buttonStyle.value === 'solid')   return `${base} bg-primary text-primary-foreground hover:opacity-90`
-  if (buttonStyle.value === 'ghost')   return `${base} text-foreground hover:bg-muted`
-  return `${base} border border-border bg-background text-foreground hover:bg-muted`
-})
-
-const activeClass = computed(() => {
-  if (buttonStyle.value === 'solid')  return 'ring-2 ring-offset-1 ring-primary'
-  if (buttonStyle.value === 'ghost')  return 'bg-muted font-bold'
-  return 'border-primary text-primary font-bold'
-})
 </script>
+
+<style scoped>
+.pg-btn {
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--blog-radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  min-width: 2.25rem;
+  text-align: center;
+  transition: all 150ms;
+  cursor: pointer;
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+}
+.pg-btn:hover:not(:disabled) {
+  background: var(--bg);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.pg-btn--active {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+.pg-btn--active:hover { opacity: 0.88; }
+.pg-btn--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.pg-ellipsis { color: var(--soft); }
+</style>

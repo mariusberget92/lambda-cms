@@ -35,6 +35,7 @@ class Post extends Model
         "slug",
         "excerpt",
         "body",
+        "body_format",
         "status",
         "featured",
         "published_at",
@@ -44,6 +45,7 @@ class Post extends Model
         "meta_title",
         "meta_description",
         "meta_keywords",
+        "custom_js",
         "preview_token",
     ];
 

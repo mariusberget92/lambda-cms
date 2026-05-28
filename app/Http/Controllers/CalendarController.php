@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Services\LicenseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -13,6 +14,10 @@ class CalendarController extends Controller
 {
     public function index(Request $request): Response
     {
+        if (! app(LicenseService::class)->isPro()) {
+            return Inertia::render('License/Upgrade', ['feature' => 'calendar']);
+        }
+
         $month = Carbon::now()->format('Y-m');
         $data  = $this->buildMonthData($request, $month);
 
@@ -25,6 +30,10 @@ class CalendarController extends Controller
 
     public function data(Request $request): JsonResponse
     {
+        if (! app(LicenseService::class)->isPro()) {
+            abort(403, 'Pro license required.');
+        }
+
         $validated = $request->validate([
             'month' => [
                 'nullable',

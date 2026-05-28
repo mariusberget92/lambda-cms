@@ -52,7 +52,7 @@ const containerClasses = computed(() => {
     d.wrap ? 'flex-wrap' : 'flex-nowrap',
     gapIsString.value     ? null : (GAP_MAP[d.gap]     ?? 'gap-4'),
     JUSTIFY_MAP[d.justify]     ?? 'justify-start',
-    ALIGN_MAP[d.align]         ?? 'items-start',
+    ALIGN_MAP[d.align]         ?? null,
     // inline-flex sizes itself to content — skip max-width constraint
     mode.value !== 'inline-flex' ? (MAX_WIDTH_MAP[d.maxWidth]  ?? 'max-w-full') : null,
     paddingIsObject.value ? null : (PADDING_MAP[d.padding] ?? 'p-4'),

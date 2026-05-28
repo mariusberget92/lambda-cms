@@ -4,7 +4,7 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import { Head, router } from '@inertiajs/vue3'
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import StatusBadge from '@/Components/StatusBadge.vue'
-import { LayoutTemplate, Plus, Pencil, Trash2, ChevronDown, Lock } from 'lucide-vue-next'
+import { LayoutTemplate, Plus, Pencil, Trash2, ChevronDown, Lock } from '@lucide/vue'
 import { formatDate } from '@/lib/utils.js'
 
 const props = defineProps({
@@ -17,9 +17,11 @@ const TYPE_LABELS = {
   'archive':        'Archive',
   'search-results': 'Search Results',
   'partial':        'Partial',
+  'header':         'Header',
+  'footer':         'Footer',
 }
 
-const ALL_TYPES = ['blog-index', 'single-post', 'archive', 'search-results', 'partial']
+const ALL_TYPES = ['blog-index', 'single-post', 'archive', 'search-results', 'partial', 'header', 'footer']
 
 // Flatten all templates into one sorted list
 const allTemplates = computed(() => {

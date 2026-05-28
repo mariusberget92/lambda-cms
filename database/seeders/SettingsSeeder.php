@@ -44,6 +44,11 @@ class SettingsSeeder extends Seeder
             ['group' => 'seo', 'key' => 'seo.default_description',   'value' => '',     'type' => 'string'],
             ['group' => 'seo', 'key' => 'seo.default_og_image_url',  'value' => '',     'type' => 'string'],
             ['group' => 'seo', 'key' => 'seo.default_keywords',      'value' => '',     'type' => 'string'],
+
+            // License
+            ['group' => 'license', 'key' => 'license.key',          'value' => '', 'type' => 'string'],
+            ['group' => 'license', 'key' => 'license.status',       'value' => 'inactive', 'type' => 'string'],
+            ['group' => 'license', 'key' => 'license.activated_at', 'value' => '', 'type' => 'string'],
         ];
 
         foreach ($defaults as $setting) {

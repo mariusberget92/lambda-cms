@@ -49,13 +49,28 @@ import PostTaxonomyBlock      from '@/Components/Blocks/PostTaxonomyBlock.vue'
 import PostCommentsBlock      from '@/Components/Blocks/PostCommentsBlock.vue'
 import ArchiveTitleBlock      from '@/Components/Blocks/ArchiveTitleBlock.vue'
 import SearchBlock            from '@/Components/Blocks/SearchBlock.vue'
-import NavigationBlock        from '@/components/Blocks/NavigationBlock.vue'
-import LinkBlock              from '@/components/Blocks/LinkBlock.vue'
+import NavigationBlock        from '@/Components/Blocks/NavigationBlock.vue'
+import LinkBlock              from '@/Components/Blocks/LinkBlock.vue'
 import FilterLinkBlock        from '@/Components/Blocks/FilterLinkBlock.vue'
-import PaginationBlock        from '@/components/Blocks/PaginationBlock.vue'
+import PaginationBlock        from '@/Components/Blocks/PaginationBlock.vue'
 import PostListBlock          from '@/Components/Blocks/PostListBlock.vue'
 import TemplateBlock          from '@/Components/Blocks/TemplateBlock.vue'
 import TableBlock             from '@/Components/Blocks/TableBlock.vue'
+import AccordionBlock         from '@/Components/Blocks/AccordionBlock.vue'
+import TabsBlock              from '@/Components/Blocks/TabsBlock.vue'
+import EmbedBlock             from '@/Components/Blocks/EmbedBlock.vue'
+import ButtonBlock            from '@/Components/Blocks/ButtonBlock.vue'
+import IconListBlock          from '@/Components/Blocks/IconListBlock.vue'
+import PostCardBlock          from '@/Components/Blocks/PostCardBlock.vue'
+import CoverBlock             from '@/Components/Blocks/CoverBlock.vue'
+import StatCardBlock          from '@/Components/Blocks/StatCardBlock.vue'
+import CategoryChipBlock      from '@/Components/Blocks/CategoryChipBlock.vue'
+import BandBlock              from '@/Components/Blocks/BandBlock.vue'
+import SectionHeaderBlock     from '@/Components/Blocks/SectionHeaderBlock.vue'
+import MastheadBlock          from '@/Components/Blocks/MastheadBlock.vue'
+import NavHeaderBlock          from '@/Components/Blocks/NavHeaderBlock.vue'
+import SiteFooterBlock         from '@/Components/Blocks/SiteFooterBlock.vue'
+import ActiveFilterBannerBlock from '@/Components/Blocks/ActiveFilterBannerBlock.vue'
 
 const props = defineProps({
   blocks:       { type: Array,  default: () => [] },
@@ -238,6 +253,24 @@ const BLOCK_MAP = {
   pagination:            PaginationBlock,
   'template':            TemplateBlock,
   table:                 TableBlock,
+  accordion:             AccordionBlock,
+  'accordion-item':      AccordionBlock,
+  tabs:                  TabsBlock,
+  'tab-item':            TabsBlock,
+  embed:                 EmbedBlock,
+  button:               ButtonBlock,
+  'icon-list':          IconListBlock,
+  columns:              ContainerBlock,
+  'post-card':          PostCardBlock,
+  cover:                CoverBlock,
+  'stat-card':          StatCardBlock,
+  'category-chip':      CategoryChipBlock,
+  band:                 BandBlock,
+  'section-header':     SectionHeaderBlock,
+  masthead:             MastheadBlock,
+  'nav-header':          NavHeaderBlock,
+  'site-footer':         SiteFooterBlock,
+  'active-filter':       ActiveFilterBannerBlock,
 }
 
 // Injected by LoopItemProvider when this renderer is inside a loop iteration

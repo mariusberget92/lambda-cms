@@ -39,6 +39,7 @@
             <Calendar class="w-4 h-4" />
           </template>
           Calendar
+          <span v-if="!isPro" class="ml-auto rounded-full bg-primary/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary leading-none">Pro</span>
         </SidebarLink>
 
         <SidebarLink
@@ -169,6 +170,7 @@
             </svg>
           </template>
           Webhooks
+          <span v-if="!isPro" class="ml-auto rounded-full bg-primary/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary leading-none">Pro</span>
         </SidebarLink>
         <div class="border-t border-sidebar-border my-3"></div>
         <a
@@ -238,8 +240,8 @@
 <script setup>
 import { computed, onMounted, watchEffect } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
-import { Sun, Moon, Calendar, ExternalLink, LayoutTemplate } from "lucide-vue-next";
-import SidebarLink from "@/Components/SidebarLink.vue";
+import { Sun, Moon, Calendar, ExternalLink, LayoutTemplate } from '@lucide/vue';
+import SidebarLink from "@/components/SidebarLink.vue";
 import { useTheme } from "@/composables/useTheme.js";
 import Notifications from "@/Components/Notifications.vue";
 
@@ -254,6 +256,7 @@ const page = usePage();
 const user = computed(() => page.props.auth?.user ?? { name: "", email: "" });
 const currentRoute = computed(() => page.props.currentRoute ?? "");
 const pendingCommentsCount = computed(() => page.props.pendingCommentsCount ?? 0);
+const isPro = computed(() => page.props.isPro ?? false);
 const userInitials = computed(() =>
   user.value.name
     .split(" ")

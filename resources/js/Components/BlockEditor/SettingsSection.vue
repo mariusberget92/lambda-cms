@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { ChevronRight } from 'lucide-vue-next'
+import { ChevronRight } from '@lucide/vue'
 
 const props = defineProps({
   label:       { type: String,  required: true },

@@ -1,7 +1,6 @@
-<!-- resources/js/Components/Blocks/VideoBlock.vue -->
 <template>
-  <figure class="my-4">
-    <div v-if="embedUrl" class="relative aspect-video rounded-lg overflow-hidden border border-border">
+  <figure class="video-block">
+    <div v-if="embedUrl" class="video-block__frame">
       <iframe
         :src="embedUrl"
         class="absolute inset-0 w-full h-full"
@@ -10,14 +9,15 @@
         allowfullscreen
       />
     </div>
-    <div v-else class="aspect-video rounded-lg border-2 border-dashed border-border flex items-center justify-center text-muted-foreground text-sm">
+    <div v-else class="video-block__empty">
       {{ resolvedUrl ? 'Invalid video URL' : 'No video URL set' }}
     </div>
-    <figcaption v-if="block.data.caption" class="mt-2 text-center text-sm text-muted-foreground">
+    <figcaption v-if="block.data.caption" class="video-block__caption">
       {{ block.data.caption }}
     </figcaption>
   </figure>
 </template>
+
 <script setup>
 import { computed } from 'vue'
 import { useFieldBinding } from '@/composables/useLoopBinding.js'
@@ -34,3 +34,25 @@ const embedUrl = computed(() => {
   return null
 })
 </script>
+
+<style scoped>
+.video-block { margin: 1rem 0; }
+.video-block__frame {
+  position: relative;
+  aspect-ratio: 16/9;
+  border-radius: var(--blog-radius);
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+}
+.video-block__empty {
+  aspect-ratio: 16/9;
+  border-radius: var(--blog-radius);
+  border: 2px dashed var(--line-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--soft);
+  font-size: 0.875rem;
+}
+.video-block__caption { margin-top: 0.5rem; text-align: center; font-size: 0.875rem; color: var(--soft); }
+</style>

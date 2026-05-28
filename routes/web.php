@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\BlogController;
+
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\CategoryController;
@@ -43,8 +44,6 @@ Route::middleware('not_installed')->prefix('install')->group(function () {
     Route::post('/admin',   [InstallController::class, 'admin']);
     Route::get('/mail',     [InstallController::class, 'showMail'])->name('install.mail');
     Route::post('/mail',    [InstallController::class, 'mail']);
-    Route::get('/genre',    [InstallController::class, 'showGenre'])->name('install.genre');
-    Route::post('/genre',   [InstallController::class, 'genre']);
 });
 
 // ── All routes below require the app to be installed ─────────────────────────
@@ -129,6 +128,7 @@ Route::middleware('installed')->group(function () {
         Route::get('/media',                    [MediaController::class, 'index'])->name('media.index');
         Route::post('/media',                   [MediaController::class, 'store'])->name('media.store');
         Route::get('/media/{media}/usage',      [MediaController::class, 'usage'])->name('media.usage');
+        Route::post('/media/{media}/replace',   [MediaController::class, 'replace'])->name('media.replace');
         Route::patch('/media/{media}',          [MediaController::class, 'update'])->name('media.update');
         Route::delete('/media/bulk',            [MediaController::class, 'bulkDestroy'])->name('media.bulk-destroy');
         Route::delete('/media/{media}',         [MediaController::class, 'destroy'])->name('media.destroy');
@@ -158,9 +158,11 @@ Route::middleware('installed')->group(function () {
         Route::post('/comments/bulk',               [CommentController::class, 'bulk'])->name('comments.bulk');
         Route::post('/comments/{comment}/reply',    [CommentController::class, 'reply'])->name('comments.reply');
 
-        Route::get('/settings',             [SettingsController::class, 'index'])->name('settings.index');
-        Route::put('/settings/{group}',     [SettingsController::class, 'update'])->name('settings.update');
-        Route::post('/settings/test-email', [SettingsController::class, 'testEmail'])->name('settings.test-email');
+        Route::get('/settings',                          [SettingsController::class, 'index'])->name('settings.index');
+        Route::put('/settings/{group}',                  [SettingsController::class, 'update'])->name('settings.update');
+        Route::post('/settings/test-email',              [SettingsController::class, 'testEmail'])->name('settings.test-email');
+        Route::post('/settings/license/activate',        [SettingsController::class, 'activateLicense'])->name('settings.license.activate');
+        Route::delete('/settings/license',               [SettingsController::class, 'deactivateLicense'])->name('settings.license.deactivate');
 
         Route::get('/navigation',                      [NavigationController::class, 'index'])->name('navigation.index');
         Route::post('/navigation',                     [NavigationController::class, 'store'])->name('navigation.store');

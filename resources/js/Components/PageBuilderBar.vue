@@ -60,6 +60,33 @@
 
     <div class="w-px h-5 bg-white/10 shrink-0" />
 
+    <!-- Custom JS popover -->
+    <div class="relative shrink-0" ref="customJsRef">
+      <button
+        type="button"
+        class="flex items-center gap-1.5 px-2 py-1 rounded text-xs transition-colors"
+        :class="customJs ? 'text-primary hover:text-primary/80 hover:bg-white/10' : 'text-white/50 hover:text-white hover:bg-white/10'"
+        @click="customJsOpen = !customJsOpen"
+      >
+        <Code2 class="w-3.5 h-3.5" />
+        Custom JS
+        <ChevronDown class="w-3 h-3 transition-transform" :class="{ 'rotate-180': customJsOpen }" />
+      </button>
+      <Transition name="popover">
+        <div
+          v-if="customJsOpen"
+          class="absolute right-0 top-full mt-1 w-96 rounded-lg border border-white/10 bg-[#181825] shadow-2xl p-4 z-50 space-y-3"
+        >
+          <p class="text-xs font-semibold text-white/50 uppercase tracking-wider">Custom JavaScript</p>
+          <p class="text-xs text-white/30">JavaScript injected on this page only.</p>
+          <JsEditor
+            :model-value="customJs"
+            @update:model-value="$emit('update:customJs', $event)"
+          />
+        </div>
+      </Transition>
+    </div>
+
     <!-- SEO popover -->
     <div class="relative shrink-0" ref="seoRef">
       <button
@@ -176,7 +203,8 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { ArrowLeft, ChevronDown, ExternalLink } from 'lucide-vue-next'
+import { ArrowLeft, ChevronDown, Code2, ExternalLink } from '@lucide/vue'
+import JsEditor from '@/Components/JsEditor.vue'
 
 const props = defineProps({
   backHref:         { type: String,  required: true },
@@ -187,6 +215,7 @@ const props = defineProps({
   metaTitle:        { type: String,  default: '' },
   metaDescription:  { type: String,  default: '' },
   metaKeywords:     { type: String,  default: '' },
+  customJs:         { type: String,  default: '' },
   processing:       { type: Boolean, default: false },
   saveLabel:        { type: String,  default: 'Save page' },
   showRevisions:    { type: Boolean, default: false },
@@ -197,12 +226,15 @@ const props = defineProps({
 const emit = defineEmits([
   'update:title', 'update:slug', 'update:status',
   'update:metaTitle', 'update:metaDescription', 'update:metaKeywords',
+  'update:customJs',
   'save', 'restoreRevision', 'revisionsOpen',
 ])
 
 const seoOpen       = ref(false)
+const customJsOpen  = ref(false)
 const revisionsOpen = ref(false)
 const seoRef        = ref(null)
+const customJsRef   = ref(null)
 const revisionsRef  = ref(null)
 
 function onRevisionsToggle() {
@@ -213,6 +245,7 @@ function onRevisionsToggle() {
 // Close popovers when clicking outside
 function onClickOutside(e) {
   if (seoRef.value && !seoRef.value.contains(e.target)) seoOpen.value = false
+  if (customJsRef.value && !customJsRef.value.contains(e.target)) customJsOpen.value = false
   if (revisionsRef.value && !revisionsRef.value.contains(e.target)) revisionsOpen.value = false
 }
 

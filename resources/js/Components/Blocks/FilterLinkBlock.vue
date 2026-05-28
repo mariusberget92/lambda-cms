@@ -17,8 +17,7 @@ const filterUrl = computed(() => slug.value ? `/?${paramName.value}=${slug.value
 const isActive = computed(() => {
   if (!slug.value) return false
   try {
-    const params = new URLSearchParams(window.location.search)
-    return params.get(paramName.value) === slug.value
+    return new URLSearchParams(window.location.search).get(paramName.value) === slug.value
   } catch {
     return false
   }
@@ -31,35 +30,59 @@ function navigate(e) {
 </script>
 
 <template>
-  <!-- List variant: compact row, full-width, subtle hover -->
   <a
     v-if="variant === 'list'"
     :href="filterUrl"
-    class="flex items-center justify-between w-full px-2 py-1.5 rounded-md text-sm transition-colors"
-    :style="isActive
-      ? 'color:#4f46e5; background:#ede9fe; font-weight:600;'
-      : 'color:#4b5563;'"
-    style_hover="background:#f3f4f6"
-    @mouseenter="e => !isActive && (e.target.style.background='#f3f4f6')"
-    @mouseleave="e => !isActive && (e.target.style.background='')"
+    class="filter-list-link flex items-center justify-between w-full px-2.5 py-1.5 rounded transition-all duration-150 font-sans text-sm"
+    :class="{ 'filter-list-link--active': isActive }"
     @click="navigate"
   >
-    <span>{{ label || slug }}</span>
-    <span style="color:#9ca3af; font-size:10px;">›</span>
+    <span class="flex items-center gap-1.5"><span class="filter-list-link__dot">·</span>{{ label || slug }}</span>
+    <span class="font-mono-blog text-[11px] filter-list-link__arrow">›</span>
   </a>
 
-  <!-- Pill variant: compact rounded badge -->
   <a
     v-else-if="variant === 'pill'"
     :href="filterUrl"
-    class="inline-flex items-center rounded-full text-xs font-medium transition-colors cursor-pointer"
-    :style="isActive
-      ? 'padding:3px 10px; background:#ede9fe; color:#4f46e5; border:1px solid #c4b5fd;'
-      : 'padding:3px 10px; background:#f9fafb; color:#374151; border:1px solid #e5e7eb;'"
-    @mouseenter="e => !isActive && (e.target.style.background='#f3f4f6')"
-    @mouseleave="e => !isActive && (e.target.style.background= isActive ? '#ede9fe' : '#f9fafb')"
+    class="filter-pill inline-flex items-center font-mono-blog text-[11px] px-3 py-1 rounded-full transition-all duration-150 cursor-pointer"
+    :class="{ 'filter-pill--active': isActive }"
     @click="navigate"
   >
     {{ label || slug }}
   </a>
 </template>
+
+<style scoped>
+.filter-list-link {
+  color: var(--soft);
+  border-radius: var(--blog-radius);
+}
+.filter-list-link:hover,
+.filter-list-link--active {
+  color: var(--accent);
+  background: var(--bg);
+  font-weight: 600;
+}
+.filter-list-link__dot   { color: var(--line-strong); }
+.filter-list-link__arrow { color: var(--line-strong); }
+.filter-list-link:hover .filter-list-link__arrow,
+.filter-list-link--active .filter-list-link__arrow {
+  color: var(--accent);
+}
+.filter-list-link:hover .filter-list-link__dot,
+.filter-list-link--active .filter-list-link__dot {
+  color: var(--accent);
+}
+
+.filter-pill {
+  color: var(--soft);
+  border: 1px solid var(--line-strong);
+  background: transparent;
+}
+.filter-pill:hover,
+.filter-pill--active {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+</style>

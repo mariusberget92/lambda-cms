@@ -26,6 +26,7 @@ export const SOURCE_FIELDS = {
     { value: 'name',        label: 'Category Name' },
     { value: 'slug',        label: 'Category Slug' },
     { value: 'description', label: 'Description' },
+    { value: 'hue',         label: 'Hue (0–360)' },
     { value: 'posts_count', label: 'Post Count' },
     { value: 'url',         label: 'Category URL' },
   ],

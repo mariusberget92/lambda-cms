@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { X, CircleCheck, CircleX, TriangleAlert, Info } from 'lucide-vue-next'
+import { X, CircleCheck, CircleX, TriangleAlert, Info } from '@lucide/vue'
 
 const props = defineProps({
   id:       { type: Number, required: true },

@@ -145,8 +145,8 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { RotateCcw, RotateCw } from 'lucide-vue-next'
+import { Tabs, TabsList, TabsTrigger } from '@/Components/ui/tabs'
+import { RotateCcw, RotateCw } from '@lucide/vue'
 import { VueDraggable } from 'vue-draggable-plus'
 import LayerItem from './LayerItem.vue'
 import AdvancedSettings  from './blocks/AdvancedSettings.vue'
@@ -186,6 +186,17 @@ import EmbedSettings          from './blocks/EmbedSettings.vue'
 import PaginationSettings     from './blocks/PaginationSettings.vue'
 import NavigationSettings     from './blocks/NavigationSettings.vue'
 import TableSettings         from './blocks/TableSettings.vue'
+import ButtonSettings        from './blocks/ButtonSettings.vue'
+import IconListSettings      from './blocks/IconListSettings.vue'
+import ColumnsSettings       from './blocks/ColumnsSettings.vue'
+import CoverSettings         from './blocks/CoverSettings.vue'
+import StatCardSettings      from './blocks/StatCardSettings.vue'
+import CategoryChipSettings  from './blocks/CategoryChipSettings.vue'
+import BandSettings          from './blocks/BandSettings.vue'
+import SectionHeaderSettings from './blocks/SectionHeaderSettings.vue'
+import MastheadSettings      from './blocks/MastheadSettings.vue'
+import NavHeaderSettings     from './blocks/NavHeaderSettings.vue'
+import SiteFooterSettings    from './blocks/SiteFooterSettings.vue'
 
 const props = defineProps({
   blocks:        { type: Array,   default: () => [] },
@@ -239,6 +250,10 @@ const STYLE_BLOCKS = new Set([
   'filter-link', 'navigation', 'search',
   'post-title', 'post-meta', 'post-author', 'post-taxonomy',
   'archive-title',
+  // New blocks
+  'button', 'icon-list', 'columns',
+  // Design system blocks
+  'cover', 'stat-card', 'category-chip', 'band', 'section-header', 'masthead',
 ])
 
 // Block types where Style should be the default active tab
@@ -268,6 +283,10 @@ const LABELS = {
   link: 'Link', 'filter-link': 'Filter Link', 'template': 'Template', accordion: 'Accordion', 'accordion-item': 'Accordion Item',
   tabs: 'Tabs', 'tab-item': 'Tab', embed: 'Embed', pagination: 'Pagination',
   navigation: 'Navigation', table: 'Table',
+  button: 'Button', 'icon-list': 'Icon List', columns: 'Columns',
+  cover: 'Cover', 'stat-card': 'Stat Card', 'category-chip': 'Category Chip',
+  band: 'Band', 'section-header': 'Section Header', masthead: 'Masthead',
+  'nav-header': 'Nav Header', 'site-footer': 'Site Footer', 'active-filter': 'Active Filter',
 }
 
 const COMPONENT_MAP = {
@@ -297,6 +316,18 @@ const COMPONENT_MAP = {
   pagination:            PaginationSettings,
   navigation:            NavigationSettings,
   table:                 TableSettings,
+  button:                ButtonSettings,
+  'icon-list':           IconListSettings,
+  columns:               ColumnsSettings,
+  cover:                 CoverSettings,
+  'stat-card':           StatCardSettings,
+  'category-chip':       CategoryChipSettings,
+  band:                  BandSettings,
+  'section-header':      SectionHeaderSettings,
+  masthead:              MastheadSettings,
+  'nav-header':          NavHeaderSettings,
+  'site-footer':         SiteFooterSettings,
+  'active-filter':       null,
 }
 
 const settingsComponent = computed(() =>

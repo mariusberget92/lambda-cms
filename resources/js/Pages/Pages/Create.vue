@@ -24,6 +24,7 @@ const form = useForm({
   meta_title:       '',
   meta_description: '',
   meta_keywords:    '',
+  custom_js:        '',
 })
 
 watch(() => form.title, (val, oldVal) => {
@@ -57,6 +58,7 @@ function submit() {
         :meta-title="form.meta_title"
         :meta-description="form.meta_description"
         :meta-keywords="form.meta_keywords"
+        :custom-js="form.custom_js"
         :processing="form.processing"
         save-label="Save page"
         :show-revisions="false"
@@ -66,6 +68,7 @@ function submit() {
         @update:meta-title="form.meta_title = $event"
         @update:meta-description="form.meta_description = $event"
         @update:meta-keywords="form.meta_keywords = $event"
+        @update:custom-js="form.custom_js = $event"
         @save="submit"
       />
     </template>

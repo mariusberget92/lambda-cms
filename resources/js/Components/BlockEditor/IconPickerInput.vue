@@ -114,7 +114,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { Icon, addCollection } from '@iconify/vue'
-import { ChevronDown, X } from 'lucide-vue-next'
+import { ChevronDown, X } from '@lucide/vue'
 
 import fa6SolidData   from '@iconify-json/fa6-solid/icons.json'
 import fa6RegularData from '@iconify-json/fa6-regular/icons.json'

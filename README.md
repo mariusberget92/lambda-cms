@@ -1,6 +1,6 @@
 # ⚡ Lambda CMS
 
-> A modern, self-hosted CMS built with **Laravel 12**, **Inertia.js**, and **Vue 3**. Clean, fast, and developer-friendly — with a full-featured drag-and-drop block editor, template system, media library, comment moderation, webhooks, and a headless JSON API.
+> A modern, self-hosted CMS built with **Laravel 12**, **Inertia.js**, and **Vue 3**. Clean, fast, and developer-friendly — with a full-featured block editor, template system, media library, comment moderation, webhooks, and a headless JSON API.
 
 ---
 
@@ -24,7 +24,7 @@
 - **Posts** — Full CRUD with rich text (Tiptap) or drag-and-drop block editor
 - **Pages** — Custom static pages built entirely with the block editor
 - **Categories & Tags** — Full CRUD, many-to-many on posts; categories support custom colors
-- **Post scheduling** — Set a future publish date; posts go live automatically
+- **Post scheduling** — Set a future publish date; posts go live automatically via Laravel scheduler
 - **Autosave** — Drafts are saved automatically while editing
 - **Revisions** — Full revision history with one-click restore (up to 25 revisions)
 - **Draft preview** — Shareable `/preview/posts/{token}` and `/preview/pages/{token}` URLs, no login required
@@ -32,17 +32,17 @@
 
 ### 🧱 Block Editor
 
-30 block types organized by purpose:
+30+ block types organized by purpose:
 
 | Category | Blocks |
 |---|---|
-| 📄 Content | Paragraph, Heading, Image, Video, Gallery, Quote, Code, CTA, HTML, Table, Divider, Spacer |
+| 📄 Content | Paragraph, Heading, Quote, Code, Divider, Spacer, HTML |
+| 🖼️ Media | Image, Gallery, Video, Embed |
 | 🗂️ Layout | Section, Container (flex / grid / inline-flex) |
-| 🔗 Interactive | Link, Navigation, Search, Filter Link |
-| 🔄 Dynamic | Loop (posts / categories / tags / pages), Post List |
-| 📰 Post parts | Post Title, Post Body, Featured Image, Post Meta, Post Author, Post Taxonomy, Post Comments |
-| 🗃️ Archive | Archive Title, Archive Loop |
-| 🧩 Composition | Template (embed a saved partial or layout template) |
+| 🔗 Interactive | Button, CTA, Link, Navigation, Accordion, Tabs, Search, Filter Link, Active Filter, Icon List |
+| 🔄 Data | Loop, Pagination, Post List, Post Card, Post Title, Post Body, Post Featured Image, Post Meta, Post Author, Post Taxonomy, Post Comments, Archive Title |
+| 🌐 Site | Nav Header, Site Footer, Masthead, Band |
+| 🧩 Composition | Table, Template (embed a saved partial or layout) |
 
 **Editor features:**
 - 🖱️ Drag-and-drop canvas with cross-list nesting
@@ -55,13 +55,15 @@
 
 ### 🧩 Template System
 
-- **Template types:** `partial`, `blog-index`, `single-post`, `archive`, `search-results`
-- **5 pre-shipped system templates** — cannot be deleted, can be freely edited
+- **Template types:** `partial`, `blog-index`, `single-post`, `archive`, `search-results`, `header`, `footer`
+- **7 pre-shipped system templates** — cannot be deleted, can be freely edited
   - Post Card (partial — used in the default blog index loop)
   - Default Blog Index
   - Default Single Post
   - Default Archive
   - Default Search Results
+  - Default Header (rendered on every blog page)
+  - Default Footer (rendered on every blog page)
 - Full CRUD for custom templates with the same block editor, autosave, and revisions
 - Templates embedded in loop blocks correctly inherit loop context for dynamic field bindings
 
@@ -77,9 +79,15 @@
 ### 🌐 Public Frontend
 
 - Block-driven pages — every public page is rendered from saved block templates
+- Header and footer rendered from editable block templates (type: `header` / `footer`)
+- Blog index with category/tag filtering, active filter indicator, and masthead hero
+- Single post with featured hero image, unified content card, and comments
+- Category and tag archive pages
+- Full-text search with results loop
 - RSS feed at `/feed` and XML sitemap at `/sitemap.xml`
+- Token-driven design system via CSS custom properties — no hardcoded colors in any block component
 - Admin bar visible to authenticated users (hidden from public visitors)
-- Navigation items managed from the admin and rendered via the Navigation block
+- Accent color from settings applies live to the blog frontend
 
 ### 💬 Comments
 
@@ -133,6 +141,7 @@
 - SMTP mail configuration with test-send button
 - Media: max upload size, image resize width
 - Comments: enabled toggle, items per page
+- Appearance: accent color — applies live to both admin and blog frontend
 
 ### 🔌 REST API (Headless)
 
@@ -161,7 +170,7 @@ POST /api/v1/query          ← block editor loop data source
 
 - PHP 8.2+
 - Composer
-- Node.js 18+ & npm
+- Node.js 20+ & npm
 - SQLite (built into PHP) or MySQL 8+
 
 ### Install
@@ -179,13 +188,28 @@ php artisan key:generate
 npm run build
 ```
 
-Then visit `/install` in your browser and complete the 5-step setup wizard.
+Then visit your site in a browser. You'll be redirected to `/install` for the 5-step setup wizard.
 
 ### Local Development
 
 ```bash
 php artisan serve   # or use Laravel Herd / Valet
 npm run dev
+```
+
+### Production
+
+```bash
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+npm run build
+```
+
+Add a cron job to run the Laravel scheduler every minute (handles auto-publishing of scheduled posts):
+
+```
+* * * * * cd /path/to/lambda-cms && php artisan schedule:run >> /dev/null 2>&1
 ```
 
 ---
@@ -197,8 +221,6 @@ npm run dev
 - [ ] API write access — token-based auth for creating/updating content
 - [ ] Multi-language / i18n content support
 - [ ] Featured image in-browser crop before saving to media library
-- [ ] Pagination block for the public frontend
-- [ ] User-configurable accent color
 - [ ] Import / export pages and templates
 
 ---

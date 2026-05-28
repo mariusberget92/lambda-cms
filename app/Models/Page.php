@@ -33,6 +33,7 @@ class Page extends Model
         'meta_title',
         'meta_description',
         'meta_keywords',
+        'custom_js',
         'preview_token',
     ];
 

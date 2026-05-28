@@ -478,6 +478,162 @@
 
       </div>
 
+      <!-- Custom Code -->
+      <div v-show="activeTab === 'custom-code'">
+        <!-- Pro gate -->
+        <div v-if="!license.is_pro" class="rounded-lg border border-border bg-muted/30 p-6 flex flex-col items-center text-center gap-3">
+          <Icon icon="lucide:zap" class="text-primary" width="28" height="28" />
+          <div>
+            <p class="text-sm font-semibold">Custom JS requires Pro</p>
+            <p class="text-xs text-muted-foreground mt-1">Inject JavaScript on every public page to power analytics, chat widgets, and more.</p>
+          </div>
+          <button
+            type="button"
+            class="mt-1 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-[var(--primary-hover)] transition-colors"
+            @click="activeTab = 'license'"
+          >
+            Activate license
+          </button>
+        </div>
+
+        <form v-else @submit.prevent="submitCode">
+          <ContentCard
+            title="Custom Code"
+            description="JavaScript injected globally on every public page."
+          >
+            <div class="space-y-3">
+              <div class="space-y-1">
+                <label class="text-sm font-medium">Global Custom JS</label>
+                <p class="text-xs text-muted-foreground">Runs on every public page. Be careful with untrusted code.</p>
+                <JsEditor v-model="codeForm['code.custom_js']" />
+              </div>
+            </div>
+
+            <template #footer>
+              <button
+                type="submit"
+                :disabled="codeForm.processing"
+                class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)] disabled:opacity-50"
+              >
+                {{ codeForm.processing ? 'Saving...' : 'Save changes' }}
+              </button>
+            </template>
+          </ContentCard>
+        </form>
+      </div>
+
+      <!-- License -->
+      <div v-show="activeTab === 'license'" class="space-y-6">
+
+        <!-- Active license -->
+        <ContentCard
+          v-if="license.is_pro"
+          title="Pro License"
+          description="Your Pro license is active."
+        >
+          <div class="space-y-4">
+            <div class="flex items-center gap-3 rounded-lg border border-primary bg-primary/5 px-4 py-3">
+              <Icon icon="lucide:badge-check" class="text-primary shrink-0" width="20" height="20" />
+              <div>
+                <p class="text-sm font-semibold text-foreground">Lambda CMS Pro — Active</p>
+                <p v-if="license.key" class="text-xs text-muted-foreground font-mono mt-0.5">{{ license.key }}</p>
+                <p v-if="license.activated_at" class="text-xs text-muted-foreground mt-0.5">
+                  Activated {{ new Date(license.activated_at).toLocaleDateString() }}
+                </p>
+              </div>
+            </div>
+
+            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <li
+                v-for="feat in PRO_FEATURES"
+                :key="feat.label"
+                class="flex items-center gap-2 text-sm text-foreground"
+              >
+                <Icon :icon="feat.icon" class="text-primary shrink-0" width="14" height="14" />
+                {{ feat.label }}
+              </li>
+            </ul>
+          </div>
+
+          <template #footer>
+            <button
+              type="button"
+              :disabled="deactivateForm.processing"
+              class="rounded-md border border-destructive px-4 py-2 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-50"
+              @click="deactivateLicense"
+            >
+              Deactivate license
+            </button>
+          </template>
+        </ContentCard>
+
+        <!-- Activate license -->
+        <ContentCard
+          v-else
+          title="Activate Pro License"
+          description="Enter your license key to unlock Pro features."
+        >
+          <div class="space-y-5">
+
+            <!-- Feature list -->
+            <div class="rounded-lg border border-border bg-muted/30 px-4 py-4">
+              <p class="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Pro includes</p>
+              <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <li
+                  v-for="feat in PRO_FEATURES"
+                  :key="feat.label"
+                  class="flex items-center gap-2 text-sm text-foreground"
+                >
+                  <Icon :icon="feat.icon" class="text-primary shrink-0" width="14" height="14" />
+                  {{ feat.label }}
+                </li>
+              </ul>
+            </div>
+
+            <!-- Key input -->
+            <div class="space-y-1">
+              <label for="license_key" class="text-sm font-medium">License key</label>
+              <p class="text-xs text-muted-foreground">Format: XXXXX-XXXXX-XXXXX-XXXXX</p>
+              <input
+                id="license_key"
+                v-model="licenseForm.key"
+                type="text"
+                placeholder="ABCDE-12345-FGHIJ-67890"
+                autocomplete="off"
+                spellcheck="false"
+                class="w-full rounded-md border bg-background px-3 py-2 text-sm font-mono placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring uppercase"
+                :class="{ 'border-destructive': licenseForm.errors.license_key }"
+              />
+              <p v-if="licenseForm.errors.license_key" class="text-xs text-destructive mt-1">
+                {{ licenseForm.errors.license_key }}
+              </p>
+            </div>
+
+            <a
+              href="https://lambdacms.io/pro"
+              target="_blank"
+              rel="noopener"
+              class="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+            >
+              Get a license key
+              <Icon icon="lucide:arrow-up-right" width="12" height="12" />
+            </a>
+          </div>
+
+          <template #footer>
+            <button
+              type="button"
+              :disabled="licenseForm.processing || !licenseForm.key.trim()"
+              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-[var(--primary-hover)] transition-colors disabled:opacity-50"
+              @click="activateLicense"
+            >
+              {{ licenseForm.processing ? 'Activating...' : 'Activate license' }}
+            </button>
+          </template>
+        </ContentCard>
+
+      </div>
+
       <!-- Appearance -->
       <div v-show="activeTab === 'appearance'">
         <form @submit.prevent="submitAppearance">
@@ -531,20 +687,26 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import { Loader2 } from 'lucide-vue-next'
-import { Head, useForm, usePage } from "@inertiajs/vue3";
+import { ref, computed, watch, onMounted } from 'vue'
+import { Loader2 } from '@lucide/vue'
+import { Head, useForm, usePage, router } from "@inertiajs/vue3";
+import { Icon } from '@iconify/vue'
 import { useNotifications } from '@/composables/useNotifications.js'
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PageHeader from '@/Components/PageHeader.vue'
 import ContentCard from '@/Components/ContentCard.vue'
 import SelectBox from '@/Components/SelectBox.vue'
 import NumberInput from '@/Components/NumberInput.vue'
+import JsEditor from '@/Components/JsEditor.vue'
 
 const props = defineProps({
   settings: {
     type: Object,
     required: true,
+  },
+  license: {
+    type: Object,
+    default: () => ({ key: null, status: 'inactive', is_pro: false, activated_at: null }),
   },
 });
 
@@ -552,13 +714,24 @@ const props = defineProps({
 const activeTab = ref('general')
 
 const tabs = [
-  { key: 'general',    label: 'General'    },
-  { key: 'mail',       label: 'Mail'       },
-  { key: 'media',      label: 'Media'      },
-  { key: 'comments',   label: 'Comments'   },
-  { key: 'seo',        label: 'SEO'        },
-  { key: 'appearance', label: 'Appearance' },
+  { key: 'general',     label: 'General'      },
+  { key: 'mail',        label: 'Mail'         },
+  { key: 'media',       label: 'Media'        },
+  { key: 'comments',    label: 'Comments'     },
+  { key: 'seo',         label: 'SEO'          },
+  { key: 'appearance',  label: 'Appearance'   },
+  { key: 'custom-code', label: 'Custom Code'  },
+  { key: 'license',     label: 'License'      },
 ]
+
+// Jump to tab from URL query param (e.g., ?tab=license)
+onMounted(() => {
+  const params = new URLSearchParams(window.location.search)
+  const tab    = params.get('tab')
+  if (tab && tabs.some(t => t.key === tab)) {
+    activeTab.value = tab
+  }
+})
 
 // ── Auto-switch to mail tab when mail flash messages appear ───────────────────
 const page = usePage()
@@ -756,6 +929,19 @@ function submitAppearance() {
   })
 }
 
+// ── Code form ─────────────────────────────────────────────────────────────────
+const codeForm = useForm({
+  'code.custom_js': props.settings['code.custom_js'] ?? '',
+})
+
+function submitCode() {
+  codeForm.put(route('settings.update', 'code'), {
+    preserveScroll: true,
+    onSuccess: () => notify('Settings saved.', 'success'),
+    onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
+  })
+}
+
 // ── Test email form ──────────────────────────────────────────────────────────
 const testMailForm = useForm({});
 
@@ -765,6 +951,37 @@ function sendTestEmail() {
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   });
 }
+
+// ── License form ─────────────────────────────────────────────────────────────
+const licenseForm = useForm({ key: '' })
+const deactivateForm = useForm({})
+
+function activateLicense() {
+  licenseForm.post(route('settings.license.activate'), {
+    preserveScroll: true,
+    onSuccess: () => {
+      licenseForm.reset()
+      notify('Pro license activated!', 'success')
+    },
+    onError: (errors) => notify(errors.license_key ?? 'Activation failed.', 'error'),
+  })
+}
+
+function deactivateLicense() {
+  if (! confirm('Deactivate your Pro license? Pro features will be disabled.')) return
+  deactivateForm.delete(route('settings.license.deactivate'), {
+    preserveScroll: true,
+    onSuccess: () => notify('License deactivated.', 'success'),
+  })
+}
+
+const PRO_FEATURES = [
+  { icon: 'lucide:calendar', label: 'Content Calendar' },
+  { icon: 'lucide:clock',    label: 'Scheduled Publishing' },
+  { icon: 'lucide:webhook',  label: 'Webhooks' },
+  { icon: 'lucide:code-2',   label: 'Custom JS Injection' },
+  { icon: 'lucide:headphones', label: 'Priority Support' },
+]
 </script>
 
 <style scoped>

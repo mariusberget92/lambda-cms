@@ -70,7 +70,17 @@ import {
   Navigation2,
   Table2,
   Filter,
-} from 'lucide-vue-next'
+  RectangleHorizontal,
+  ListChecks,
+  Columns2,
+  Terminal,
+  BarChart3,
+  Hash,
+  Sparkles,
+  SeparatorHorizontal,
+  PanelTop,
+  PanelBottom,
+} from '@lucide/vue'
 
 const props = defineProps({
   isAdmin: { type: Boolean, default: false },
@@ -91,12 +101,15 @@ const ALL_TYPES = [
   { type: 'tab-item',       label: 'Tab',       icon: LayoutPanelTop,  group: 'Content', hiddenFromPalette: true },
   { type: 'embed',          label: 'Embed',     icon: PlayCircle,      group: 'Content' },
   // ── Layout ───────────────────────────────────────────────────────────────
+  { type: 'columns',   label: 'Columns',   icon: Columns2,          group: 'Layout' },
   { type: 'container', label: 'Container', icon: LayoutTemplate,    group: 'Layout' },
   { type: 'section',   label: 'Section',   icon: Rows2,             group: 'Layout' },
   { type: 'divider',   label: 'Divider',   icon: Minus,             group: 'Layout' },
   { type: 'spacer',      label: 'Spacer',     icon: ArrowUpDown,       group: 'Layout' },
   { type: 'navigation', label: 'Navigation', icon: Navigation2,       group: 'Layout' },
   // ── Interactive ──────────────────────────────────────────────────────────
+  { type: 'button',    label: 'Button',    icon: RectangleHorizontal, group: 'Interactive' },
+  { type: 'icon-list', label: 'Icon List', icon: ListChecks,        group: 'Interactive' },
   { type: 'cta',       label: 'CTA',       icon: MousePointerClick, group: 'Interactive' },
   { type: 'search',    label: 'Search',    icon: Search,            group: 'Interactive' },
   { type: 'loop',      label: 'Loop',      icon: Repeat2,           group: 'Interactive' },
@@ -106,6 +119,17 @@ const ALL_TYPES = [
   { type: 'pagination',  label: 'Pagination',  icon: ChevronRightIcon,  group: 'Interactive' },
   { type: 'table',     label: 'Table',     icon: Table2,            group: 'Interactive' },
   { type: 'html',      label: 'HTML',      icon: FileCode,          group: 'Developer', adminOnly: true },
+  // ── Design (Lambda design system blocks) ─────────────────────────────────
+  { type: 'cover',          label: 'Cover',       icon: Terminal,          group: 'Design' },
+  { type: 'stat-card',      label: 'Stat Card',   icon: BarChart3,         group: 'Design' },
+  { type: 'category-chip',  label: 'Cat. Chip',   icon: Hash,              group: 'Design' },
+  { type: 'band',           label: 'Band',        icon: Sparkles,          group: 'Design' },
+  { type: 'section-header', label: 'Sec. Header', icon: SeparatorHorizontal, group: 'Design' },
+  { type: 'masthead',       label: 'Masthead',    icon: Heading2,          group: 'Design' },
+  // ── Global (header / footer templates) ───────────────────────────────────
+  { type: 'nav-header',    label: 'Nav Header',    icon: PanelTop,    group: 'Global' },
+  { type: 'site-footer',  label: 'Site Footer',  icon: PanelBottom, group: 'Global' },
+  { type: 'active-filter', label: 'Active Filter', icon: Filter,     group: 'Interactive' },
   // ── Post (hidden from palette — only used inside loop blocks) ───────────
   { type: 'post-title',          label: 'Post Title',  icon: Heading1,      group: 'Post', hiddenFromPalette: true },
   { type: 'post-body',           label: 'Post Body',   icon: AlignLeft,     group: 'Post', hiddenFromPalette: true },
@@ -126,9 +150,11 @@ const GROUP_COLORS = {
   'Developer':   'text-[var(--chart-4)]',
   'Post':        'text-[var(--chart-5)]',
   'Archive':     'text-[var(--chart-1)]',
+  'Design':      'text-[var(--chart-2)]',
+  'Global':      'text-[var(--chart-3)]',
 }
 
-const GROUP_ORDER = ['Content', 'Layout', 'Interactive', 'Developer', 'Post', 'Archive']
+const GROUP_ORDER = ['Content', 'Layout', 'Interactive', 'Developer', 'Post', 'Archive', 'Design', 'Global']
 
 const visibleGroups = computed(() => {
   const visible = ALL_TYPES.filter(t =>
@@ -151,6 +177,42 @@ const DEFAULT_DATA = {
   divider:   { style: 'line' },
   cta:       { headline: '', text: '', button_label: '', button_url: '' },
   html:      { content: '' },
+  button: {
+    label: 'Click here',
+    url: '',
+    target: '_self',
+    rel: '',
+    variant: 'filled',
+    size: 'md',
+    alignment: 'left',
+    fullWidth: false,
+    bgColor: null,
+    textColor: null,
+    radius: null,
+    icon: { name: null, position: 'prefix', size: '1.1em', color: null, gap: '0.5em' },
+  },
+  'icon-list': {
+    items: [
+      { icon: 'lucide:check', text: 'Feature one' },
+      { icon: 'lucide:check', text: 'Feature two' },
+      { icon: 'lucide:check', text: 'Feature three' },
+    ],
+    direction: 'vertical',
+    gap: '0.75rem',
+    iconGap: '0.6em',
+    iconSize: '1.1em',
+    iconColor: null,
+  },
+  columns: {
+    direction: 'row',
+    wrap: true,
+    gap: '1rem',
+    justify: 'start',
+    align: 'start',
+    maxWidth: 'full',
+    columns: '2',
+    padding: { top: '1rem', right: '1rem', bottom: '1rem', left: '1rem' },
+  },
   container: {
     direction: 'row', wrap: true,
     gap: '1rem',
@@ -226,6 +288,65 @@ const DEFAULT_DATA = {
     alignment: 'center',
     buttonStyle: 'outline',
   },
+  cover: {
+    variant: 'flat',
+    filepath: '~/lambdacms/posts/slug.md',
+    callsign: 'λ.01',
+    glyph: 'essays',
+    issueNo: '№ 01',
+    hue: 220,
+    statusOk: true,
+  },
+  'stat-card': {
+    value: '2.4K',
+    label: 'articles',
+    trend: '↑ +12%',
+    trendTone: 'positive',
+  },
+  'category-chip': {
+    label: 'Category',
+    slug: '',
+    hue: 220,
+    active: false,
+  },
+  band: {
+    label: 'All Topics',
+    limit: 30,
+    showCount: false,
+  },
+  'section-header': {
+    number: '01',
+    title: 'Section Title',
+    meta: '',
+    showRule: false,
+  },
+  'nav-header': {
+    logoText:   '',
+    showSearch: true,
+    sticky:     true,
+  },
+  'active-filter': {
+    defaultTitle: 'Latest Posts',
+  },
+  'site-footer': {
+    tagline:   '',
+    copyright: '',
+    showRss:   true,
+    columns:   [
+      { heading: 'Content', links: [{ label: 'Home', url: '/' }, { label: 'RSS Feed', url: '/feed' }] },
+    ],
+  },
+  masthead: {
+    eyebrow: '// engineering-notes',
+    title: 'Engineering notes from a ||runtime||',
+    subtitle: 'Modern tooling, architecture, and the craft of building at scale.',
+    accentWord: 'v1.0.0',
+    stats: [
+      { value: '0', label: 'articles' },
+      { value: '0', label: 'categories' },
+      { value: '0', label: 'tags' },
+    ],
+  },
   table: {
     mode: 'static',
     columns: [
@@ -260,7 +381,7 @@ function cloneBlock(typeDef) {
     customClasses: '',
     customCss: '',
     fontFamily: '',
-    ...(['container', 'section', 'loop', 'archive-loop', 'link', 'accordion', 'tabs', 'accordion-item', 'tab-item'].includes(typeDef.type)
+    ...(['container', 'section', 'loop', 'archive-loop', 'link', 'accordion', 'tabs', 'accordion-item', 'tab-item', 'columns'].includes(typeDef.type)
       ? { children: [] }
       : {}),
   }
@@ -271,6 +392,22 @@ function cloneBlock(typeDef) {
       id: makeId(),
       type: 'accordion-item',
       data: { title: `Item ${i}` },
+      customId: '', customClasses: '', customCss: '', fontFamily: '',
+      children: [],
+    }))
+  }
+
+  // Auto-populate columns with equal-width container children
+  if (typeDef.type === 'columns') {
+    const n = parseInt(block.data.columns ?? '2')
+    block.children = Array.from({ length: n }, () => ({
+      id: makeId(),
+      type: 'container',
+      data: {
+        direction: 'column', wrap: false,
+        gap: '0.5rem', justify: 'start', align: 'start', maxWidth: 'full',
+        padding: { top: '0.5rem', right: '0.5rem', bottom: '0.5rem', left: '0.5rem' },
+      },
       customId: '', customClasses: '', customCss: '', fontFamily: '',
       children: [],
     }))

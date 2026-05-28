@@ -51,7 +51,10 @@ class PreviewController extends Controller
                 'title'              => $post->title,
                 'slug'               => $post->slug,
                 'excerpt'            => $post->excerpt,
-                'body'               => $post->body,
+                'body'               => $post->body_format === 'markdown'
+                    ? app(\App\Services\MarkdownService::class)->toHtml($post->body ?? '')
+                    : $post->body,
+                'body_format'        => $post->body_format ?? 'html',
                 'use_block_editor'   => (bool) $post->use_block_editor,
                 'blocks'             => $post->blocks,
                 'published_at'       => $post->published_at?->toDateString(),
@@ -63,6 +66,7 @@ class PreviewController extends Controller
                 ],
                 'categories' => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug])->values(),
                 'tags'       => $post->tags->map(fn ($t) => ['name' => $t->name, 'slug' => $t->slug]),
+                'custom_js'  => $post->custom_js,
             ],
             'sidebar'         => [],
             'comments'        => $firstPage->map(fn (Comment $c) => [
@@ -100,9 +104,10 @@ class PreviewController extends Controller
 
         return Inertia::render('Blog/Page', [
             'page' => [
-                'title'  => $page->title,
-                'slug'   => $page->slug,
-                'blocks' => $this->resolveBlocks($page->blocks ?? [], $request->query()),
+                'title'     => $page->title,
+                'slug'      => $page->slug,
+                'blocks'    => $this->resolveBlocks($page->blocks ?? [], $request->query()),
+                'custom_js' => $page->custom_js,
             ],
             'seo'       => $seo,
             'isPreview' => true,

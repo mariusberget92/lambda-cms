@@ -137,7 +137,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import MediaPicker    from '@/Components/MediaPicker.vue'
+import MediaPicker    from '@/components/MediaPicker.vue'
 import NumberInput    from '@/Components/NumberInput.vue'
 import DimensionInput from '../DimensionInput.vue'
 

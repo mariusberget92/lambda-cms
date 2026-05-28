@@ -11,7 +11,9 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'slug', 'description', 'color'];
+    protected $fillable = ['name', 'slug', 'description', 'color', 'hue'];
+
+    protected $casts = ['hue' => 'integer'];
 
     // ─── Relationships ────────────────────────────────────────────────────────
 

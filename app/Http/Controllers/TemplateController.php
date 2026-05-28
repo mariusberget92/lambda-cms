@@ -29,7 +29,7 @@ class TemplateController extends Controller
 
     public function create(Request $request)
     {
-        $request->validate(['type' => ['required', 'in:blog-index,single-post,archive,search-results,partial']]);
+        $request->validate(['type' => ['required', 'in:blog-index,single-post,archive,search-results,partial,header,footer']]);
 
         return Inertia::render('Templates/Create', ['type' => $request->type]);
     }
@@ -38,7 +38,7 @@ class TemplateController extends Controller
     {
         $validated = $request->validate([
             'title'            => ['required', 'string', 'max:255'],
-            'type'             => ['required', 'in:blog-index,single-post,archive,search-results,partial'],
+            'type'             => ['required', 'in:blog-index,single-post,archive,search-results,partial,header,footer'],
             'loop_source'      => ['nullable', 'in:posts,categories,tags,pages'],
             'status'           => ['required', 'in:draft,published'],
             'blocks'           => ['nullable', 'array'],
@@ -94,7 +94,7 @@ class TemplateController extends Controller
 
         $validated = $request->validate([
             'title'            => ['required', 'string', 'max:255'],
-            'type'             => ['required', 'in:blog-index,single-post,archive,search-results,partial'],
+            'type'             => ['required', 'in:blog-index,single-post,archive,search-results,partial,header,footer'],
             'loop_source'      => ['nullable', 'in:posts,categories,tags,pages'],
             'status'           => ['required', 'in:draft,published'],
             'blocks'           => ['nullable', 'array'],

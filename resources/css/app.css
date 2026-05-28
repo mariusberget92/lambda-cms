@@ -261,6 +261,75 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* ─── LambdaCMS Blog Design System ──────────────────────────────────────────
+   Scoped to .lambda-blog-root so it never bleeds into the admin panel.
+   Three palette variants: system (default), terminal, synth.
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Display font — Space Grotesk */
+.lambda-blog-root { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
+.font-display      { font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif; }
+.font-mono-blog    { font-family: 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace; }
+
+/* Token scope for elements teleported outside .lambda-blog-root (e.g. search overlay) */
+.lambda-blog-tokens {
+  --bg:          #f8f9fb;
+  --panel:       #ffffff;
+  --ink:         #111827;
+  --soft:        #6b7280;
+  --rule:        #e5e7eb;
+  --line:        rgba(0,0,0,0.06);
+  --line-strong: rgba(0,0,0,0.12);
+  --accent:      #18181b;
+  --accent-ink:  #ffffff;
+  --code:        #18181b;
+  --code-ink:    #d4d4d8;
+  --gutter:      32px;
+  --blog-radius: 4px;
+}
+
+/* ── neutral palette ── */
+.lambda-blog-root {
+  --bg:          #f8f9fb;
+  --panel:       #ffffff;
+  --ink:         #111827;
+  --soft:        #6b7280;
+  --rule:        #e5e7eb;
+  --line:        rgba(0,0,0,0.06);
+  --line-strong: rgba(0,0,0,0.12);
+  --accent:      #18181b;
+  --accent-ink:  #ffffff;
+  --code:        #18181b;
+  --code-ink:    #d4d4d8;
+  --gutter:      32px;
+  --blog-radius: 4px;
+}
+
+/* Base resets inside blog scope */
+.lambda-blog-root {
+  background-color: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+/* Unified post content card — wraps Written by, Topics and body in one shell */
+.lambda-blog-root .post-content-card {
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--blog-radius);
+  overflow: hidden;
+}
+
+/* Sidebar widget card — used by Categories and Tags blocks */
+.lambda-blog-root .sidebar-card {
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--blog-radius);
+  padding: 1.25rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
 /* Status dot pulse animation */
 @keyframes status-dot-pulse {
   0%, 100% { opacity: 1; }

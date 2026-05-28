@@ -82,9 +82,39 @@
           </div>
 
           <!-- Editor -->
-          <div>
+          <div class="space-y-2">
+            <!-- Mode switcher -->
+            <div class="flex items-center gap-1 rounded-lg border border-border bg-muted/40 p-1 w-fit">
+              <button
+                v-for="mode in editorModes"
+                :key="mode.value"
+                type="button"
+                class="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors"
+                :class="editorMode === mode.value
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'"
+                @click="editorMode = mode.value"
+              >
+                <Icon :icon="mode.icon" width="12" height="12" />
+                {{ mode.label }}
+              </button>
+            </div>
+
             <div class="rounded-lg border overflow-hidden">
-              <TiptapEditor v-model="form.body" />
+              <TiptapEditor v-if="editorMode === 'wysiwyg'" v-model="form.body" />
+              <MarkdownEditor v-else v-model="form.body" />
+            </div>
+
+            <!-- .md file upload (markdown mode only) -->
+            <div v-if="editorMode === 'markdown'" class="flex items-center gap-2">
+              <label
+                class="inline-flex items-center gap-1.5 cursor-pointer rounded-md border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+              >
+                <Icon icon="lucide:upload" width="12" height="12" />
+                Import .md file
+                <input type="file" accept=".md,text/markdown" class="sr-only" @change="importMarkdownFile" />
+              </label>
+              <span class="text-xs text-muted-foreground">CommonMark + GFM supported</span>
             </div>
           </div>
         </div>
@@ -102,10 +132,19 @@
                   <p class="text-xs text-muted-foreground">Only visible to you</p>
                 </div>
               </label>
-              <label class="flex items-center gap-3 cursor-pointer">
-                <input type="radio" v-model="form.status" value="scheduled" class="accent-primary" />
-                <div>
-                  <span class="text-sm font-medium">Scheduled</span>
+              <label class="flex items-center gap-3" :class="isPro ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'">
+                <input type="radio" v-model="form.status" value="scheduled" class="accent-primary" :disabled="!isPro" />
+                <div class="flex-1 min-w-0">
+                  <span class="text-sm font-medium flex items-center gap-1.5">
+                    Scheduled
+                    <Link
+                      v-if="!isPro"
+                      :href="route('settings.index') + '?tab=license'"
+                      class="inline-flex items-center gap-0.5 rounded-full bg-primary/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary leading-none hover:bg-primary/25 transition-colors"
+                    >
+                      <Icon icon="lucide:zap" width="9" height="9" />Pro
+                    </Link>
+                  </span>
                   <p class="text-xs text-muted-foreground">Auto-publishes at a set time</p>
                 </div>
               </label>
@@ -252,6 +291,22 @@
             </div>
           </div>
 
+          <!-- Custom JS -->
+          <div class="rounded-lg border bg-card">
+            <button
+              type="button"
+              class="flex w-full items-center justify-between px-4 py-3 text-sm font-medium"
+              @click="customJsOpen = !customJsOpen"
+            >
+              <span>Custom JS</span>
+              <ChevronDown class="w-4 h-4 transition-transform" :class="{ 'rotate-180': customJsOpen }" />
+            </button>
+            <div v-if="customJsOpen" class="border-t px-4 py-3">
+              <p class="text-xs text-muted-foreground mb-2">JavaScript injected on this post's page only.</p>
+              <JsEditor v-model="form.custom_js" />
+            </div>
+          </div>
+
           <!-- Details -->
           <div class="rounded-lg border bg-card p-4 text-sm space-y-1.5">
             <h3 class="font-medium mb-2">Details</h3>
@@ -335,19 +390,31 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-import { Head, useForm } from "@inertiajs/vue3";
+import { Head, useForm, usePage, Link } from "@inertiajs/vue3";
+import { Icon } from '@iconify/vue'
+import MarkdownEditor from "@/Components/MarkdownEditor.vue";
 import axios from 'axios'
-import { ChevronDown, ArrowLeft, X, ExternalLink } from 'lucide-vue-next'
+import { ChevronDown, ArrowLeft, X, ExternalLink } from '@lucide/vue'
 import AppLayout from "@/Layouts/AppLayout.vue";
-import TiptapEditor from "@/Components/TiptapEditor.vue";
-import MediaPicker from '@/Components/MediaPicker.vue'
+import TiptapEditor from "@/components/TiptapEditor.vue";
+import MediaPicker from '@/components/MediaPicker.vue'
 import DateTimePicker from '@/Components/DateTimePicker.vue'
 import TagInput from '@/Components/TagInput.vue'
 import CategoryInput from '@/Components/CategoryInput.vue'
 import { useNotifications } from '@/composables/useNotifications.js'
+import JsEditor from '@/Components/JsEditor.vue'
 
 const { notify, dismiss } = useNotifications()
 let autosaveToastId = null
+
+const page = usePage()
+const isPro = computed(() => page.props.isPro ?? false)
+
+// ── Editor mode ──────────────────────────────────────────────────────────────
+const editorModes = [
+  { value: 'wysiwyg',  label: 'Rich Text', icon: 'lucide:pilcrow' },
+  { value: 'markdown', label: 'Markdown',  icon: 'lucide:file-text' },
+]
 
 const props = defineProps({
   post:       Object,
@@ -356,10 +423,26 @@ const props = defineProps({
   autosave:   { type: Object, default: null },
 });
 
+const editorMode = ref(props.post.body_format === 'markdown' ? 'markdown' : 'wysiwyg')
+
+watch(editorMode, (mode) => {
+  form.body_format = mode === 'markdown' ? 'markdown' : 'html'
+})
+
+function importMarkdownFile(event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (e) => { form.body = e.target.result ?? '' }
+  reader.readAsText(file)
+  event.target.value = ''
+}
+
 const form = useForm({
   title:             props.post.title,
   excerpt:           props.post.excerpt ?? "",
   body:              props.post.body ?? "",
+  body_format:       props.post.body_format ?? "html",
   status:            props.post.status,
   published_at:      props.post.published_at ?? '',
   category_ids:      props.post.category_ids ?? [],
@@ -371,6 +454,7 @@ const form = useForm({
   meta_title:        props.post.meta_title ?? null,
   meta_description:  props.post.meta_description ?? null,
   meta_keywords:     props.post.meta_keywords ?? null,
+  custom_js:         props.post.custom_js ?? null,
 });
 
 // Autosave
@@ -491,6 +575,7 @@ function onStatusChange(newStatus) {
   }
 }
 
+const customJsOpen    = ref(false)
 const showMediaPicker = ref(false)
 const featuredImage   = ref(props.post.featured_image ?? null)
 
