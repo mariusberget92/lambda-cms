@@ -8,7 +8,7 @@ class LicenseService
 {
     public function isPro(): bool
     {
-        return Setting::get('license.status') === 'active';
+        return true;
     }
 
     /**

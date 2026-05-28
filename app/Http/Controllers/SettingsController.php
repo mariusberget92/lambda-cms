@@ -31,7 +31,6 @@ class SettingsController extends Controller
 
         return Inertia::render('Settings/Index', [
             'settings' => $settings,
-            'license'  => app(LicenseService::class)->getInfo(),
         ]);
     }
 

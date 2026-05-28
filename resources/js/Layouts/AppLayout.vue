@@ -39,7 +39,6 @@
             <Calendar class="w-4 h-4" />
           </template>
           Calendar
-          <span v-if="!isPro" class="ml-auto rounded-full bg-primary/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary leading-none">Pro</span>
         </SidebarLink>
 
         <SidebarLink
@@ -170,7 +169,6 @@
             </svg>
           </template>
           Webhooks
-          <span v-if="!isPro" class="ml-auto rounded-full bg-primary/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary leading-none">Pro</span>
         </SidebarLink>
         <div class="border-t border-sidebar-border my-3"></div>
         <a
