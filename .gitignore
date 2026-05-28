@@ -25,3 +25,5 @@ nul
 .worktrees
 .claude/worktrees/
 .superpowers/
+docs/.vitepress/dist
+docs/.vitepress/cache
