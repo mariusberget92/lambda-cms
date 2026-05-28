@@ -35,6 +35,7 @@ class Post extends Model
         "slug",
         "excerpt",
         "body",
+        "body_format",
         "status",
         "featured",
         "published_at",

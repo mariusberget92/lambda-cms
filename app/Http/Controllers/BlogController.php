@@ -7,13 +7,17 @@ use App\Models\Post;
 use App\Models\Setting;
 use App\Models\Tag;
 use App\Models\Comment;
+use App\Services\MarkdownService;
 use App\Services\TemplateResolver;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class BlogController extends Controller
 {
-    public function __construct(private readonly TemplateResolver $templates) {}
+    public function __construct(
+        private readonly TemplateResolver $templates,
+        private readonly MarkdownService  $markdown,
+    ) {}
 
     public function index(): Response
     {
@@ -56,7 +60,10 @@ class BlogController extends Controller
                 'title'              => $post->title,
                 'slug'               => $post->slug,
                 'excerpt'            => $post->excerpt,
-                'body'               => $post->body,
+                'body'               => $post->body_format === 'markdown'
+                    ? $this->markdown->toHtml($post->body ?? '')
+                    : $post->body,
+                'body_format'        => $post->body_format ?? 'html',
                 'use_block_editor'   => (bool) $post->use_block_editor,
                 'blocks'             => $post->blocks,
                 'published_at'       => $post->published_at?->toDateString(),

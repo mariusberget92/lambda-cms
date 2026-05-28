@@ -86,6 +86,7 @@ class PostController extends Controller
             'meta_description' => ['nullable', 'string', 'max:300'],
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
             'custom_js'        => ['nullable', 'string'],
+            'body_format'      => ['nullable', 'in:html,markdown'],
             'use_block_editor' => ['nullable', 'boolean'],
             'blocks'           => ['nullable', 'array'],
         ]);
@@ -104,6 +105,7 @@ class PostController extends Controller
             )->id;
         }
 
+        $validated['body_format']      = $validated['body_format']      ?? 'html';
         $validated['comments_enabled'] = $validated['comments_enabled'] ?? true;
         $validated['featured']         = $validated['featured'] ?? false;
         $validated['meta_title']       = $validated['meta_title']       ?? null;
@@ -165,6 +167,7 @@ class PostController extends Controller
                 'meta_description'  => $post->meta_description,
                 'meta_keywords'     => $post->meta_keywords,
                 'custom_js'         => $post->custom_js,
+                'body_format'       => $post->body_format ?? 'html',
                 'use_block_editor'  => (bool) $post->use_block_editor,
                 'blocks'            => $post->blocks,
                 'preview_token'     => $post->preview_token,
@@ -207,6 +210,7 @@ class PostController extends Controller
             'meta_description' => ['nullable', 'string', 'max:300'],
             'meta_keywords'    => ['nullable', 'string', 'max:255'],
             'custom_js'        => ['nullable', 'string'],
+            'body_format'      => ['nullable', 'in:html,markdown'],
             'use_block_editor' => ['nullable', 'boolean'],
             'blocks'           => ['nullable', 'array'],
         ]);
