@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Database\Seeders\LambdaContentSeeder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -210,6 +211,11 @@ class InstallController extends Controller
             if (! $user->hasRole('administrator')) {
                 $user->assignRole('administrator');
             }
+
+            // Seed showcase content now that an administrator exists.
+            // This cannot run inside DatabaseSeeder because the admin user
+            // doesn't exist yet when db:seed is called during this step.
+            app(LambdaContentSeeder::class)->run();
 
             return $user;
         });

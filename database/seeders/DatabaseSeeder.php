@@ -28,12 +28,14 @@ class DatabaseSeeder extends Seeder
         // ── Default templates ────────────────────────────────────────────────
         $this->call(TemplateSeeder::class);
 
-        // ── Lambda CMS showcase content (all environments) ───────────────────
-        $this->call(LambdaContentSeeder::class);
-
-        // ── Dev fixtures (extra test users, posts, categories, tags) ─────────
+        // ── Dev fixtures + showcase content (local only) ─────────────────────
+        // LambdaContentSeeder requires an administrator to exist; DevSeeder
+        // creates those users, so it must run first. In production the
+        // installer calls LambdaContentSeeder directly after creating the
+        // admin account (see InstallController::mail).
         if (app()->environment('local')) {
             $this->call(DevSeeder::class);
+            $this->call(LambdaContentSeeder::class);
         }
     }
 
