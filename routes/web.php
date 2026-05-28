@@ -4,6 +4,8 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\TwoFactorChallengeController;
+use App\Http\Controllers\Auth\TwoFactorController;
 use App\Http\Controllers\BlogController;
 
 use App\Http\Controllers\FeedController;
@@ -77,6 +79,9 @@ Route::middleware('installed')->group(function () {
 
         Route::get('/reset-password/{token}', [ResetPasswordController::class, 'show'])->name('password.reset');
         Route::post('/reset-password',        [ResetPasswordController::class, 'reset'])->name('password.update');
+
+        Route::get('/two-factor-challenge',  [TwoFactorChallengeController::class, 'show'])->name('two-factor.challenge');
+        Route::post('/two-factor-challenge', [TwoFactorChallengeController::class, 'verify'])->name('two-factor.verify');
     });
 
     // ── Auth only (email verification + logout) ──────────────────────────────
@@ -123,6 +128,12 @@ Route::middleware('installed')->group(function () {
         Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
         Route::post('/profile/avatar',   [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
         Route::delete('/profile/avatar', [ProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
+
+        Route::post('/profile/two-factor',                  [TwoFactorController::class, 'enable'])->name('profile.two-factor.enable');
+        Route::post('/profile/two-factor/confirm',          [TwoFactorController::class, 'confirm'])->name('profile.two-factor.confirm');
+        Route::delete('/profile/two-factor',                [TwoFactorController::class, 'disable'])->name('profile.two-factor.disable');
+        Route::get('/profile/two-factor/recovery-codes',   [TwoFactorController::class, 'recoveryCodes'])->name('profile.two-factor.recovery-codes');
+        Route::post('/profile/two-factor/recovery-codes',  [TwoFactorController::class, 'regenerateRecoveryCodes'])->name('profile.two-factor.regenerate-recovery-codes');
 
         // Media library
         Route::get('/media',                    [MediaController::class, 'index'])->name('media.index');

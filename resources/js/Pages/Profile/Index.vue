@@ -220,6 +220,213 @@
         </Transition>
       </div>
 
+      <!-- Panel 4: Two-factor authentication -->
+      <div class="rounded-lg border bg-card p-6 space-y-5">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h3 class="text-sm font-semibold">Two-factor authentication</h3>
+            <p class="text-xs text-muted-foreground mt-0.5">
+              Add an extra layer of security with an authenticator app.
+            </p>
+          </div>
+          <span
+            class="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium"
+            :class="twoFactorStatus === 'enabled'
+              ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+              : 'bg-muted text-muted-foreground'"
+          >
+            {{ twoFactorStatus === 'enabled' ? 'Enabled' : 'Disabled' }}
+          </span>
+        </div>
+
+        <!-- State: disabled — prompt to enable -->
+        <template v-if="twoFactorStatus === 'disabled'">
+          <p class="text-xs text-muted-foreground">
+            When enabled, you will be asked for a code from your authenticator app each time you sign in.
+          </p>
+          <button
+            type="button"
+            :disabled="tfaLoading"
+            @click="startSetup"
+            class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)] disabled:opacity-50"
+          >
+            {{ tfaLoading ? 'Preparing…' : 'Enable 2FA' }}
+          </button>
+        </template>
+
+        <!-- State: setup — show QR code + confirm -->
+        <template v-if="twoFactorStatus === 'setup'">
+          <div class="space-y-4">
+            <p class="text-xs text-muted-foreground">
+              Scan the QR code below with your authenticator app (Google Authenticator, Authy, 1Password, etc.), then enter the 6-digit code to confirm.
+            </p>
+
+            <!-- QR code -->
+            <div class="flex flex-col items-center gap-3">
+              <div class="rounded-lg border p-3 bg-white inline-block">
+                <img v-if="qrDataUrl" :src="qrDataUrl" alt="2FA QR Code" class="w-40 h-40" />
+                <div v-else class="w-40 h-40 flex items-center justify-center">
+                  <svg class="w-6 h-6 animate-spin text-muted-foreground" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Manual key -->
+              <div class="text-center">
+                <p class="text-xs text-muted-foreground mb-1">Or enter this key manually:</p>
+                <code class="text-xs font-mono bg-muted px-2 py-1 rounded tracking-widest select-all">
+                  {{ tfaSetupSecret }}
+                </code>
+              </div>
+            </div>
+
+            <!-- Confirm input -->
+            <div class="space-y-1">
+              <label class="text-sm font-medium">Confirmation code</label>
+              <input
+                v-model="tfaConfirmCode"
+                type="text"
+                inputmode="numeric"
+                maxlength="6"
+                placeholder="000000"
+                class="w-full rounded-md border bg-background px-3 py-2 text-sm tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-ring"
+                :class="{ 'border-destructive': tfaConfirmError }"
+                @keydown.enter="confirmSetup"
+              />
+              <p v-if="tfaConfirmError" class="text-xs text-destructive">{{ tfaConfirmError }}</p>
+            </div>
+
+            <div class="flex gap-2">
+              <button
+                type="button"
+                @click="cancelSetup"
+                class="rounded-md border px-4 py-2 text-sm hover:bg-accent transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                :disabled="tfaLoading || tfaConfirmCode.length < 6"
+                @click="confirmSetup"
+                class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-[var(--primary-hover)] disabled:opacity-50"
+              >
+                {{ tfaLoading ? 'Verifying…' : 'Confirm & enable' }}
+              </button>
+            </div>
+          </div>
+        </template>
+
+        <!-- State: confirmed — show recovery codes after fresh enable -->
+        <template v-if="twoFactorStatus === 'confirmed'">
+          <div class="rounded-md border border-amber-200 bg-amber-50 dark:border-amber-800/40 dark:bg-amber-900/10 p-4 space-y-3">
+            <p class="text-sm font-medium text-amber-800 dark:text-amber-400">
+              Save your recovery codes
+            </p>
+            <p class="text-xs text-amber-700 dark:text-amber-500">
+              Store these codes somewhere safe. Each code can only be used once to sign in if you lose access to your authenticator app.
+            </p>
+            <div class="grid grid-cols-2 gap-1.5">
+              <code
+                v-for="c in recoveryCodes"
+                :key="c"
+                class="rounded bg-white dark:bg-background border px-2 py-1 text-xs font-mono tracking-widest text-center select-all"
+              >
+                {{ c }}
+              </code>
+            </div>
+            <button
+              type="button"
+              @click="twoFactorStatus = 'enabled'"
+              class="w-full rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent transition-colors"
+            >
+              I've saved my codes
+            </button>
+          </div>
+        </template>
+
+        <!-- State: enabled — management options -->
+        <template v-if="twoFactorStatus === 'enabled'">
+          <div class="space-y-4">
+            <!-- Recovery codes section -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <p class="text-xs font-medium">Recovery codes</p>
+                <button
+                  type="button"
+                  :disabled="tfaLoading"
+                  @click="showRecoveryCodes ? showRecoveryCodes = false : loadRecoveryCodes()"
+                  class="text-xs text-primary hover:underline underline-offset-2"
+                >
+                  {{ showRecoveryCodes ? 'Hide' : 'View codes' }}
+                </button>
+              </div>
+
+              <Transition name="fade">
+                <div v-if="showRecoveryCodes" class="space-y-3">
+                  <div class="grid grid-cols-2 gap-1.5">
+                    <code
+                      v-for="c in recoveryCodes"
+                      :key="c"
+                      class="rounded border bg-muted px-2 py-1 text-xs font-mono tracking-widest text-center select-all"
+                    >
+                      {{ c }}
+                    </code>
+                  </div>
+                  <button
+                    type="button"
+                    :disabled="tfaLoading"
+                    @click="regenerateCodes"
+                    class="text-xs text-muted-foreground hover:text-foreground underline-offset-2 hover:underline transition-colors"
+                  >
+                    {{ tfaLoading ? 'Regenerating…' : 'Regenerate codes' }}
+                  </button>
+                </div>
+              </Transition>
+            </div>
+
+            <!-- Disable -->
+            <div v-if="!showDisableConfirm">
+              <button
+                type="button"
+                @click="showDisableConfirm = true"
+                class="rounded-md border border-destructive/40 px-4 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
+              >
+                Disable 2FA
+              </button>
+            </div>
+
+            <Transition name="fade">
+              <div
+                v-if="showDisableConfirm"
+                class="rounded-md border border-destructive/20 bg-destructive/5 p-4 space-y-3"
+              >
+                <p class="text-sm font-medium text-destructive">Disable two-factor authentication?</p>
+                <p class="text-xs text-muted-foreground">This will remove the extra security layer from your account.</p>
+                <div class="flex gap-2">
+                  <button
+                    type="button"
+                    @click="showDisableConfirm = false"
+                    class="rounded-md border px-4 py-2 text-sm hover:bg-accent transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    :disabled="tfaLoading"
+                    @click="disableTfa"
+                    class="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50 transition-colors"
+                  >
+                    {{ tfaLoading ? 'Disabling…' : 'Yes, disable' }}
+                  </button>
+                </div>
+              </div>
+            </Transition>
+          </div>
+        </template>
+      </div>
+
     </div>
   </AppLayout>
 </template>
@@ -230,6 +437,8 @@ import { Head, useForm, usePage, router } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PageHeader from '@/Components/PageHeader.vue'
 import { useNotifications } from '@/composables/useNotifications.js'
+import axios from 'axios'
+import QRCode from 'qrcode'
 const { notify } = useNotifications()
 
 const page = usePage();
@@ -299,6 +508,105 @@ function submitAvatar() {
 function deleteAvatar() {
   showDeleteConfirm.value = false;
   router.delete(route("profile.avatar.delete"), { preserveScroll: true });
+}
+
+// ── Panel 4: Two-factor authentication ────────────────────────────────────
+// twoFactorStatus: 'disabled' | 'setup' | 'confirmed' | 'enabled'
+const twoFactorStatus   = ref(user.value.two_factor_enabled ? 'enabled' : 'disabled')
+const tfaLoading        = ref(false)
+const tfaSetupSecret    = ref('')
+const tfaConfirmCode    = ref('')
+const tfaConfirmError   = ref('')
+const qrDataUrl         = ref('')
+const recoveryCodes     = ref([])
+const showRecoveryCodes = ref(false)
+const showDisableConfirm = ref(false)
+
+async function startSetup() {
+  tfaLoading.value = true
+  try {
+    const { data } = await axios.post(route('profile.two-factor.enable'))
+    tfaSetupSecret.value = data.secret
+    qrDataUrl.value = await QRCode.toDataURL(data.qr_uri, { width: 160, margin: 1 })
+    twoFactorStatus.value = 'setup'
+    tfaConfirmCode.value  = ''
+    tfaConfirmError.value = ''
+  } catch {
+    notify('Could not start 2FA setup.', 'error')
+  } finally {
+    tfaLoading.value = false
+  }
+}
+
+function cancelSetup() {
+  twoFactorStatus.value = 'disabled'
+  tfaSetupSecret.value  = ''
+  qrDataUrl.value       = ''
+  tfaConfirmCode.value  = ''
+  tfaConfirmError.value = ''
+  // Clean up the pending secret server-side
+  axios.delete(route('profile.two-factor.disable')).catch(() => {})
+}
+
+async function confirmSetup() {
+  if (tfaLoading.value || tfaConfirmCode.value.length < 6) return
+  tfaLoading.value    = true
+  tfaConfirmError.value = ''
+  try {
+    const { data } = await axios.post(route('profile.two-factor.confirm'), {
+      code: tfaConfirmCode.value,
+    })
+    recoveryCodes.value   = data.recovery_codes
+    twoFactorStatus.value = 'confirmed'
+    notify('Two-factor authentication enabled.', 'success')
+  } catch (err) {
+    tfaConfirmError.value = err.response?.data?.message ?? 'Invalid code.'
+    tfaConfirmCode.value  = ''
+  } finally {
+    tfaLoading.value = false
+  }
+}
+
+async function disableTfa() {
+  tfaLoading.value = true
+  try {
+    await axios.delete(route('profile.two-factor.disable'))
+    twoFactorStatus.value  = 'disabled'
+    showDisableConfirm.value = false
+    recoveryCodes.value    = []
+    showRecoveryCodes.value = false
+    notify('Two-factor authentication disabled.', 'success')
+  } catch {
+    notify('Could not disable 2FA.', 'error')
+  } finally {
+    tfaLoading.value = false
+  }
+}
+
+async function loadRecoveryCodes() {
+  tfaLoading.value = true
+  try {
+    const { data } = await axios.get(route('profile.two-factor.recovery-codes'))
+    recoveryCodes.value     = data.recovery_codes
+    showRecoveryCodes.value = true
+  } catch {
+    notify('Could not load recovery codes.', 'error')
+  } finally {
+    tfaLoading.value = false
+  }
+}
+
+async function regenerateCodes() {
+  tfaLoading.value = true
+  try {
+    const { data } = await axios.post(route('profile.two-factor.regenerate-recovery-codes'))
+    recoveryCodes.value = data.recovery_codes
+    notify('Recovery codes regenerated. Save the new codes.', 'success')
+  } catch {
+    notify('Could not regenerate codes.', 'error')
+  } finally {
+    tfaLoading.value = false
+  }
 }
 </script>
 

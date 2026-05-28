@@ -27,8 +27,9 @@ class HandleInertiaRequests extends Middleware
                 "user" => $request->user() ? array_merge(
                     $request->user()->only("id", "name", "email", "avatar_url"),
                     [
-                        "role"           => $request->user()->getRoleNames()->first(),
-                        "email_verified" => $request->user()->hasVerifiedEmail(),
+                        "role"               => $request->user()->getRoleNames()->first(),
+                        "email_verified"     => $request->user()->hasVerifiedEmail(),
+                        "two_factor_enabled" => $request->user()->hasTwoFactorEnabled(),
                     ]
                 ) : null,
             ],

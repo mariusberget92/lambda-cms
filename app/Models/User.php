@@ -28,6 +28,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'banned_at',
         'banned_until',
         'ban_reason',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        'two_factor_confirmed_at',
     ];
 
     /**
@@ -38,6 +41,8 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     /**
@@ -55,12 +60,18 @@ class User extends Authenticatable implements MustVerifyEmail
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
-            'last_seen_at'      => 'datetime',
-            'banned_at'         => 'datetime',
-            'banned_until'      => 'datetime',
+            'email_verified_at'       => 'datetime',
+            'password'                => 'hashed',
+            'last_seen_at'            => 'datetime',
+            'banned_at'               => 'datetime',
+            'banned_until'            => 'datetime',
+            'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    public function hasTwoFactorEnabled(): bool
+    {
+        return $this->two_factor_confirmed_at !== null;
     }
 
     /**

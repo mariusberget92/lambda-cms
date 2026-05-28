@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 
 class LoginController extends Controller
 {
@@ -45,6 +46,15 @@ class LoginController extends Controller
                 return back()->withErrors([
                     'email' => 'Your account has been suspended: ' . ($user->ban_reason ?? 'no reason given'),
                 ])->onlyInput('email');
+            }
+
+            if ($user->hasTwoFactorEnabled()) {
+                $userId   = $user->id;
+                $remember = $request->boolean('remember');
+                Auth::logout();
+                $request->session()->put('two_factor_auth_user_id', $userId);
+                $request->session()->put('two_factor_auth_remember', $remember);
+                return redirect()->route('two-factor.challenge');
             }
 
             RateLimiter::clear($throttleKey);
