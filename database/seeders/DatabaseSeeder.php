@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -41,12 +40,4 @@ class DatabaseSeeder extends Seeder
         }
     }
 
-    /**
-     * Seed real Lambda CMS showcase posts.
-     * Called by InstallController after the admin user has been created.
-     */
-    public function seedDefaultPost(User $adminUser): void
-    {
-        app(LambdaContentSeeder::class)->run();
-    }
 }

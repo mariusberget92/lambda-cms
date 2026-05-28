@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Services\GenreSeeder;
-use Database\Seeders\DatabaseSeeder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -42,14 +40,6 @@ class InstallController extends Controller
     public function showMail(): Response
     {
         return Inertia::render('Install/Mail', ['step' => 4]);
-    }
-
-    public function showGenre(): Response
-    {
-        return Inertia::render('Install/Genre', [
-            'step'   => 5,
-            'genres' => GenreSeeder::genres(),
-        ]);
     }
 
     // ── POST handlers ─────────────────────────────────────────────────────────
@@ -154,7 +144,8 @@ class InstallController extends Controller
     }
 
     /**
-     * Step 4 — Mail configuration. Stores config and redirects to genre selection.
+     * Step 4 — Mail configuration. Runs migrations, seeds, creates the admin
+     * user, and completes the installation.
      */
     public function mail(Request $request): RedirectResponse
     {
@@ -188,20 +179,6 @@ class InstallController extends Controller
 
         Artisan::call('config:clear');
 
-        return redirect('/install/genre');
-    }
-
-    /**
-     * Step 5 — Genre / theme selection. Runs migrations, seeds, creates admin, finishes install.
-     */
-    public function genre(Request $request): RedirectResponse
-    {
-        $validGenres = array_keys(GenreSeeder::genres());
-
-        $request->validate([
-            'genre' => ['required', 'string', 'in:' . implode(',', $validGenres)],
-        ]);
-
         // Run migrations (idempotent — safe to run even if partially applied)
         Artisan::call('migrate', ['--force' => true]);
 
@@ -213,17 +190,14 @@ class InstallController extends Controller
 
         Artisan::call('config:clear');
 
-        // Retrieve admin data from session
+        // Retrieve admin data from session (stored in step 3)
         $adminData = $request->session()->get('install.admin');
         $request->session()->forget('install.admin');
 
-        $selectedGenre = $request->genre;
-
-        // Wrap seeding + user creation in a transaction
-        $user = DB::transaction(function () use ($adminData, $selectedGenre) {
+        $user = DB::transaction(function () use ($adminData) {
             Artisan::call('db:seed', ['--force' => true, '--class' => 'DatabaseSeeder']);
 
-            // Use firstOrCreate so a retry after a partial failure doesn't violate the unique constraint
+            // firstOrCreate so a retry after a partial failure doesn't violate the unique constraint
             $user = User::firstOrCreate(
                 ['email' => $adminData['email']],
                 [
@@ -236,9 +210,6 @@ class InstallController extends Controller
             if (! $user->hasRole('administrator')) {
                 $user->assignRole('administrator');
             }
-
-            // Seed genre-specific posts instead of the generic "Hello World"
-            (new GenreSeeder())->seed($selectedGenre, $user);
 
             return $user;
         });

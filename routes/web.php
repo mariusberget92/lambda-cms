@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\BlogController;
+
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\CategoryController;
@@ -43,8 +44,6 @@ Route::middleware('not_installed')->prefix('install')->group(function () {
     Route::post('/admin',   [InstallController::class, 'admin']);
     Route::get('/mail',     [InstallController::class, 'showMail'])->name('install.mail');
     Route::post('/mail',    [InstallController::class, 'mail']);
-    Route::get('/genre',    [InstallController::class, 'showGenre'])->name('install.genre');
-    Route::post('/genre',   [InstallController::class, 'genre']);
 });
 
 // ── All routes below require the app to be installed ─────────────────────────
