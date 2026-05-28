@@ -45,6 +45,7 @@ export default defineConfig({
             { text: 'Two-Factor Auth', link: '/guide/two-factor-authentication' },
             { text: 'Settings',        link: '/guide/settings' },
             { text: 'Webhooks',        link: '/guide/webhooks' },
+            { text: 'Import & Export', link: '/guide/import-export' },
           ],
         },
       ],
