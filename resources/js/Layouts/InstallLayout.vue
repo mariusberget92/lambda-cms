@@ -17,7 +17,6 @@ const steps = [
   { number: 2, label: 'Site' },
   { number: 3, label: 'Admin' },
   { number: 4, label: 'Mail' },
-  { number: 5, label: 'Theme' },
 ]
 </script>
 
