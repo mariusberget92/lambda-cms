@@ -16,6 +16,37 @@ Block editor · In-browser image editor · 2FA · Headless API · No cloud lock-
 
 ---
 
+## Screenshots
+
+<table>
+  <tr>
+    <td><img src=".github/screenshots/01-dashboard.png" alt="Dashboard" /></td>
+    <td><img src=".github/screenshots/02-posts.png" alt="Posts" /></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Dashboard — post stats and recent activity</sub></td>
+    <td align="center"><sub>Posts — list with search, filters, and bulk actions</sub></td>
+  </tr>
+  <tr>
+    <td><img src=".github/screenshots/03-post-editor.png" alt="Post editor" /></td>
+    <td><img src=".github/screenshots/05-categories.png" alt="Categories" /></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Post editor — Tiptap rich-text with sidebar metadata</sub></td>
+    <td align="center"><sub>Categories — color-coded with cloud and table view</sub></td>
+  </tr>
+  <tr>
+    <td><img src=".github/screenshots/06-tags.png" alt="Tags" /></td>
+    <td><img src=".github/screenshots/08-export.png" alt="Export" /></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Tags — weighted tag cloud with post counts</sub></td>
+    <td align="center"><sub>Export — select entities and download a portable ZIP</sub></td>
+  </tr>
+</table>
+
+---
+
 ## 🤔 What is Lambda CMS?
 
 Lambda CMS is a clean, fast, fully self-hosted content management system. No subscriptions, no SaaS lock-in — you own your data and your stack. Built with **Laravel 12**, **Vue 3**, and **Inertia.js**, it feels like a modern SPA while keeping the server-side simplicity of a traditional Laravel app.
@@ -209,7 +240,7 @@ Add a cron entry to run the scheduler (handles auto-publishing):
 
 ## 🗺️ Roadmap
 
-- [ ] Post and template import / export
+- [x] Post and template import / export
 - [ ] API write access — token-based auth for creating and updating content
 - [ ] Multi-language / i18n content support
 
