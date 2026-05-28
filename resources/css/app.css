@@ -287,6 +287,8 @@
   --code-ink:    #d4d4d8;
   --gutter:      32px;
   --blog-radius: 4px;
+  --input-bg:    #f8f9fb;
+  --border:      rgba(0,0,0,0.12);
 }
 
 /* ── neutral palette ── */
@@ -304,6 +306,9 @@
   --code-ink:    #d4d4d8;
   --gutter:      32px;
   --blog-radius: 4px;
+  /* Override admin token so global input rule uses the blog's own background */
+  --input-bg:    var(--bg);
+  --border:      var(--line-strong);
 }
 
 /* Base resets inside blog scope */
