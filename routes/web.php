@@ -31,6 +31,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PreviewController;
 use App\Http\Controllers\NavigationController;
 use App\Http\Controllers\WebhookController;
+use App\Http\Controllers\ExportController;
+use App\Http\Controllers\ImportController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -183,12 +185,18 @@ Route::middleware('installed')->group(function () {
         Route::put('/webhooks/{webhook}',          [WebhookController::class, 'update'])->name('webhooks.update');
         Route::delete('/webhooks/{webhook}',       [WebhookController::class, 'destroy'])->name('webhooks.destroy');
 
+        Route::get('/export',          [ExportController::class, 'index'])->name('export.index');
+        Route::get('/export/download', [ExportController::class, 'download'])->name('export.download');
+        Route::get('/import',          [ImportController::class, 'index'])->name('import.index');
+        Route::post('/import/preview', [ImportController::class, 'preview'])->name('import.preview');
+        Route::post('/import',         [ImportController::class, 'store'])->name('import.store');
+
     });
     Route::get('/search', [SearchController::class, 'index'])->name('search');
 
     // ── Public custom pages (catch-all — must be last inside this group) ─────
     Route::get('/{slug}', [PublicPageController::class, 'show'])
-        ->where('slug', '^(?!login|logout|dashboard|blog|feed|sitemap\.xml|posts|categories|tags|users|profile|settings|media|comments|pages|templates|calendar|password|register|verify|install|email|forgot-password|reset-password|search).*$')
+        ->where('slug', '^(?!login|logout|dashboard|blog|feed|sitemap\.xml|posts|categories|tags|users|profile|settings|media|comments|pages|templates|calendar|password|register|verify|install|email|forgot-password|reset-password|search|export|import).*$')
         ->name('pages.show');
 
 });

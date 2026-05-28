@@ -170,6 +170,32 @@
           </template>
           Webhooks
         </SidebarLink>
+
+        <p class="px-3 mt-4 mb-1 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/40">Data</p>
+        <SidebarLink
+          v-if="user.role === 'administrator'"
+          :href="route('export.index')"
+          :active="currentRoute?.startsWith('export.')"
+        >
+          <template #icon>
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+          </template>
+          Export
+        </SidebarLink>
+        <SidebarLink
+          v-if="user.role === 'administrator'"
+          :href="route('import.index')"
+          :active="currentRoute?.startsWith('import.')"
+        >
+          <template #icon>
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12"/>
+            </svg>
+          </template>
+          Import
+        </SidebarLink>
         <div class="border-t border-sidebar-border my-3"></div>
         <a
           href="/"
