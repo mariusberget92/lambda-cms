@@ -273,6 +273,7 @@
 
 /* Token scope for elements teleported outside .lambda-blog-root (e.g. search overlay) */
 .lambda-blog-tokens {
+  color-scheme: light;
   --bg:          #f8f9fb;
   --panel:       #ffffff;
   --ink:         #111827;
@@ -307,6 +308,7 @@
 
 /* Base resets inside blog scope */
 .lambda-blog-root {
+  color-scheme: light;
   background-color: var(--bg);
   color: var(--ink);
   min-height: 100vh;
