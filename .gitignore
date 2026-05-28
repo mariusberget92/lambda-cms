@@ -23,7 +23,7 @@ Homestead.yaml
 Thumbs.db
 nul
 .worktrees
-.claude/worktrees/
+.claude/
 .superpowers/
 docs/.vitepress/dist
 docs/.vitepress/cache
