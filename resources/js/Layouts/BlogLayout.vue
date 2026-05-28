@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, watchEffect } from 'vue'
 import { Head, Link, usePage } from '@inertiajs/vue3'
 import { LayoutDashboard, PenSquare, LogOut } from '@lucide/vue'
 import BlockRenderer from '@/Components/BlockRenderer.vue'
@@ -12,6 +12,14 @@ const csrfToken = computed(() => document.querySelector('meta[name="csrf-token"]
 
 const headerBlocks = computed(() => page.props.headerBlocks ?? [])
 const footerBlocks = computed(() => page.props.footerBlocks ?? [])
+
+watchEffect(() => {
+  const color = page.props.accentColor
+  if (color && /^#[0-9a-fA-F]{6}$/.test(color)) {
+    document.documentElement.style.setProperty('--accent', color)
+    document.documentElement.style.setProperty('--accent-ink', '#ffffff')
+  }
+})
 </script>
 
 <template>
