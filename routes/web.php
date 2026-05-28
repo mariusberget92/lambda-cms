@@ -158,9 +158,11 @@ Route::middleware('installed')->group(function () {
         Route::post('/comments/bulk',               [CommentController::class, 'bulk'])->name('comments.bulk');
         Route::post('/comments/{comment}/reply',    [CommentController::class, 'reply'])->name('comments.reply');
 
-        Route::get('/settings',             [SettingsController::class, 'index'])->name('settings.index');
-        Route::put('/settings/{group}',     [SettingsController::class, 'update'])->name('settings.update');
-        Route::post('/settings/test-email', [SettingsController::class, 'testEmail'])->name('settings.test-email');
+        Route::get('/settings',                          [SettingsController::class, 'index'])->name('settings.index');
+        Route::put('/settings/{group}',                  [SettingsController::class, 'update'])->name('settings.update');
+        Route::post('/settings/test-email',              [SettingsController::class, 'testEmail'])->name('settings.test-email');
+        Route::post('/settings/license/activate',        [SettingsController::class, 'activateLicense'])->name('settings.license.activate');
+        Route::delete('/settings/license',               [SettingsController::class, 'deactivateLicense'])->name('settings.license.deactivate');
 
         Route::get('/navigation',                      [NavigationController::class, 'index'])->name('navigation.index');
         Route::post('/navigation',                     [NavigationController::class, 'store'])->name('navigation.store');

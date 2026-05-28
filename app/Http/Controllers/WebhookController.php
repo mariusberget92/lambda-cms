@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Webhook;
+use App\Services\LicenseService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -11,6 +12,10 @@ class WebhookController extends Controller
 {
     public function index(): Response
     {
+        if (! app(LicenseService::class)->isPro()) {
+            return Inertia::render('License/Upgrade', ['feature' => 'webhooks']);
+        }
+
         return Inertia::render('Settings/Webhooks', [
             'webhooks' => Webhook::orderByDesc('created_at')->get(),
         ]);
@@ -18,6 +23,10 @@ class WebhookController extends Controller
 
     public function store(Request $request)
     {
+        if (! app(LicenseService::class)->isPro()) {
+            abort(403, 'Pro license required.');
+        }
+
         $validated = $request->validate([
             'url'       => ['required', 'url', 'max:500'],
             'secret'    => ['nullable', 'string', 'max:255'],
@@ -33,6 +42,10 @@ class WebhookController extends Controller
 
     public function update(Request $request, Webhook $webhook)
     {
+        if (! app(LicenseService::class)->isPro()) {
+            abort(403, 'Pro license required.');
+        }
+
         $validated = $request->validate([
             'url'       => ['required', 'url', 'max:500'],
             'secret'    => ['nullable', 'string', 'max:255'],
