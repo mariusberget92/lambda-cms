@@ -1,5 +1,5 @@
 <script setup>
-import { computed, watchEffect } from 'vue'
+import { computed, onMounted, watchEffect } from 'vue'
 import { Head, Link, usePage } from '@inertiajs/vue3'
 import { LayoutDashboard, PenSquare, LogOut } from '@lucide/vue'
 import BlockRenderer from '@/Components/BlockRenderer.vue'
@@ -12,6 +12,12 @@ const csrfToken = computed(() => document.querySelector('meta[name="csrf-token"]
 
 const headerBlocks = computed(() => page.props.headerBlocks ?? [])
 const footerBlocks = computed(() => page.props.footerBlocks ?? [])
+
+// Remove the admin dark-mode class whenever the blog layout is active so
+// dark:* Tailwind utilities and dark-valued CSS tokens never affect blog pages.
+onMounted(() => {
+  document.documentElement.classList.remove('dark')
+})
 
 watchEffect(() => {
   const color = page.props.accentColor

@@ -287,8 +287,12 @@
   --code-ink:    #d4d4d8;
   --gutter:      32px;
   --blog-radius: 4px;
-  --input-bg:    #f8f9fb;
-  --border:      rgba(0,0,0,0.12);
+  --input-bg:         #f8f9fb;
+  --border:           rgba(0,0,0,0.12);
+  --background:       #f8f9fb;
+  --foreground:       #111827;
+  --muted:            rgba(0,0,0,0.12);
+  --muted-foreground: #6b7280;
 }
 
 /* ── neutral palette ── */
@@ -306,9 +310,13 @@
   --code-ink:    #d4d4d8;
   --gutter:      32px;
   --blog-radius: 4px;
-  /* Override admin token so global input rule uses the blog's own background */
-  --input-bg:    var(--bg);
-  --border:      var(--line-strong);
+  /* Override admin tokens so global rules never bleed dark values into the blog */
+  --input-bg:         var(--bg);
+  --border:           var(--line-strong);
+  --background:       var(--bg);
+  --foreground:       var(--ink);
+  --muted:            var(--line-strong);
+  --muted-foreground: var(--soft);
 }
 
 /* Base resets inside blog scope */

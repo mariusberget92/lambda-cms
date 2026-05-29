@@ -54,7 +54,7 @@ class ImportController extends Controller
 
         $path = $request->input('tmp_path');
 
-        if (!Storage::disk('local')->exists($path)) {
+        if (!str_starts_with($path, 'imports/tmp/') || !Storage::disk('local')->exists($path)) {
             return back()->with('error', 'Upload session expired. Please upload the file again.');
         }
 

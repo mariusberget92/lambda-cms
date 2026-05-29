@@ -9,7 +9,7 @@
         class="shrink-0 mt-[0.2em]"
         aria-hidden="true"
       />
-      <div class="prose prose-sm max-w-none dark:prose-invert" v-html="resolvedContent" />
+      <div class="prose prose-sm max-w-none" v-html="resolvedContent" />
       <Icon
         v-if="icon.position === 'suffix'"
         :icon="icon.name"
@@ -19,7 +19,7 @@
       />
     </div>
   </template>
-  <div v-else class="prose prose-sm max-w-none dark:prose-invert" v-html="resolvedContent" />
+  <div v-else class="prose prose-sm max-w-none" v-html="resolvedContent" />
 </template>
 
 <script setup>

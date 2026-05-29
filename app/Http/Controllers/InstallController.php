@@ -192,9 +192,10 @@ class InstallController extends Controller
 
         Artisan::call('config:clear');
 
-        // Retrieve admin data from session (stored in step 3)
+        // Retrieve admin data from session (stored in step 3).
+        // Forget the key only after the transaction succeeds so a retry after a
+        // partial failure can still read the credentials from session.
         $adminData = $request->session()->get('install.admin');
-        $request->session()->forget('install.admin');
 
         $user = DB::transaction(function () use ($adminData) {
             Artisan::call('db:seed', ['--force' => true, '--class' => 'DatabaseSeeder']);
@@ -220,6 +221,8 @@ class InstallController extends Controller
 
             return $user;
         });
+
+        $request->session()->forget('install.admin');
 
         // Mark as installed
         file_put_contents(storage_path('app/installed'), now()->toDateTimeString());

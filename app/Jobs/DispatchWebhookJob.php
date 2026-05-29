@@ -40,7 +40,8 @@ class DispatchWebhookJob implements ShouldQueue
         try {
             Http::withHeaders($headers)
                 ->timeout(10)
-                ->post($this->webhook->url, json_decode($body, true));
+                ->withBody($body, 'application/json')
+                ->post($this->webhook->url);
 
             $this->webhook->update(['last_triggered_at' => now()]);
         } catch (\Throwable $e) {

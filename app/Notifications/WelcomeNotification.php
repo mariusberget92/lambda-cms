@@ -31,11 +31,11 @@ class WelcomeNotification extends Notification
             ->greeting("Hello, {$notifiable->name}!")
             ->line('An account has been created for you on **Lambda CMS**.')
             ->line('Please complete two steps to activate your account:')
-            ->line('**Step 1 — Verify your email address:**')
-            ->action('Verify Email Address', $verificationUrl)
-            ->line('**Step 2 — Set your own password:**')
-            ->line('After verifying, use this link to choose your password:')
-            ->line('[Set your password](' . $resetUrl . ')')
+            ->line('**Step 1 — Set your password:**')
+            ->action('Set Your Password', $resetUrl)
+            ->line('**Step 2 — Verify your email address:**')
+            ->line('After setting your password and logging in, verify your email with this link:')
+            ->line('[Verify Email Address](' . $verificationUrl . ')')
             ->line('Both links expire in 24 hours.')
             ->line('If you did not expect this invitation, you can safely ignore this email.');
     }
