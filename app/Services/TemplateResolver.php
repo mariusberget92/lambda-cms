@@ -11,7 +11,7 @@ class TemplateResolver
 
     public function resolve(string $type): ?Template
     {
-        if (!array_key_exists($type, $this->cache)) {
+        if (! array_key_exists($type, $this->cache)) {
             $this->cache[$type] = Template::activeFor($type);
         }
 

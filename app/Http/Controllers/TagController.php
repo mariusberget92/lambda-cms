@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTagRequest;
 use App\Http\Requests\UpdateTagRequest;
 use App\Models\Tag;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class TagController extends Controller
@@ -16,9 +15,9 @@ class TagController extends Controller
             ->orderBy('name')
             ->get()
             ->map(fn ($t) => [
-                'id'          => $t->id,
-                'name'        => $t->name,
-                'slug'        => $t->slug,
+                'id' => $t->id,
+                'name' => $t->name,
+                'slug' => $t->slug,
                 'posts_count' => $t->posts_count,
             ]);
 
@@ -49,7 +48,7 @@ class TagController extends Controller
     {
         return Inertia::render('Tags/Form', [
             'tag' => [
-                'id'   => $tag->id,
+                'id' => $tag->id,
                 'name' => $tag->name,
                 'slug' => $tag->slug,
             ],

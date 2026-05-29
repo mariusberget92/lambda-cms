@@ -10,7 +10,7 @@ use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
 {
-    protected $rootView = "app";
+    protected $rootView = 'app';
 
     public function version(Request $request): ?string
     {
@@ -20,25 +20,25 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
-            "appName" => config('app.name', 'Lambda CMS'),
-            "auth" => [
-                "user" => $request->user() ? array_merge(
-                    $request->user()->only("id", "name", "email", "avatar_url"),
+            'appName' => config('app.name', 'Lambda CMS'),
+            'auth' => [
+                'user' => $request->user() ? array_merge(
+                    $request->user()->only('id', 'name', 'email', 'avatar_url'),
                     [
-                        "role"               => $request->user()->getRoleNames()->first(),
-                        "email_verified"     => $request->user()->hasVerifiedEmail(),
-                        "two_factor_enabled" => $request->user()->hasTwoFactorEnabled(),
+                        'role' => $request->user()->getRoleNames()->first(),
+                        'email_verified' => $request->user()->hasVerifiedEmail(),
+                        'two_factor_enabled' => $request->user()->hasTwoFactorEnabled(),
                     ]
                 ) : null,
             ],
-            "flash" => [
-                "status"       => fn () => $request->session()->get("status"),
-                "error"        => fn () => $request->session()->get("error"),
-                "mail_status"  => fn () => $request->session()->get("mail_status"),
-                "mail_error"   => fn () => $request->session()->get("mail_error"),
+            'flash' => [
+                'status' => fn () => $request->session()->get('status'),
+                'error' => fn () => $request->session()->get('error'),
+                'mail_status' => fn () => $request->session()->get('mail_status'),
+                'mail_error' => fn () => $request->session()->get('mail_error'),
             ],
-            "currentRoute"         => $request->route()?->getName(),
-            "pendingCommentsCount" => fn () => $request->user()?->hasRole('administrator')
+            'currentRoute' => $request->route()?->getName(),
+            'pendingCommentsCount' => fn () => $request->user()?->hasRole('administrator')
                 ? Comment::pending()->count()
                 : null,
             'accentColor' => fn () => Setting::get('site.accent_color') ?: null,

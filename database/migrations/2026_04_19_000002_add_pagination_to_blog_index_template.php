@@ -12,10 +12,14 @@ return new class extends Migration
             ->where('type', 'blog-index')
             ->first();
 
-        if (!$template) return;
+        if (! $template) {
+            return;
+        }
 
         $blocks = json_decode($template->blocks, true);
-        if (!is_array($blocks)) return;
+        if (! is_array($blocks)) {
+            return;
+        }
 
         DB::table('templates')
             ->where('id', $template->id)
@@ -29,23 +33,24 @@ return new class extends Migration
                 $block['data']['pageParam'] = 'page';
             }
             if (($block['id'] ?? null) === 3 && ($block['type'] ?? null) === 'container') {
-                $hasPagination = collect($block['children'] ?? [])->contains(fn($c) => ($c['id'] ?? null) === 6);
-                if (!$hasPagination) {
+                $hasPagination = collect($block['children'] ?? [])->contains(fn ($c) => ($c['id'] ?? null) === 6);
+                if (! $hasPagination) {
                     $block['children'][] = [
-                        'id'   => 6,
+                        'id' => 6,
                         'type' => 'pagination',
                         'data' => [
-                            'pageParam'   => 'page',
-                            'style'       => 'numbered',
-                            'alignment'   => 'center',
+                            'pageParam' => 'page',
+                            'style' => 'numbered',
+                            'alignment' => 'center',
                             'buttonStyle' => 'outline',
                         ],
                     ];
                 }
             }
-            if (!empty($block['children'])) {
+            if (! empty($block['children'])) {
                 $block['children'] = $this->patchBlocks($block['children']);
             }
+
             return $block;
         }, $blocks);
     }
@@ -57,10 +62,14 @@ return new class extends Migration
             ->where('type', 'blog-index')
             ->first();
 
-        if (!$template) return;
+        if (! $template) {
+            return;
+        }
 
         $blocks = json_decode($template->blocks, true);
-        if (!is_array($blocks)) return;
+        if (! is_array($blocks)) {
+            return;
+        }
 
         DB::table('templates')
             ->where('id', $template->id)
@@ -75,12 +84,13 @@ return new class extends Migration
             }
             if (($block['id'] ?? null) === 3 && ($block['type'] ?? null) === 'container') {
                 $block['children'] = array_values(
-                    array_filter($block['children'] ?? [], fn($c) => ($c['id'] ?? null) !== 6)
+                    array_filter($block['children'] ?? [], fn ($c) => ($c['id'] ?? null) !== 6)
                 );
             }
-            if (!empty($block['children'])) {
+            if (! empty($block['children'])) {
                 $block['children'] = $this->revertBlocks($block['children']);
             }
+
             return $block;
         }, $blocks);
     }

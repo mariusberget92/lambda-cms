@@ -26,16 +26,16 @@ class Category extends Model
 
     public static function generateSlug(string $name, ?int $excludeId = null): string
     {
-        $slug     = Str::slug($name);
+        $slug = Str::slug($name);
         $original = $slug;
-        $count    = 1;
+        $count = 1;
 
         while (
             static::where('slug', $slug)
                 ->when($excludeId, fn ($q) => $q->where('id', '!=', $excludeId))
                 ->exists()
         ) {
-            $slug = $original . '-' . $count++;
+            $slug = $original.'-'.$count++;
         }
 
         return $slug;

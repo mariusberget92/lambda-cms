@@ -51,8 +51,8 @@ class DashboardTest extends TestCase
 
     public function test_dashboard_upcoming_scheduled_posts_ordered_by_publish_date(): void
     {
-        $user   = $this->makeUser();
-        $later  = Post::factory()->create(['user_id' => $user->id, 'status' => 'scheduled', 'published_at' => now()->addDays(3)]);
+        $user = $this->makeUser();
+        $later = Post::factory()->create(['user_id' => $user->id, 'status' => 'scheduled', 'published_at' => now()->addDays(3)]);
         $sooner = Post::factory()->create(['user_id' => $user->id, 'status' => 'scheduled', 'published_at' => now()->addDay()]);
 
         $this->actingAs($user)
@@ -69,8 +69,8 @@ class DashboardTest extends TestCase
     {
         $user = $this->makeUser();
         Post::factory()->count(7)->create([
-            'user_id'      => $user->id,
-            'status'       => 'scheduled',
+            'user_id' => $user->id,
+            'status' => 'scheduled',
             'published_at' => now()->addDay(),
         ]);
 
@@ -84,13 +84,13 @@ class DashboardTest extends TestCase
     {
         $user = $this->makeUser();
         Post::factory()->create([
-            'user_id'      => $user->id,
-            'status'       => 'scheduled',
+            'user_id' => $user->id,
+            'status' => 'scheduled',
             'published_at' => now()->subHour(),
         ]);
         $future = Post::factory()->create([
-            'user_id'      => $user->id,
-            'status'       => 'scheduled',
+            'user_id' => $user->id,
+            'status' => 'scheduled',
             'published_at' => now()->addDay(),
         ]);
 
@@ -105,13 +105,13 @@ class DashboardTest extends TestCase
 
     public function test_dashboard_recent_posts_ordered_by_updated_at(): void
     {
-        $user  = $this->makeUser();
+        $user = $this->makeUser();
         $older = Post::factory()->create([
-            'user_id'    => $user->id,
+            'user_id' => $user->id,
             'updated_at' => now()->subMinutes(10),
         ]);
         $newer = Post::factory()->create([
-            'user_id'    => $user->id,
+            'user_id' => $user->id,
             'updated_at' => now()->subMinutes(5),
         ]);
         // Touch $older so its updated_at is now the most recent

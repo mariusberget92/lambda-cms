@@ -43,7 +43,7 @@ class ProfileTest extends TestCase
         $user = $this->makeUser();
 
         $this->actingAs($user)->post('/profile/info', [
-            'name'  => 'New Name',
+            'name' => 'New Name',
             'email' => $user->email,
         ])->assertRedirect('/profile');
 
@@ -56,7 +56,7 @@ class ProfileTest extends TestCase
         $this->assertNotNull($user->email_verified_at);
 
         $this->actingAs($user)->post('/profile/info', [
-            'name'  => $user->name,
+            'name' => $user->name,
             'email' => 'newemail@example.com',
         ]);
 
@@ -68,7 +68,7 @@ class ProfileTest extends TestCase
         $user = $this->makeUser();
 
         $this->actingAs($user)->post('/profile/info', [
-            'name'  => 'Updated Name',
+            'name' => 'Updated Name',
             'email' => $user->email,
         ]);
 
@@ -77,11 +77,11 @@ class ProfileTest extends TestCase
 
     public function test_info_update_validates_unique_email(): void
     {
-        $user  = $this->makeUser();
+        $user = $this->makeUser();
         $other = $this->makeUser();
 
         $this->actingAs($user)->post('/profile/info', [
-            'name'  => $user->name,
+            'name' => $user->name,
             'email' => $other->email,
         ])->assertSessionHasErrors('email');
     }
@@ -93,8 +93,8 @@ class ProfileTest extends TestCase
         $user = $this->makeUser();
 
         $this->actingAs($user)->post('/profile/password', [
-            'current_password'      => 'password',
-            'password'              => 'newpassword1',
+            'current_password' => 'password',
+            'password' => 'newpassword1',
             'password_confirmation' => 'newpassword1',
         ])->assertRedirect('/profile');
     }
@@ -104,8 +104,8 @@ class ProfileTest extends TestCase
         $user = $this->makeUser();
 
         $this->actingAs($user)->post('/profile/password', [
-            'current_password'      => 'wrongpassword',
-            'password'              => 'newpassword1',
+            'current_password' => 'wrongpassword',
+            'password' => 'newpassword1',
             'password_confirmation' => 'newpassword1',
         ])->assertSessionHasErrors('current_password');
     }
@@ -115,8 +115,8 @@ class ProfileTest extends TestCase
         $user = $this->makeUser();
 
         $this->actingAs($user)->post('/profile/password', [
-            'current_password'      => 'password',
-            'password'              => 'newpassword1',
+            'current_password' => 'password',
+            'password' => 'newpassword1',
             'password_confirmation' => 'doesnotmatch',
         ])->assertSessionHasErrors('password');
     }
@@ -150,7 +150,7 @@ class ProfileTest extends TestCase
         // Upload avatar for user1 then manually set it as user2's avatar
         // so user2 has an "old" avatar with a different path than their own ID
         $firstFile = UploadedFile::fake()->create('old.jpg', 100, 'image/jpeg');
-        $oldPath = $firstFile->storeAs('avatars', $user2->id . '_old.jpg', 'public');
+        $oldPath = $firstFile->storeAs('avatars', $user2->id.'_old.jpg', 'public');
         $user2->forceFill(['avatar' => $oldPath])->save();
         Storage::disk('public')->assertExists($oldPath);
 

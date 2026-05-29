@@ -16,22 +16,22 @@ class ExportService
     public function generate(array $entities, bool $includeMediaFiles): string
     {
         $dir = storage_path('app/private/exports');
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             mkdir($dir, 0755, true);
         }
 
-        $tmpPath = $dir . '/' . Str::uuid() . '.zip';
+        $tmpPath = $dir.'/'.Str::uuid().'.zip';
 
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
         $zip->open($tmpPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
         $manifest = [
-            'version'              => '1.0',
-            'app'                  => 'lambda-cms',
-            'exported_at'          => now()->toISOString(),
-            'entities'             => $entities,
-            'include_media_files'  => $includeMediaFiles,
-            'counts'               => [],
+            'version' => '1.0',
+            'app' => 'lambda-cms',
+            'exported_at' => now()->toISOString(),
+            'entities' => $entities,
+            'include_media_files' => $includeMediaFiles,
+            'counts' => [],
         ];
 
         if (in_array('categories', $entities)) {
@@ -56,7 +56,7 @@ class ExportService
                     $disk = $item['disk'] === 'public' ? 'public' : 'local';
                     if (Storage::disk($disk)->exists($item['path'])) {
                         $zip->addFromString(
-                            'media/' . $item['filename'],
+                            'media/'.$item['filename'],
                             Storage::disk($disk)->get($item['path'])
                         );
                     }
@@ -85,11 +85,11 @@ class ExportService
     private function exportCategories(): array
     {
         return Category::all()->map(fn ($c) => [
-            'name'        => $c->name,
-            'slug'        => $c->slug,
+            'name' => $c->name,
+            'slug' => $c->slug,
             'description' => $c->description,
-            'color'       => $c->color,
-            'hue'         => $c->hue,
+            'color' => $c->color,
+            'hue' => $c->hue,
         ])->values()->toArray();
     }
 
@@ -104,56 +104,56 @@ class ExportService
     private function exportMedia(): array
     {
         return Media::all()->map(fn ($m) => [
-            'id'                => $m->id,
-            'filename'          => $m->filename,
+            'id' => $m->id,
+            'filename' => $m->filename,
             'original_filename' => $m->original_filename,
-            'disk'              => $m->disk,
-            'path'              => $m->path,
-            'mime_type'         => $m->mime_type,
-            'type'              => $m->type,
-            'size'              => $m->size,
-            'width'             => $m->width,
-            'height'            => $m->height,
-            'alt'               => $m->alt,
-            'description'       => $m->description,
+            'disk' => $m->disk,
+            'path' => $m->path,
+            'mime_type' => $m->mime_type,
+            'type' => $m->type,
+            'size' => $m->size,
+            'width' => $m->width,
+            'height' => $m->height,
+            'alt' => $m->alt,
+            'description' => $m->description,
         ])->values()->toArray();
     }
 
     private function exportTemplates(): array
     {
         return Template::all()->map(fn ($t) => [
-            'title'            => $t->title,
-            'type'             => $t->type,
-            'loop_source'      => $t->loop_source,
-            'status'           => $t->status,
-            'blocks'           => $t->blocks ?? [],
-            'meta_title'       => $t->meta_title,
+            'title' => $t->title,
+            'type' => $t->type,
+            'loop_source' => $t->loop_source,
+            'status' => $t->status,
+            'blocks' => $t->blocks ?? [],
+            'meta_title' => $t->meta_title,
             'meta_description' => $t->meta_description,
-            'meta_keywords'    => $t->meta_keywords,
+            'meta_keywords' => $t->meta_keywords,
         ])->values()->toArray();
     }
 
     private function exportPosts(): array
     {
         return Post::with(['categories', 'tags', 'featuredImage'])->get()->map(fn ($p) => [
-            'title'             => $p->title,
-            'slug'              => $p->slug,
-            'excerpt'           => $p->excerpt,
-            'body'              => $p->body,
-            'body_format'       => $p->body_format,
-            'status'            => $p->status,
-            'featured'          => (bool) $p->featured,
-            'published_at'      => $p->published_at?->toISOString(),
-            'comments_enabled'  => (bool) $p->comments_enabled,
-            'use_block_editor'  => (bool) $p->use_block_editor,
-            'blocks'            => $p->blocks ?? [],
-            'meta_title'        => $p->meta_title,
-            'meta_description'  => $p->meta_description,
-            'meta_keywords'     => $p->meta_keywords,
-            'custom_js'         => $p->custom_js,
-            'categories'        => $p->categories->pluck('slug')->values()->toArray(),
-            'tags'              => $p->tags->pluck('slug')->values()->toArray(),
-            'featured_image'    => $p->featuredImage?->filename,
+            'title' => $p->title,
+            'slug' => $p->slug,
+            'excerpt' => $p->excerpt,
+            'body' => $p->body,
+            'body_format' => $p->body_format,
+            'status' => $p->status,
+            'featured' => (bool) $p->featured,
+            'published_at' => $p->published_at?->toISOString(),
+            'comments_enabled' => (bool) $p->comments_enabled,
+            'use_block_editor' => (bool) $p->use_block_editor,
+            'blocks' => $p->blocks ?? [],
+            'meta_title' => $p->meta_title,
+            'meta_description' => $p->meta_description,
+            'meta_keywords' => $p->meta_keywords,
+            'custom_js' => $p->custom_js,
+            'categories' => $p->categories->pluck('slug')->values()->toArray(),
+            'tags' => $p->tags->pluck('slug')->values()->toArray(),
+            'featured_image' => $p->featuredImage?->filename,
         ])->values()->toArray();
     }
 }

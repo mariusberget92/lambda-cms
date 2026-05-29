@@ -37,7 +37,7 @@ class AuthTest extends TestCase
         $user = User::factory()->create();
 
         $this->post('/login', [
-            'email'    => $user->email,
+            'email' => $user->email,
             'password' => 'password',
         ])->assertRedirect(route('dashboard'));
 
@@ -49,7 +49,7 @@ class AuthTest extends TestCase
         $user = User::factory()->create();
 
         $this->post('/login', [
-            'email'    => $user->email,
+            'email' => $user->email,
             'password' => 'wrongpassword',
         ])->assertSessionHasErrors('email');
 
@@ -59,7 +59,7 @@ class AuthTest extends TestCase
     public function test_login_fails_with_unknown_email(): void
     {
         $this->post('/login', [
-            'email'    => 'nobody@example.com',
+            'email' => 'nobody@example.com',
             'password' => 'password',
         ])->assertSessionHasErrors('email');
 
@@ -79,20 +79,20 @@ class AuthTest extends TestCase
         $user = User::factory()->create();
 
         // Clear any existing rate limit state
-        $throttleKey = strtolower($user->email) . '|127.0.0.1';
+        $throttleKey = strtolower($user->email).'|127.0.0.1';
         RateLimiter::clear($throttleKey);
 
         // 5 failed attempts
         for ($i = 0; $i < 5; $i++) {
             $this->post('/login', [
-                'email'    => $user->email,
+                'email' => $user->email,
                 'password' => 'wrongpassword',
             ]);
         }
 
         // 6th attempt should be throttled
         $this->post('/login', [
-            'email'    => $user->email,
+            'email' => $user->email,
             'password' => 'wrongpassword',
         ])->assertSessionHasErrors('email');
 
@@ -102,7 +102,7 @@ class AuthTest extends TestCase
     public function test_rate_limit_is_cleared_after_successful_login(): void
     {
         $user = User::factory()->create();
-        $throttleKey = strtolower($user->email) . '|127.0.0.1';
+        $throttleKey = strtolower($user->email).'|127.0.0.1';
         RateLimiter::clear($throttleKey);
 
         // Hit the limiter a few times
@@ -111,7 +111,7 @@ class AuthTest extends TestCase
 
         // Successful login
         $this->post('/login', [
-            'email'    => $user->email,
+            'email' => $user->email,
             'password' => 'password',
         ]);
 

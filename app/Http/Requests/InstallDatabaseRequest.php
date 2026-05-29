@@ -15,13 +15,13 @@ class InstallDatabaseRequest extends FormRequest
     {
         if ($this->input('driver') === 'mysql') {
             return [
-                'driver'   => ['required', 'in:sqlite,mysql'],
-                'host'     => ['required', 'string'],
-                'port'     => ['required', 'integer', 'min:1', 'max:65535'],
+                'driver' => ['required', 'in:sqlite,mysql'],
+                'host' => ['required', 'string'],
+                'port' => ['required', 'integer', 'min:1', 'max:65535'],
                 'database' => ['required', 'string'],
                 'username' => ['required', 'string'],
                 'password' => ['nullable', 'string'],
-                'prefix'   => ['nullable', 'string'],
+                'prefix' => ['nullable', 'string'],
             ];
         }
 

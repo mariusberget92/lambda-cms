@@ -14,9 +14,9 @@ class ImportStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tmp_path'          => ['required', 'string'],
-            'entities'          => ['required', 'array', 'min:1'],
-            'entities.*'        => ['in:posts,categories,tags,media,templates'],
+            'tmp_path' => ['required', 'string'],
+            'entities' => ['required', 'array', 'min:1'],
+            'entities.*' => ['in:posts,categories,tags,media,templates'],
             'conflict_strategy' => ['required', 'in:skip,overwrite,duplicate'],
         ];
     }

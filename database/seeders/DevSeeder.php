@@ -11,7 +11,7 @@ class DevSeeder extends Seeder
     public function run(): void
     {
         $adminRole = Role::findByName('administrator');
-        $userRole  = Role::findByName('user');
+        $userRole = Role::findByName('user');
 
         // 2 extra admin accounts for local testing (password: "password")
         User::factory()->count(2)->create()->each(fn ($u) => $u->assignRole($adminRole));

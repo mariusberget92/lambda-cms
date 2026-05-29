@@ -38,9 +38,9 @@ class WebhookTest extends TestCase
     private function webhookPayload(array $overrides = []): array
     {
         return array_merge([
-            'url'       => 'https://example.com/hook',
-            'secret'    => null,
-            'events'    => ['post.published'],
+            'url' => 'https://example.com/hook',
+            'secret' => null,
+            'events' => ['post.published'],
             'is_active' => true,
         ], $overrides);
     }
@@ -73,9 +73,8 @@ class WebhookTest extends TestCase
 
         $this->actingAs($this->makeAdmin())
             ->get('/webhooks')
-            ->assertInertia(fn ($page) =>
-                $page->has('webhooks', 1)
-                     ->where('webhooks.0.url', 'https://example.com/my-hook')
+            ->assertInertia(fn ($page) => $page->has('webhooks', 1)
+                ->where('webhooks.0.url', 'https://example.com/my-hook')
             );
     }
 
@@ -154,13 +153,13 @@ class WebhookTest extends TestCase
 
         $this->actingAs($this->makeAdmin())
             ->put("/webhooks/{$webhook->id}", $this->webhookPayload([
-                'url'    => 'https://updated.example.com/hook',
+                'url' => 'https://updated.example.com/hook',
                 'events' => ['post.deleted'],
             ]))
             ->assertRedirect();
 
         $this->assertDatabaseHas('webhooks', [
-            'id'  => $webhook->id,
+            'id' => $webhook->id,
             'url' => 'https://updated.example.com/hook',
         ]);
     }
@@ -291,7 +290,7 @@ class WebhookTest extends TestCase
         Queue::fake();
 
         Webhook::create($this->webhookPayload([
-            'events'    => ['post.published'],
+            'events' => ['post.published'],
             'is_active' => false,
         ]));
 

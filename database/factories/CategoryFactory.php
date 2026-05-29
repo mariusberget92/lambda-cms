@@ -13,10 +13,10 @@ class CategoryFactory extends Factory
         $name = ucwords($name);
 
         return [
-            'name'        => $name,
-            'slug'        => Str::slug($name),
+            'name' => $name,
+            'slug' => Str::slug($name),
             'description' => fake()->optional(0.6)->sentence(),
-            'color'       => null,
+            'color' => null,
         ];
     }
 }

@@ -41,7 +41,7 @@ class AutosaveTest extends TestCase
     public function test_owner_can_autosave_own_post(): void
     {
         $owner = $this->makeUser();
-        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post = Post::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($owner)
             ->postJson("/posts/{$post->id}/autosave", $this->payload())
@@ -53,7 +53,7 @@ class AutosaveTest extends TestCase
     {
         $owner = $this->makeUser();
         $admin = $this->makeAdmin();
-        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post = Post::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($admin)
             ->postJson("/posts/{$post->id}/autosave", $this->payload())
@@ -62,9 +62,9 @@ class AutosaveTest extends TestCase
 
     public function test_non_owner_non_admin_gets_403_on_store_post_bypassing_middleware(): void
     {
-        $owner   = $this->makeUser();
-        $other   = $this->makeUser();
-        $post    = Post::factory()->create(['user_id' => $owner->id]);
+        $owner = $this->makeUser();
+        $other = $this->makeUser();
+        $post = Post::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($other)
             ->withoutMiddleware()
@@ -77,7 +77,7 @@ class AutosaveTest extends TestCase
     public function test_owner_can_destroy_own_post_autosave(): void
     {
         $owner = $this->makeUser();
-        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post = Post::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($owner)
             ->deleteJson("/posts/{$post->id}/autosave")
@@ -89,7 +89,7 @@ class AutosaveTest extends TestCase
     {
         $owner = $this->makeUser();
         $admin = $this->makeAdmin();
-        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post = Post::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($admin)
             ->deleteJson("/posts/{$post->id}/autosave")
@@ -100,7 +100,7 @@ class AutosaveTest extends TestCase
     {
         $owner = $this->makeUser();
         $other = $this->makeUser();
-        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post = Post::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($other)
             ->withoutMiddleware()
@@ -112,19 +112,19 @@ class AutosaveTest extends TestCase
     {
         $owner = $this->makeUser();
         $admin = $this->makeAdmin();
-        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post = Post::factory()->create(['user_id' => $owner->id]);
 
         Autosave::create([
             'autosaveable_type' => Post::class,
-            'autosaveable_id'   => $post->id,
-            'user_id'           => $owner->id,
-            'payload'           => ['title' => 'Owner draft'],
+            'autosaveable_id' => $post->id,
+            'user_id' => $owner->id,
+            'payload' => ['title' => 'Owner draft'],
         ]);
 
         $this->assertDatabaseHas('autosaves', [
             'autosaveable_type' => Post::class,
-            'autosaveable_id'   => $post->id,
-            'user_id'           => $owner->id,
+            'autosaveable_id' => $post->id,
+            'user_id' => $owner->id,
         ]);
 
         $this->actingAs($admin)
@@ -134,8 +134,8 @@ class AutosaveTest extends TestCase
 
         $this->assertDatabaseMissing('autosaves', [
             'autosaveable_type' => Post::class,
-            'autosaveable_id'   => $post->id,
-            'user_id'           => $owner->id,
+            'autosaveable_id' => $post->id,
+            'user_id' => $owner->id,
         ]);
     }
 
@@ -144,7 +144,7 @@ class AutosaveTest extends TestCase
     public function test_admin_owner_can_autosave_own_page(): void
     {
         $owner = $this->makeAdmin();
-        $page  = Page::factory()->create(['user_id' => $owner->id]);
+        $page = Page::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($owner)
             ->postJson("/pages/{$page->id}/autosave", $this->payload())
@@ -156,7 +156,7 @@ class AutosaveTest extends TestCase
     {
         $owner = $this->makeAdmin();
         $admin = $this->makeAdmin();
-        $page  = Page::factory()->create(['user_id' => $owner->id]);
+        $page = Page::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($admin)
             ->postJson("/pages/{$page->id}/autosave", $this->payload())
@@ -167,7 +167,7 @@ class AutosaveTest extends TestCase
     {
         $owner = $this->makeAdmin();
         $other = $this->makeUser();
-        $page  = Page::factory()->create(['user_id' => $owner->id]);
+        $page = Page::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($other)
             ->withoutMiddleware()
@@ -180,7 +180,7 @@ class AutosaveTest extends TestCase
     public function test_admin_owner_can_destroy_own_page_autosave(): void
     {
         $owner = $this->makeAdmin();
-        $page  = Page::factory()->create(['user_id' => $owner->id]);
+        $page = Page::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($owner)
             ->deleteJson("/pages/{$page->id}/autosave")
@@ -192,7 +192,7 @@ class AutosaveTest extends TestCase
     {
         $owner = $this->makeAdmin();
         $admin = $this->makeAdmin();
-        $page  = Page::factory()->create(['user_id' => $owner->id]);
+        $page = Page::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($admin)
             ->deleteJson("/pages/{$page->id}/autosave")
@@ -203,7 +203,7 @@ class AutosaveTest extends TestCase
     {
         $owner = $this->makeAdmin();
         $other = $this->makeUser();
-        $page  = Page::factory()->create(['user_id' => $owner->id]);
+        $page = Page::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($other)
             ->withoutMiddleware()
@@ -215,19 +215,19 @@ class AutosaveTest extends TestCase
     {
         $owner = $this->makeAdmin();
         $admin = $this->makeAdmin();
-        $page  = Page::factory()->create(['user_id' => $owner->id]);
+        $page = Page::factory()->create(['user_id' => $owner->id]);
 
         Autosave::create([
             'autosaveable_type' => Page::class,
-            'autosaveable_id'   => $page->id,
-            'user_id'           => $owner->id,
-            'payload'           => ['title' => 'Owner draft'],
+            'autosaveable_id' => $page->id,
+            'user_id' => $owner->id,
+            'payload' => ['title' => 'Owner draft'],
         ]);
 
         $this->assertDatabaseHas('autosaves', [
             'autosaveable_type' => Page::class,
-            'autosaveable_id'   => $page->id,
-            'user_id'           => $owner->id,
+            'autosaveable_id' => $page->id,
+            'user_id' => $owner->id,
         ]);
 
         $this->actingAs($admin)
@@ -237,8 +237,8 @@ class AutosaveTest extends TestCase
 
         $this->assertDatabaseMissing('autosaves', [
             'autosaveable_type' => Page::class,
-            'autosaveable_id'   => $page->id,
-            'user_id'           => $owner->id,
+            'autosaveable_id' => $page->id,
+            'user_id' => $owner->id,
         ]);
     }
 
@@ -246,7 +246,7 @@ class AutosaveTest extends TestCase
 
     public function test_admin_owner_can_autosave_own_template(): void
     {
-        $owner    = $this->makeAdmin();
+        $owner = $this->makeAdmin();
         $template = Template::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($owner)
@@ -257,8 +257,8 @@ class AutosaveTest extends TestCase
 
     public function test_admin_can_autosave_any_template(): void
     {
-        $owner    = $this->makeAdmin();
-        $admin    = $this->makeAdmin();
+        $owner = $this->makeAdmin();
+        $admin = $this->makeAdmin();
         $template = Template::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($admin)
@@ -268,8 +268,8 @@ class AutosaveTest extends TestCase
 
     public function test_non_owner_non_admin_gets_403_on_store_template_bypassing_middleware(): void
     {
-        $owner    = $this->makeAdmin();
-        $other    = $this->makeUser();
+        $owner = $this->makeAdmin();
+        $other = $this->makeUser();
         $template = Template::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($other)
@@ -282,7 +282,7 @@ class AutosaveTest extends TestCase
 
     public function test_admin_owner_can_destroy_own_template_autosave(): void
     {
-        $owner    = $this->makeAdmin();
+        $owner = $this->makeAdmin();
         $template = Template::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($owner)
@@ -293,8 +293,8 @@ class AutosaveTest extends TestCase
 
     public function test_admin_can_destroy_any_template_autosave(): void
     {
-        $owner    = $this->makeAdmin();
-        $admin    = $this->makeAdmin();
+        $owner = $this->makeAdmin();
+        $admin = $this->makeAdmin();
         $template = Template::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($admin)
@@ -304,8 +304,8 @@ class AutosaveTest extends TestCase
 
     public function test_non_owner_non_admin_gets_403_on_destroy_template_bypassing_middleware(): void
     {
-        $owner    = $this->makeAdmin();
-        $other    = $this->makeUser();
+        $owner = $this->makeAdmin();
+        $other = $this->makeUser();
         $template = Template::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($other)
@@ -316,21 +316,21 @@ class AutosaveTest extends TestCase
 
     public function test_admin_destroy_template_autosave_deletes_owners_record(): void
     {
-        $owner    = $this->makeAdmin();
-        $admin    = $this->makeAdmin();
+        $owner = $this->makeAdmin();
+        $admin = $this->makeAdmin();
         $template = Template::factory()->create(['user_id' => $owner->id]);
 
         Autosave::create([
             'autosaveable_type' => Template::class,
-            'autosaveable_id'   => $template->id,
-            'user_id'           => $owner->id,
-            'payload'           => ['title' => 'Owner draft'],
+            'autosaveable_id' => $template->id,
+            'user_id' => $owner->id,
+            'payload' => ['title' => 'Owner draft'],
         ]);
 
         $this->assertDatabaseHas('autosaves', [
             'autosaveable_type' => Template::class,
-            'autosaveable_id'   => $template->id,
-            'user_id'           => $owner->id,
+            'autosaveable_id' => $template->id,
+            'user_id' => $owner->id,
         ]);
 
         $this->actingAs($admin)
@@ -340,8 +340,8 @@ class AutosaveTest extends TestCase
 
         $this->assertDatabaseMissing('autosaves', [
             'autosaveable_type' => Template::class,
-            'autosaveable_id'   => $template->id,
-            'user_id'           => $owner->id,
+            'autosaveable_id' => $template->id,
+            'user_id' => $owner->id,
         ]);
     }
 }

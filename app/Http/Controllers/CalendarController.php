@@ -15,11 +15,11 @@ class CalendarController extends Controller
     public function index(Request $request): Response
     {
         $month = Carbon::now()->format('Y-m');
-        $data  = $this->buildMonthData($request, $month);
+        $data = $this->buildMonthData($request, $month);
 
         return Inertia::render('Calendar/Index', [
-            'month'              => $month,
-            'grouped'            => $data['grouped'],
+            'month' => $month,
+            'grouped' => $data['grouped'],
             'unscheduled_drafts' => $data['unscheduled_drafts'],
         ]);
     }
@@ -27,20 +27,20 @@ class CalendarController extends Controller
     public function data(CalendarDataRequest $request): JsonResponse
     {
         $month = $request->validated('month') ?? Carbon::now()->format('Y-m');
-        $data  = $this->buildMonthData($request, $month);
+        $data = $this->buildMonthData($request, $month);
 
         return response()->json([
-            'grouped'            => $data['grouped'],
+            'grouped' => $data['grouped'],
             'unscheduled_drafts' => $data['unscheduled_drafts'],
         ]);
     }
 
     private function buildMonthData(Request $request, string $month): array
     {
-        $user    = $request->user();
+        $user = $request->user();
         $isAdmin = $user->hasRole('administrator');
-        $start   = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
-        $end     = $start->copy()->endOfMonth();
+        $start = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+        $end = $start->copy()->endOfMonth();
 
         // Posts with a published_at falling in this month
         $postsQuery = Post::with('author:id,name')
@@ -50,18 +50,18 @@ class CalendarController extends Controller
         if (! $isAdmin) {
             $postsQuery->where(function ($q) use ($user) {
                 $q->where('status', 'published')
-                  ->orWhere('user_id', $user->id);
+                    ->orWhere('user_id', $user->id);
             });
         }
 
         $grouped = $postsQuery->get()
             ->map(fn ($post) => [
-                'id'           => $post->id,
-                'title'        => $post->title,
-                'slug'         => $post->slug,
-                'status'       => $post->status,
+                'id' => $post->id,
+                'title' => $post->title,
+                'slug' => $post->slug,
+                'status' => $post->status,
                 'published_at' => $post->published_at->toIso8601String(),
-                'author_name'  => $post->author?->name ?? 'Unknown',
+                'author_name' => $post->author?->name ?? 'Unknown',
             ])
             ->groupBy(fn ($post) => Carbon::parse($post['published_at'])->toDateString())
             ->map->values()
@@ -78,18 +78,18 @@ class CalendarController extends Controller
 
         $unscheduledDrafts = $draftsQuery->get()
             ->map(fn ($post) => [
-                'id'           => $post->id,
-                'title'        => $post->title,
-                'slug'         => $post->slug,
-                'status'       => $post->status,
+                'id' => $post->id,
+                'title' => $post->title,
+                'slug' => $post->slug,
+                'status' => $post->status,
                 'published_at' => null,
-                'author_name'  => $post->author?->name ?? 'Unknown',
+                'author_name' => $post->author?->name ?? 'Unknown',
             ])
             ->values()
             ->toArray();
 
         return [
-            'grouped'            => $grouped,
+            'grouped' => $grouped,
             'unscheduled_drafts' => $unscheduledDrafts,
         ];
     }

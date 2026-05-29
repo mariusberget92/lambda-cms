@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Comment;
 use App\Models\Post;
 use App\Models\Setting;
 use App\Models\Tag;
-use App\Models\Comment;
 use App\Services\MarkdownService;
 use App\Services\TemplateResolver;
+use Illuminate\Http\JsonResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -16,7 +17,7 @@ class BlogController extends Controller
 {
     public function __construct(
         private readonly TemplateResolver $templates,
-        private readonly MarkdownService  $markdown,
+        private readonly MarkdownService $markdown,
     ) {}
 
     public function index(): Response
@@ -30,9 +31,9 @@ class BlogController extends Controller
             ->through(fn (Post $post) => $this->postData($post));
 
         return Inertia::render('Blog/TemplatePage', [
-            'blocks'      => $template?->blocks ?? [],
+            'blocks' => $template?->blocks ?? [],
             'postContext' => ['posts' => $posts],
-            'seo'         => $this->buildIndexSeo(),
+            'seo' => $this->buildIndexSeo(),
         ]);
     }
 
@@ -48,33 +49,33 @@ class BlogController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
-        $perPage   = (int) Setting::get('comments.per_page', 10);
-        $total     = $post->comments()->approved()->count();
-        $template  = $this->templates->resolve('single-post');
+        $perPage = (int) Setting::get('comments.per_page', 10);
+        $total = $post->comments()->approved()->count();
+        $template = $this->templates->resolve('single-post');
 
         return Inertia::render('Blog/TemplatePage', [
-            'blocks'   => $template?->blocks ?? [],
+            'blocks' => $template?->blocks ?? [],
             'customJs' => $post->custom_js,
             'postContext' => [
-                'id'                 => $post->id,
-                'title'              => $post->title,
-                'slug'               => $post->slug,
-                'excerpt'            => $post->excerpt,
-                'body'               => $post->body_format === 'markdown'
+                'id' => $post->id,
+                'title' => $post->title,
+                'slug' => $post->slug,
+                'excerpt' => $post->excerpt,
+                'body' => $post->body_format === 'markdown'
                     ? $this->markdown->toHtml($post->body ?? '')
                     : $post->body,
-                'body_format'        => $post->body_format ?? 'html',
-                'use_block_editor'   => (bool) $post->use_block_editor,
-                'blocks'             => $post->blocks,
-                'published_at'       => $post->published_at?->toDateString(),
+                'body_format' => $post->body_format ?? 'html',
+                'use_block_editor' => (bool) $post->use_block_editor,
+                'blocks' => $post->blocks,
+                'published_at' => $post->published_at?->toDateString(),
                 'featured_image_url' => $post->featuredImage?->url,
                 'featured_image_alt' => $post->featuredImage?->alt,
-                'author'             => ['name' => $post->author?->name ?? 'Deleted User', 'avatar_url' => $post->author?->avatar_url],
-                'categories'         => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug, 'color' => $c->color ?? null, 'hue' => $c->hue ?? null])->values(),
-                'tags'               => $post->tags->map(fn ($t) => ['name' => $t->name, 'slug' => $t->slug]),
+                'author' => ['name' => $post->author?->name ?? 'Deleted User', 'avatar_url' => $post->author?->avatar_url],
+                'categories' => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug, 'color' => $c->color ?? null, 'hue' => $c->hue ?? null])->values(),
+                'tags' => $post->tags->map(fn ($t) => ['name' => $t->name, 'slug' => $t->slug]),
             ],
             'commentsData' => [
-                'total'   => $total,
+                'total' => $total,
                 'hasMore' => $post->comments()->approved()->count() > $perPage,
                 'perPage' => $perPage,
                 'enabled' => $post->commentsOpen(),
@@ -94,25 +95,25 @@ class BlogController extends Controller
             ->paginate(15)
             ->through(fn (Post $post) => $this->postData($post));
 
-        $siteName  = Setting::get('site.name', config('app.name'));
+        $siteName = Setting::get('site.name', config('app.name'));
         $separator = Setting::get('seo.title_separator', ' | ');
 
         return Inertia::render('Blog/TemplatePage', [
-            'blocks'         => $template?->blocks ?? [],
+            'blocks' => $template?->blocks ?? [],
             'archiveContext' => [
-                'type'       => 'category',
-                'name'       => $category->name,
-                'slug'       => $category->slug,
+                'type' => 'category',
+                'name' => $category->name,
+                'slug' => $category->slug,
                 'postsCount' => $posts->total(),
-                'posts'      => $posts,
+                'posts' => $posts,
             ],
             'seo' => [
-                'title'       => "Posts in {$category->name}{$separator}{$siteName}",
+                'title' => "Posts in {$category->name}{$separator}{$siteName}",
                 'description' => "All posts in the {$category->name} category.",
-                'image'       => Setting::get('seo.default_og_image_url', ''),
-                'canonical'   => url("/blog/category/{$category->slug}"),
-                'type'        => 'website',
-                'keywords'    => Setting::get('seo.default_keywords', ''),
+                'image' => Setting::get('seo.default_og_image_url', ''),
+                'canonical' => url("/blog/category/{$category->slug}"),
+                'type' => 'website',
+                'keywords' => Setting::get('seo.default_keywords', ''),
             ],
         ]);
     }
@@ -128,36 +129,36 @@ class BlogController extends Controller
             ->paginate(15)
             ->through(fn (Post $post) => $this->postData($post));
 
-        $siteName  = Setting::get('site.name', config('app.name'));
+        $siteName = Setting::get('site.name', config('app.name'));
         $separator = Setting::get('seo.title_separator', ' | ');
 
         return Inertia::render('Blog/TemplatePage', [
-            'blocks'         => $template?->blocks ?? [],
+            'blocks' => $template?->blocks ?? [],
             'archiveContext' => [
-                'type'       => 'tag',
-                'name'       => $tag->name,
-                'slug'       => $tag->slug,
+                'type' => 'tag',
+                'name' => $tag->name,
+                'slug' => $tag->slug,
                 'postsCount' => $posts->total(),
-                'posts'      => $posts,
+                'posts' => $posts,
             ],
             'seo' => [
-                'title'       => "Posts tagged '{$tag->name}'{$separator}{$siteName}",
+                'title' => "Posts tagged '{$tag->name}'{$separator}{$siteName}",
                 'description' => "All posts tagged '{$tag->name}'.",
-                'image'       => Setting::get('seo.default_og_image_url', ''),
-                'canonical'   => url("/blog/tag/{$tag->slug}"),
-                'type'        => 'website',
-                'keywords'    => Setting::get('seo.default_keywords', ''),
+                'image' => Setting::get('seo.default_og_image_url', ''),
+                'canonical' => url("/blog/tag/{$tag->slug}"),
+                'type' => 'website',
+                'keywords' => Setting::get('seo.default_keywords', ''),
             ],
         ]);
     }
 
-    public function comments(Post $post): \Illuminate\Http\JsonResponse
+    public function comments(Post $post): JsonResponse
     {
         abort_unless($post->isPublished(), 404);
         abort_unless($post->commentsOpen(), 403);
 
         $perPage = (int) Setting::get('comments.per_page', 10);
-        $page    = max(1, (int) request('page', 1));
+        $page = max(1, (int) request('page', 1));
 
         $paginator = $post->comments()
             ->approved()
@@ -166,15 +167,15 @@ class BlogController extends Controller
             ->paginate($perPage, ['*'], 'page', $page);
 
         return response()->json([
-            'data'     => $paginator->map(fn (Comment $c) => [
-                'id'          => $c->id,
+            'data' => $paginator->map(fn (Comment $c) => [
+                'id' => $c->id,
                 'author_name' => $c->author_name,
-                'avatar_url'  => $c->user?->avatar_url ?? null,
-                'body'        => $c->body,
-                'created_at'  => $c->created_at->diffForHumans(),
+                'avatar_url' => $c->user?->avatar_url ?? null,
+                'body' => $c->body,
+                'created_at' => $c->created_at->diffForHumans(),
             ]),
             'has_more' => $paginator->hasMorePages(),
-            'total'    => $paginator->total(),
+            'total' => $paginator->total(),
         ]);
     }
 
@@ -185,41 +186,41 @@ class BlogController extends Controller
         $siteName = Setting::get('site.name', config('app.name'));
 
         return [
-            'title'       => $siteName,
+            'title' => $siteName,
             'description' => Setting::get('seo.default_description', ''),
-            'image'       => Setting::get('seo.default_og_image_url', ''),
-            'canonical'   => url('/'),
-            'type'        => 'website',
-            'keywords'    => Setting::get('seo.default_keywords', ''),
+            'image' => Setting::get('seo.default_og_image_url', ''),
+            'canonical' => url('/'),
+            'type' => 'website',
+            'keywords' => Setting::get('seo.default_keywords', ''),
         ];
     }
 
     private function buildShowSeo(Post $post): array
     {
         $separator = Setting::get('seo.title_separator', ' | ');
-        $siteName  = Setting::get('site.name', config('app.name'));
+        $siteName = Setting::get('site.name', config('app.name'));
 
         return [
-            'title'       => ($post->meta_title ?: $post->title) . $separator . $siteName,
+            'title' => ($post->meta_title ?: $post->title).$separator.$siteName,
             'description' => $post->meta_description ?: $post->excerpt ?: Setting::get('seo.default_description', ''),
-            'image'       => $post->featuredImage?->url ?: Setting::get('seo.default_og_image_url', ''),
-            'canonical'   => url("/blog/{$post->slug}"),
-            'type'        => 'article',
-            'keywords'    => $post->meta_keywords ?: Setting::get('seo.default_keywords', ''),
+            'image' => $post->featuredImage?->url ?: Setting::get('seo.default_og_image_url', ''),
+            'canonical' => url("/blog/{$post->slug}"),
+            'type' => 'article',
+            'keywords' => $post->meta_keywords ?: Setting::get('seo.default_keywords', ''),
         ];
     }
 
     private function postData(Post $post): array
     {
         return [
-            'id'                  => $post->id,
-            'title'               => $post->title,
-            'slug'                => $post->slug,
-            'excerpt'             => $post->excerpt,
-            'published_at'        => $post->published_at?->toDateString(),
-            'featured_image_url'  => $post->featuredImage?->url,
-            'author'              => [
-                'name'       => $post->author?->name ?? 'Deleted User',
+            'id' => $post->id,
+            'title' => $post->title,
+            'slug' => $post->slug,
+            'excerpt' => $post->excerpt,
+            'published_at' => $post->published_at?->toDateString(),
+            'featured_image_url' => $post->featuredImage?->url,
+            'author' => [
+                'name' => $post->author?->name ?? 'Deleted User',
                 'avatar_url' => $post->author?->avatar_url,
             ],
             'categories' => $post->categories

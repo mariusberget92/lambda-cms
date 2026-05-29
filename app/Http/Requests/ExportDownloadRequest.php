@@ -14,8 +14,8 @@ class ExportDownloadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'entities'            => ['required', 'array', 'min:1'],
-            'entities.*'          => ['in:posts,categories,tags,media,templates'],
+            'entities' => ['required', 'array', 'min:1'],
+            'entities.*' => ['in:posts,categories,tags,media,templates'],
             'include_media_files' => ['nullable', 'boolean'],
         ];
     }

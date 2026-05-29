@@ -30,114 +30,109 @@ class PreviewTest extends TestCase
     public function test_valid_post_token_renders_preview(): void
     {
         $post = Post::factory()->create([
-            'user_id'       => $this->makeUser()->id,
-            'title'         => 'My Draft Post',
-            'status'        => 'draft',
+            'user_id' => $this->makeUser()->id,
+            'title' => 'My Draft Post',
+            'status' => 'draft',
             'preview_token' => Str::random(64),
         ]);
 
-        $this->get("/preview/post/{$post->preview_token}")
+        $this->get("/preview/posts/{$post->preview_token}")
             ->assertOk()
-            ->assertInertia(fn ($page) =>
-                $page->component('Blog/Show')
-                     ->where('post.title', 'My Draft Post')
+            ->assertInertia(fn ($page) => $page->component('Blog/TemplatePage')
+                ->where('postContext.title', 'My Draft Post')
             );
     }
 
     public function test_invalid_post_token_returns_404(): void
     {
-        $this->get('/preview/post/' . Str::random(64))
+        $this->get('/preview/posts/'.Str::random(64))
             ->assertNotFound();
     }
 
     public function test_draft_post_can_be_previewed(): void
     {
         $post = Post::factory()->create([
-            'user_id'       => $this->makeUser()->id,
-            'status'        => 'draft',
+            'user_id' => $this->makeUser()->id,
+            'status' => 'draft',
             'preview_token' => Str::random(64),
         ]);
 
-        $this->get("/preview/post/{$post->preview_token}")->assertOk();
+        $this->get("/preview/posts/{$post->preview_token}")->assertOk();
     }
 
     public function test_scheduled_post_can_be_previewed(): void
     {
         $post = Post::factory()->create([
-            'user_id'       => $this->makeUser()->id,
-            'status'        => 'scheduled',
-            'published_at'  => now()->addDays(3),
+            'user_id' => $this->makeUser()->id,
+            'status' => 'scheduled',
+            'published_at' => now()->addDays(3),
             'preview_token' => Str::random(64),
         ]);
 
-        $this->get("/preview/post/{$post->preview_token}")->assertOk();
+        $this->get("/preview/posts/{$post->preview_token}")->assertOk();
     }
 
     public function test_published_post_can_be_previewed(): void
     {
         $post = Post::factory()->published()->create([
-            'user_id'       => $this->makeUser()->id,
+            'user_id' => $this->makeUser()->id,
             'preview_token' => Str::random(64),
         ]);
 
-        $this->get("/preview/post/{$post->preview_token}")->assertOk();
+        $this->get("/preview/posts/{$post->preview_token}")->assertOk();
     }
 
     public function test_post_preview_requires_no_authentication(): void
     {
         $post = Post::factory()->create([
-            'user_id'       => $this->makeUser()->id,
-            'status'        => 'draft',
+            'user_id' => $this->makeUser()->id,
+            'status' => 'draft',
             'preview_token' => Str::random(64),
         ]);
 
         // Explicitly as a guest (no actingAs)
-        $this->get("/preview/post/{$post->preview_token}")->assertOk();
+        $this->get("/preview/posts/{$post->preview_token}")->assertOk();
     }
 
     public function test_post_preview_sets_is_preview_flag(): void
     {
         $post = Post::factory()->create([
-            'user_id'       => $this->makeUser()->id,
-            'status'        => 'draft',
+            'user_id' => $this->makeUser()->id,
+            'status' => 'draft',
             'preview_token' => Str::random(64),
         ]);
 
-        $this->get("/preview/post/{$post->preview_token}")
-            ->assertInertia(fn ($page) =>
-                $page->where('isPreview', true)
+        $this->get("/preview/posts/{$post->preview_token}")
+            ->assertInertia(fn ($page) => $page->where('isPreview', true)
             );
     }
 
     public function test_post_preview_has_no_comments(): void
     {
         $post = Post::factory()->create([
-            'user_id'       => $this->makeUser()->id,
-            'status'        => 'draft',
+            'user_id' => $this->makeUser()->id,
+            'status' => 'draft',
             'preview_token' => Str::random(64),
         ]);
 
-        $this->get("/preview/post/{$post->preview_token}")
-            ->assertInertia(fn ($page) =>
-                $page->where('commentsEnabled', false)
-                     ->where('commentsTotal', 0)
+        $this->get("/preview/posts/{$post->preview_token}")
+            ->assertInertia(fn ($page) => $page->where('commentsData.enabled', false)
+                ->where('commentsData.total', 0)
             );
     }
 
     public function test_post_preview_title_has_preview_prefix(): void
     {
         $post = Post::factory()->create([
-            'user_id'       => $this->makeUser()->id,
-            'title'         => 'Test Title',
-            'status'        => 'draft',
+            'user_id' => $this->makeUser()->id,
+            'title' => 'Test Title',
+            'status' => 'draft',
             'preview_token' => Str::random(64),
         ]);
 
-        $this->get("/preview/post/{$post->preview_token}")
-            ->assertInertia(fn ($page) =>
-                $page->where('seo.title', fn ($value) =>
-                    str_contains($value, '[Preview]')
-                )
+        $this->get("/preview/posts/{$post->preview_token}")
+            ->assertInertia(fn ($page) => $page->where('seo.title', fn ($value) => str_contains($value, '[Preview]')
+            )
             );
     }
 
@@ -146,33 +141,32 @@ class PreviewTest extends TestCase
     public function test_valid_page_token_renders_preview(): void
     {
         $page = Page::factory()->create([
-            'title'         => 'My Draft Page',
-            'status'        => 'draft',
+            'title' => 'My Draft Page',
+            'status' => 'draft',
             'preview_token' => Str::random(64),
         ]);
 
-        $this->get("/preview/page/{$page->preview_token}")
+        $this->get("/preview/pages/{$page->preview_token}")
             ->assertOk()
-            ->assertInertia(fn ($p) =>
-                $p->component('Blog/Page')
-                  ->where('page.title', 'My Draft Page')
+            ->assertInertia(fn ($p) => $p->component('Blog/Page')
+                ->where('page.title', 'My Draft Page')
             );
     }
 
     public function test_invalid_page_token_returns_404(): void
     {
-        $this->get('/preview/page/' . Str::random(64))
+        $this->get('/preview/pages/'.Str::random(64))
             ->assertNotFound();
     }
 
     public function test_draft_page_can_be_previewed(): void
     {
         $page = Page::factory()->create([
-            'status'        => 'draft',
+            'status' => 'draft',
             'preview_token' => Str::random(64),
         ]);
 
-        $this->get("/preview/page/{$page->preview_token}")->assertOk();
+        $this->get("/preview/pages/{$page->preview_token}")->assertOk();
     }
 
     public function test_published_page_can_be_previewed(): void
@@ -181,45 +175,42 @@ class PreviewTest extends TestCase
             'preview_token' => Str::random(64),
         ]);
 
-        $this->get("/preview/page/{$page->preview_token}")->assertOk();
+        $this->get("/preview/pages/{$page->preview_token}")->assertOk();
     }
 
     public function test_page_preview_requires_no_authentication(): void
     {
         $page = Page::factory()->create([
-            'status'        => 'draft',
+            'status' => 'draft',
             'preview_token' => Str::random(64),
         ]);
 
-        $this->get("/preview/page/{$page->preview_token}")->assertOk();
+        $this->get("/preview/pages/{$page->preview_token}")->assertOk();
     }
 
     public function test_page_preview_sets_is_preview_flag(): void
     {
         $page = Page::factory()->create([
-            'status'        => 'draft',
+            'status' => 'draft',
             'preview_token' => Str::random(64),
         ]);
 
-        $this->get("/preview/page/{$page->preview_token}")
-            ->assertInertia(fn ($p) =>
-                $p->where('isPreview', true)
+        $this->get("/preview/pages/{$page->preview_token}")
+            ->assertInertia(fn ($p) => $p->where('isPreview', true)
             );
     }
 
     public function test_page_preview_title_has_preview_prefix(): void
     {
         $page = Page::factory()->create([
-            'title'         => 'My Page',
-            'status'        => 'draft',
+            'title' => 'My Page',
+            'status' => 'draft',
             'preview_token' => Str::random(64),
         ]);
 
-        $this->get("/preview/page/{$page->preview_token}")
-            ->assertInertia(fn ($p) =>
-                $p->where('seo.title', fn ($value) =>
-                    str_contains($value, '[Preview]')
-                )
+        $this->get("/preview/pages/{$page->preview_token}")
+            ->assertInertia(fn ($p) => $p->where('seo.title', fn ($value) => str_contains($value, '[Preview]')
+            )
             );
     }
 
@@ -243,9 +234,9 @@ class PreviewTest extends TestCase
 
     public function test_each_post_gets_a_unique_preview_token(): void
     {
-        $user   = $this->makeUser();
-        $post1  = Post::factory()->create(['user_id' => $user->id]);
-        $post2  = Post::factory()->create(['user_id' => $user->id]);
+        $user = $this->makeUser();
+        $post1 = Post::factory()->create(['user_id' => $user->id]);
+        $post2 = Post::factory()->create(['user_id' => $user->id]);
 
         $this->assertNotEquals($post1->preview_token, $post2->preview_token);
     }

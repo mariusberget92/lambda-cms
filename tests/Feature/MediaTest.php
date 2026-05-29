@@ -53,9 +53,9 @@ class MediaTest extends TestCase
         $response->assertJsonStructure(['id', 'url', 'filename', 'type', 'size', 'formatted_size']);
 
         $this->assertDatabaseHas('media', [
-            'user_id'   => $user->id,
+            'user_id' => $user->id,
             'mime_type' => 'image/jpeg',
-            'type'      => 'image',
+            'type' => 'image',
         ]);
     }
 
@@ -101,7 +101,7 @@ class MediaTest extends TestCase
         $this->seedRolesAndPermissions();
         Storage::fake('public');
 
-        $user  = User::factory()->create()->assignRole('user');
+        $user = User::factory()->create()->assignRole('user');
         $media = Media::factory()->create(['user_id' => $user->id]);
 
         $response = $this->actingAs($user)->patch(route('media.update', $media), [
@@ -118,7 +118,7 @@ class MediaTest extends TestCase
         $this->seedRolesAndPermissions();
         Storage::fake('public');
 
-        $user  = User::factory()->create()->assignRole('user');
+        $user = User::factory()->create()->assignRole('user');
         $media = Media::factory()->create(['user_id' => $user->id]);
 
         $response = $this->actingAs($user)->patch(route('media.update', $media), [
@@ -154,7 +154,7 @@ class MediaTest extends TestCase
         $this->seedRolesAndPermissions();
         Storage::fake('public');
 
-        $user  = User::factory()->create()->assignRole('user');
+        $user = User::factory()->create()->assignRole('user');
         $media = Media::factory()->create(['user_id' => $user->id, 'disk' => 'public', 'path' => 'media/2026/02/test.jpg']);
         Storage::disk('public')->put($media->path, 'fake-content');
 
@@ -207,7 +207,7 @@ class MediaTest extends TestCase
         $admin = User::factory()->create()->assignRole('administrator');
 
         $media = Media::factory()->create(['user_id' => $admin->id]);
-        $post  = Post::factory()->create(['featured_image_id' => $media->id, 'user_id' => $admin->id]);
+        $post = Post::factory()->create(['featured_image_id' => $media->id, 'user_id' => $admin->id]);
 
         $this->actingAs($admin)
             ->getJson(route('media.usage', $media))
@@ -252,7 +252,7 @@ class MediaTest extends TestCase
         $this->seedRolesAndPermissions();
         Storage::fake('public');
 
-        $user   = User::factory()->create()->assignRole('user');
+        $user = User::factory()->create()->assignRole('user');
         $media1 = Media::factory()->create(['user_id' => $user->id, 'disk' => 'public', 'path' => 'media/2026/02/a.jpg']);
         $media2 = Media::factory()->create(['user_id' => $user->id, 'disk' => 'public', 'path' => 'media/2026/02/b.jpg']);
         Storage::disk('public')->put($media1->path, 'x');
@@ -273,7 +273,7 @@ class MediaTest extends TestCase
         $this->seedRolesAndPermissions();
         Storage::fake('public');
 
-        $user  = User::factory()->create()->assignRole('user');
+        $user = User::factory()->create()->assignRole('user');
         $owner = User::factory()->create()->assignRole('user');
         $media = Media::factory()->create(['user_id' => $owner->id]);
 

@@ -4,20 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\BanRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 
 class BanController extends Controller
 {
     private const DURATIONS = [
-        '1h'        => ['addHour',  []],
-        '6h'        => ['addHours', [6]],
-        '24h'       => ['addDay',   []],
-        '7d'        => ['addWeek',  []],
-        '30d'       => ['addMonth', []],
+        '1h' => ['addHour',  []],
+        '6h' => ['addHours', [6]],
+        '24h' => ['addDay',   []],
+        '7d' => ['addWeek',  []],
+        '30d' => ['addMonth', []],
         'permanent' => null,
     ];
 
-    public function ban(BanRequest $request, User $user): \Illuminate\Http\RedirectResponse
+    public function ban(BanRequest $request, User $user): RedirectResponse
     {
         // Guard: cannot ban yourself or another admin
         if ($user->id === $request->user()->id || $user->hasRole('administrator')) {
@@ -34,21 +34,21 @@ class BanController extends Controller
         }
 
         $user->update([
-            'banned_at'    => now(),
+            'banned_at' => now(),
             'banned_until' => $bannedUntil,
-            'ban_reason'   => $validated['reason'],
+            'ban_reason' => $validated['reason'],
         ]);
 
         return redirect()->route('users.index')
             ->with('status', "{$user->name} has been banned.");
     }
 
-    public function unban(User $user): \Illuminate\Http\RedirectResponse
+    public function unban(User $user): RedirectResponse
     {
         $user->update([
-            'banned_at'    => null,
+            'banned_at' => null,
             'banned_until' => null,
-            'ban_reason'   => null,
+            'ban_reason' => null,
         ]);
 
         return redirect()->route('users.index')

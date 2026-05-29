@@ -16,8 +16,8 @@ class ListPostsRequest extends FormRequest
         return [
             'per_page' => ['integer', 'min:1', 'max:100'],
             'category' => ['nullable', 'string'],
-            'tag'      => ['nullable', 'string'],
-            'search'   => ['nullable', 'string', 'max:100'],
+            'tag' => ['nullable', 'string'],
+            'search' => ['nullable', 'string', 'max:100'],
         ];
     }
 }

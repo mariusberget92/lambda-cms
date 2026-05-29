@@ -23,10 +23,9 @@ class PublicPageTest extends TestCase
 
         $this->get('/about')
             ->assertOk()
-            ->assertInertia(fn ($p) =>
-                $p->component('Blog/Page')
-                  ->where('page.slug', 'about')
-                  ->has('page.blocks')
+            ->assertInertia(fn ($p) => $p->component('Blog/Page')
+                ->where('page.slug', 'about')
+                ->has('page.blocks')
             );
     }
 
@@ -45,16 +44,15 @@ class PublicPageTest extends TestCase
     public function test_published_page_passes_seo_props(): void
     {
         $page = Page::factory()->published()->create([
-            'slug'             => 'services',
-            'meta_title'       => 'Our Services',
+            'slug' => 'services',
+            'meta_title' => 'Our Services',
             'meta_description' => 'We provide great services.',
         ]);
 
         $this->get('/services')
             ->assertOk()
-            ->assertInertia(fn ($p) =>
-                $p->has('seo')
-                  ->where('seo.title', fn ($v) => str_contains($v, 'Our Services'))
+            ->assertInertia(fn ($p) => $p->has('seo')
+                ->where('seo.title', fn ($v) => str_contains($v, 'Our Services'))
             );
     }
 }

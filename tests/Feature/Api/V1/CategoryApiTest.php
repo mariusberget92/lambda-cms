@@ -41,7 +41,7 @@ class CategoryApiTest extends TestCase
         $this->markAsInstalled();
         $this->seedRolesAndPermissions();
 
-        $user     = User::factory()->create()->assignRole('user');
+        $user = User::factory()->create()->assignRole('user');
         $category = Category::factory()->create();
         $published = Post::factory()->create(['user_id' => $user->id, 'status' => 'published', 'published_at' => now()]);
         $published->categories()->sync([$category->id]);

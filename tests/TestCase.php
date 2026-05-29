@@ -5,6 +5,7 @@ namespace Tests;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -38,14 +39,14 @@ abstract class TestCase extends BaseTestCase
      */
     protected function seedRolesAndPermissions(): void
     {
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         foreach (['manage posts', 'manage categories', 'manage tags', 'manage users'] as $name) {
             Permission::firstOrCreate(['name' => $name]);
         }
 
         $admin = Role::firstOrCreate(['name' => 'administrator']);
-        $user  = Role::firstOrCreate(['name' => 'user']);
+        $user = Role::firstOrCreate(['name' => 'user']);
 
         $admin->syncPermissions(Permission::all());
         $user->syncPermissions(['manage posts', 'manage categories', 'manage tags']);

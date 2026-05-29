@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -72,7 +73,7 @@ class CategoryTest extends TestCase
 
     public function test_user_can_update_a_category(): void
     {
-        $user     = $this->makeUser();
+        $user = $this->makeUser();
         $category = Category::factory()->create(['name' => 'Old Name', 'slug' => 'old-name']);
 
         $this->actingAs($user)
@@ -84,7 +85,7 @@ class CategoryTest extends TestCase
 
     public function test_updating_category_regenerates_slug(): void
     {
-        $user     = $this->makeUser();
+        $user = $this->makeUser();
         $category = Category::factory()->create(['name' => 'Old Name', 'slug' => 'old-name']);
 
         $this->actingAs($user)
@@ -97,7 +98,7 @@ class CategoryTest extends TestCase
 
     public function test_user_can_delete_a_category(): void
     {
-        $user     = $this->makeUser();
+        $user = $this->makeUser();
         $category = Category::factory()->create();
 
         $this->actingAs($user)
@@ -109,9 +110,9 @@ class CategoryTest extends TestCase
 
     public function test_category_with_posts_can_still_be_deleted(): void
     {
-        $user     = $this->makeUser();
-        $category = \App\Models\Category::factory()->create();
-        $post     = \App\Models\Post::factory()->create();
+        $user = $this->makeUser();
+        $category = Category::factory()->create();
+        $post = Post::factory()->create();
         $post->categories()->attach($category);
 
         $this->actingAs($user)
@@ -145,8 +146,7 @@ class CategoryTest extends TestCase
         $cat = Category::factory()->create(['color' => '#bf616a']);
         $response = $this->actingAs($this->makeUser())
             ->get("/categories/{$cat->id}/edit");
-        $response->assertInertia(fn ($page) =>
-            $page->where('category.color', '#bf616a')
+        $response->assertInertia(fn ($page) => $page->where('category.color', '#bf616a')
         );
     }
 }

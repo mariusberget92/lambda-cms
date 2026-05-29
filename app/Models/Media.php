@@ -27,8 +27,8 @@ class Media extends Model
     ];
 
     protected $casts = [
-        'size'   => 'integer',
-        'width'  => 'integer',
+        'size' => 'integer',
+        'width' => 'integer',
         'height' => 'integer',
     ];
 
@@ -52,14 +52,14 @@ class Media extends Model
         $bytes = $this->size;
 
         if ($bytes >= 1_048_576) {
-            return round($bytes / 1_048_576, 2) . ' MB';
+            return round($bytes / 1_048_576, 2).' MB';
         }
 
         if ($bytes >= 1_024) {
-            return round($bytes / 1_024, 2) . ' KB';
+            return round($bytes / 1_024, 2).' KB';
         }
 
-        return $bytes . ' B';
+        return $bytes.' B';
     }
 
     public function isImage(): bool

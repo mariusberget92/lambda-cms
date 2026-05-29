@@ -60,10 +60,10 @@ class ProfileController extends Controller
             Storage::disk('public')->delete($user->avatar);
         }
 
-        $ext  = $request->file('avatar')->guessClientExtension() ?? 'jpg';
+        $ext = $request->file('avatar')->guessClientExtension() ?? 'jpg';
         $path = $request->file('avatar')->storeAs(
             'avatars',
-            $user->id . '.' . $ext,
+            $user->id.'.'.$ext,
             'public'
         );
 

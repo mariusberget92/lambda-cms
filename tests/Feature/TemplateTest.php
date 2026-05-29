@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Post;
 use App\Models\Template;
 use App\Models\User;
+use App\Services\TemplateResolver;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -53,13 +54,14 @@ class TemplateTest extends TestCase
         $admin = $this->makeAdmin();
 
         $response = $this->actingAs($admin)->post('/templates', [
-            'title'  => 'My Blog Index',
-            'type'   => 'blog-index',
+            'title' => 'My Blog Index',
+            'type' => 'blog-index',
             'status' => 'draft',
             'blocks' => [],
         ]);
 
-        $response->assertRedirect(route('templates.index'));
+        $template = Template::where('title', 'My Blog Index')->first();
+        $response->assertRedirect(route('templates.edit', $template));
         $this->assertDatabaseHas('templates', ['type' => 'blog-index', 'title' => 'My Blog Index']);
     }
 
@@ -78,15 +80,15 @@ class TemplateTest extends TestCase
 
         $first = Template::create([
             'user_id' => $admin->id,
-            'title'   => 'First',
-            'type'    => 'blog-index',
-            'status'  => 'published',
-            'blocks'  => [],
+            'title' => 'First',
+            'type' => 'blog-index',
+            'status' => 'published',
+            'blocks' => [],
         ]);
 
         $this->actingAs($admin)->post('/templates', [
-            'title'  => 'Second',
-            'type'   => 'blog-index',
+            'title' => 'Second',
+            'type' => 'blog-index',
             'status' => 'published',
             'blocks' => [],
         ]);
@@ -99,13 +101,13 @@ class TemplateTest extends TestCase
 
     public function test_owner_can_access_edit_template(): void
     {
-        $owner    = $this->makeAdmin();
+        $owner = $this->makeAdmin();
         $template = Template::create([
             'user_id' => $owner->id,
-            'title'   => 'Mine',
-            'type'    => 'single-post',
-            'status'  => 'draft',
-            'blocks'  => [],
+            'title' => 'Mine',
+            'type' => 'single-post',
+            'status' => 'draft',
+            'blocks' => [],
         ]);
 
         $this->actingAs($owner)
@@ -115,14 +117,14 @@ class TemplateTest extends TestCase
 
     public function test_admin_can_edit_template_owned_by_another_admin(): void
     {
-        $owner    = $this->makeAdmin();
-        $other    = $this->makeAdmin();
+        $owner = $this->makeAdmin();
+        $other = $this->makeAdmin();
         $template = Template::create([
             'user_id' => $owner->id,
-            'title'   => 'Someone Elses',
-            'type'    => 'single-post',
-            'status'  => 'draft',
-            'blocks'  => [],
+            'title' => 'Someone Elses',
+            'type' => 'single-post',
+            'status' => 'draft',
+            'blocks' => [],
         ]);
 
         $this->actingAs($other)
@@ -132,14 +134,14 @@ class TemplateTest extends TestCase
 
     public function test_non_owner_regular_user_cannot_edit_template(): void
     {
-        $owner    = $this->makeAdmin();
+        $owner = $this->makeAdmin();
         $notOwner = $this->makeUser();
         $template = Template::create([
             'user_id' => $owner->id,
-            'title'   => 'Not Yours',
-            'type'    => 'single-post',
-            'status'  => 'draft',
-            'blocks'  => [],
+            'title' => 'Not Yours',
+            'type' => 'single-post',
+            'status' => 'draft',
+            'blocks' => [],
         ]);
 
         // Role middleware redirects non-admins to the dashboard before the ownership check fires.
@@ -152,69 +154,69 @@ class TemplateTest extends TestCase
 
     public function test_admin_can_update_template(): void
     {
-        $admin    = $this->makeAdmin();
+        $admin = $this->makeAdmin();
         $template = Template::create([
             'user_id' => $admin->id,
-            'title'   => 'Old',
-            'type'    => 'single-post',
-            'status'  => 'draft',
-            'blocks'  => [],
+            'title' => 'Old',
+            'type' => 'single-post',
+            'status' => 'draft',
+            'blocks' => [],
         ]);
 
         $this->actingAs($admin)
             ->put("/templates/{$template->id}", ['title' => 'New', 'type' => 'single-post', 'status' => 'draft', 'blocks' => []])
-            ->assertRedirect(route('templates.index'));
+            ->assertRedirect(route('templates.edit', $template));
 
         $this->assertEquals('New', $template->fresh()->title);
     }
 
     public function test_owner_can_update_own_template(): void
     {
-        $owner    = $this->makeAdmin();
+        $owner = $this->makeAdmin();
         $template = Template::create([
             'user_id' => $owner->id,
-            'title'   => 'Old Owner',
-            'type'    => 'archive',
-            'status'  => 'draft',
-            'blocks'  => [],
+            'title' => 'Old Owner',
+            'type' => 'archive',
+            'status' => 'draft',
+            'blocks' => [],
         ]);
 
         $this->actingAs($owner)
             ->put("/templates/{$template->id}", ['title' => 'Updated Owner', 'type' => 'archive', 'status' => 'draft', 'blocks' => []])
-            ->assertRedirect(route('templates.index'));
+            ->assertRedirect(route('templates.edit', $template));
 
         $this->assertEquals('Updated Owner', $template->fresh()->title);
     }
 
     public function test_admin_can_update_template_owned_by_another_admin(): void
     {
-        $owner    = $this->makeAdmin();
-        $other    = $this->makeAdmin();
+        $owner = $this->makeAdmin();
+        $other = $this->makeAdmin();
         $template = Template::create([
             'user_id' => $owner->id,
-            'title'   => 'Old Cross',
-            'type'    => 'archive',
-            'status'  => 'draft',
-            'blocks'  => [],
+            'title' => 'Old Cross',
+            'type' => 'archive',
+            'status' => 'draft',
+            'blocks' => [],
         ]);
 
         $this->actingAs($other)
             ->put("/templates/{$template->id}", ['title' => 'Updated Cross', 'type' => 'archive', 'status' => 'draft', 'blocks' => []])
-            ->assertRedirect(route('templates.index'));
+            ->assertRedirect(route('templates.edit', $template));
 
         $this->assertEquals('Updated Cross', $template->fresh()->title);
     }
 
     public function test_non_owner_regular_user_cannot_update_template(): void
     {
-        $owner    = $this->makeAdmin();
+        $owner = $this->makeAdmin();
         $notOwner = $this->makeUser();
         $template = Template::create([
             'user_id' => $owner->id,
-            'title'   => 'Protected',
-            'type'    => 'archive',
-            'status'  => 'draft',
-            'blocks'  => [],
+            'title' => 'Protected',
+            'type' => 'archive',
+            'status' => 'draft',
+            'blocks' => [],
         ]);
 
         // Role middleware redirects non-admins before ownership check fires.
@@ -227,13 +229,13 @@ class TemplateTest extends TestCase
 
     public function test_admin_can_delete_template(): void
     {
-        $admin    = $this->makeAdmin();
+        $admin = $this->makeAdmin();
         $template = Template::create([
             'user_id' => $admin->id,
-            'title'   => 'Bye',
-            'type'    => 'archive',
-            'status'  => 'draft',
-            'blocks'  => [],
+            'title' => 'Bye',
+            'type' => 'archive',
+            'status' => 'draft',
+            'blocks' => [],
         ]);
 
         $this->actingAs($admin)
@@ -245,13 +247,13 @@ class TemplateTest extends TestCase
 
     public function test_owner_can_delete_own_template(): void
     {
-        $owner    = $this->makeAdmin();
+        $owner = $this->makeAdmin();
         $template = Template::create([
             'user_id' => $owner->id,
-            'title'   => 'Delete Me',
-            'type'    => 'search-results',
-            'status'  => 'draft',
-            'blocks'  => [],
+            'title' => 'Delete Me',
+            'type' => 'search-results',
+            'status' => 'draft',
+            'blocks' => [],
         ]);
 
         $this->actingAs($owner)
@@ -263,14 +265,14 @@ class TemplateTest extends TestCase
 
     public function test_admin_can_delete_template_owned_by_another_admin(): void
     {
-        $owner    = $this->makeAdmin();
-        $other    = $this->makeAdmin();
+        $owner = $this->makeAdmin();
+        $other = $this->makeAdmin();
         $template = Template::create([
             'user_id' => $owner->id,
-            'title'   => 'Cross Delete',
-            'type'    => 'search-results',
-            'status'  => 'draft',
-            'blocks'  => [],
+            'title' => 'Cross Delete',
+            'type' => 'search-results',
+            'status' => 'draft',
+            'blocks' => [],
         ]);
 
         $this->actingAs($other)
@@ -282,14 +284,14 @@ class TemplateTest extends TestCase
 
     public function test_non_owner_regular_user_cannot_delete_template(): void
     {
-        $owner    = $this->makeAdmin();
+        $owner = $this->makeAdmin();
         $notOwner = $this->makeUser();
         $template = Template::create([
             'user_id' => $owner->id,
-            'title'   => 'Cannot Delete',
-            'type'    => 'search-results',
-            'status'  => 'draft',
-            'blocks'  => [],
+            'title' => 'Cannot Delete',
+            'type' => 'search-results',
+            'status' => 'draft',
+            'blocks' => [],
         ]);
 
         // Role middleware redirects non-admins before ownership check fires.
@@ -304,15 +306,15 @@ class TemplateTest extends TestCase
 
     public function test_non_owner_user_gets_403_on_edit_bypassing_middleware(): void
     {
-        $owner    = $this->makeAdmin();
+        $owner = $this->makeAdmin();
         $notOwner = User::factory()->create();
         $notOwner->assignRole('user');
         $template = Template::create([
             'user_id' => $owner->id,
-            'title'   => 'Not Yours Edit',
-            'type'    => 'single-post',
-            'status'  => 'draft',
-            'blocks'  => [],
+            'title' => 'Not Yours Edit',
+            'type' => 'single-post',
+            'status' => 'draft',
+            'blocks' => [],
         ]);
 
         $this->actingAs($notOwner)
@@ -323,15 +325,15 @@ class TemplateTest extends TestCase
 
     public function test_non_owner_user_gets_403_on_update_bypassing_middleware(): void
     {
-        $owner    = $this->makeAdmin();
+        $owner = $this->makeAdmin();
         $notOwner = User::factory()->create();
         $notOwner->assignRole('user');
         $template = Template::create([
             'user_id' => $owner->id,
-            'title'   => 'Not Yours Update',
-            'type'    => 'archive',
-            'status'  => 'draft',
-            'blocks'  => [],
+            'title' => 'Not Yours Update',
+            'type' => 'archive',
+            'status' => 'draft',
+            'blocks' => [],
         ]);
 
         $this->actingAs($notOwner)
@@ -344,15 +346,15 @@ class TemplateTest extends TestCase
 
     public function test_non_owner_user_gets_403_on_destroy_bypassing_middleware(): void
     {
-        $owner    = $this->makeAdmin();
+        $owner = $this->makeAdmin();
         $notOwner = User::factory()->create();
         $notOwner->assignRole('user');
         $template = Template::create([
             'user_id' => $owner->id,
-            'title'   => 'Not Yours Delete',
-            'type'    => 'search-results',
-            'status'  => 'draft',
-            'blocks'  => [],
+            'title' => 'Not Yours Delete',
+            'type' => 'search-results',
+            'status' => 'draft',
+            'blocks' => [],
         ]);
 
         $this->actingAs($notOwner)
@@ -370,9 +372,9 @@ class TemplateTest extends TestCase
         $admin = $this->makeAdmin();
         $this->actingAs($admin)
             ->post('/templates', [
-                'title'            => 'Test',
-                'type'             => 'blog-index',
-                'status'           => 'draft',
+                'title' => 'Test',
+                'type' => 'blog-index',
+                'status' => 'draft',
                 'meta_description' => str_repeat('a', 301),
             ])
             ->assertSessionHasErrors('meta_description');
@@ -380,13 +382,13 @@ class TemplateTest extends TestCase
 
     public function test_meta_description_max_300_on_update(): void
     {
-        $admin    = $this->makeAdmin();
-        $template = \App\Models\Template::factory()->create();
+        $admin = $this->makeAdmin();
+        $template = Template::factory()->create();
         $this->actingAs($admin)
             ->put("/templates/{$template->id}", [
-                'title'            => 'Test',
-                'type'             => 'blog-index',
-                'status'           => 'draft',
+                'title' => 'Test',
+                'type' => 'blog-index',
+                'status' => 'draft',
                 'meta_description' => str_repeat('a', 301),
             ])
             ->assertSessionHasErrors('meta_description');
@@ -396,7 +398,7 @@ class TemplateTest extends TestCase
 
     public function test_template_resolver_returns_null_when_no_published_template(): void
     {
-        $resolver = app(\App\Services\TemplateResolver::class);
+        $resolver = app(TemplateResolver::class);
         $this->assertNull($resolver->resolve('blog-index'));
     }
 
@@ -408,7 +410,7 @@ class TemplateTest extends TestCase
             'status' => 'published', 'blocks' => [],
         ]);
 
-        $resolver = app(\App\Services\TemplateResolver::class);
+        $resolver = app(TemplateResolver::class);
         $this->assertNotNull($resolver->resolve('blog-index'));
     }
 
@@ -425,13 +427,13 @@ class TemplateTest extends TestCase
 
     public function test_blog_index_uses_default_view_without_template(): void
     {
-        $this->get('/')->assertInertia(fn ($page) => $page->component('Blog/Index'));
+        $this->get('/')->assertInertia(fn ($page) => $page->component('Blog/TemplatePage'));
     }
 
     public function test_single_post_uses_template_when_published(): void
     {
         $admin = $this->makeAdmin();
-        $post  = Post::factory()->create(['status' => 'published', 'published_at' => now()]);
+        $post = Post::factory()->create(['status' => 'published', 'published_at' => now()]);
 
         Template::create([
             'user_id' => $admin->id, 'title' => 'Single Post Template',

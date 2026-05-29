@@ -19,8 +19,8 @@ class MediaTest extends TestCase
         $user = User::factory()->create()->assignRole('user');
         $media = Media::factory()->create([
             'user_id' => $user->id,
-            'disk'    => 'public',
-            'path'    => 'media/2026/02/abc123.jpg',
+            'disk' => 'public',
+            'path' => 'media/2026/02/abc123.jpg',
         ]);
 
         $this->assertStringContainsString('media/2026/02/abc123.jpg', $media->url);
@@ -33,9 +33,9 @@ class MediaTest extends TestCase
 
         $user = User::factory()->create()->assignRole('user');
         $media = Media::factory()->create([
-            'user_id'   => $user->id,
+            'user_id' => $user->id,
             'mime_type' => 'image/jpeg',
-            'type'      => 'image',
+            'type' => 'image',
         ]);
 
         $this->assertEquals('image', $media->type);
@@ -49,7 +49,7 @@ class MediaTest extends TestCase
         $user = User::factory()->create()->assignRole('user');
         $media = Media::factory()->create([
             'user_id' => $user->id,
-            'size'    => 1536,
+            'size' => 1536,
         ]);
 
         $this->assertStringContainsString('KB', $media->formatted_size);

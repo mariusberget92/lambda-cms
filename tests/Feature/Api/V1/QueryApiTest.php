@@ -8,6 +8,7 @@ use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
 class QueryApiTest extends TestCase
@@ -26,7 +27,7 @@ class QueryApiTest extends TestCase
         return User::factory()->create()->assignRole('user');
     }
 
-    private function query(array $payload): \Illuminate\Testing\TestResponse
+    private function query(array $payload): TestResponse
     {
         return $this->postJson('/api/v1/query', $payload);
     }
@@ -132,7 +133,7 @@ class QueryApiTest extends TestCase
         $user = $this->makeUser();
         Post::factory()->published()->count(4)->create(['user_id' => $user->id]);
 
-        $all    = $this->query(['source' => 'posts'])->json('items');
+        $all = $this->query(['source' => 'posts'])->json('items');
         $offset = $this->query(['source' => 'posts', 'offset' => 2])->json('items');
 
         $this->assertCount(4, $all);
@@ -148,7 +149,7 @@ class QueryApiTest extends TestCase
 
         $response = $this->query([
             'source' => 'posts',
-            'sort'   => ['field' => 'title', 'direction' => 'asc'],
+            'sort' => ['field' => 'title', 'direction' => 'asc'],
         ]);
 
         $items = $response->json('items');
@@ -164,7 +165,7 @@ class QueryApiTest extends TestCase
 
         $response = $this->query([
             'source' => 'posts',
-            'sort'   => ['field' => 'title', 'direction' => 'desc'],
+            'sort' => ['field' => 'title', 'direction' => 'desc'],
         ]);
 
         $items = $response->json('items');
@@ -192,7 +193,7 @@ class QueryApiTest extends TestCase
         Post::factory()->published()->create(['user_id' => $user->id, 'featured' => false, 'title' => 'Normal']);
 
         $response = $this->query([
-            'source'  => 'posts',
+            'source' => 'posts',
             'filters' => [['field' => 'featured', 'op' => '=', 'value' => true]],
         ]);
 

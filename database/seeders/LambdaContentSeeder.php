@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 /**
  * Seeds a fresh Lambda CMS installation with a small set of polished,
@@ -18,103 +19,106 @@ class LambdaContentSeeder extends Seeder
     public function run(): void
     {
         $admin = User::role('administrator')->first();
-        if (!$admin) return;
+        if (! $admin) {
+            return;
+        }
 
         // ── Categories ────────────────────────────────────────────────────────
         $categories = [
-            'open-source'     => $this->cat('Open Source',     '#88c0d0', 'Open source software, community, and collaboration.'),
-            'features'        => $this->cat('Features',        '#81a1c1', 'Deep dives into Lambda CMS features and capabilities.'),
+            'open-source' => $this->cat('Open Source', '#88c0d0', 'Open source software, community, and collaboration.'),
+            'features' => $this->cat('Features', '#81a1c1', 'Deep dives into Lambda CMS features and capabilities.'),
             'getting-started' => $this->cat('Getting Started', '#a3be8c', 'Installation guides, quick starts, and first steps.'),
-            'design'          => $this->cat('Design',          '#b48ead', 'Design systems, UI patterns, and visual craftsmanship.'),
-            'release-notes'   => $this->cat('Release Notes',   '#ebcb8b', 'Changelogs and version announcements.'),
+            'design' => $this->cat('Design', '#b48ead', 'Design systems, UI patterns, and visual craftsmanship.'),
+            'release-notes' => $this->cat('Release Notes', '#ebcb8b', 'Changelogs and version announcements.'),
         ];
 
         // ── Tags ──────────────────────────────────────────────────────────────
         $tags = [
-            'laravel'        => $this->tag('laravel'),
-            'vue'            => $this->tag('vue'),
-            'inertia'        => $this->tag('inertia'),
-            'tailwind'       => $this->tag('tailwind'),
-            'block-editor'   => $this->tag('block-editor'),
-            'open-source'    => $this->tag('open-source'),
-            'cms'            => $this->tag('cms'),
-            'seo'            => $this->tag('seo'),
-            'templates'      => $this->tag('templates'),
-            'design-system'  => $this->tag('design-system'),
+            'laravel' => $this->tag('laravel'),
+            'vue' => $this->tag('vue'),
+            'inertia' => $this->tag('inertia'),
+            'tailwind' => $this->tag('tailwind'),
+            'block-editor' => $this->tag('block-editor'),
+            'open-source' => $this->tag('open-source'),
+            'cms' => $this->tag('cms'),
+            'seo' => $this->tag('seo'),
+            'templates' => $this->tag('templates'),
+            'design-system' => $this->tag('design-system'),
         ];
 
         // ── Posts ─────────────────────────────────────────────────────────────
         $posts = [
             [
-                'title'       => 'Introducing Lambda CMS',
-                'slug'        => 'introducing-lambda-cms',
-                'excerpt'     => 'Lambda CMS is an open-source blog CMS built on Laravel 12, Vue 3, and Inertia.js — designed for developers who want full control without sacrificing a beautiful editing experience.',
-                'body'        => $this->postIntroducing(),
+                'title' => 'Introducing Lambda CMS',
+                'slug' => 'introducing-lambda-cms',
+                'excerpt' => 'Lambda CMS is an open-source blog CMS built on Laravel 12, Vue 3, and Inertia.js — designed for developers who want full control without sacrificing a beautiful editing experience.',
+                'body' => $this->postIntroducing(),
                 'body_format' => 'markdown',
-                'categories'  => ['open-source'],
-                'tags'        => ['laravel', 'vue', 'inertia', 'open-source', 'cms'],
-                'featured'    => true,
+                'categories' => ['open-source'],
+                'tags' => ['laravel', 'vue', 'inertia', 'open-source', 'cms'],
+                'featured' => true,
             ],
             [
-                'title'       => 'The Block Editor: Build Any Layout Without Code',
-                'slug'        => 'block-editor-build-any-layout',
-                'excerpt'     => 'Lambda CMS ships with a powerful block-based page editor. Sections, containers, loops, partials — every layout you can imagine, built visually and stored as clean JSON.',
-                'body'        => $this->postBlockEditor(),
+                'title' => 'The Block Editor: Build Any Layout Without Code',
+                'slug' => 'block-editor-build-any-layout',
+                'excerpt' => 'Lambda CMS ships with a powerful block-based page editor. Sections, containers, loops, partials — every layout you can imagine, built visually and stored as clean JSON.',
+                'body' => $this->postBlockEditor(),
                 'body_format' => 'markdown',
-                'categories'  => ['features'],
-                'tags'        => ['block-editor', 'templates', 'cms'],
-                'featured'    => true,
+                'categories' => ['features'],
+                'tags' => ['block-editor', 'templates', 'cms'],
+                'featured' => true,
             ],
             [
-                'title'       => 'Installing Lambda CMS in Under 5 Minutes',
-                'slug'        => 'installing-lambda-cms',
-                'excerpt'     => 'A step-by-step walkthrough of the browser-based installer — from cloning the repo to your first published post.',
-                'body'        => $this->postInstalling(),
+                'title' => 'Installing Lambda CMS in Under 5 Minutes',
+                'slug' => 'installing-lambda-cms',
+                'excerpt' => 'A step-by-step walkthrough of the browser-based installer — from cloning the repo to your first published post.',
+                'body' => $this->postInstalling(),
                 'body_format' => 'markdown',
-                'categories'  => ['getting-started'],
-                'tags'        => ['laravel', 'open-source', 'cms'],
-                'featured'    => false,
+                'categories' => ['getting-started'],
+                'tags' => ['laravel', 'open-source', 'cms'],
+                'featured' => false,
             ],
             [
-                'title'       => 'Design Tokens: How the Lambda CMS Frontend Stays Consistent',
-                'slug'        => 'design-tokens-frontend-system',
-                'excerpt'     => 'Every colour, border, and radius in the Lambda CMS blog frontend flows through a small set of CSS custom properties. Here\'s how the system works and why it matters.',
-                'body'        => $this->postDesignTokens(),
+                'title' => 'Design Tokens: How the Lambda CMS Frontend Stays Consistent',
+                'slug' => 'design-tokens-frontend-system',
+                'excerpt' => 'Every colour, border, and radius in the Lambda CMS blog frontend flows through a small set of CSS custom properties. Here\'s how the system works and why it matters.',
+                'body' => $this->postDesignTokens(),
                 'body_format' => 'markdown',
-                'categories'  => ['design'],
-                'tags'        => ['tailwind', 'design-system', 'vue'],
-                'featured'    => false,
+                'categories' => ['design'],
+                'tags' => ['tailwind', 'design-system', 'vue'],
+                'featured' => false,
             ],
             [
-                'title'       => 'Lambda CMS v1.0 — Release Notes',
-                'slug'        => 'lambda-cms-v1-release-notes',
-                'excerpt'     => 'The first stable release of Lambda CMS. What shipped, what we cut, and what\'s coming next.',
-                'body'        => $this->postReleaseNotes(),
+                'title' => 'Lambda CMS v1.0 — Release Notes',
+                'slug' => 'lambda-cms-v1-release-notes',
+                'excerpt' => 'The first stable release of Lambda CMS. What shipped, what we cut, and what\'s coming next.',
+                'body' => $this->postReleaseNotes(),
                 'body_format' => 'markdown',
-                'categories'  => ['release-notes', 'open-source'],
-                'tags'        => ['open-source', 'laravel', 'vue', 'cms'],
-                'featured'    => false,
+                'categories' => ['release-notes', 'open-source'],
+                'tags' => ['open-source', 'laravel', 'vue', 'cms'],
+                'featured' => false,
             ],
         ];
 
         foreach ($posts as $i => $p) {
             if (Post::where('slug', $p['slug'])->exists()) {
                 Post::where('slug', $p['slug'])->update([
-                    'body'        => $p['body'],
+                    'body' => $p['body'],
                     'body_format' => 'markdown',
                 ]);
+
                 continue;
             }
 
             $post = Post::create([
-                'user_id'      => $admin->id,
-                'title'        => $p['title'],
-                'slug'         => $p['slug'],
-                'excerpt'      => $p['excerpt'],
-                'body'         => $p['body'],
-                'body_format'  => $p['body_format'],
-                'status'       => 'published',
-                'featured'     => $p['featured'],
+                'user_id' => $admin->id,
+                'title' => $p['title'],
+                'slug' => $p['slug'],
+                'excerpt' => $p['excerpt'],
+                'body' => $p['body'],
+                'body_format' => $p['body_format'],
+                'status' => 'published',
+                'featured' => $p['featured'],
                 'published_at' => now()->subDays(count($posts) - $i),
             ]);
 
@@ -130,7 +134,7 @@ class LambdaContentSeeder extends Seeder
     private function cat(string $name, string $color, string $description): Category
     {
         return Category::firstOrCreate(
-            ['slug' => \Illuminate\Support\Str::slug($name)],
+            ['slug' => Str::slug($name)],
             ['name' => $name, 'color' => $color, 'description' => $description]
         );
     }

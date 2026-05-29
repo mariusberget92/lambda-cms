@@ -16,7 +16,7 @@ class QueryBuilderTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->qb = new QueryBuilder();
+        $this->qb = new QueryBuilder;
     }
 
     public function test_filter_logic_or_returns_union_of_matches(): void
@@ -26,9 +26,9 @@ class QueryBuilderTest extends TestCase
         Category::factory()->create(['name' => 'Gamma', 'slug' => 'gamma']);
 
         $result = $this->qb->resolve([
-            'source'       => 'categories',
+            'source' => 'categories',
             'filter_logic' => 'or',
-            'filters'      => [
+            'filters' => [
                 ['field' => 'slug', 'op' => '=', 'value' => 'alpha'],
                 ['field' => 'slug', 'op' => '=', 'value' => 'beta'],
             ],
@@ -47,9 +47,9 @@ class QueryBuilderTest extends TestCase
         Category::factory()->create(['name' => 'Beta',  'slug' => 'beta']);
 
         $result = $this->qb->resolve([
-            'source'       => 'categories',
+            'source' => 'categories',
             'filter_logic' => 'and',
-            'filters'      => [
+            'filters' => [
                 ['field' => 'slug', 'op' => '=', 'value' => 'alpha'],
                 ['field' => 'slug', 'op' => '=', 'value' => 'beta'],
             ],
@@ -65,7 +65,7 @@ class QueryBuilderTest extends TestCase
 
         // No filter_logic key — should behave like AND
         $result = $this->qb->resolve([
-            'source'  => 'categories',
+            'source' => 'categories',
             'filters' => [
                 ['field' => 'slug', 'op' => '=', 'value' => 'alpha'],
                 ['field' => 'slug', 'op' => '=', 'value' => 'beta'],

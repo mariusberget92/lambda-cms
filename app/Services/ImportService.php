@@ -15,13 +15,13 @@ class ImportService
 {
     public function preview(string $zipPath): array
     {
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
         if ($zip->open($zipPath) !== true) {
             throw new \RuntimeException('Could not open ZIP file.');
         }
 
         $manifestJson = $zip->getFromName('manifest.json');
-        if (!$manifestJson) {
+        if (! $manifestJson) {
             $zip->close();
             throw new \RuntimeException('Invalid export file: missing manifest.json');
         }
@@ -44,16 +44,16 @@ class ImportService
         $zip->close();
 
         return [
-            'exported_at'         => $manifest['exported_at'] ?? null,
-            'version'             => $manifest['version'] ?? null,
-            'entities'            => $available,
+            'exported_at' => $manifest['exported_at'] ?? null,
+            'version' => $manifest['version'] ?? null,
+            'entities' => $available,
             'include_media_files' => $manifest['include_media_files'] ?? false,
         ];
     }
 
     public function import(string $zipPath, array $entities, string $conflictStrategy, int $userId): array
     {
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
         if ($zip->open($zipPath) !== true) {
             throw new \RuntimeException('Could not open ZIP file.');
         }
@@ -103,29 +103,29 @@ class ImportService
                         $skipped++;
                     } elseif ($strategy === 'overwrite') {
                         $existing->update([
-                            'name'        => $item['name'],
+                            'name' => $item['name'],
                             'description' => $item['description'] ?? null,
-                            'color'       => $item['color'] ?? null,
-                            'hue'         => $item['hue'] ?? null,
+                            'color' => $item['color'] ?? null,
+                            'hue' => $item['hue'] ?? null,
                         ]);
                         $updated++;
                     } elseif ($strategy === 'duplicate') {
                         Category::create([
-                            'name'        => $item['name'],
-                            'slug'        => Category::generateSlug($item['name']),
+                            'name' => $item['name'],
+                            'slug' => Category::generateSlug($item['name']),
                             'description' => $item['description'] ?? null,
-                            'color'       => $item['color'] ?? null,
-                            'hue'         => $item['hue'] ?? null,
+                            'color' => $item['color'] ?? null,
+                            'hue' => $item['hue'] ?? null,
                         ]);
                         $created++;
                     }
                 } else {
                     Category::create([
-                        'name'        => $item['name'],
-                        'slug'        => $item['slug'],
+                        'name' => $item['name'],
+                        'slug' => $item['slug'],
                         'description' => $item['description'] ?? null,
-                        'color'       => $item['color'] ?? null,
-                        'hue'         => $item['hue'] ?? null,
+                        'color' => $item['color'] ?? null,
+                        'hue' => $item['hue'] ?? null,
                     ]);
                     $created++;
                 }
@@ -184,36 +184,38 @@ class ImportService
                 if ($existing) {
                     if ($strategy === 'skip') {
                         $skipped++;
+
                         continue;
                     } elseif ($strategy === 'overwrite') {
                         $existing->update([
-                            'alt'         => $item['alt'] ?? null,
+                            'alt' => $item['alt'] ?? null,
                             'description' => $item['description'] ?? null,
                         ]);
                         $updated++;
+
                         continue;
                     }
                     // duplicate falls through to create a new record
                 }
 
-                $fileContent = $zip->getFromName('media/' . $item['filename']);
+                $fileContent = $zip->getFromName('media/'.$item['filename']);
                 if ($fileContent !== false) {
                     Storage::disk('public')->put($item['path'], $fileContent);
                 }
 
                 Media::create([
-                    'user_id'           => $userId,
-                    'filename'          => $item['filename'],
+                    'user_id' => $userId,
+                    'filename' => $item['filename'],
                     'original_filename' => $item['original_filename'],
-                    'disk'              => $item['disk'],
-                    'path'              => $item['path'],
-                    'mime_type'         => $item['mime_type'],
-                    'type'              => $item['type'],
-                    'size'              => $item['size'],
-                    'width'             => $item['width'] ?? null,
-                    'height'            => $item['height'] ?? null,
-                    'alt'               => $item['alt'] ?? null,
-                    'description'       => $item['description'] ?? null,
+                    'disk' => $item['disk'],
+                    'path' => $item['path'],
+                    'mime_type' => $item['mime_type'],
+                    'type' => $item['type'],
+                    'size' => $item['size'],
+                    'width' => $item['width'] ?? null,
+                    'height' => $item['height'] ?? null,
+                    'alt' => $item['alt'] ?? null,
+                    'description' => $item['description'] ?? null,
                 ]);
                 $created++;
             } catch (\Throwable) {
@@ -246,16 +248,16 @@ class ImportService
                                 ->update(['status' => 'draft']);
                         }
                         $existing->update([
-                            'loop_source'      => $item['loop_source'] ?? null,
-                            'status'           => $item['status'] ?? 'draft',
-                            'blocks'           => $item['blocks'] ?? [],
-                            'meta_title'       => $item['meta_title'] ?? null,
+                            'loop_source' => $item['loop_source'] ?? null,
+                            'status' => $item['status'] ?? 'draft',
+                            'blocks' => $item['blocks'] ?? [],
+                            'meta_title' => $item['meta_title'] ?? null,
                             'meta_description' => $item['meta_description'] ?? null,
-                            'meta_keywords'    => $item['meta_keywords'] ?? null,
+                            'meta_keywords' => $item['meta_keywords'] ?? null,
                         ]);
                         $updated++;
                     } elseif ($strategy === 'duplicate') {
-                        Template::create($this->templateFields($item, $userId, $item['title'] . ' (imported)'));
+                        Template::create($this->templateFields($item, $userId, $item['title'].' (imported)'));
                         $created++;
                     }
                 } else {
@@ -279,16 +281,16 @@ class ImportService
     private function templateFields(array $item, int $userId, string $title): array
     {
         return [
-            'user_id'          => $userId,
-            'title'            => $title,
-            'type'             => $item['type'],
-            'loop_source'      => $item['loop_source'] ?? null,
-            'is_system'        => false,
-            'status'           => $item['status'] ?? 'draft',
-            'blocks'           => $item['blocks'] ?? [],
-            'meta_title'       => $item['meta_title'] ?? null,
+            'user_id' => $userId,
+            'title' => $title,
+            'type' => $item['type'],
+            'loop_source' => $item['loop_source'] ?? null,
+            'is_system' => false,
+            'status' => $item['status'] ?? 'draft',
+            'blocks' => $item['blocks'] ?? [],
+            'meta_title' => $item['meta_title'] ?? null,
             'meta_description' => $item['meta_description'] ?? null,
-            'meta_keywords'    => $item['meta_keywords'] ?? null,
+            'meta_keywords' => $item['meta_keywords'] ?? null,
         ];
     }
 
@@ -303,11 +305,13 @@ class ImportService
                 if ($existing) {
                     if ($strategy === 'skip') {
                         $skipped++;
+
                         continue;
                     } elseif ($strategy === 'overwrite') {
                         $existing->update($this->postFields($item, $userId));
                         $this->syncPostRelations($existing, $item);
                         $updated++;
+
                         continue;
                     }
                     // duplicate: generate a unique slug
@@ -331,21 +335,21 @@ class ImportService
     private function postFields(array $item, int $userId): array
     {
         return [
-            'user_id'           => $userId,
-            'title'             => $item['title'],
-            'excerpt'           => $item['excerpt'] ?? null,
-            'body'              => $item['body'] ?? null,
-            'body_format'       => $item['body_format'] ?? 'html',
-            'status'            => $item['status'] ?? 'draft',
-            'featured'          => $item['featured'] ?? false,
-            'published_at'      => isset($item['published_at']) ? Carbon::parse($item['published_at']) : null,
-            'comments_enabled'  => $item['comments_enabled'] ?? true,
-            'use_block_editor'  => $item['use_block_editor'] ?? false,
-            'blocks'            => $item['blocks'] ?? [],
-            'meta_title'        => $item['meta_title'] ?? null,
-            'meta_description'  => $item['meta_description'] ?? null,
-            'meta_keywords'     => $item['meta_keywords'] ?? null,
-            'custom_js'         => $item['custom_js'] ?? null,
+            'user_id' => $userId,
+            'title' => $item['title'],
+            'excerpt' => $item['excerpt'] ?? null,
+            'body' => $item['body'] ?? null,
+            'body_format' => $item['body_format'] ?? 'html',
+            'status' => $item['status'] ?? 'draft',
+            'featured' => $item['featured'] ?? false,
+            'published_at' => isset($item['published_at']) ? Carbon::parse($item['published_at']) : null,
+            'comments_enabled' => $item['comments_enabled'] ?? true,
+            'use_block_editor' => $item['use_block_editor'] ?? false,
+            'blocks' => $item['blocks'] ?? [],
+            'meta_title' => $item['meta_title'] ?? null,
+            'meta_description' => $item['meta_description'] ?? null,
+            'meta_keywords' => $item['meta_keywords'] ?? null,
+            'custom_js' => $item['custom_js'] ?? null,
             'featured_image_id' => $this->resolveMediaId($item['featured_image'] ?? null),
         ];
     }
@@ -353,16 +357,17 @@ class ImportService
     private function syncPostRelations(Post $post, array $item): void
     {
         $categoryIds = Category::whereIn('slug', $item['categories'] ?? [])->pluck('id');
-        $tagIds      = Tag::whereIn('slug', $item['tags'] ?? [])->pluck('id');
+        $tagIds = Tag::whereIn('slug', $item['tags'] ?? [])->pluck('id');
         $post->categories()->sync($categoryIds);
         $post->tags()->sync($tagIds);
     }
 
     private function resolveMediaId(?string $filename): ?int
     {
-        if (!$filename) {
+        if (! $filename) {
             return null;
         }
+
         return Media::where('filename', $filename)->value('id');
     }
 }

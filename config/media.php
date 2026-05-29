@@ -9,7 +9,7 @@ use App\Models\Setting;
 $settingGet = function (string $key, mixed $fallback): mixed {
     try {
         return Setting::get($key, $fallback);
-    } catch (\Throwable) {
+    } catch (Throwable) {
         return $fallback;
     }
 };
@@ -31,18 +31,18 @@ return [
      * a file's type label ('image', 'document', 'video', 'audio') from its MIME type.
      */
     'mime_groups' => [
-        'image'    => ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
+        'image' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
         'document' => ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-        'video'    => ['video/mp4', 'video/webm'],
-        'audio'    => ['audio/mpeg', 'audio/wav'],
+        'video' => ['video/mp4', 'video/webm'],
+        'audio' => ['audio/mpeg', 'audio/wav'],
     ],
 
     'allowed_mimes' => (function () use ($settingGet): array {
         $groups = [
-            'image'    => ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
+            'image' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
             'document' => ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-            'video'    => ['video/mp4', 'video/webm'],
-            'audio'    => ['audio/mpeg', 'audio/wav'],
+            'video' => ['video/mp4', 'video/webm'],
+            'audio' => ['audio/mpeg', 'audio/wav'],
         ];
 
         $enabledCategories = json_decode($settingGet('media.allowed_categories', json_encode(array_keys($groups))), true);

@@ -6,6 +6,7 @@ use App\Models\Page;
 use App\Models\Post;
 use App\Observers\PageObserver;
 use App\Observers\PostObserver;
+use App\Services\TemplateResolver;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -17,7 +18,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(\App\Services\TemplateResolver::class);
+        $this->app->singleton(TemplateResolver::class);
     }
 
     /**

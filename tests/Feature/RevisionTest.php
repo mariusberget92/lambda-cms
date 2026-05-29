@@ -38,7 +38,7 @@ class RevisionTest extends TestCase
     {
         $admin = $this->makeAdmin();
         $owner = $this->makeUser();
-        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post = Post::factory()->create(['user_id' => $owner->id]);
         $post->saveRevision($owner->id);
 
         $this->actingAs($admin)
@@ -50,7 +50,7 @@ class RevisionTest extends TestCase
     public function test_owner_can_view_own_post_revisions(): void
     {
         $owner = $this->makeUser();
-        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post = Post::factory()->create(['user_id' => $owner->id]);
         $post->saveRevision($owner->id);
 
         $this->actingAs($owner)
@@ -62,7 +62,7 @@ class RevisionTest extends TestCase
     {
         $owner = $this->makeUser();
         $other = $this->makeUser();
-        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post = Post::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($other)
             ->withoutMiddleware([RoleMiddleware::class])
@@ -76,7 +76,7 @@ class RevisionTest extends TestCase
     {
         $admin = $this->makeAdmin();
         $owner = $this->makeUser();
-        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post = Post::factory()->create(['user_id' => $owner->id]);
         $post->saveRevision($owner->id);
         $revision = $post->revisions()->first();
 
@@ -88,7 +88,7 @@ class RevisionTest extends TestCase
     public function test_owner_can_restore_own_post_revision(): void
     {
         $owner = $this->makeUser();
-        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post = Post::factory()->create(['user_id' => $owner->id]);
         $post->saveRevision($owner->id);
         $revision = $post->revisions()->first();
 
@@ -101,7 +101,7 @@ class RevisionTest extends TestCase
     {
         $owner = $this->makeUser();
         $other = $this->makeUser();
-        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post = Post::factory()->create(['user_id' => $owner->id]);
         $post->saveRevision($owner->id);
         $revision = $post->revisions()->first();
 
@@ -119,7 +119,7 @@ class RevisionTest extends TestCase
     {
         $admin = $this->makeAdmin();
         $owner = $this->makeUser();
-        $page  = Page::factory()->create(['user_id' => $owner->id]);
+        $page = Page::factory()->create(['user_id' => $owner->id]);
         $page->saveRevision($owner->id);
 
         $this->actingAs($admin)
@@ -131,7 +131,7 @@ class RevisionTest extends TestCase
     public function test_owner_can_view_their_own_page_revisions_bypassing_role_middleware(): void
     {
         $owner = $this->makeUser();
-        $page  = Page::factory()->create(['user_id' => $owner->id]);
+        $page = Page::factory()->create(['user_id' => $owner->id]);
         $page->saveRevision($owner->id);
 
         $this->actingAs($owner)
@@ -144,7 +144,7 @@ class RevisionTest extends TestCase
     {
         $owner = $this->makeUser();
         $other = $this->makeUser();
-        $page  = Page::factory()->create(['user_id' => $owner->id]);
+        $page = Page::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($other)
             ->withoutMiddleware([RoleMiddleware::class])
@@ -160,7 +160,7 @@ class RevisionTest extends TestCase
     {
         $admin = $this->makeAdmin();
         $owner = $this->makeUser();
-        $page  = Page::factory()->create(['user_id' => $owner->id]);
+        $page = Page::factory()->create(['user_id' => $owner->id]);
         $page->saveRevision($owner->id);
         $revision = $page->revisions()->first();
 
@@ -172,7 +172,7 @@ class RevisionTest extends TestCase
     public function test_owner_can_restore_their_own_page_revision(): void
     {
         $owner = $this->makeUser();
-        $page  = Page::factory()->create(['user_id' => $owner->id]);
+        $page = Page::factory()->create(['user_id' => $owner->id]);
         $page->saveRevision($owner->id);
         $revision = $page->revisions()->first();
 
@@ -183,9 +183,9 @@ class RevisionTest extends TestCase
 
     public function test_non_owner_non_admin_gets_403_on_restore_page_revision(): void
     {
-        $owner  = $this->makeUser();
-        $other  = $this->makeUser();
-        $page   = Page::factory()->create(['user_id' => $owner->id]);
+        $owner = $this->makeUser();
+        $other = $this->makeUser();
+        $page = Page::factory()->create(['user_id' => $owner->id]);
         $page->saveRevision($owner->id);
         $revision = $page->revisions()->first();
 
@@ -200,8 +200,8 @@ class RevisionTest extends TestCase
 
     public function test_admin_can_view_revisions_for_any_template(): void
     {
-        $admin    = $this->makeAdmin();
-        $owner    = $this->makeUser();
+        $admin = $this->makeAdmin();
+        $owner = $this->makeUser();
         $template = Template::factory()->create(['user_id' => $owner->id]);
         $template->saveRevision($owner->id);
 
@@ -213,7 +213,7 @@ class RevisionTest extends TestCase
 
     public function test_owner_can_view_their_own_template_revisions_bypassing_role_middleware(): void
     {
-        $owner    = $this->makeUser();
+        $owner = $this->makeUser();
         $template = Template::factory()->create(['user_id' => $owner->id]);
         $template->saveRevision($owner->id);
 
@@ -225,8 +225,8 @@ class RevisionTest extends TestCase
 
     public function test_non_owner_non_admin_gets_403_on_template_revisions_bypassing_role_middleware(): void
     {
-        $owner    = $this->makeUser();
-        $other    = $this->makeUser();
+        $owner = $this->makeUser();
+        $other = $this->makeUser();
         $template = Template::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($other)
@@ -239,8 +239,8 @@ class RevisionTest extends TestCase
 
     public function test_admin_can_restore_a_revision_for_any_template(): void
     {
-        $admin    = $this->makeAdmin();
-        $owner    = $this->makeUser();
+        $admin = $this->makeAdmin();
+        $owner = $this->makeUser();
         $template = Template::factory()->create(['user_id' => $owner->id]);
         $template->saveRevision($owner->id);
         $revision = $template->revisions()->first();
@@ -252,7 +252,7 @@ class RevisionTest extends TestCase
 
     public function test_owner_can_restore_their_own_template_revision(): void
     {
-        $owner    = $this->makeUser();
+        $owner = $this->makeUser();
         $template = Template::factory()->create(['user_id' => $owner->id]);
         $template->saveRevision($owner->id);
         $revision = $template->revisions()->first();
@@ -264,8 +264,8 @@ class RevisionTest extends TestCase
 
     public function test_non_owner_non_admin_gets_403_on_restore_template_revision(): void
     {
-        $owner    = $this->makeUser();
-        $other    = $this->makeUser();
+        $owner = $this->makeUser();
+        $other = $this->makeUser();
         $template = Template::factory()->create(['user_id' => $owner->id]);
         $template->saveRevision($owner->id);
         $revision = $template->revisions()->first();

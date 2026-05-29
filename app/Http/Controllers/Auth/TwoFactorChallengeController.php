@@ -16,7 +16,7 @@ class TwoFactorChallengeController extends Controller
 
     public function __construct()
     {
-        $this->google2fa = new Google2FA();
+        $this->google2fa = new Google2FA;
     }
 
     public function show(Request $request)
@@ -34,10 +34,11 @@ class TwoFactorChallengeController extends Controller
 
         if (! $userId || ! ($user = User::find($userId))) {
             $request->session()->forget(['two_factor_auth_user_id', 'two_factor_auth_remember']);
+
             return redirect()->route('auth.login');
         }
 
-        $code     = trim($request->input('code'));
+        $code = trim($request->input('code'));
         $verified = false;
 
         // Try TOTP (6 digits)
@@ -69,9 +70,9 @@ class TwoFactorChallengeController extends Controller
             return false;
         }
 
-        $codes    = json_decode(decrypt($user->two_factor_recovery_codes), true);
+        $codes = json_decode(decrypt($user->two_factor_recovery_codes), true);
         $normalize = fn (string $c) => strtolower(str_replace(['-', ' '], '', $c));
-        $needle   = $normalize($input);
+        $needle = $normalize($input);
 
         foreach ($codes as $index => $stored) {
             if (hash_equals($normalize($stored), $needle)) {
@@ -79,6 +80,7 @@ class TwoFactorChallengeController extends Controller
                 $user->update([
                     'two_factor_recovery_codes' => encrypt(json_encode(array_values($codes))),
                 ]);
+
                 return true;
             }
         }

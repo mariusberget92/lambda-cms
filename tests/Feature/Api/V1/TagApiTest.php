@@ -42,9 +42,9 @@ class TagApiTest extends TestCase
         $this->seedRolesAndPermissions();
 
         $user = User::factory()->create()->assignRole('user');
-        $tag  = Tag::factory()->create();
+        $tag = Tag::factory()->create();
         $published = Post::factory()->create(['user_id' => $user->id, 'status' => 'published', 'published_at' => now()]);
-        $draft     = Post::factory()->create(['user_id' => $user->id, 'status' => 'draft']);
+        $draft = Post::factory()->create(['user_id' => $user->id, 'status' => 'draft']);
         $published->tags()->attach($tag);
         $draft->tags()->attach($tag);
 

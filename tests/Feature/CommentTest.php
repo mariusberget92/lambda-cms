@@ -2,11 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\SendNewCommentNotification;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\Setting;
 use App\Models\User;
+use App\Services\SettingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class CommentTest extends TestCase
@@ -34,7 +37,7 @@ class CommentTest extends TestCase
 
     public function test_comment_belongs_to_post(): void
     {
-        $post    = Post::factory()->published()->create();
+        $post = Post::factory()->published()->create();
         $comment = Comment::factory()->create(['post_id' => $post->id]);
 
         $this->assertTrue($comment->post->is($post));
@@ -55,16 +58,16 @@ class CommentTest extends TestCase
         $post = Post::factory()->published()->create();
 
         $response = $this->post(route('comments.store', $post->slug), [
-            'author_name'  => 'Alice',
+            'author_name' => 'Alice',
             'author_email' => 'alice@example.com',
-            'body'         => 'Great post!',
+            'body' => 'Great post!',
         ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas('comments', [
-            'post_id'     => $post->id,
+            'post_id' => $post->id,
             'author_name' => 'Alice',
-            'status'      => 'pending',
+            'status' => 'pending',
         ]);
     }
 
@@ -74,8 +77,8 @@ class CommentTest extends TestCase
 
         $this->post(route('comments.store', $post->slug), [
             'author_name' => 'Bot',
-            'body'        => 'Spam',
-            'website'     => 'http://spam.example.com',
+            'body' => 'Spam',
+            'website' => 'http://spam.example.com',
         ]);
 
         $this->assertDatabaseMissing('comments', ['author_name' => 'Bot']);
@@ -96,7 +99,7 @@ class CommentTest extends TestCase
 
         $this->actingAs($user)->post(route('comments.store', $post->slug), [
             'author_name' => $user->name,
-            'body'        => 'Logged in comment',
+            'body' => 'Logged in comment',
         ]);
 
         $this->assertDatabaseHas('comments', [
@@ -117,7 +120,7 @@ class CommentTest extends TestCase
     public function test_admin_can_view_comments_index(): void
     {
         $admin = $this->makeAdmin();
-        $post  = Post::factory()->published()->create();
+        $post = Post::factory()->published()->create();
         Comment::factory()->create(['post_id' => $post->id, 'status' => 'pending']);
 
         $this->actingAs($admin)->get(route('comments.index'))->assertOk();
@@ -125,8 +128,8 @@ class CommentTest extends TestCase
 
     public function test_admin_can_approve_comment(): void
     {
-        $admin   = $this->makeAdmin();
-        $post    = Post::factory()->published()->create();
+        $admin = $this->makeAdmin();
+        $post = Post::factory()->published()->create();
         $comment = Comment::factory()->create(['post_id' => $post->id, 'status' => 'pending']);
 
         $this->actingAs($admin)->patch(route('comments.approve', $comment))->assertRedirect();
@@ -135,8 +138,8 @@ class CommentTest extends TestCase
 
     public function test_admin_can_reject_comment(): void
     {
-        $admin   = $this->makeAdmin();
-        $post    = Post::factory()->published()->create();
+        $admin = $this->makeAdmin();
+        $post = Post::factory()->published()->create();
         $comment = Comment::factory()->create(['post_id' => $post->id, 'status' => 'pending']);
 
         $this->actingAs($admin)->patch(route('comments.reject', $comment))->assertRedirect();
@@ -145,8 +148,8 @@ class CommentTest extends TestCase
 
     public function test_admin_can_delete_comment(): void
     {
-        $admin   = $this->makeAdmin();
-        $post    = Post::factory()->published()->create();
+        $admin = $this->makeAdmin();
+        $post = Post::factory()->published()->create();
         $comment = Comment::factory()->create(['post_id' => $post->id]);
 
         $this->actingAs($admin)->delete(route('comments.destroy', $comment))->assertRedirect();
@@ -156,8 +159,8 @@ class CommentTest extends TestCase
     public function test_admin_can_bulk_approve(): void
     {
         $admin = $this->makeAdmin();
-        $post  = Post::factory()->published()->create();
-        $ids   = Comment::factory(3)->create(['post_id' => $post->id, 'status' => 'pending'])->pluck('id')->toArray();
+        $post = Post::factory()->published()->create();
+        $ids = Comment::factory(3)->create(['post_id' => $post->id, 'status' => 'pending'])->pluck('id')->toArray();
 
         $this->actingAs($admin)->post(route('comments.bulk'), ['action' => 'approve', 'ids' => $ids])->assertRedirect();
         $this->assertEquals(3, Comment::whereIn('id', $ids)->where('status', 'approved')->count());
@@ -165,16 +168,16 @@ class CommentTest extends TestCase
 
     public function test_notification_dispatched_on_comment_store(): void
     {
-        \Illuminate\Support\Facades\Queue::fake();
+        Queue::fake();
 
         $post = Post::factory()->published()->create();
 
         $this->post(route('comments.store', $post->slug), [
             'author_name' => 'Alice',
-            'body'        => 'Test notification',
+            'body' => 'Test notification',
         ]);
 
-        \Illuminate\Support\Facades\Queue::assertPushed(\App\Jobs\SendNewCommentNotification::class);
+        Queue::assertPushed(SendNewCommentNotification::class);
     }
 
     // -- Comments settings --------------------------------------------------------
@@ -183,7 +186,7 @@ class CommentTest extends TestCase
     {
         Setting::create(['group' => 'comments', 'key' => 'comments.enabled',  'value' => $enabled ? '1' : '0', 'type' => 'boolean']);
         Setting::create(['group' => 'comments', 'key' => 'comments.per_page', 'value' => (string) $perPage,     'type' => 'integer']);
-        app(\App\Services\SettingService::class)->bust();
+        app(SettingService::class)->bust();
     }
 
     public function test_comments_store_rejected_when_comments_disabled(): void
@@ -193,7 +196,7 @@ class CommentTest extends TestCase
 
         $this->post(route('comments.store', $post->slug), [
             'author_name' => 'Alice',
-            'body'        => 'Hello!',
+            'body' => 'Hello!',
         ])->assertForbidden();
     }
 
@@ -203,7 +206,7 @@ class CommentTest extends TestCase
         $admin = $this->makeAdmin();
 
         $this->actingAs($admin)->put(route('settings.update', 'comments'), [
-            'comments.enabled'  => '1',
+            'comments.enabled' => '1',
             'comments.per_page' => 20,
         ])->assertRedirect();
 
@@ -217,12 +220,12 @@ class CommentTest extends TestCase
         $admin = $this->makeAdmin();
 
         $this->actingAs($admin)->put(route('settings.update', 'comments'), [
-            'comments.enabled'  => '1',
+            'comments.enabled' => '1',
             'comments.per_page' => 999,
         ])->assertSessionHasErrors('comments.per_page');
 
         $this->actingAs($admin)->put(route('settings.update', 'comments'), [
-            'comments.enabled'  => '1',
+            'comments.enabled' => '1',
             'comments.per_page' => 2,
         ])->assertSessionHasErrors('comments.per_page');
     }
@@ -238,10 +241,10 @@ class CommentTest extends TestCase
         $response = $this->getJson("/blog/{$post->slug}/comments?page=1");
 
         $response->assertOk()
-                 ->assertJsonStructure(['data', 'has_more', 'total'])
-                 ->assertJsonCount(3, 'data')
-                 ->assertJsonPath('total', 5)
-                 ->assertJsonPath('has_more', true);
+            ->assertJsonStructure(['data', 'has_more', 'total'])
+            ->assertJsonCount(3, 'data')
+            ->assertJsonPath('total', 5)
+            ->assertJsonPath('has_more', true);
     }
 
     public function test_comments_json_endpoint_respects_page_param(): void
@@ -253,8 +256,8 @@ class CommentTest extends TestCase
         $response = $this->getJson("/blog/{$post->slug}/comments?page=2");
 
         $response->assertOk()
-                 ->assertJsonCount(2, 'data')
-                 ->assertJsonPath('has_more', false);
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('has_more', false);
     }
 
     public function test_comments_json_endpoint_only_returns_approved(): void
@@ -292,9 +295,9 @@ class CommentTest extends TestCase
         $response = $this->getJson("/blog/{$post->slug}/comments");
 
         $response->assertOk()
-                 ->assertJsonCount(0, 'data')
-                 ->assertJsonPath('has_more', false)
-                 ->assertJsonPath('total', 0);
+            ->assertJsonCount(0, 'data')
+            ->assertJsonPath('has_more', false)
+            ->assertJsonPath('total', 0);
     }
 
     public function test_comments_json_endpoint_excludes_rejected_comments(): void
@@ -317,7 +320,7 @@ class CommentTest extends TestCase
 
         $this->post(route('comments.store', $post->slug), [
             'author_name' => 'Alice',
-            'body'        => 'Hello!',
+            'body' => 'Hello!',
         ])->assertForbidden();
     }
 

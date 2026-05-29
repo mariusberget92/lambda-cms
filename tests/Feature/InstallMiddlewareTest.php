@@ -106,9 +106,9 @@ class InstallMiddlewareTest extends TestCase
         $this->markAsNotInstalled();
 
         $this->post('/install/admin', [
-            'name'                  => 'Admin',
-            'email'                 => 'admin@example.com',
-            'password'              => 'secret123',
+            'name' => 'Admin',
+            'email' => 'admin@example.com',
+            'password' => 'secret123',
             'password_confirmation' => 'doesnotmatch',
         ])->assertSessionHasErrors(['password']);
     }
@@ -118,9 +118,9 @@ class InstallMiddlewareTest extends TestCase
         $this->markAsNotInstalled();
 
         $this->post('/install/admin', [
-            'name'                  => 'Admin User',
-            'email'                 => 'admin@example.com',
-            'password'              => 'password123',
+            'name' => 'Admin User',
+            'email' => 'admin@example.com',
+            'password' => 'password123',
             'password_confirmation' => 'password123',
         ])->assertRedirect('/install/mail');
     }

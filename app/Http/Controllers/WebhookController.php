@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreWebhookRequest;
 use App\Http\Requests\UpdateWebhookRequest;
 use App\Models\Webhook;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 

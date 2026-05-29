@@ -34,7 +34,7 @@ return new class extends Migration
         // We detect this by checking if type_new already exists (partial run)
         $columns = array_column(DB::select('PRAGMA table_info("templates")'), 'name');
 
-        if (!in_array('type_new', $columns)) {
+        if (! in_array('type_new', $columns)) {
             // Add temp column, copy, drop old, rename
             Schema::table('templates', function (Blueprint $table) {
                 $table->string('type_new', 64)->nullable()->after('type');
@@ -55,7 +55,7 @@ return new class extends Migration
         $indexes = DB::select('PRAGMA index_list("templates")');
         $indexNames = array_column($indexes, 'name');
 
-        if (!in_array('templates_type_status_index', $indexNames)) {
+        if (! in_array('templates_type_status_index', $indexNames)) {
             Schema::table('templates', function (Blueprint $table) {
                 $table->index(['type', 'status']);
             });

@@ -26,7 +26,7 @@ class Template extends Model
     ];
 
     protected $casts = [
-        'blocks'    => 'array',
+        'blocks' => 'array',
         'is_system' => 'boolean',
     ];
 
@@ -39,10 +39,10 @@ class Template extends Model
 
     public function autosaves()
     {
-        return $this->morphMany(\App\Models\Autosave::class, 'autosaveable');
+        return $this->morphMany(Autosave::class, 'autosaveable');
     }
 
-    public function autosave(int $userId): ?\App\Models\Autosave
+    public function autosave(int $userId): ?Autosave
     {
         return $this->autosaves()->where('user_id', $userId)->first();
     }

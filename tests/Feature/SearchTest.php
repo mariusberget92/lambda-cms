@@ -31,8 +31,8 @@ class SearchTest extends TestCase
 
         $response = $this->get('/search?q=Hello');
         $response->assertInertia(fn ($page) => $page
-            ->component('Blog/Search')
-            ->has('results.data', 1)
+            ->component('Blog/TemplatePage')
+            ->has('searchContext.results.data', 1)
         );
     }
 
@@ -53,6 +53,6 @@ class SearchTest extends TestCase
         Post::factory()->create(['title' => 'Draft Hello', 'status' => 'draft']);
 
         $response = $this->get('/search?q=Hello');
-        $response->assertInertia(fn ($page) => $page->has('results.data', 0));
+        $response->assertInertia(fn ($page) => $page->has('searchContext.results.data', 0));
     }
 }

@@ -22,8 +22,8 @@ trait HasRevisions
             ->toArray();
 
         $this->revisions()->create([
-            'user_id'    => $userId,
-            'payload'    => $payload,
+            'user_id' => $userId,
+            'payload' => $payload,
             'created_at' => now(),
         ]);
 

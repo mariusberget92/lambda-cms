@@ -26,6 +26,7 @@ class SendNewCommentNotification implements ShouldQueue
 
             if (empty($adminEmail)) {
                 Log::warning('SendNewCommentNotification: no admin email configured, skipping.');
+
                 return;
             }
 

@@ -14,9 +14,9 @@ class CategoryController extends Controller
             ->orderBy('name')
             ->get()
             ->map(fn (Category $c) => [
-                'id'          => $c->id,
-                'name'        => $c->name,
-                'slug'        => $c->slug,
+                'id' => $c->id,
+                'name' => $c->name,
+                'slug' => $c->slug,
                 'description' => $c->description,
                 'posts_count' => $c->posts_count,
             ]);
@@ -31,9 +31,9 @@ class CategoryController extends Controller
             ->firstOrFail();
 
         return response()->json([
-            'id'          => $category->id,
-            'name'        => $category->name,
-            'slug'        => $category->slug,
+            'id' => $category->id,
+            'name' => $category->name,
+            'slug' => $category->slug,
             'description' => $category->description,
             'posts_count' => $category->posts_count,
         ]);
