@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateProfileAvatarRequest;
+use App\Http\Requests\UpdateProfileInfoRequest;
+use App\Http\Requests\UpdateProfilePasswordRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 
 class ProfileController extends Controller
@@ -15,17 +16,9 @@ class ProfileController extends Controller
         return Inertia::render('Profile/Index');
     }
 
-    public function updateInfo(Request $request)
+    public function updateInfo(UpdateProfileInfoRequest $request)
     {
-        $validated = $request->validate([
-            'name'  => ['required', 'string', 'max:255'],
-            'email' => [
-                'required',
-                'email',
-                'max:255',
-                Rule::unique('users', 'email')->ignore($request->user()->id),
-            ],
-        ]);
+        $validated = $request->validated();
 
         $user = $request->user();
         $emailChanged = $validated['email'] !== $user->email;
@@ -46,13 +39,8 @@ class ProfileController extends Controller
             ->with('status', $message);
     }
 
-    public function updatePassword(Request $request)
+    public function updatePassword(UpdateProfilePasswordRequest $request)
     {
-        $request->validate([
-            'current_password' => ['required', 'current_password'],
-            'password'         => ['required', 'confirmed', Password::min(8)],
-        ]);
-
         $request->user()->update([
             'password' => $request->password,
         ]);
@@ -62,11 +50,8 @@ class ProfileController extends Controller
             ->with('status', 'Password updated.');
     }
 
-    public function updateAvatar(Request $request)
+    public function updateAvatar(UpdateProfileAvatarRequest $request)
     {
-        $request->validate([
-            'avatar' => ['required', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'max:5120'],
-        ]);
 
         $user = $request->user();
 

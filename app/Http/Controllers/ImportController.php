@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ImportPreviewRequest;
+use App\Http\Requests\ImportStoreRequest;
 use App\Services\ImportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -18,11 +20,8 @@ class ImportController extends Controller
         ]);
     }
 
-    public function preview(Request $request)
+    public function preview(ImportPreviewRequest $request)
     {
-        $request->validate([
-            'file' => 'required|file|mimes:zip|max:204800',
-        ]);
 
         $path = $request->file('file')->storeAs(
             'imports/tmp',
@@ -43,14 +42,8 @@ class ImportController extends Controller
             ->with('import_preview', $preview);
     }
 
-    public function store(Request $request)
+    public function store(ImportStoreRequest $request)
     {
-        $request->validate([
-            'tmp_path'          => 'required|string',
-            'entities'          => 'required|array|min:1',
-            'entities.*'        => 'in:posts,categories,tags,media,templates',
-            'conflict_strategy' => 'required|in:skip,overwrite,duplicate',
-        ]);
 
         $path = $request->input('tmp_path');
 

@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\InstallAdminRequest;
+use App\Http\Requests\InstallDatabaseRequest;
+use App\Http\Requests\InstallMailRequest;
+use App\Http\Requests\InstallSiteRequest;
 use App\Models\User;
 use Database\Seeders\LambdaContentSeeder;
 use Database\Seeders\TemplateSeeder;
@@ -11,7 +15,6 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
 use PDO;
@@ -49,20 +52,11 @@ class InstallController extends Controller
     /**
      * Step 1 — Database configuration.
      */
-    public function database(Request $request): RedirectResponse
+    public function database(InstallDatabaseRequest $request): RedirectResponse
     {
         $driver = $request->input('driver', 'sqlite');
 
         if ($driver === 'mysql') {
-            $request->validate([
-                'driver'   => ['required', 'in:sqlite,mysql'],
-                'host'     => ['required', 'string'],
-                'port'     => ['required', 'integer', 'min:1', 'max:65535'],
-                'database' => ['required', 'string'],
-                'username' => ['required', 'string'],
-                'password' => ['nullable', 'string'],
-                'prefix'   => ['nullable', 'string'],
-            ]);
 
             // Test connection
             try {
@@ -85,9 +79,6 @@ class InstallController extends Controller
                 'DB_TABLE_PREFIX' => $request->prefix ?? '',
             ]);
         } else {
-            $request->validate([
-                'driver' => ['required', 'in:sqlite,mysql'],
-            ]);
 
             // Ensure the SQLite database file exists before migrations run
             $sqlitePath = database_path('database.sqlite');
@@ -108,12 +99,8 @@ class InstallController extends Controller
     /**
      * Step 2 — Site configuration.
      */
-    public function site(Request $request): RedirectResponse
+    public function site(InstallSiteRequest $request): RedirectResponse
     {
-        $request->validate([
-            'site_name' => ['required', 'string', 'max:255'],
-            'site_url'  => ['required', 'url', 'max:255'],
-        ]);
 
         $this->writeEnv([
             'APP_NAME' => $request->site_name,
@@ -128,13 +115,8 @@ class InstallController extends Controller
     /**
      * Step 3 — Admin account (stored in session only).
      */
-    public function admin(Request $request): RedirectResponse
+    public function admin(InstallAdminRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'email', 'max:255'],
-            'password' => ['required', 'confirmed', Password::min(8)],
-        ]);
 
         $request->session()->put('install.admin', [
             'name'     => $request->name,
@@ -149,20 +131,11 @@ class InstallController extends Controller
      * Step 4 — Mail configuration. Runs migrations, seeds, creates the admin
      * user, and completes the installation.
      */
-    public function mail(Request $request): RedirectResponse
+    public function mail(InstallMailRequest $request): RedirectResponse
     {
         $mailer = $request->input('mailer', 'log');
 
         if ($mailer === 'smtp') {
-            $request->validate([
-                'mailer'       => ['required', 'in:smtp,log'],
-                'host'         => ['required', 'string'],
-                'port'         => ['required', 'integer', 'min:1', 'max:65535'],
-                'username'     => ['required', 'string'],
-                'password'     => ['nullable', 'string'],
-                'from_address' => ['required', 'email'],
-                'from_name'    => ['required', 'string', 'max:255'],
-            ]);
 
             $this->writeEnv([
                 'MAIL_MAILER'       => 'smtp',

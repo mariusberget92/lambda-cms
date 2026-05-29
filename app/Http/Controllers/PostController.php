@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BulkPostRequest;
+use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
 use App\Models\Autosave;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class PostController extends Controller
@@ -61,34 +63,9 @@ class PostController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StorePostRequest $request)
     {
-        $validated = $request->validate([
-            'title'       => ['required', 'string', 'max:255'],
-            'excerpt'     => ['nullable', 'string', 'max:500'],
-            'body'        => ['nullable', 'string'],
-            'status'      => ['required', 'in:draft,scheduled,published'],
-            'published_at' => [
-                Rule::when($request->input('status') === 'scheduled', ['required', 'date', 'after:now']),
-                Rule::when($request->input('status') !== 'scheduled', ['nullable']),
-            ],
-            'category_ids'   => ['nullable', 'array'],
-            'category_ids.*' => ['exists:categories,id'],
-            'tag_ids'          => ['nullable', 'array'],
-            'tag_ids.*'        => ['exists:tags,id'],
-            'new_tag_names'    => ['nullable', 'array', 'distinct'],
-            'new_tag_names.*'  => ['string', 'min:1', 'max:50'],
-            'featured_image_id' => ['nullable', 'exists:media,id'],
-            'comments_enabled'  => ['nullable', 'boolean'],
-            'featured'          => ['nullable', 'boolean'],
-            'meta_title'       => ['nullable', 'string', 'max:100'],
-            'meta_description' => ['nullable', 'string', 'max:300'],
-            'meta_keywords'    => ['nullable', 'string', 'max:255'],
-            'custom_js'        => ['nullable', 'string'],
-            'body_format'      => ['nullable', 'in:html,markdown'],
-            'use_block_editor' => ['nullable', 'boolean'],
-            'blocks'           => ['nullable', 'array'],
-        ]);
+        $validated = $request->validated();
 
         $tagIds      = $validated['tag_ids'] ?? [];
         $categoryIds = $validated['category_ids'] ?? [];
@@ -177,38 +154,13 @@ class PostController extends Controller
         ]);
     }
 
-    public function update(Request $request, Post $post)
+    public function update(UpdatePostRequest $request, Post $post)
     {
         if ($post->user_id !== $request->user()->id && !$request->user()->hasRole('administrator')) {
             abort(403);
         }
 
-        $validated = $request->validate([
-            'title'       => ['required', 'string', 'max:255'],
-            'excerpt'     => ['nullable', 'string', 'max:500'],
-            'body'        => ['nullable', 'string'],
-            'status'      => ['required', 'in:draft,scheduled,published'],
-            'published_at' => [
-                Rule::when($request->input('status') === 'scheduled', ['required', 'date', 'after:now']),
-                Rule::when($request->input('status') !== 'scheduled', ['nullable']),
-            ],
-            'category_ids'   => ['nullable', 'array'],
-            'category_ids.*' => ['exists:categories,id'],
-            'tag_ids'           => ['nullable', 'array'],
-            'tag_ids.*'         => ['exists:tags,id'],
-            'new_tag_names'     => ['nullable', 'array', 'distinct'],
-            'new_tag_names.*'   => ['string', 'min:1', 'max:50'],
-            'featured_image_id' => ['nullable', 'exists:media,id'],
-            'comments_enabled'  => ['nullable', 'boolean'],
-            'featured'          => ['nullable', 'boolean'],
-            'meta_title'       => ['nullable', 'string', 'max:100'],
-            'meta_description' => ['nullable', 'string', 'max:300'],
-            'meta_keywords'    => ['nullable', 'string', 'max:255'],
-            'custom_js'        => ['nullable', 'string'],
-            'body_format'      => ['nullable', 'in:html,markdown'],
-            'use_block_editor' => ['nullable', 'boolean'],
-            'blocks'           => ['nullable', 'array'],
-        ]);
+        $validated = $request->validated();
 
         $tagIds      = $validated['tag_ids'] ?? [];
         $categoryIds = $validated['category_ids'] ?? [];
@@ -272,13 +224,9 @@ class PostController extends Controller
             ->with('status', 'Post deleted.');
     }
 
-    public function bulk(Request $request)
+    public function bulk(BulkPostRequest $request)
     {
-        $validated = $request->validate([
-            'action' => ['required', 'in:publish,draft,delete'],
-            'ids'    => ['required', 'array', 'min:1'],
-            'ids.*'  => ['integer', 'exists:posts,id'],
-        ]);
+        $validated = $request->validated();
         $posts = Post::whereIn('id', $validated['ids'])->get();
 
         // Authorize each post individually — abort immediately if any fail.

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreWebhookRequest;
+use App\Http\Requests\UpdateWebhookRequest;
 use App\Models\Webhook;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -16,30 +18,18 @@ class WebhookController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreWebhookRequest $request)
     {
-        $validated = $request->validate([
-            'url'       => ['required', 'url', 'max:500'],
-            'secret'    => ['nullable', 'string', 'max:255'],
-            'events'    => ['required', 'array', 'min:1'],
-            'events.*'  => ['string', 'in:post.published,post.updated,post.deleted,page.published,page.updated,page.deleted'],
-            'is_active' => ['boolean'],
-        ]);
+        $validated = $request->validated();
 
         Webhook::create($validated);
 
         return back()->with('status', 'Webhook created.');
     }
 
-    public function update(Request $request, Webhook $webhook)
+    public function update(UpdateWebhookRequest $request, Webhook $webhook)
     {
-        $validated = $request->validate([
-            'url'       => ['required', 'url', 'max:500'],
-            'secret'    => ['nullable', 'string', 'max:255'],
-            'events'    => ['required', 'array', 'min:1'],
-            'events.*'  => ['string', 'in:post.published,post.updated,post.deleted,page.published,page.updated,page.deleted'],
-            'is_active' => ['boolean'],
-        ]);
+        $validated = $request->validated();
 
         $webhook->update($validated);
 

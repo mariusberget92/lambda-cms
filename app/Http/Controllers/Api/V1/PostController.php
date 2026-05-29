@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\ListPostsRequest;
 use App\Models\Post;
 use App\Services\MarkdownService;
 use Illuminate\Http\JsonResponse;
@@ -10,14 +11,8 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(ListPostsRequest $request): JsonResponse
     {
-        $request->validate([
-            'per_page' => ['integer', 'min:1', 'max:100'],
-            'category' => ['nullable', 'string'],
-            'tag'      => ['nullable', 'string'],
-            'search'   => ['nullable', 'string', 'max:100'],
-        ]);
 
         $posts = Post::published()
             ->with(['author:id,name', 'categories:id,name,slug', 'tags:id,name,slug', 'featuredImage:id,path,disk,alt,width,height'])

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -33,14 +35,9 @@ class CategoryController extends Controller
         return Inertia::render('Categories/Form');
     }
 
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        $validated = $request->validate([
-            'name'        => ['required', 'string', 'max:100'],
-            'description' => ['nullable', 'string', 'max:500'],
-            'color'       => ['nullable', 'string', 'max:7', 'regex:/^#[0-9a-fA-F]{6}$/'],
-            'hue'         => ['nullable', 'integer', 'between:0,360'],
-        ]);
+        $validated = $request->validated();
 
         $validated['slug'] = Category::generateSlug($validated['name']);
 
@@ -65,14 +62,9 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function update(Request $request, Category $category)
+    public function update(UpdateCategoryRequest $request, Category $category)
     {
-        $validated = $request->validate([
-            'name'        => ['required', 'string', 'max:100'],
-            'description' => ['nullable', 'string', 'max:500'],
-            'color'       => ['nullable', 'string', 'max:7', 'regex:/^#[0-9a-fA-F]{6}$/'],
-            'hue'         => ['nullable', 'integer', 'between:0,360'],
-        ]);
+        $validated = $request->validated();
 
         $validated['slug'] = Category::generateSlug($validated['name'], $category->id);
 

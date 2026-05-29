@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BulkCommentRequest;
+use App\Http\Requests\ReplyCommentRequest;
+use App\Http\Requests\StoreCommentRequest;
 use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Http\RedirectResponse;
@@ -53,7 +56,7 @@ class CommentController extends Controller
     /**
      * Public — store a new comment (pending).
      */
-    public function store(Request $request, Post $post): RedirectResponse
+    public function store(StoreCommentRequest $request, Post $post): RedirectResponse
     {
         if (! $post->commentsOpen()) {
             abort(403, 'Comments are disabled.');
@@ -64,11 +67,7 @@ class CommentController extends Controller
             return back()->with('status', 'Your comment has been submitted and is awaiting moderation.');
         }
 
-        $validated = $request->validate([
-            'author_name'  => ['required', 'string', 'max:100'],
-            'author_email' => ['nullable', 'email', 'max:255'],
-            'body'         => ['required', 'string', 'max:5000'],
-        ]);
+        $validated = $request->validated();
 
         $comment = $post->comments()->create([
             'user_id'      => $request->user()?->id,
@@ -113,13 +112,11 @@ class CommentController extends Controller
     /**
      * Admin — reply to a comment, optionally notify the original commenter.
      */
-    public function reply(Request $request, Comment $comment): RedirectResponse
+    public function reply(ReplyCommentRequest $request, Comment $comment): RedirectResponse
     {
         abort_if($comment->parent_id !== null, 422, 'Cannot reply to a reply.');
 
-        $validated = $request->validate([
-            'body' => ['required', 'string', 'max:2000'],
-        ]);
+        $validated = $request->validated();
 
         $reply = Comment::create([
             'post_id'      => $comment->post_id,
@@ -144,13 +141,9 @@ class CommentController extends Controller
     /**
      * Admin — bulk approve / reject / delete.
      */
-    public function bulk(Request $request): RedirectResponse
+    public function bulk(BulkCommentRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'action' => ['required', 'in:approve,reject,delete'],
-            'ids'    => ['required', 'array', 'min:1'],
-            'ids.*'  => ['integer', 'exists:comments,id'],
-        ]);
+        $validated = $request->validated();
 
         $comments = Comment::whereIn('id', $validated['ids']);
 

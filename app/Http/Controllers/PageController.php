@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePageRequest;
+use App\Http\Requests\UpdatePageRequest;
 use App\Models\Autosave;
 use App\Models\Category;
 use App\Models\Page;
 use App\Models\Tag;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class PageController extends Controller
@@ -37,18 +38,9 @@ class PageController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StorePageRequest $request)
     {
-        $validated = $request->validate([
-            'title'            => ['required', 'string', 'max:255'],
-            'slug'             => ['required', 'string', 'max:255', 'unique:pages,slug'],
-            'status'           => ['required', 'in:published,draft'],
-            'blocks'           => ['nullable', 'array'],
-            'meta_title'       => ['nullable', 'string', 'max:100'],
-            'meta_description' => ['nullable', 'string', 'max:300'],
-            'meta_keywords'    => ['nullable', 'string', 'max:255'],
-            'custom_js'        => ['nullable', 'string'],
-        ]);
+        $validated = $request->validated();
 
         Page::create([
             ...$validated,
@@ -84,18 +76,9 @@ class PageController extends Controller
         ]);
     }
 
-    public function update(Request $request, Page $page)
+    public function update(UpdatePageRequest $request, Page $page)
     {
-        $validated = $request->validate([
-            'title'            => ['required', 'string', 'max:255'],
-            'slug'             => ['required', 'string', 'max:255', Rule::unique('pages', 'slug')->ignore($page->id)],
-            'status'           => ['required', 'in:published,draft'],
-            'blocks'           => ['nullable', 'array'],
-            'meta_title'       => ['nullable', 'string', 'max:100'],
-            'meta_description' => ['nullable', 'string', 'max:300'],
-            'meta_keywords'    => ['nullable', 'string', 'max:255'],
-            'custom_js'        => ['nullable', 'string'],
-        ]);
+        $validated = $request->validated();
 
         $page->update($validated);
 
