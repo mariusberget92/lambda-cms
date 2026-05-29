@@ -29,7 +29,6 @@ use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\BanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PreviewController;
-use App\Http\Controllers\NavigationController;
 use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\ImportController;
@@ -174,12 +173,6 @@ Route::middleware('installed')->group(function () {
         Route::get('/settings',                          [SettingsController::class, 'index'])->name('settings.index');
         Route::put('/settings/{group}',                  [SettingsController::class, 'update'])->name('settings.update');
         Route::post('/settings/test-email',              [SettingsController::class, 'testEmail'])->name('settings.test-email');
-        Route::get('/navigation',                      [NavigationController::class, 'index'])->name('navigation.index');
-        Route::post('/navigation',                     [NavigationController::class, 'store'])->name('navigation.store');
-        Route::put('/navigation/{navItem}',            [NavigationController::class, 'update'])->name('navigation.update');
-        Route::delete('/navigation/{navItem}',         [NavigationController::class, 'destroy'])->name('navigation.destroy');
-        Route::post('/navigation/reorder',             [NavigationController::class, 'reorder'])->name('navigation.reorder');
-
         Route::get('/webhooks',                    [WebhookController::class, 'index'])->name('webhooks.index');
         Route::post('/webhooks',                   [WebhookController::class, 'store'])->name('webhooks.store');
         Route::put('/webhooks/{webhook}',          [WebhookController::class, 'update'])->name('webhooks.update');

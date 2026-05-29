@@ -42,16 +42,55 @@
       </button>
     </div>
 
-    <p class="text-[11px] text-muted-foreground/60 leading-relaxed pt-1">
-      Nav links are managed under <strong>Settings → Navigation</strong>.
-    </p>
+    <!-- Nav links -->
+    <div>
+      <div class="flex items-center justify-between mb-2">
+        <label class="text-xs font-medium text-muted-foreground">Nav links</label>
+        <button type="button" class="text-[11px] text-primary hover:underline" @click="addLink">+ Add link</button>
+      </div>
+      <div class="space-y-1.5">
+        <div v-for="(link, i) in links" :key="i" class="flex items-center gap-1.5">
+          <input
+            :value="link.label"
+            type="text"
+            placeholder="Label"
+            class="w-24 rounded border bg-background px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-ring"
+            @input="updateLink(i, 'label', $event.target.value)"
+          />
+          <input
+            :value="link.url"
+            type="text"
+            placeholder="URL or /path"
+            class="flex-1 rounded border bg-background px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-ring"
+            @input="updateLink(i, 'url', $event.target.value)"
+          />
+          <button type="button" class="text-muted-foreground hover:text-destructive text-xs shrink-0" @click="removeLink(i)">✕</button>
+        </div>
+      </div>
+      <p v-if="!links.length" class="text-xs text-muted-foreground/60 italic mt-1">No links yet.</p>
+    </div>
+
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue'
+
 const props = defineProps({
   block: { type: Object, required: true },
   tab:   { type: String, default: null },
 })
 const emit = defineEmits(['update'])
+
+const links = computed(() => props.block.data?.links ?? [])
+
+function addLink() {
+  emit('update', { id: props.block.id, data: { links: [...links.value, { label: '', url: '' }] } })
+}
+function removeLink(i) {
+  emit('update', { id: props.block.id, data: { links: links.value.filter((_, j) => j !== i) } })
+}
+function updateLink(i, key, val) {
+  emit('update', { id: props.block.id, data: { links: links.value.map((l, j) => j === i ? { ...l, [key]: val } : l) } })
+}
 </script>

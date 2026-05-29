@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Models\Comment;
-use App\Models\NavItem;
 use App\Models\Setting;
 use App\Models\Template;
 use Illuminate\Http\Request;
@@ -48,16 +47,6 @@ class HandleInertiaRequests extends Middleware
                 ->toArray(),
             'headerBlocks' => fn () => Template::activeFor('header')?->blocks ?? [],
             'footerBlocks' => fn () => Template::activeFor('footer')?->blocks ?? [],
-            'navItems' => fn () => NavItem::with('page:id,slug')
-                ->orderBy('sort_order')
-                ->get()
-                ->map(fn ($item) => [
-                    'label' => $item->label,
-                    'url'   => $item->getResolvedUrl(),
-                ])
-                ->filter(fn ($item) => $item['url'] !== null)
-                ->values()
-                ->toArray(),
         ]);
     }
 }

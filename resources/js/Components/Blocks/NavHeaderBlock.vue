@@ -7,7 +7,7 @@ const props = defineProps({ block: { type: Object, required: true } })
 
 const page       = usePage()
 const appName    = computed(() => props.block.data?.logoText || page.props.appName || 'Blog')
-const navItems   = computed(() => page.props.navItems ?? [])
+const navItems   = computed(() => props.block.data?.links ?? [])
 const showSearch = computed(() => props.block.data?.showSearch !== false)
 const isSticky   = computed(() => props.block.data?.sticky !== false)
 
