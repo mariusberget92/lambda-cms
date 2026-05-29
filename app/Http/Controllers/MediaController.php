@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BulkDestroyMediaRequest;
+use App\Http\Requests\ReplaceMediaRequest;
+use App\Http\Requests\StoreMediaRequest;
+use App\Http\Requests\UpdateMediaRequest;
 use App\Models\Media;
 use App\Models\Post;
 use Illuminate\Http\JsonResponse;
@@ -57,24 +61,8 @@ class MediaController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreMediaRequest $request): JsonResponse
     {
-        // Force JSON response for validation errors (upload endpoint is always JSON)
-        $request->headers->set('Accept', 'application/json');
-
-        $maxKb = (int) (config('media.max_upload_mb', 10) * 1024);
-
-        $allMimes = collect(config('media.allowed_mimes', []))->flatten()->implode(',');
-
-        $request->validate([
-            'file' => [
-                'required',
-                'file',
-                "max:{$maxKb}",
-                "mimetypes:{$allMimes}",
-            ],
-        ]);
-
         $file     = $request->file('file');
         $mimeType = $file->getMimeType();
         $type     = Media::typeFromMime($mimeType);
@@ -129,16 +117,13 @@ class MediaController extends Controller
         return response()->json($this->toArray($media));
     }
 
-    public function update(Request $request, Media $media): JsonResponse
+    public function update(UpdateMediaRequest $request, Media $media): JsonResponse
     {
         if ($media->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
             abort(403);
         }
 
-        $validated = $request->validate([
-            'alt'         => ['nullable', 'string', 'max:255'],
-            'description' => ['nullable', 'string', 'max:2000'],
-        ]);
+        $validated = $request->validated();
 
         $media->update($validated);
 
@@ -170,7 +155,7 @@ class MediaController extends Controller
         return response()->json(['posts' => $posts]);
     }
 
-    public function replace(Request $request, Media $media): JsonResponse
+    public function replace(ReplaceMediaRequest $request, Media $media): JsonResponse
     {
         if ($media->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
             abort(403);
@@ -179,12 +164,6 @@ class MediaController extends Controller
         if ($media->type !== 'image') {
             abort(422, 'Only image files can be edited.');
         }
-
-        $maxKb = (int) (config('media.max_upload_mb', 10) * 1024);
-
-        $request->validate([
-            'file' => ['required', 'file', "max:{$maxKb}", 'mimetypes:image/jpeg,image/png,image/webp,image/gif'],
-        ]);
 
         $file     = $request->file('file');
         $mimeType = $file->getMimeType();
@@ -216,12 +195,8 @@ class MediaController extends Controller
         return response()->json($this->toArray($media->fresh()));
     }
 
-    public function bulkDestroy(Request $request): JsonResponse
+    public function bulkDestroy(BulkDestroyMediaRequest $request): JsonResponse
     {
-        $request->validate([
-            'ids'   => ['required', 'array'],
-            'ids.*' => ['integer'],
-        ]);
 
         $query = Media::whereIn('id', $request->input('ids'));
 

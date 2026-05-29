@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\ForgotPasswordRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
-use App\Http\Controllers\Controller;
 use Inertia\Inertia;
 
 class ForgotPasswordController extends Controller
@@ -14,12 +15,8 @@ class ForgotPasswordController extends Controller
         return Inertia::render("Auth/ForgotPassword");
     }
 
-    public function send(Request $request)
+    public function send(ForgotPasswordRequest $request)
     {
-        $request->validate([
-            "email" => ["required", "email"],
-        ]);
-
         $status = Password::sendResetLink($request->only("email"));
 
         if ($status === Password::RESET_LINK_SENT) {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\TwoFactorRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -33,9 +34,8 @@ class TwoFactorController extends Controller
         return response()->json(['qr_uri' => $qrUri, 'secret' => $secret]);
     }
 
-    public function confirm(Request $request): JsonResponse
+    public function confirm(TwoFactorRequest $request): JsonResponse
     {
-        $request->validate(['code' => ['required', 'string']]);
 
         $user   = $request->user();
         $secret = $user->two_factor_secret ? decrypt($user->two_factor_secret) : null;

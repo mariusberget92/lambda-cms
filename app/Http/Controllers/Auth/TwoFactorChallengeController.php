@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\TwoFactorRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +28,7 @@ class TwoFactorChallengeController extends Controller
         return Inertia::render('Auth/TwoFactorChallenge');
     }
 
-    public function verify(Request $request)
+    public function verify(TwoFactorRequest $request)
     {
         $userId = $request->session()->get('two_factor_auth_user_id');
 
@@ -35,8 +36,6 @@ class TwoFactorChallengeController extends Controller
             $request->session()->forget(['two_factor_auth_user_id', 'two_factor_auth_remember']);
             return redirect()->route('auth.login');
         }
-
-        $request->validate(['code' => ['required', 'string']]);
 
         $code     = trim($request->input('code'));
         $verified = false;

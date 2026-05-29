@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BanRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,7 @@ class BanController extends Controller
         'permanent' => null,
     ];
 
-    public function ban(Request $request, User $user): \Illuminate\Http\RedirectResponse
+    public function ban(BanRequest $request, User $user): \Illuminate\Http\RedirectResponse
     {
         // Guard: cannot ban yourself or another admin
         if ($user->id === $request->user()->id || $user->hasRole('administrator')) {
@@ -24,10 +25,7 @@ class BanController extends Controller
                 ->with('error', 'This user cannot be banned.');
         }
 
-        $validated = $request->validate([
-            'reason'   => ['required', 'string', 'max:255'],
-            'duration' => ['required', 'string', 'in:' . implode(',', array_keys(self::DURATIONS))],
-        ]);
+        $validated = $request->validated();
 
         $bannedUntil = null;
         if ($validated['duration'] !== 'permanent') {

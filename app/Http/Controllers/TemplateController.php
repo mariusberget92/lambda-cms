@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTemplateRequest;
+use App\Http\Requests\TemplateTypeRequest;
+use App\Http\Requests\UpdateTemplateRequest;
 use App\Models\Template;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -27,25 +30,16 @@ class TemplateController extends Controller
         return Inertia::render('Templates/Index', ['templates' => $templates]);
     }
 
-    public function create(Request $request)
+    public function create(TemplateTypeRequest $request)
     {
-        $request->validate(['type' => ['required', 'in:blog-index,single-post,archive,search-results,partial,header,footer']]);
+        $request->validated();
 
         return Inertia::render('Templates/Create', ['type' => $request->type]);
     }
 
-    public function store(Request $request)
+    public function store(StoreTemplateRequest $request)
     {
-        $validated = $request->validate([
-            'title'            => ['required', 'string', 'max:255'],
-            'type'             => ['required', 'in:blog-index,single-post,archive,search-results,partial,header,footer'],
-            'loop_source'      => ['nullable', 'in:posts,categories,tags,pages'],
-            'status'           => ['required', 'in:draft,published'],
-            'blocks'           => ['nullable', 'array'],
-            'meta_title'       => ['nullable', 'string', 'max:100'],
-            'meta_description' => ['nullable', 'string', 'max:300'],
-            'meta_keywords'    => ['nullable', 'string', 'max:255'],
-        ]);
+        $validated = $request->validated();
 
         if ($validated['status'] === 'published' && $validated['type'] !== 'partial') {
             Template::where('type', $validated['type'])
@@ -86,22 +80,13 @@ class TemplateController extends Controller
         ]);
     }
 
-    public function update(Request $request, Template $template)
+    public function update(UpdateTemplateRequest $request, Template $template)
     {
         if ($template->user_id !== $request->user()->id && !$request->user()->hasRole('administrator')) {
             abort(403);
         }
 
-        $validated = $request->validate([
-            'title'            => ['required', 'string', 'max:255'],
-            'type'             => ['required', 'in:blog-index,single-post,archive,search-results,partial,header,footer'],
-            'loop_source'      => ['nullable', 'in:posts,categories,tags,pages'],
-            'status'           => ['required', 'in:draft,published'],
-            'blocks'           => ['nullable', 'array'],
-            'meta_title'       => ['nullable', 'string', 'max:100'],
-            'meta_description' => ['nullable', 'string', 'max:300'],
-            'meta_keywords'    => ['nullable', 'string', 'max:255'],
-        ]);
+        $validated = $request->validated();
 
         if ($validated['status'] === 'published' && $validated['type'] !== 'partial') {
             Template::where('type', $validated['type'])

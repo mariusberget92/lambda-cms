@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTagRequest;
+use App\Http\Requests\UpdateTagRequest;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -30,11 +32,9 @@ class TagController extends Controller
         return Inertia::render('Tags/Form');
     }
 
-    public function store(Request $request)
+    public function store(StoreTagRequest $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:60'],
-        ]);
+        $validated = $request->validated();
 
         $validated['slug'] = Tag::generateSlug($validated['name']);
 
@@ -56,11 +56,9 @@ class TagController extends Controller
         ]);
     }
 
-    public function update(Request $request, Tag $tag)
+    public function update(UpdateTagRequest $request, Tag $tag)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:60'],
-        ]);
+        $validated = $request->validated();
 
         $validated['slug'] = Tag::generateSlug($validated['name'], $tag->id);
 

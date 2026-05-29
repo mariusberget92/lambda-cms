@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AutosaveRequest;
 use App\Models\Autosave;
 use App\Models\Page;
 use App\Models\Post;
@@ -11,13 +12,11 @@ use Illuminate\Http\Request;
 
 class AutosaveController extends Controller
 {
-    public function storePost(Request $request, Post $post): JsonResponse
+    public function storePost(AutosaveRequest $request, Post $post): JsonResponse
     {
         if ($post->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
             abort(403);
         }
-
-        $request->validate(['payload' => ['required', 'array']]);
 
         Autosave::updateOrCreate(
             [
@@ -31,13 +30,11 @@ class AutosaveController extends Controller
         return response()->json(['saved_at' => now()->format('H:i')]);
     }
 
-    public function storePage(Request $request, Page $page): JsonResponse
+    public function storePage(AutosaveRequest $request, Page $page): JsonResponse
     {
         if ($page->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
             abort(403);
         }
-
-        $request->validate(['payload' => ['required', 'array']]);
 
         Autosave::updateOrCreate(
             [
@@ -81,13 +78,11 @@ class AutosaveController extends Controller
         return response()->json(['ok' => true]);
     }
 
-    public function storeTemplate(Request $request, Template $template): JsonResponse
+    public function storeTemplate(AutosaveRequest $request, Template $template): JsonResponse
     {
         if ($template->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
             abort(403);
         }
-
-        $request->validate(['payload' => ['required', 'array']]);
 
         Autosave::updateOrCreate(
             [

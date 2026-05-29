@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ExportDownloadRequest;
 use App\Models\Category;
 use App\Models\Media;
 use App\Models\Post;
@@ -26,16 +27,10 @@ class ExportController extends Controller
         ]);
     }
 
-    public function download(Request $request)
+    public function download(ExportDownloadRequest $request)
     {
-        $request->validate([
-            'entities'            => 'required|array|min:1',
-            'entities.*'          => 'in:posts,categories,tags,media,templates',
-            'include_media_files' => 'nullable|boolean',
-        ]);
-
-        $entities           = $request->input('entities', []);
-        $includeMediaFiles  = $request->boolean('include_media_files');
+        $entities          = $request->validated('entities', []);
+        $includeMediaFiles = $request->boolean('include_media_files');
 
         $tmpPath = (new ExportService())->generate($entities, $includeMediaFiles);
         $filename = 'lambda-cms-export-' . now()->format('Y-m-d-His') . '.zip';
