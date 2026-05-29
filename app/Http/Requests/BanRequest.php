@@ -14,7 +14,7 @@ class BanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'reason'   => ['required', 'string', 'max:255'],
+            'reason' => ['required', 'string', 'max:255'],
             'duration' => ['required', 'string', 'in:1h,6h,24h,7d,30d,permanent'],
         ];
     }

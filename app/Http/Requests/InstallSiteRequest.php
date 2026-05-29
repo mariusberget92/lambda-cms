@@ -15,7 +15,7 @@ class InstallSiteRequest extends FormRequest
     {
         return [
             'site_name' => ['required', 'string', 'max:255'],
-            'site_url'  => ['required', 'url', 'max:255'],
+            'site_url' => ['required', 'url', 'max:255'],
         ];
     }
 }

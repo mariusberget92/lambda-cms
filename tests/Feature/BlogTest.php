@@ -4,8 +4,9 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\Setting;
 use App\Models\Tag;
-use App\Models\User;
+use App\Services\SettingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -35,9 +36,9 @@ class BlogTest extends TestCase
         $response->assertOk();
         $response->assertInertia(
             fn ($page) => $page
-                ->component('Blog/Index')
-                ->has('posts.data', 1)
-                ->where('posts.data.0.title', 'A Published Post')
+                ->component('Blog/TemplatePage')
+                ->has('postContext.posts.data', 1)
+                ->where('postContext.posts.data.0.title', 'A Published Post')
         );
     }
 
@@ -46,7 +47,7 @@ class BlogTest extends TestCase
         Post::factory()->draft()->create(['title' => 'A Draft Post']);
 
         $this->get('/')->assertInertia(
-            fn ($page) => $page->has('posts.data', 0)
+            fn ($page) => $page->has('postContext.posts.data', 0)
         );
     }
 
@@ -54,28 +55,26 @@ class BlogTest extends TestCase
     {
         $this->get('/')->assertInertia(
             fn ($page) => $page
-                ->has('sidebar')
-                ->has('sidebar.categories')
-                ->has('sidebar.tags')
-                ->has('sidebar.recentPosts')
+                ->has('postContext')
+                ->has('seo')
         );
     }
 
     public function test_blog_index_orders_posts_by_published_at_desc(): void
     {
         $older = Post::factory()->published()->create([
-            'title'        => 'Older Post',
+            'title' => 'Older Post',
             'published_at' => now()->subDays(5),
         ]);
         $newer = Post::factory()->published()->create([
-            'title'        => 'Newer Post',
+            'title' => 'Newer Post',
             'published_at' => now()->subDay(),
         ]);
 
         $this->get('/')->assertInertia(
             fn ($page) => $page
-                ->where('posts.data.0.title', 'Newer Post')
-                ->where('posts.data.1.title', 'Older Post')
+                ->where('postContext.posts.data.0.title', 'Newer Post')
+                ->where('postContext.posts.data.1.title', 'Older Post')
         );
     }
 
@@ -85,14 +84,14 @@ class BlogTest extends TestCase
     {
         $post = Post::factory()->published()->create([
             'title' => 'My Great Post',
-            'slug'  => 'my-great-post',
+            'slug' => 'my-great-post',
         ]);
 
         $this->get('/blog/my-great-post')->assertInertia(
             fn ($page) => $page
-                ->component('Blog/Show')
-                ->where('post.title', 'My Great Post')
-                ->where('post.slug', 'my-great-post')
+                ->component('Blog/TemplatePage')
+                ->where('postContext.title', 'My Great Post')
+                ->where('postContext.slug', 'my-great-post')
         );
     }
 
@@ -116,7 +115,7 @@ class BlogTest extends TestCase
         ]);
 
         $this->get('/blog/body-post')->assertInertia(
-            fn ($page) => $page->where('post.body', '<p>Hello World</p>')
+            fn ($page) => $page->where('postContext.body', '<p>Hello World</p>')
         );
     }
 
@@ -125,25 +124,25 @@ class BlogTest extends TestCase
         $post = Post::factory()->published()->create(['slug' => 'sidebar-post']);
 
         $this->get('/blog/sidebar-post')->assertInertia(
-            fn ($page) => $page->has('sidebar')
+            fn ($page) => $page->has('postContext')
         );
     }
 
     // ── SEO helper ───────────────────────────────────────────────────────────
 
     private function seedSeoSettings(
-        string $separator      = ' | ',
-        string $defaultDesc    = '',
+        string $separator = ' | ',
+        string $defaultDesc = '',
         string $defaultOgImage = '',
-        string $siteName       = 'Test Site'
+        string $siteName = 'Test Site'
     ): void {
-        \App\Models\Setting::insert([
+        Setting::insert([
             ['group' => 'site', 'key' => 'site.name',                'value' => $siteName,       'type' => 'string',  'created_at' => now(), 'updated_at' => now()],
             ['group' => 'seo',  'key' => 'seo.title_separator',      'value' => $separator,      'type' => 'string',  'created_at' => now(), 'updated_at' => now()],
             ['group' => 'seo',  'key' => 'seo.default_description',  'value' => $defaultDesc,    'type' => 'string',  'created_at' => now(), 'updated_at' => now()],
             ['group' => 'seo',  'key' => 'seo.default_og_image_url', 'value' => $defaultOgImage, 'type' => 'string',  'created_at' => now(), 'updated_at' => now()],
         ]);
-        app(\App\Services\SettingService::class)->bust();
+        app(SettingService::class)->bust();
     }
 
     // ── SEO prop: show ────────────────────────────────────────────────────────
@@ -152,7 +151,7 @@ class BlogTest extends TestCase
     {
         $this->seedSeoSettings();
         $post = Post::factory()->published()->create([
-            'title'      => 'Post Title',
+            'title' => 'Post Title',
             'meta_title' => 'Custom SEO Title',
         ]);
 
@@ -166,7 +165,7 @@ class BlogTest extends TestCase
     {
         $this->seedSeoSettings();
         $post = Post::factory()->published()->create([
-            'title'      => 'Post Title',
+            'title' => 'Post Title',
             'meta_title' => null,
         ]);
 
@@ -180,7 +179,7 @@ class BlogTest extends TestCase
     {
         $this->seedSeoSettings();
         $post = Post::factory()->published()->create([
-            'excerpt'          => 'Post excerpt',
+            'excerpt' => 'Post excerpt',
             'meta_description' => 'Custom meta desc',
         ]);
 
@@ -194,7 +193,7 @@ class BlogTest extends TestCase
     {
         $this->seedSeoSettings();
         $post = Post::factory()->published()->create([
-            'excerpt'          => 'Post excerpt',
+            'excerpt' => 'Post excerpt',
             'meta_description' => null,
         ]);
 
@@ -208,7 +207,7 @@ class BlogTest extends TestCase
     {
         $this->seedSeoSettings(defaultDesc: 'Site-wide default desc');
         $post = Post::factory()->published()->create([
-            'excerpt'          => null,
+            'excerpt' => null,
             'meta_description' => null,
         ]);
 
@@ -289,7 +288,7 @@ class BlogTest extends TestCase
 
         $this->get('/')
             ->assertInertia(fn ($page) => $page
-                ->where('seo.canonical', url('/blog'))
+                ->where('seo.canonical', url('/'))
             );
     }
 
@@ -305,7 +304,7 @@ class BlogTest extends TestCase
 
     public function test_blog_show_uses_post_meta_keywords_when_set(): void
     {
-        \App\Models\Setting::insert([
+        Setting::insert([
             ['group' => 'seo',  'key' => 'seo.title_separator',      'value' => ' | ',          'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
             ['group' => 'seo',  'key' => 'seo.default_keywords',     'value' => 'global, kw',   'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
             ['group' => 'site', 'key' => 'site.name',                'value' => 'Lambda CMS',   'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
@@ -321,7 +320,7 @@ class BlogTest extends TestCase
 
     public function test_blog_show_falls_back_to_default_keywords(): void
     {
-        \App\Models\Setting::insert([
+        Setting::insert([
             ['group' => 'seo',  'key' => 'seo.title_separator',      'value' => ' | ',          'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
             ['group' => 'seo',  'key' => 'seo.default_keywords',     'value' => 'global, kw',   'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
             ['group' => 'site', 'key' => 'site.name',                'value' => 'Lambda CMS',   'type' => 'string', 'created_at' => now(), 'updated_at' => now()],
@@ -349,14 +348,14 @@ class BlogTest extends TestCase
         $category = Category::factory()->create();
 
         $this->get("/blog/category/{$category->slug}")->assertInertia(
-            fn ($page) => $page->component('Blog/Archive')
+            fn ($page) => $page->component('Blog/TemplatePage')
         );
     }
 
     public function test_category_archive_shows_only_posts_in_that_category(): void
     {
         $category = Category::factory()->create();
-        $other    = Category::factory()->create();
+        $other = Category::factory()->create();
 
         $included = Post::factory()->published()->create(['title' => 'Included Post']);
         $excluded = Post::factory()->published()->create(['title' => 'Excluded Post']);
@@ -366,19 +365,19 @@ class BlogTest extends TestCase
 
         $this->get("/blog/category/{$category->slug}")->assertInertia(
             fn ($page) => $page
-                ->has('posts.data', 1)
-                ->where('posts.data.0.title', 'Included Post')
+                ->has('archiveContext.posts.data', 1)
+                ->where('archiveContext.posts.data.0.title', 'Included Post')
         );
     }
 
     public function test_category_archive_excludes_draft_posts(): void
     {
         $category = Category::factory()->create();
-        $post     = Post::factory()->draft()->create();
+        $post = Post::factory()->draft()->create();
         $post->categories()->attach($category);
 
         $this->get("/blog/category/{$category->slug}")->assertInertia(
-            fn ($page) => $page->has('posts.data', 0)
+            fn ($page) => $page->has('archiveContext.posts.data', 0)
         );
     }
 
@@ -390,15 +389,15 @@ class BlogTest extends TestCase
     public function test_category_archive_heading_contains_correct_data(): void
     {
         $category = Category::factory()->create(['name' => 'Laravel', 'slug' => 'laravel']);
-        $post     = Post::factory()->published()->create();
+        $post = Post::factory()->published()->create();
         $post->categories()->attach($category);
 
         $this->get("/blog/category/{$category->slug}")->assertInertia(
             fn ($page) => $page
-                ->where('heading.type', 'category')
-                ->where('heading.name', 'Laravel')
-                ->where('heading.slug', 'laravel')
-                ->where('heading.postsCount', 1)
+                ->where('archiveContext.type', 'category')
+                ->where('archiveContext.name', 'Laravel')
+                ->where('archiveContext.slug', 'laravel')
+                ->where('archiveContext.postsCount', 1)
         );
     }
 
@@ -417,10 +416,8 @@ class BlogTest extends TestCase
 
         $this->get("/blog/category/{$category->slug}")->assertInertia(
             fn ($page) => $page
-                ->has('sidebar')
-                ->has('sidebar.categories')
-                ->has('sidebar.tags')
-                ->has('sidebar.recentPosts')
+                ->has('archiveContext')
+                ->has('seo')
         );
     }
 
@@ -438,13 +435,13 @@ class BlogTest extends TestCase
         $tag = Tag::factory()->create();
 
         $this->get("/blog/tag/{$tag->slug}")->assertInertia(
-            fn ($page) => $page->component('Blog/Archive')
+            fn ($page) => $page->component('Blog/TemplatePage')
         );
     }
 
     public function test_tag_archive_shows_only_posts_with_that_tag(): void
     {
-        $tag   = Tag::factory()->create();
+        $tag = Tag::factory()->create();
         $other = Tag::factory()->create();
 
         $included = Post::factory()->published()->create(['title' => 'Tagged Post']);
@@ -455,19 +452,19 @@ class BlogTest extends TestCase
 
         $this->get("/blog/tag/{$tag->slug}")->assertInertia(
             fn ($page) => $page
-                ->has('posts.data', 1)
-                ->where('posts.data.0.title', 'Tagged Post')
+                ->has('archiveContext.posts.data', 1)
+                ->where('archiveContext.posts.data.0.title', 'Tagged Post')
         );
     }
 
     public function test_tag_archive_excludes_draft_posts(): void
     {
-        $tag  = Tag::factory()->create();
+        $tag = Tag::factory()->create();
         $post = Post::factory()->draft()->create();
         $post->tags()->attach($tag);
 
         $this->get("/blog/tag/{$tag->slug}")->assertInertia(
-            fn ($page) => $page->has('posts.data', 0)
+            fn ($page) => $page->has('archiveContext.posts.data', 0)
         );
     }
 
@@ -478,16 +475,16 @@ class BlogTest extends TestCase
 
     public function test_tag_archive_heading_contains_correct_data(): void
     {
-        $tag  = Tag::factory()->create(['name' => 'PHP', 'slug' => 'php']);
+        $tag = Tag::factory()->create(['name' => 'PHP', 'slug' => 'php']);
         $post = Post::factory()->published()->create();
         $post->tags()->attach($tag);
 
         $this->get("/blog/tag/{$tag->slug}")->assertInertia(
             fn ($page) => $page
-                ->where('heading.type', 'tag')
-                ->where('heading.name', 'PHP')
-                ->where('heading.slug', 'php')
-                ->where('heading.postsCount', 1)
+                ->where('archiveContext.type', 'tag')
+                ->where('archiveContext.name', 'PHP')
+                ->where('archiveContext.slug', 'php')
+                ->where('archiveContext.postsCount', 1)
         );
     }
 
@@ -504,7 +501,7 @@ class BlogTest extends TestCase
 
     public function test_single_post_page_renders_when_author_is_deleted(): void
     {
-        $post = \App\Models\Post::factory()->published()->create();
+        $post = Post::factory()->published()->create();
         // Simulate deleted author by nullifying user_id directly
         DB::table('posts')
             ->where('id', $post->id)

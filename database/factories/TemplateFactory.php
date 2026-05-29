@@ -14,10 +14,10 @@ class TemplateFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'title'   => $this->faker->sentence(3),
-            'type'    => $this->faker->randomElement(['blog-index', 'single-post', 'archive', 'search-results']),
-            'status'  => 'draft',
-            'blocks'  => [],
+            'title' => $this->faker->sentence(3),
+            'type' => $this->faker->randomElement(['blog-index', 'single-post', 'archive', 'search-results']),
+            'status' => 'draft',
+            'blocks' => [],
         ];
     }
 

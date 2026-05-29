@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
@@ -23,7 +21,7 @@ class LoginController extends Controller
     {
         $credentials = $request->validated();
 
-        $throttleKey = Str::lower($request->input('email')) . '|' . $request->ip();
+        $throttleKey = Str::lower($request->input('email')).'|'.$request->ip();
 
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
             $seconds = RateLimiter::availableIn($throttleKey);
@@ -42,21 +40,23 @@ class LoginController extends Controller
                 $request->session()->regenerateToken();
 
                 return back()->withErrors([
-                    'email' => 'Your account has been suspended: ' . ($user->ban_reason ?? 'no reason given'),
+                    'email' => 'Your account has been suspended: '.($user->ban_reason ?? 'no reason given'),
                 ])->onlyInput('email');
             }
 
             if ($user->hasTwoFactorEnabled()) {
-                $userId   = $user->id;
+                $userId = $user->id;
                 $remember = $request->boolean('remember');
                 Auth::logout();
                 $request->session()->put('two_factor_auth_user_id', $userId);
                 $request->session()->put('two_factor_auth_remember', $remember);
+
                 return redirect()->route('two-factor.challenge');
             }
 
             RateLimiter::clear($throttleKey);
             $request->session()->regenerate();
+
             return redirect()->intended(route('dashboard'));
         }
 

@@ -80,10 +80,9 @@ class PasswordResetTest extends TestCase
     {
         $this->get('/reset-password/some-token?email=user@example.com')
             ->assertOk()
-            ->assertInertia(fn ($page) =>
-                $page->component('Auth/ResetPassword')
-                     ->where('token', 'some-token')
-                     ->where('email', 'user@example.com')
+            ->assertInertia(fn ($page) => $page->component('Auth/ResetPassword')
+                ->where('token', 'some-token')
+                ->where('email', 'user@example.com')
             );
     }
 
@@ -108,14 +107,15 @@ class PasswordResetTest extends TestCase
         $token = null;
         Notification::assertSentTo($user, ResetPassword::class, function ($notification) use (&$token) {
             $token = $notification->token;
+
             return true;
         });
 
         // Use the token to reset the password
         $this->post('/reset-password', [
-            'token'                 => $token,
-            'email'                 => $user->email,
-            'password'              => 'newpassword123',
+            'token' => $token,
+            'email' => $user->email,
+            'password' => 'newpassword123',
             'password_confirmation' => 'newpassword123',
         ])->assertRedirect(route('login'));
 
@@ -128,9 +128,9 @@ class PasswordResetTest extends TestCase
         $user = User::factory()->create();
 
         $this->post('/reset-password', [
-            'token'                 => 'invalid-token',
-            'email'                 => $user->email,
-            'password'              => 'newpassword123',
+            'token' => 'invalid-token',
+            'email' => $user->email,
+            'password' => 'newpassword123',
             'password_confirmation' => 'newpassword123',
         ])->assertSessionHasErrors('email');
     }
@@ -138,9 +138,9 @@ class PasswordResetTest extends TestCase
     public function test_reset_fails_with_mismatched_password_confirmation(): void
     {
         $this->post('/reset-password', [
-            'token'                 => 'some-token',
-            'email'                 => 'user@example.com',
-            'password'              => 'newpassword123',
+            'token' => 'some-token',
+            'email' => 'user@example.com',
+            'password' => 'newpassword123',
             'password_confirmation' => 'differentpassword',
         ])->assertSessionHasErrors('password');
     }
@@ -148,9 +148,9 @@ class PasswordResetTest extends TestCase
     public function test_reset_fails_when_password_is_too_short(): void
     {
         $this->post('/reset-password', [
-            'token'                 => 'some-token',
-            'email'                 => 'user@example.com',
-            'password'              => 'short',
+            'token' => 'some-token',
+            'email' => 'user@example.com',
+            'password' => 'short',
             'password_confirmation' => 'short',
         ])->assertSessionHasErrors('password');
     }
@@ -172,18 +172,19 @@ class PasswordResetTest extends TestCase
         $token = null;
         Notification::assertSentTo($user, ResetPassword::class, function ($notification) use (&$token) {
             $token = $notification->token;
+
             return true;
         });
 
         $this->post('/reset-password', [
-            'token'                 => $token,
-            'email'                 => $user->email,
-            'password'              => 'brandnewpass1',
+            'token' => $token,
+            'email' => $user->email,
+            'password' => 'brandnewpass1',
             'password_confirmation' => 'brandnewpass1',
         ]);
 
         $this->post('/login', [
-            'email'    => $user->email,
+            'email' => $user->email,
             'password' => 'brandnewpass1',
         ])->assertRedirect(route('dashboard'));
 
@@ -201,22 +202,23 @@ class PasswordResetTest extends TestCase
         $token = null;
         Notification::assertSentTo($user, ResetPassword::class, function ($notification) use (&$token) {
             $token = $notification->token;
+
             return true;
         });
 
         // First reset — should succeed
         $this->post('/reset-password', [
-            'token'                 => $token,
-            'email'                 => $user->email,
-            'password'              => 'newpassword123',
+            'token' => $token,
+            'email' => $user->email,
+            'password' => 'newpassword123',
             'password_confirmation' => 'newpassword123',
         ]);
 
         // Second reset with same token — should fail
         $this->post('/reset-password', [
-            'token'                 => $token,
-            'email'                 => $user->email,
-            'password'              => 'anotherpassword',
+            'token' => $token,
+            'email' => $user->email,
+            'password' => 'anotherpassword',
             'password_confirmation' => 'anotherpassword',
         ])->assertSessionHasErrors('email');
     }

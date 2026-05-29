@@ -19,12 +19,12 @@ class PageController extends Controller
             ->latest()
             ->paginate(20)
             ->through(fn ($page) => [
-                'id'         => $page->id,
-                'title'      => $page->title,
-                'slug'       => $page->slug,
-                'status'     => $page->status,
+                'id' => $page->id,
+                'title' => $page->title,
+                'slug' => $page->slug,
+                'status' => $page->status,
                 'created_at' => $page->created_at->toDateString(),
-                'creator'    => $page->creator->name,
+                'creator' => $page->creator->name,
             ]);
 
         return Inertia::render('Pages/Index', ['pages' => $pages]);
@@ -34,7 +34,7 @@ class PageController extends Controller
     {
         return Inertia::render('Pages/Create', [
             'categories' => Category::orderBy('name')->get(['id', 'name']),
-            'tags'       => Tag::orderBy('name')->get(['id', 'name']),
+            'tags' => Tag::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -54,24 +54,24 @@ class PageController extends Controller
     {
         return Inertia::render('Pages/Edit', [
             'page' => [
-                'id'               => $page->id,
-                'title'            => $page->title,
-                'slug'             => $page->slug,
-                'status'           => $page->status,
-                'updated_at'       => $page->updated_at?->toISOString(),
-                'blocks'           => $page->blocks,
-                'meta_title'       => $page->meta_title,
+                'id' => $page->id,
+                'title' => $page->title,
+                'slug' => $page->slug,
+                'status' => $page->status,
+                'updated_at' => $page->updated_at?->toISOString(),
+                'blocks' => $page->blocks,
+                'meta_title' => $page->meta_title,
                 'meta_description' => $page->meta_description,
-                'meta_keywords'    => $page->meta_keywords,
-                'custom_js'        => $page->custom_js,
-                'preview_token'    => $page->preview_token,
+                'meta_keywords' => $page->meta_keywords,
+                'custom_js' => $page->custom_js,
+                'preview_token' => $page->preview_token,
             ],
             'categories' => Category::orderBy('name')->get(['id', 'name']),
-            'tags'       => Tag::orderBy('name')->get(['id', 'name']),
-            'autosave'   => Autosave::where([
+            'tags' => Tag::orderBy('name')->get(['id', 'name']),
+            'autosave' => Autosave::where([
                 'autosaveable_type' => Page::class,
-                'autosaveable_id'   => $page->id,
-                'user_id'           => $request->user()->id,
+                'autosaveable_id' => $page->id,
+                'user_id' => $request->user()->id,
             ])->first()?->only(['payload', 'updated_at']),
         ]);
     }
@@ -86,8 +86,8 @@ class PageController extends Controller
 
         Autosave::where([
             'autosaveable_type' => Page::class,
-            'autosaveable_id'   => $page->id,
-            'user_id'           => $request->user()->id,
+            'autosaveable_id' => $page->id,
+            'user_id' => $request->user()->id,
         ])->delete();
 
         return redirect()->route('pages.edit', $page->id)->with('status', 'Page updated.');

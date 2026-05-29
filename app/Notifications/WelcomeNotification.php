@@ -24,7 +24,7 @@ class WelcomeNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $verificationUrl = $this->buildVerificationUrl($notifiable);
-        $resetUrl        = $this->buildPasswordResetUrl($notifiable);
+        $resetUrl = $this->buildPasswordResetUrl($notifiable);
 
         return (new MailMessage)
             ->subject('Welcome to Lambda CMS — Set up your account')
@@ -35,7 +35,7 @@ class WelcomeNotification extends Notification
             ->action('Set Your Password', $resetUrl)
             ->line('**Step 2 — Verify your email address:**')
             ->line('After setting your password and logging in, verify your email with this link:')
-            ->line('[Verify Email Address](' . $verificationUrl . ')')
+            ->line('[Verify Email Address]('.$verificationUrl.')')
             ->line('Both links expire in 24 hours.')
             ->line('If you did not expect this invitation, you can safely ignore this email.');
     }
@@ -49,7 +49,7 @@ class WelcomeNotification extends Notification
             'verification.verify',
             Carbon::now()->addDay(),
             [
-                'id'   => $notifiable->getKey(),
+                'id' => $notifiable->getKey(),
                 'hash' => sha1($notifiable->getEmailForVerification()),
             ]
         );

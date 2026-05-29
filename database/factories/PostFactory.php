@@ -14,26 +14,26 @@ class PostFactory extends Factory
         $title = rtrim($title, '.');
 
         return [
-            'user_id'          => User::factory(),
-            'title'            => $title,
-            'slug'             => Str::slug($title),
-            'excerpt'          => fake()->paragraph(2),
-            'body'             => $this->generateBody(),
-            'status'           => 'draft',
-            'featured'         => false,
-            'published_at'     => null,
+            'user_id' => User::factory(),
+            'title' => $title,
+            'slug' => Str::slug($title),
+            'excerpt' => fake()->paragraph(2),
+            'body' => $this->generateBody(),
+            'status' => 'draft',
+            'featured' => false,
+            'published_at' => null,
             'comments_enabled' => true,
-            'meta_title'       => null,
+            'meta_title' => null,
             'meta_description' => null,
             'use_block_editor' => false,
-            'blocks'           => null,
+            'blocks' => null,
         ];
     }
 
     public function published(): static
     {
         return $this->state([
-            'status'       => 'published',
+            'status' => 'published',
             'published_at' => fake()->dateTimeThisYear(),
         ]);
     }
@@ -41,7 +41,7 @@ class PostFactory extends Factory
     public function draft(): static
     {
         return $this->state([
-            'status'       => 'draft',
+            'status' => 'draft',
             'published_at' => null,
         ]);
     }
@@ -50,8 +50,9 @@ class PostFactory extends Factory
     {
         $paragraphs = [];
         for ($i = 0; $i < rand(3, 6); $i++) {
-            $paragraphs[] = '<p>' . fake()->paragraph(rand(3, 6)) . '</p>';
+            $paragraphs[] = '<p>'.fake()->paragraph(rand(3, 6)).'</p>';
         }
+
         return implode("\n", $paragraphs);
     }
 }

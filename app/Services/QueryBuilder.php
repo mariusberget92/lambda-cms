@@ -11,41 +11,41 @@ class QueryBuilder
 {
     // Fields allowed in filter conditions per source (security whitelist)
     private const FILTERABLE = [
-        'posts'      => ['featured', 'title', 'slug'],
+        'posts' => ['featured', 'title', 'slug'],
         'categories' => ['name', 'slug'],
-        'tags'       => ['name', 'slug'],
-        'pages'      => ['title', 'slug'],
+        'tags' => ['name', 'slug'],
+        'pages' => ['title', 'slug'],
     ];
 
     private const SORT_ALLOWED = [
-        'posts'      => ['published_at', 'title', 'created_at'],
+        'posts' => ['published_at', 'title', 'created_at'],
         'categories' => ['name', 'created_at', 'posts_count'],
-        'tags'       => ['name', 'created_at', 'posts_count'],
-        'pages'      => ['title', 'created_at', 'updated_at'],
+        'tags' => ['name', 'created_at', 'posts_count'],
+        'pages' => ['title', 'created_at', 'updated_at'],
     ];
 
     /**
      * Resolve a loop block's data config into an items + total array.
      *
-     * @param  array  $data       block.data (source, filters, sort, limit, offset)
+     * @param  array  $data  block.data (source, filters, sort, limit, offset)
      * @param  array  $urlParams  current URL query params (used for urlParam filters)
-     * @return array  ['items' => [...], 'total' => int]
+     * @return array ['items' => [...], 'total' => int]
      */
     public function resolve(array $data, array $urlParams = []): array
     {
-        $source      = $data['source']       ?? 'posts';
-        $filters     = $this->applyUrlParams($data['filters'] ?? [], $urlParams);
-        $sort        = $data['sort']         ?? ['field' => 'created_at', 'direction' => 'desc'];
-        $limit       = min((int) ($data['limit']  ?? 12), 100);
-        $offset      = (int) ($data['offset'] ?? 0);
+        $source = $data['source'] ?? 'posts';
+        $filters = $this->applyUrlParams($data['filters'] ?? [], $urlParams);
+        $sort = $data['sort'] ?? ['field' => 'created_at', 'direction' => 'desc'];
+        $limit = min((int) ($data['limit'] ?? 12), 100);
+        $offset = (int) ($data['offset'] ?? 0);
         $filterLogic = ($data['filter_logic'] ?? 'and') === 'or' ? 'or' : 'and';
 
         return match ($source) {
-            'posts'      => $this->resolvePosts($filters, $sort, $limit, $offset, $filterLogic),
+            'posts' => $this->resolvePosts($filters, $sort, $limit, $offset, $filterLogic),
             'categories' => $this->resolveCategories($filters, $sort, $limit, $offset, $filterLogic),
-            'tags'       => $this->resolveTags($filters, $sort, $limit, $offset, $filterLogic),
-            'pages'      => $this->resolvePages($filters, $sort, $limit, $offset, $filterLogic),
-            default      => ['items' => [], 'total' => 0],
+            'tags' => $this->resolveTags($filters, $sort, $limit, $offset, $filterLogic),
+            'pages' => $this->resolvePages($filters, $sort, $limit, $offset, $filterLogic),
+            default => ['items' => [], 'total' => 0],
         };
     }
 
@@ -58,6 +58,7 @@ class QueryBuilder
                 $filter['value'] = $urlParams[$paramKey];
                 unset($filter['urlParam']);
             }
+
             return $filter;
         }, $filters);
     }
@@ -79,24 +80,24 @@ class QueryBuilder
         $total = $query->count();
 
         $items = $query->skip($offset)->take($limit)->get()->map(fn ($post) => [
-            'id'                 => $post->id,
-            'title'              => $post->title,
-            'slug'               => $post->slug,
-            'excerpt'            => $post->excerpt,
-            'body'               => $post->body,
-            'featured'           => (bool) $post->featured,
-            'published_at'           => $post->published_at?->toIso8601String(),
+            'id' => $post->id,
+            'title' => $post->title,
+            'slug' => $post->slug,
+            'excerpt' => $post->excerpt,
+            'body' => $post->body,
+            'featured' => (bool) $post->featured,
+            'published_at' => $post->published_at?->toIso8601String(),
             'published_at_formatted' => $post->published_at?->format('M j, Y'),
-            'author_name'        => $post->author->name ?? '',
-            'author_avatar_url'  => $post->author?->avatar_url ?? null,
+            'author_name' => $post->author->name ?? '',
+            'author_avatar_url' => $post->author?->avatar_url ?? null,
             'featured_image_url' => $post->featuredImage?->url,
-            'url'                => url("/blog/{$post->slug}"),
-            'categories'         => $post->categories->map(fn ($c) => ['name' => $c->name, 'slug' => $c->slug, 'color' => $c->color, 'hue' => $c->hue])->values()->all(),
-            'category_name'      => $post->categories->first()?->name ?? '',
-            'category_color'     => $post->categories->first()?->color ?? '',
-            'category_hue'       => $post->categories->first()?->hue ?? null,
-            'category_slug'      => $post->categories->first()?->slug ?? '',
-            'tags'               => $post->tags->map(fn ($t) => ['name' => $t->name, 'slug' => $t->slug])->values()->all(),
+            'url' => url("/blog/{$post->slug}"),
+            'categories' => $post->categories->map(fn ($c) => ['name' => $c->name, 'slug' => $c->slug, 'color' => $c->color, 'hue' => $c->hue])->values()->all(),
+            'category_name' => $post->categories->first()?->name ?? '',
+            'category_color' => $post->categories->first()?->color ?? '',
+            'category_hue' => $post->categories->first()?->hue ?? null,
+            'category_slug' => $post->categories->first()?->slug ?? '',
+            'tags' => $post->tags->map(fn ($t) => ['name' => $t->name, 'slug' => $t->slug])->values()->all(),
         ])->all();
 
         return ['items' => $items, 'total' => $total];
@@ -116,13 +117,13 @@ class QueryBuilder
         $total = $query->count();
 
         $items = $query->skip($offset)->take($limit)->get()->map(fn ($cat) => [
-            'id'          => $cat->id,
-            'name'        => $cat->name,
-            'slug'        => $cat->slug,
+            'id' => $cat->id,
+            'name' => $cat->name,
+            'slug' => $cat->slug,
             'description' => $cat->description,
             'posts_count' => $cat->posts_count,
-            'url'         => url("/categories/{$cat->slug}"),
-            'filter_url'  => '/?category=' . $cat->slug,
+            'url' => url("/categories/{$cat->slug}"),
+            'filter_url' => '/?category='.$cat->slug,
         ])->all();
 
         return ['items' => $items, 'total' => $total];
@@ -142,12 +143,12 @@ class QueryBuilder
         $total = $query->count();
 
         $items = $query->skip($offset)->take($limit)->get()->map(fn ($tag) => [
-            'id'          => $tag->id,
-            'name'        => $tag->name,
-            'slug'        => $tag->slug,
+            'id' => $tag->id,
+            'name' => $tag->name,
+            'slug' => $tag->slug,
             'posts_count' => $tag->posts_count,
-            'url'         => url("/tags/{$tag->slug}"),
-            'filter_url'  => '/?tag=' . $tag->slug,
+            'url' => url("/tags/{$tag->slug}"),
+            'filter_url' => '/?tag='.$tag->slug,
         ])->all();
 
         return ['items' => $items, 'total' => $total];
@@ -167,11 +168,11 @@ class QueryBuilder
         $total = $query->count();
 
         $items = $query->skip($offset)->take($limit)->get()->map(fn ($page) => [
-            'id'               => $page->id,
-            'title'            => $page->title,
-            'slug'             => $page->slug,
+            'id' => $page->id,
+            'title' => $page->title,
+            'slug' => $page->slug,
             'meta_description' => $page->meta_description,
-            'url'              => url("/{$page->slug}"),
+            'url' => url("/{$page->slug}"),
         ])->all();
 
         return ['items' => $items, 'total' => $total];
@@ -179,7 +180,9 @@ class QueryBuilder
 
     private function applyFilters($query, array $filters, string $source, string $logic): void
     {
-        if (empty($filters)) return;
+        if (empty($filters)) {
+            return;
+        }
 
         if ($logic === 'or') {
             $query->where(function ($q) use ($filters, $source) {
@@ -199,32 +202,42 @@ class QueryBuilder
     private function applyFilter($query, array $filter, string $source): void
     {
         $field = $filter['field'] ?? null;
-        $op    = $filter['op']    ?? '=';
+        $op = $filter['op'] ?? '=';
         $value = $filter['value'] ?? null;
 
-        if (!$field) return;
+        if (! $field) {
+            return;
+        }
 
         // Relationship filters (posts only) — handled before whitelist
         if ($source === 'posts') {
             if ($field === 'category_slug' && $op === '=' && $value !== null && $value !== '') {
                 $query->whereHas('categories', fn ($q) => $q->where('slug', $value));
+
                 return;
             }
             if ($field === 'tag_slug' && $op === '=' && $value !== null && $value !== '') {
                 $query->whereHas('tags', fn ($q) => $q->where('slug', $value));
+
                 return;
             }
         }
 
         // Security: only allow whitelisted filter fields
-        if (!in_array($field, self::FILTERABLE[$source] ?? [], true)) return;
+        if (! in_array($field, self::FILTERABLE[$source] ?? [], true)) {
+            return;
+        }
 
         switch ($op) {
             case '=':
-                if ($value !== null) $query->where($field, $value);
+                if ($value !== null) {
+                    $query->where($field, $value);
+                }
                 break;
             case '!=':
-                if ($value !== null) $query->where($field, '!=', $value);
+                if ($value !== null) {
+                    $query->where($field, '!=', $value);
+                }
                 break;
             case 'not_empty':
                 $query->whereNotNull($field)->where($field, '!=', '');

@@ -28,45 +28,45 @@ class SitemapController extends Controller
             ->orderByDesc('updated_at')
             ->get(['slug', 'updated_at']);
 
-        $xml  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
+        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
 
         // Blog homepage
-        $xml .= '  <url>' . "\n";
-        $xml .= '    <loc>' . htmlspecialchars(url('/'), ENT_XML1 | ENT_COMPAT, 'UTF-8') . '</loc>' . "\n";
-        $xml .= '    <changefreq>daily</changefreq>' . "\n";
-        $xml .= '    <priority>1.0</priority>' . "\n";
-        $xml .= '  </url>' . "\n";
+        $xml .= '  <url>'."\n";
+        $xml .= '    <loc>'.htmlspecialchars(url('/'), ENT_XML1 | ENT_COMPAT, 'UTF-8').'</loc>'."\n";
+        $xml .= '    <changefreq>daily</changefreq>'."\n";
+        $xml .= '    <priority>1.0</priority>'."\n";
+        $xml .= '  </url>'."\n";
 
         foreach ($posts as $post) {
-            $xml .= '  <url>' . "\n";
-            $xml .= '    <loc>' . htmlspecialchars(url("/blog/{$post->slug}"), ENT_XML1 | ENT_COMPAT, 'UTF-8') . '</loc>' . "\n";
-            $xml .= '    <lastmod>' . $post->updated_at->toDateString() . '</lastmod>' . "\n";
-            $xml .= '  </url>' . "\n";
+            $xml .= '  <url>'."\n";
+            $xml .= '    <loc>'.htmlspecialchars(url("/blog/{$post->slug}"), ENT_XML1 | ENT_COMPAT, 'UTF-8').'</loc>'."\n";
+            $xml .= '    <lastmod>'.$post->updated_at->toDateString().'</lastmod>'."\n";
+            $xml .= '  </url>'."\n";
         }
 
         foreach ($categories as $category) {
-            $xml .= '  <url>' . "\n";
-            $xml .= '    <loc>' . htmlspecialchars(url("/blog/category/{$category->slug}"), ENT_XML1 | ENT_COMPAT, 'UTF-8') . '</loc>' . "\n";
-            $xml .= '    <lastmod>' . $category->updated_at->toDateString() . '</lastmod>' . "\n";
-            $xml .= '  </url>' . "\n";
+            $xml .= '  <url>'."\n";
+            $xml .= '    <loc>'.htmlspecialchars(url("/blog/category/{$category->slug}"), ENT_XML1 | ENT_COMPAT, 'UTF-8').'</loc>'."\n";
+            $xml .= '    <lastmod>'.$category->updated_at->toDateString().'</lastmod>'."\n";
+            $xml .= '  </url>'."\n";
         }
 
         foreach ($tags as $tag) {
-            $xml .= '  <url>' . "\n";
-            $xml .= '    <loc>' . htmlspecialchars(url("/blog/tag/{$tag->slug}"), ENT_XML1 | ENT_COMPAT, 'UTF-8') . '</loc>' . "\n";
-            $xml .= '    <lastmod>' . $tag->updated_at->toDateString() . '</lastmod>' . "\n";
-            $xml .= '  </url>' . "\n";
+            $xml .= '  <url>'."\n";
+            $xml .= '    <loc>'.htmlspecialchars(url("/blog/tag/{$tag->slug}"), ENT_XML1 | ENT_COMPAT, 'UTF-8').'</loc>'."\n";
+            $xml .= '    <lastmod>'.$tag->updated_at->toDateString().'</lastmod>'."\n";
+            $xml .= '  </url>'."\n";
         }
 
         foreach ($pages as $page) {
-            $xml .= '  <url>' . "\n";
-            $xml .= '    <loc>' . htmlspecialchars(url("/{$page->slug}"), ENT_XML1 | ENT_COMPAT, 'UTF-8') . '</loc>' . "\n";
-            $xml .= '    <lastmod>' . $page->updated_at->toDateString() . '</lastmod>' . "\n";
-            $xml .= '  </url>' . "\n";
+            $xml .= '  <url>'."\n";
+            $xml .= '    <loc>'.htmlspecialchars(url("/{$page->slug}"), ENT_XML1 | ENT_COMPAT, 'UTF-8').'</loc>'."\n";
+            $xml .= '    <lastmod>'.$page->updated_at->toDateString().'</lastmod>'."\n";
+            $xml .= '  </url>'."\n";
         }
 
-        $xml .= '</urlset>' . "\n";
+        $xml .= '</urlset>'."\n";
 
         return response($xml, 200, [
             'Content-Type' => 'application/xml; charset=utf-8',

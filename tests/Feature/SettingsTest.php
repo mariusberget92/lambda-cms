@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Mail\TestMail;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -86,7 +87,7 @@ class SettingsTest extends TestCase
 
         $this->actingAs($admin)->put('/settings/site', [
             'site.name' => 'New Site Name',
-            'site.url'  => 'https://example.com',
+            'site.url' => 'https://example.com',
         ])->assertRedirect();
 
         $this->assertDatabaseHas('settings', ['key' => 'site.name', 'value' => 'New Site Name']);
@@ -98,7 +99,7 @@ class SettingsTest extends TestCase
 
         $this->actingAs($admin)->put('/settings/site', [
             'site.name' => 'Test',
-            'site.url'  => 'not-a-url',
+            'site.url' => 'not-a-url',
         ])->assertSessionHasErrors('site.url');
     }
 
@@ -107,7 +108,7 @@ class SettingsTest extends TestCase
         $admin = $this->makeAdmin();
 
         $this->actingAs($admin)->put('/settings/media', [
-            'media.max_upload_mb'    => 25,
+            'media.max_upload_mb' => 25,
             'media.resize_max_width' => 2560,
         ])->assertRedirect();
 
@@ -119,7 +120,7 @@ class SettingsTest extends TestCase
         $admin = $this->makeAdmin();
 
         $this->actingAs($admin)->put('/settings/media', [
-            'media.max_upload_mb'    => 999,
+            'media.max_upload_mb' => 999,
             'media.resize_max_width' => 1920,
         ])->assertSessionHasErrors('media.max_upload_mb');
     }
@@ -130,7 +131,7 @@ class SettingsTest extends TestCase
 
         $this->actingAs($user)->put('/settings/site', [
             'site.name' => 'Hacked',
-            'site.url'  => 'https://hacked.com',
+            'site.url' => 'https://hacked.com',
         ])->assertRedirect(route('dashboard'));
 
         $this->assertDatabaseMissing('settings', ['key' => 'site.name', 'value' => 'Hacked']);
@@ -145,7 +146,7 @@ class SettingsTest extends TestCase
 
         $this->actingAs($admin)->post('/settings/test-email')->assertRedirect();
 
-        Mail::assertSent(\App\Mail\TestMail::class);
+        Mail::assertSent(TestMail::class);
     }
 
     public function test_regular_user_cannot_send_test_email(): void
@@ -157,26 +158,27 @@ class SettingsTest extends TestCase
 
         Mail::assertNothingSent();
     }
+
     public function test_administrator_can_update_seo_settings(): void
     {
         $admin = $this->makeAdmin();
 
         $this->actingAs($admin)->put('/settings/seo', [
-            'seo.title_separator'      => '|',
-            'seo.default_description'  => 'My site about things',
+            'seo.title_separator' => '|',
+            'seo.default_description' => 'My site about things',
             'seo.default_og_image_url' => 'https://example.com/og.jpg',
         ])->assertRedirect();
 
         $this->assertDatabaseHas('settings', [
-            'key'   => 'seo.title_separator',
+            'key' => 'seo.title_separator',
             'value' => '|',
         ]);
         $this->assertDatabaseHas('settings', [
-            'key'   => 'seo.default_description',
+            'key' => 'seo.default_description',
             'value' => 'My site about things',
         ]);
         $this->assertDatabaseHas('settings', [
-            'key'   => 'seo.default_og_image_url',
+            'key' => 'seo.default_og_image_url',
             'value' => 'https://example.com/og.jpg',
         ]);
     }
@@ -186,8 +188,8 @@ class SettingsTest extends TestCase
         $user = $this->makeUser();
 
         $this->actingAs($user)->put('/settings/seo', [
-            'seo.title_separator'      => '–',
-            'seo.default_description'  => 'Hacked',
+            'seo.title_separator' => '–',
+            'seo.default_description' => 'Hacked',
             'seo.default_og_image_url' => 'https://evil.com/img.jpg',
         ])->assertRedirect(route('dashboard'));
 
@@ -199,14 +201,14 @@ class SettingsTest extends TestCase
         $admin = $this->makeAdmin();
 
         $this->actingAs($admin)->put('/settings/seo', [
-            'seo.title_separator'      => ' | ',
-            'seo.default_description'  => '',
+            'seo.title_separator' => ' | ',
+            'seo.default_description' => '',
             'seo.default_og_image_url' => '',
-            'seo.default_keywords'     => 'laravel, cms',
+            'seo.default_keywords' => 'laravel, cms',
         ])->assertRedirect();
 
         $this->assertDatabaseHas('settings', [
-            'key'   => 'seo.default_keywords',
+            'key' => 'seo.default_keywords',
             'value' => 'laravel, cms',
         ]);
     }
@@ -219,7 +221,7 @@ class SettingsTest extends TestCase
             ->assertRedirect();
 
         $this->assertDatabaseHas('settings', [
-            'key'   => 'site.accent_color',
+            'key' => 'site.accent_color',
             'value' => '#a3be8c',
         ]);
     }
@@ -230,8 +232,7 @@ class SettingsTest extends TestCase
 
         $admin = $this->makeAdmin();
         $response = $this->actingAs($admin)->get('/dashboard');
-        $response->assertInertia(fn ($page) =>
-            $page->where('accentColor', '#a3be8c')
+        $response->assertInertia(fn ($page) => $page->where('accentColor', '#a3be8c')
         );
     }
 }

@@ -14,14 +14,14 @@ class PageFactory extends Factory
         $title = rtrim($title, '.');
 
         return [
-            'user_id'          => User::factory(),
-            'title'            => $title,
-            'slug'             => Str::slug($title),
-            'status'           => 'draft',
-            'blocks'           => null,
-            'meta_title'       => null,
+            'user_id' => User::factory(),
+            'title' => $title,
+            'slug' => Str::slug($title),
+            'status' => 'draft',
+            'blocks' => null,
+            'meta_title' => null,
             'meta_description' => null,
-            'meta_keywords'    => null,
+            'meta_keywords' => null,
         ];
     }
 
@@ -40,12 +40,12 @@ class PageFactory extends Factory
         if (empty($blocks)) {
             $blocks = [
                 [
-                    'id'   => (string) Str::uuid(),
+                    'id' => (string) Str::uuid(),
                     'type' => 'heading',
                     'data' => ['level' => 2, 'text' => 'Hello World'],
                 ],
                 [
-                    'id'   => (string) Str::uuid(),
+                    'id' => (string) Str::uuid(),
                     'type' => 'paragraph',
                     'data' => ['content' => '<p>Sample content</p>'],
                 ],

@@ -14,7 +14,7 @@ class Setting extends Model
      */
     public static function get(string $key, mixed $fallback = null): mixed
     {
-        $service  = app(SettingService::class);
+        $service = app(SettingService::class);
         $settings = $service->all();
 
         if (! $settings->has($key)) {
@@ -26,7 +26,7 @@ class Setting extends Model
         return match ($setting->type) {
             'integer' => (int) $setting->value,
             'boolean' => filter_var($setting->value, FILTER_VALIDATE_BOOLEAN),
-            default   => (string) ($setting->value ?? ''),
+            default => (string) ($setting->value ?? ''),
         };
     }
 

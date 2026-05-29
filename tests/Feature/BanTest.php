@@ -32,10 +32,10 @@ class BanTest extends TestCase
     public function test_admin_can_ban_a_user(): void
     {
         $admin = $this->makeAdmin();
-        $user  = $this->makeUser();
+        $user = $this->makeUser();
 
         $this->actingAs($admin)->post("/users/{$user->id}/ban", [
-            'reason'   => 'Spamming',
+            'reason' => 'Spamming',
             'duration' => '24h',
         ])->assertRedirect();
 
@@ -48,10 +48,10 @@ class BanTest extends TestCase
     public function test_admin_can_permanently_ban_a_user(): void
     {
         $admin = $this->makeAdmin();
-        $user  = $this->makeUser();
+        $user = $this->makeUser();
 
         $this->actingAs($admin)->post("/users/{$user->id}/ban", [
-            'reason'   => 'Repeated violations',
+            'reason' => 'Repeated violations',
             'duration' => 'permanent',
         ])->assertRedirect();
 
@@ -62,11 +62,11 @@ class BanTest extends TestCase
 
     public function test_admin_cannot_ban_another_admin(): void
     {
-        $admin  = $this->makeAdmin();
+        $admin = $this->makeAdmin();
         $target = $this->makeAdmin();
 
         $this->actingAs($admin)->post("/users/{$target->id}/ban", [
-            'reason'   => 'Test',
+            'reason' => 'Test',
             'duration' => '24h',
         ])->assertRedirect(route('users.index'));
 
@@ -79,7 +79,7 @@ class BanTest extends TestCase
         $admin = $this->makeAdmin();
 
         $this->actingAs($admin)->post("/users/{$admin->id}/ban", [
-            'reason'   => 'Test',
+            'reason' => 'Test',
             'duration' => '24h',
         ])->assertRedirect(route('users.index'));
 
@@ -89,11 +89,11 @@ class BanTest extends TestCase
 
     public function test_regular_user_cannot_ban(): void
     {
-        $user   = $this->makeUser();
+        $user = $this->makeUser();
         $target = $this->makeUser();
 
         $this->actingAs($user)->post("/users/{$target->id}/ban", [
-            'reason'   => 'Test',
+            'reason' => 'Test',
             'duration' => '24h',
         ])->assertRedirect(route('dashboard'));
     }
@@ -103,7 +103,7 @@ class BanTest extends TestCase
     public function test_admin_can_unban_a_user(): void
     {
         $admin = $this->makeAdmin();
-        $user  = $this->makeUser();
+        $user = $this->makeUser();
         $user->update(['banned_at' => now(), 'banned_until' => null, 'ban_reason' => 'Spam']);
 
         $this->actingAs($admin)->delete("/users/{$user->id}/ban")->assertRedirect();
@@ -115,7 +115,7 @@ class BanTest extends TestCase
 
     public function test_regular_user_cannot_unban(): void
     {
-        $user   = $this->makeUser();
+        $user = $this->makeUser();
         $target = $this->makeUser();
         $target->update(['banned_at' => now(), 'banned_until' => null, 'ban_reason' => 'Spam']);
 
@@ -128,7 +128,7 @@ class BanTest extends TestCase
     public function test_ban_validates_required_fields(): void
     {
         $admin = $this->makeAdmin();
-        $user  = $this->makeUser();
+        $user = $this->makeUser();
 
         $this->actingAs($admin)->post("/users/{$user->id}/ban", [])
             ->assertSessionHasErrors(['reason', 'duration']);

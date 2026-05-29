@@ -7,7 +7,6 @@ use App\Http\Requests\Api\V1\ListPostsRequest;
 use App\Models\Post;
 use App\Services\MarkdownService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
@@ -40,15 +39,15 @@ class PostController extends Controller
     private function toArray(Post $post, bool $full = false): array
     {
         $data = [
-            'id'             => $post->id,
-            'title'          => $post->title,
-            'slug'           => $post->slug,
-            'excerpt'        => $post->excerpt,
-            'status'         => $post->status,
-            'published_at'   => $post->published_at?->toIso8601String(),
-            'author'         => $post->author ? ['id' => $post->author->id, 'name' => $post->author->name] : null,
-            'categories'     => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug])->values(),
-            'tags'           => $post->tags->map(fn ($t) => ['id' => $t->id, 'name' => $t->name, 'slug' => $t->slug])->values(),
+            'id' => $post->id,
+            'title' => $post->title,
+            'slug' => $post->slug,
+            'excerpt' => $post->excerpt,
+            'status' => $post->status,
+            'published_at' => $post->published_at?->toIso8601String(),
+            'author' => $post->author ? ['id' => $post->author->id, 'name' => $post->author->name] : null,
+            'categories' => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug])->values(),
+            'tags' => $post->tags->map(fn ($t) => ['id' => $t->id, 'name' => $t->name, 'slug' => $t->slug])->values(),
             'featured_image' => $this->imageArray($post->featuredImage),
         ];
 
@@ -57,7 +56,7 @@ class PostController extends Controller
                 ? app(MarkdownService::class)->toHtml($post->body ?? '')
                 : $post->body;
 
-            $data['body']        = $body;
+            $data['body'] = $body;
             $data['body_format'] = $post->body_format ?? 'html';
         }
 
@@ -71,9 +70,9 @@ class PostController extends Controller
         }
 
         return [
-            'url'    => $image->url,
-            'alt'    => $image->alt,
-            'width'  => $image->width,
+            'url' => $image->url,
+            'alt' => $image->alt,
+            'width' => $image->width,
             'height' => $image->height,
         ];
     }

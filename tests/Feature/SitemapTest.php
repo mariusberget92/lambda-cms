@@ -58,7 +58,7 @@ class SitemapTest extends TestCase
     public function test_sitemap_includes_category_with_published_posts(): void
     {
         $category = Category::factory()->create(['slug' => 'my-category']);
-        $post     = Post::factory()->published()->create();
+        $post = Post::factory()->published()->create();
         $post->categories()->attach($category);
 
         $content = $this->get('/sitemap.xml')->getContent();
@@ -77,7 +77,7 @@ class SitemapTest extends TestCase
 
     public function test_sitemap_includes_tag_with_published_posts(): void
     {
-        $tag  = Tag::factory()->create(['slug' => 'my-tag']);
+        $tag = Tag::factory()->create(['slug' => 'my-tag']);
         $post = Post::factory()->published()->create();
         $post->tags()->attach($tag);
 
@@ -101,7 +101,7 @@ class SitemapTest extends TestCase
 
         $content = $this->get('/sitemap.xml')->getContent();
 
-        $this->assertStringContainsString('<loc>' . url('/about') . '</loc>', $content);
+        $this->assertStringContainsString('<loc>'.url('/about').'</loc>', $content);
     }
 
     public function test_sitemap_excludes_draft_pages(): void

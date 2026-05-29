@@ -17,13 +17,13 @@ class TemplateController extends Controller
             ->latest()
             ->get()
             ->map(fn (Template $t) => [
-                'id'         => $t->id,
-                'title'      => $t->title,
-                'type'       => $t->type,
-                'status'     => $t->status,
-                'is_system'  => $t->is_system,
+                'id' => $t->id,
+                'title' => $t->title,
+                'type' => $t->type,
+                'status' => $t->status,
+                'is_system' => $t->is_system,
                 'updated_at' => $t->updated_at->toDateString(),
-                'creator'    => $t->creator->name,
+                'creator' => $t->creator->name,
             ])
             ->groupBy('type');
 
@@ -54,7 +54,7 @@ class TemplateController extends Controller
 
     public function edit(Request $request, Template $template)
     {
-        if ($template->user_id !== $request->user()->id && !$request->user()->hasRole('administrator')) {
+        if ($template->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
             abort(403);
         }
 
@@ -62,19 +62,19 @@ class TemplateController extends Controller
 
         return Inertia::render('Templates/Edit', [
             'template' => [
-                'id'               => $template->id,
-                'title'            => $template->title,
-                'type'             => $template->type,
-                'loop_source'      => $template->loop_source ?? 'posts',
-                'status'           => $template->status,
-                'is_system'        => $template->is_system,
-                'blocks'           => $template->blocks ?? [],
-                'meta_title'       => $template->meta_title,
+                'id' => $template->id,
+                'title' => $template->title,
+                'type' => $template->type,
+                'loop_source' => $template->loop_source ?? 'posts',
+                'status' => $template->status,
+                'is_system' => $template->is_system,
+                'blocks' => $template->blocks ?? [],
+                'meta_title' => $template->meta_title,
                 'meta_description' => $template->meta_description,
-                'meta_keywords'    => $template->meta_keywords,
+                'meta_keywords' => $template->meta_keywords,
             ],
             'autosave' => $autosave ? [
-                'payload'    => $autosave->payload,
+                'payload' => $autosave->payload,
                 'updated_at' => $autosave->updated_at->diffForHumans(),
             ] : null,
         ]);
@@ -82,7 +82,7 @@ class TemplateController extends Controller
 
     public function update(UpdateTemplateRequest $request, Template $template)
     {
-        if ($template->user_id !== $request->user()->id && !$request->user()->hasRole('administrator')) {
+        if ($template->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
             abort(403);
         }
 
@@ -104,7 +104,7 @@ class TemplateController extends Controller
 
     public function destroy(Request $request, Template $template)
     {
-        if ($template->user_id !== $request->user()->id && !$request->user()->hasRole('administrator')) {
+        if ($template->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
             abort(403);
         }
 

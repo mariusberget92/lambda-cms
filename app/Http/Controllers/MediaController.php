@@ -14,8 +14,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
-use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 class MediaController extends Controller
 {
@@ -37,44 +37,44 @@ class MediaController extends Controller
         }
 
         $mimeToExt = [
-            'image/jpeg'       => 'jpg',
-            'image/png'        => 'png',
-            'image/gif'        => 'gif',
-            'image/webp'       => 'webp',
-            'image/svg+xml'    => 'svg',
-            'application/pdf'  => 'pdf',
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/gif' => 'gif',
+            'image/webp' => 'webp',
+            'image/svg+xml' => 'svg',
+            'application/pdf' => 'pdf',
             'application/msword' => 'doc',
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx',
-            'video/mp4'        => 'mp4',
-            'video/webm'       => 'webm',
-            'audio/mpeg'       => 'mp3',
-            'audio/wav'        => 'wav',
+            'video/mp4' => 'mp4',
+            'video/webm' => 'webm',
+            'audio/mpeg' => 'mp3',
+            'audio/wav' => 'wav',
         ];
-        $allowedMimes      = config('media.allowed_mimes', []);
+        $allowedMimes = config('media.allowed_mimes', []);
         $allowedExtensions = implode(', ', array_unique(array_filter(array_map(fn ($m) => $mimeToExt[$m] ?? null, $allowedMimes))));
 
         return Inertia::render('Media/Index', [
-            'media'             => $media,
-            'filters'           => $request->only('type', 'search'),
-            'maxUploadMb'       => (int) config('media.max_upload_mb', 10),
+            'media' => $media,
+            'filters' => $request->only('type', 'search'),
+            'maxUploadMb' => (int) config('media.max_upload_mb', 10),
             'allowedExtensions' => $allowedExtensions,
         ]);
     }
 
     public function store(StoreMediaRequest $request): JsonResponse
     {
-        $file     = $request->file('file');
+        $file = $request->file('file');
         $mimeType = $file->getMimeType();
-        $type     = Media::typeFromMime($mimeType);
-        $ext      = $file->guessExtension() ?? 'bin';
-        $uuid     = Str::uuid()->toString();
+        $type = Media::typeFromMime($mimeType);
+        $ext = $file->guessExtension() ?? 'bin';
+        $uuid = Str::uuid()->toString();
         $filename = "{$uuid}.{$ext}";
-        $folder   = 'media/' . now()->format('Y/m');
-        $path     = "{$folder}/{$filename}";
+        $folder = 'media/'.now()->format('Y/m');
+        $path = "{$folder}/{$filename}";
 
         $file->storeAs($folder, $filename, 'public');
 
-        $width  = null;
+        $width = null;
         $height = null;
 
         // Resize images (skip SVG)
@@ -83,15 +83,15 @@ class MediaController extends Controller
             $maxWidth = config('media.resize_max_width', 1920);
 
             try {
-                $manager = new ImageManager(new Driver());
-                $img     = $manager->read($fullPath);
+                $manager = new ImageManager(new Driver);
+                $img = $manager->read($fullPath);
 
                 if ($img->width() > $maxWidth) {
                     $img->scaleDown(width: $maxWidth);
                     $img->save($fullPath);
                 }
 
-                $width  = $img->width();
+                $width = $img->width();
                 $height = $img->height();
             } catch (\Throwable $e) {
                 // If image reading fails (e.g. fake file in tests), skip dimension detection
@@ -100,18 +100,18 @@ class MediaController extends Controller
         }
 
         $media = Media::create([
-            'user_id'           => $request->user()->id,
-            'filename'          => $filename,
+            'user_id' => $request->user()->id,
+            'filename' => $filename,
             'original_filename' => $file->getClientOriginalName(),
-            'disk'              => 'public',
-            'path'              => $path,
-            'mime_type'         => $mimeType,
-            'type'              => $type,
-            'size'              => Storage::disk('public')->size($path),
-            'width'             => $width,
-            'height'            => $height,
-            'alt'               => null,
-            'description'       => null,
+            'disk' => 'public',
+            'path' => $path,
+            'mime_type' => $mimeType,
+            'type' => $type,
+            'size' => Storage::disk('public')->size($path),
+            'width' => $width,
+            'height' => $height,
+            'alt' => null,
+            'description' => null,
         ]);
 
         return response()->json($this->toArray($media));
@@ -165,13 +165,13 @@ class MediaController extends Controller
             abort(422, 'Only image files can be edited.');
         }
 
-        $file     = $request->file('file');
+        $file = $request->file('file');
         $mimeType = $file->getMimeType();
-        $ext      = $file->guessExtension() ?? 'jpg';
-        $uuid     = Str::uuid()->toString();
+        $ext = $file->guessExtension() ?? 'jpg';
+        $uuid = Str::uuid()->toString();
         $filename = "{$uuid}.{$ext}";
-        $folder   = dirname($media->path);
-        $path     = "{$folder}/{$filename}";
+        $folder = dirname($media->path);
+        $path = "{$folder}/{$filename}";
 
         $file->storeAs($folder, $filename, 'public');
 
@@ -180,16 +180,16 @@ class MediaController extends Controller
         }
 
         $fullPath = Storage::disk('public')->path($path);
-        $manager  = new ImageManager(new Driver());
-        $img      = $manager->read($fullPath);
+        $manager = new ImageManager(new Driver);
+        $img = $manager->read($fullPath);
 
         $media->update([
-            'filename'  => $filename,
-            'path'      => $path,
+            'filename' => $filename,
+            'path' => $path,
             'mime_type' => $mimeType,
-            'size'      => Storage::disk('public')->size($path),
-            'width'     => $img->width(),
-            'height'    => $img->height(),
+            'size' => Storage::disk('public')->size($path),
+            'width' => $img->width(),
+            'height' => $img->height(),
         ]);
 
         return response()->json($this->toArray($media->fresh()));
@@ -217,20 +217,20 @@ class MediaController extends Controller
     private function toArray(Media $media): array
     {
         return [
-            'id'                => $media->id,
-            'url'               => $media->url,
-            'filename'          => $media->filename,
+            'id' => $media->id,
+            'url' => $media->url,
+            'filename' => $media->filename,
             'original_filename' => $media->original_filename,
-            'mime_type'         => $media->mime_type,
-            'type'              => $media->type,
-            'size'              => $media->size,
-            'formatted_size'    => $media->formatted_size,
-            'width'             => $media->width,
-            'height'            => $media->height,
-            'alt'               => $media->alt,
-            'description'       => $media->description,
-            'created_at'        => $media->created_at->toDateTimeString(),
-            'uploader'          => $media->uploader ? $media->uploader->name : null,
+            'mime_type' => $media->mime_type,
+            'type' => $media->type,
+            'size' => $media->size,
+            'formatted_size' => $media->formatted_size,
+            'width' => $media->width,
+            'height' => $media->height,
+            'alt' => $media->alt,
+            'description' => $media->description,
+            'created_at' => $media->created_at->toDateTimeString(),
+            'uploader' => $media->uploader ? $media->uploader->name : null,
         ];
     }
 }

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\BulkCommentRequest;
 use App\Http\Requests\ReplyCommentRequest;
 use App\Http\Requests\StoreCommentRequest;
+use App\Jobs\SendNewCommentNotification;
+use App\Mail\CommentReplyMail;
 use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Http\RedirectResponse;
@@ -28,27 +30,27 @@ class CommentController extends Controller
             ->paginate(25)
             ->withQueryString()
             ->through(fn (Comment $c) => [
-                'id'           => $c->id,
-                'author_name'  => $c->author_name,
+                'id' => $c->id,
+                'author_name' => $c->author_name,
                 'author_email' => $c->author_email,
-                'body'         => $c->body,
-                'status'       => $c->status,
-                'created_at'   => $c->created_at->diffForHumans(),
-                'post'         => [
+                'body' => $c->body,
+                'status' => $c->status,
+                'created_at' => $c->created_at->diffForHumans(),
+                'post' => [
                     'title' => $c->post->title,
-                    'slug'  => $c->post->slug,
+                    'slug' => $c->post->slug,
                 ],
                 'replies' => $c->replies->map(fn ($r) => [
-                    'id'          => $r->id,
+                    'id' => $r->id,
                     'author_name' => $r->author_name,
-                    'body'        => $r->body,
-                    'created_at'  => $r->created_at->diffForHumans(),
+                    'body' => $r->body,
+                    'created_at' => $r->created_at->diffForHumans(),
                 ])->values(),
             ]);
 
         return Inertia::render('Comments/Index', [
-            'comments'     => $comments,
-            'filter'       => $filter,
+            'comments' => $comments,
+            'filter' => $filter,
             'pendingCount' => Comment::pending()->whereNull('parent_id')->count(),
         ]);
     }
@@ -70,14 +72,14 @@ class CommentController extends Controller
         $validated = $request->validated();
 
         $comment = $post->comments()->create([
-            'user_id'      => $request->user()?->id,
-            'author_name'  => $validated['author_name'],
+            'user_id' => $request->user()?->id,
+            'author_name' => $validated['author_name'],
             'author_email' => $validated['author_email'] ?? null,
-            'body'         => $validated['body'],
-            'status'       => 'pending',
+            'body' => $validated['body'],
+            'status' => 'pending',
         ]);
 
-        dispatch(new \App\Jobs\SendNewCommentNotification($comment));
+        dispatch(new SendNewCommentNotification($comment));
 
         return back()->with('status', 'Your comment has been submitted and is awaiting moderation.');
     }
@@ -88,6 +90,7 @@ class CommentController extends Controller
     public function approve(Comment $comment): RedirectResponse
     {
         $comment->update(['status' => 'approved']);
+
         return back()->with('status', 'Comment approved.');
     }
 
@@ -97,6 +100,7 @@ class CommentController extends Controller
     public function reject(Comment $comment): RedirectResponse
     {
         $comment->update(['status' => 'rejected']);
+
         return back()->with('status', 'Comment rejected.');
     }
 
@@ -106,6 +110,7 @@ class CommentController extends Controller
     public function destroy(Comment $comment): RedirectResponse
     {
         $comment->delete();
+
         return back()->with('status', 'Comment deleted.');
     }
 
@@ -119,20 +124,20 @@ class CommentController extends Controller
         $validated = $request->validated();
 
         $reply = Comment::create([
-            'post_id'      => $comment->post_id,
-            'parent_id'    => $comment->id,
-            'user_id'      => $request->user()->id,
-            'author_name'  => $request->user()->name,
+            'post_id' => $comment->post_id,
+            'parent_id' => $comment->id,
+            'user_id' => $request->user()->id,
+            'author_name' => $request->user()->name,
             'author_email' => $request->user()->email,
-            'body'         => $validated['body'],
-            'status'       => 'approved',
+            'body' => $validated['body'],
+            'status' => 'approved',
         ]);
 
         $comment->loadMissing('post');
 
         if ($comment->author_email) {
             \Mail::to($comment->author_email)
-                ->queue(new \App\Mail\CommentReplyMail($comment, $reply));
+                ->queue(new CommentReplyMail($comment, $reply));
         }
 
         return back()->with('status', 'Reply sent.');
@@ -149,10 +154,10 @@ class CommentController extends Controller
 
         match ($validated['action']) {
             'approve' => $comments->update(['status' => 'approved']),
-            'reject'  => $comments->update(['status' => 'rejected']),
-            'delete'  => $comments->delete(),
+            'reject' => $comments->update(['status' => 'rejected']),
+            'delete' => $comments->delete(),
         };
 
-        return back()->with('status', ucfirst($validated['action']) . 'd ' . count($validated['ids']) . ' comment(s).');
+        return back()->with('status', ucfirst($validated['action']).'d '.count($validated['ids']).' comment(s).');
     }
 }

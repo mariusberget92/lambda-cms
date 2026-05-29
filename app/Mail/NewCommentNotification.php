@@ -18,7 +18,7 @@ class NewCommentNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New comment on "' . $this->comment->post->title . '"',
+            subject: 'New comment on "'.$this->comment->post->title.'"',
         );
     }
 

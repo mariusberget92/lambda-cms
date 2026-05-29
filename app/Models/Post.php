@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Media;
-use App\Models\Setting;
 use App\Models\Concerns\HasRevisions;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -29,39 +27,39 @@ class Post extends Model
     }
 
     protected $fillable = [
-        "user_id",
-        "featured_image_id",
-        "title",
-        "slug",
-        "excerpt",
-        "body",
-        "body_format",
-        "status",
-        "featured",
-        "published_at",
-        "comments_enabled",
-        "use_block_editor",
-        "blocks",
-        "meta_title",
-        "meta_description",
-        "meta_keywords",
-        "custom_js",
-        "preview_token",
+        'user_id',
+        'featured_image_id',
+        'title',
+        'slug',
+        'excerpt',
+        'body',
+        'body_format',
+        'status',
+        'featured',
+        'published_at',
+        'comments_enabled',
+        'use_block_editor',
+        'blocks',
+        'meta_title',
+        'meta_description',
+        'meta_keywords',
+        'custom_js',
+        'preview_token',
     ];
 
     protected $casts = [
-        "published_at"     => "datetime",
-        "comments_enabled" => "boolean",
-        "use_block_editor" => "boolean",
-        "featured"         => "boolean",
-        "blocks"           => "array",
+        'published_at' => 'datetime',
+        'comments_enabled' => 'boolean',
+        'use_block_editor' => 'boolean',
+        'featured' => 'boolean',
+        'blocks' => 'array',
     ];
 
     // ─── Relationships ────────────────────────────────────────────────────────
 
     public function author(): BelongsTo
     {
-        return $this->belongsTo(User::class, "user_id");
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function categories(): BelongsToMany
@@ -88,17 +86,17 @@ class Post extends Model
 
     public function scopePublished($query)
     {
-        return $query->where("status", "published");
+        return $query->where('status', 'published');
     }
 
     public function scopeDraft($query)
     {
-        return $query->where("status", "draft");
+        return $query->where('status', 'draft');
     }
 
     public function scopeScheduled($query)
     {
-        return $query->where("status", "scheduled");
+        return $query->where('status', 'scheduled');
     }
 
     public function scopeSearch($query, ?string $term)
@@ -108,8 +106,8 @@ class Post extends Model
         }
 
         return $query->where(function ($q) use ($term) {
-            $q->where("title", "like", "%{$term}%")
-              ->orWhere("excerpt", "like", "%{$term}%");
+            $q->where('title', 'like', "%{$term}%")
+                ->orWhere('excerpt', 'like', "%{$term}%");
         });
     }
 
@@ -122,11 +120,11 @@ class Post extends Model
         $count = 1;
 
         while (
-            static::where("slug", $slug)
-                ->when($excludeId, fn ($q) => $q->where("id", "!=", $excludeId))
+            static::where('slug', $slug)
+                ->when($excludeId, fn ($q) => $q->where('id', '!=', $excludeId))
                 ->exists()
         ) {
-            $slug = $original . "-" . $count++;
+            $slug = $original.'-'.$count++;
         }
 
         return $slug;
@@ -134,12 +132,12 @@ class Post extends Model
 
     public function isPublished(): bool
     {
-        return $this->status === "published";
+        return $this->status === 'published';
     }
 
     public function isScheduled(): bool
     {
-        return $this->status === "scheduled";
+        return $this->status === 'scheduled';
     }
 
     public function commentsOpen(): bool
@@ -147,6 +145,7 @@ class Post extends Model
         if (! Setting::get('comments.enabled', true)) {
             return false;
         }
+
         return (bool) $this->comments_enabled;
     }
 }

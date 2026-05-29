@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -73,7 +74,7 @@ class TagTest extends TestCase
     public function test_user_can_update_a_tag(): void
     {
         $user = $this->makeUser();
-        $tag  = Tag::factory()->create(['name' => 'Old Tag', 'slug' => 'old-tag']);
+        $tag = Tag::factory()->create(['name' => 'Old Tag', 'slug' => 'old-tag']);
 
         $this->actingAs($user)
             ->put("/tags/{$tag->id}", ['name' => 'New Tag'])
@@ -87,7 +88,7 @@ class TagTest extends TestCase
     public function test_user_can_delete_a_tag(): void
     {
         $user = $this->makeUser();
-        $tag  = Tag::factory()->create();
+        $tag = Tag::factory()->create();
 
         $this->actingAs($user)
             ->delete("/tags/{$tag->id}")
@@ -99,8 +100,8 @@ class TagTest extends TestCase
     public function test_tag_with_posts_can_still_be_deleted(): void
     {
         $user = $this->makeUser();
-        $tag  = \App\Models\Tag::factory()->create();
-        $post = \App\Models\Post::factory()->create();
+        $tag = Tag::factory()->create();
+        $post = Post::factory()->create();
         $post->tags()->attach($tag);
 
         $this->actingAs($user)

@@ -21,8 +21,8 @@ class AutosaveController extends Controller
         Autosave::updateOrCreate(
             [
                 'autosaveable_type' => Post::class,
-                'autosaveable_id'   => $post->id,
-                'user_id'           => $request->user()->id,
+                'autosaveable_id' => $post->id,
+                'user_id' => $request->user()->id,
             ],
             ['payload' => $request->input('payload')]
         );
@@ -39,8 +39,8 @@ class AutosaveController extends Controller
         Autosave::updateOrCreate(
             [
                 'autosaveable_type' => Page::class,
-                'autosaveable_id'   => $page->id,
-                'user_id'           => $request->user()->id,
+                'autosaveable_id' => $page->id,
+                'user_id' => $request->user()->id,
             ],
             ['payload' => $request->input('payload')]
         );
@@ -50,30 +50,40 @@ class AutosaveController extends Controller
 
     public function destroyPost(Request $request, Post $post): JsonResponse
     {
-        if ($post->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
+        $isAdmin = $request->user()->hasRole('administrator');
+
+        if ($post->user_id !== $request->user()->id && ! $isAdmin) {
             abort(403);
         }
 
-        Autosave::where([
-            'autosaveable_type' => Post::class,
-            'autosaveable_id'   => $post->id,
-            'user_id'           => $request->user()->id,
-        ])->delete();
+        $query = Autosave::where('autosaveable_type', Post::class)
+            ->where('autosaveable_id', $post->id);
+
+        if (! $isAdmin) {
+            $query->where('user_id', $request->user()->id);
+        }
+
+        $query->delete();
 
         return response()->json(['ok' => true]);
     }
 
     public function destroyPage(Request $request, Page $page): JsonResponse
     {
-        if ($page->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
+        $isAdmin = $request->user()->hasRole('administrator');
+
+        if ($page->user_id !== $request->user()->id && ! $isAdmin) {
             abort(403);
         }
 
-        Autosave::where([
-            'autosaveable_type' => Page::class,
-            'autosaveable_id'   => $page->id,
-            'user_id'           => $request->user()->id,
-        ])->delete();
+        $query = Autosave::where('autosaveable_type', Page::class)
+            ->where('autosaveable_id', $page->id);
+
+        if (! $isAdmin) {
+            $query->where('user_id', $request->user()->id);
+        }
+
+        $query->delete();
 
         return response()->json(['ok' => true]);
     }
@@ -87,8 +97,8 @@ class AutosaveController extends Controller
         Autosave::updateOrCreate(
             [
                 'autosaveable_type' => Template::class,
-                'autosaveable_id'   => $template->id,
-                'user_id'           => $request->user()->id,
+                'autosaveable_id' => $template->id,
+                'user_id' => $request->user()->id,
             ],
             ['payload' => $request->input('payload')]
         );
@@ -98,15 +108,20 @@ class AutosaveController extends Controller
 
     public function destroyTemplate(Request $request, Template $template): JsonResponse
     {
-        if ($template->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
+        $isAdmin = $request->user()->hasRole('administrator');
+
+        if ($template->user_id !== $request->user()->id && ! $isAdmin) {
             abort(403);
         }
 
-        Autosave::where([
-            'autosaveable_type' => Template::class,
-            'autosaveable_id'   => $template->id,
-            'user_id'           => $request->user()->id,
-        ])->delete();
+        $query = Autosave::where('autosaveable_type', Template::class)
+            ->where('autosaveable_id', $template->id);
+
+        if (! $isAdmin) {
+            $query->where('user_id', $request->user()->id);
+        }
+
+        $query->delete();
 
         return response()->json(['ok' => true]);
     }

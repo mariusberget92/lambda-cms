@@ -19,7 +19,7 @@ class Revision extends Model
     ];
 
     protected $casts = [
-        'payload'    => 'array',
+        'payload' => 'array',
         'created_at' => 'datetime',
     ];
 

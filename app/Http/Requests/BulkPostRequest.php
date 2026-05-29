@@ -15,8 +15,8 @@ class BulkPostRequest extends FormRequest
     {
         return [
             'action' => ['required', 'in:publish,draft,delete'],
-            'ids'    => ['required', 'array', 'min:1'],
-            'ids.*'  => ['integer', 'exists:posts,id'],
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:posts,id'],
         ];
     }
 }

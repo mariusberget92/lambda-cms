@@ -64,16 +64,16 @@ class Page extends Model
 
     public static function generateSlug(string $title, ?int $excludeId = null): string
     {
-        $slug     = Str::slug($title);
+        $slug = Str::slug($title);
         $original = $slug;
-        $count    = 1;
+        $count = 1;
 
         while (
             static::where('slug', $slug)
                 ->when($excludeId, fn ($q) => $q->where('id', '!=', $excludeId))
                 ->exists()
         ) {
-            $slug = $original . '-' . $count++;
+            $slug = $original.'-'.$count++;
         }
 
         return $slug;

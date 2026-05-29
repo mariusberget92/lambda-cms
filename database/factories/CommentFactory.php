@@ -14,12 +14,12 @@ class CommentFactory extends Factory
     public function definition(): array
     {
         return [
-            'post_id'      => Post::factory()->published(),
-            'user_id'      => null,
-            'author_name'  => $this->faker->name(),
+            'post_id' => Post::factory()->published(),
+            'user_id' => null,
+            'author_name' => $this->faker->name(),
             'author_email' => $this->faker->safeEmail(),
-            'body'         => $this->faker->paragraph(),
-            'status'       => 'pending',
+            'body' => $this->faker->paragraph(),
+            'status' => 'pending',
         ];
     }
 
@@ -41,10 +41,10 @@ class CommentFactory extends Factory
     public function forUser(User $user): static
     {
         return $this->state([
-            'user_id'      => $user->id,
-            'author_name'  => $user->name,
+            'user_id' => $user->id,
+            'author_name' => $user->name,
             'author_email' => null,
-            'status'       => 'approved',
+            'status' => 'approved',
         ]);
     }
 }

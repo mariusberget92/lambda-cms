@@ -12,10 +12,14 @@ return new class extends Migration
             ->where('type', 'partial')
             ->first();
 
-        if (!$template) return;
+        if (! $template) {
+            return;
+        }
 
         $blocks = json_decode($template->blocks, true);
-        if (!is_array($blocks)) return;
+        if (! is_array($blocks)) {
+            return;
+        }
 
         DB::table('templates')
             ->where('id', $template->id)
@@ -27,7 +31,7 @@ return new class extends Migration
         return array_map(function (array $block) {
             // Block 507: meta+read-more row — full-width flex with space-between
             if (($block['id'] ?? null) === 507 && ($block['type'] ?? null) === 'container') {
-                $block['data']['mode']    = 'flex';
+                $block['data']['mode'] = 'flex';
                 $block['data']['justify'] = 'between';
                 unset($block['data']['childGrow']);
             }
@@ -35,9 +39,10 @@ return new class extends Migration
             if (($block['id'] ?? null) === 502 && ($block['type'] ?? null) === 'container') {
                 $block['data']['align'] = 'stretch';
             }
-            if (!empty($block['children'])) {
+            if (! empty($block['children'])) {
                 $block['children'] = $this->patchBlocks($block['children']);
             }
+
             return $block;
         }, $blocks);
     }
@@ -49,10 +54,14 @@ return new class extends Migration
             ->where('type', 'partial')
             ->first();
 
-        if (!$template) return;
+        if (! $template) {
+            return;
+        }
 
         $blocks = json_decode($template->blocks, true);
-        if (!is_array($blocks)) return;
+        if (! is_array($blocks)) {
+            return;
+        }
 
         DB::table('templates')
             ->where('id', $template->id)
@@ -63,16 +72,17 @@ return new class extends Migration
     {
         return array_map(function (array $block) {
             if (($block['id'] ?? null) === 507 && ($block['type'] ?? null) === 'container') {
-                $block['data']['mode']      = 'inline-flex';
+                $block['data']['mode'] = 'inline-flex';
                 $block['data']['childGrow'] = false;
                 unset($block['data']['justify']);
             }
             if (($block['id'] ?? null) === 502 && ($block['type'] ?? null) === 'container') {
                 unset($block['data']['align']);
             }
-            if (!empty($block['children'])) {
+            if (! empty($block['children'])) {
                 $block['children'] = $this->revertBlocks($block['children']);
             }
+
             return $block;
         }, $blocks);
     }

@@ -7,7 +7,8 @@ use Illuminate\Console\Command;
 
 class PublishScheduledPostsCommand extends Command
 {
-    protected $signature   = 'posts:publish-scheduled';
+    protected $signature = 'posts:publish-scheduled';
+
     protected $description = 'Publish scheduled posts whose publish date has passed.';
 
     public function handle(): void

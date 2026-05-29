@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class CategoryController extends Controller
@@ -16,12 +15,12 @@ class CategoryController extends Controller
             ->orderBy('name')
             ->get()
             ->map(fn ($c) => [
-                'id'          => $c->id,
-                'name'        => $c->name,
-                'slug'        => $c->slug,
+                'id' => $c->id,
+                'name' => $c->name,
+                'slug' => $c->slug,
                 'description' => $c->description,
-                'color'       => $c->color,
-                'hue'         => $c->hue,
+                'color' => $c->color,
+                'hue' => $c->hue,
                 'posts_count' => $c->posts_count,
             ]);
 
@@ -52,12 +51,12 @@ class CategoryController extends Controller
     {
         return Inertia::render('Categories/Form', [
             'category' => [
-                'id'          => $category->id,
-                'name'        => $category->name,
-                'slug'        => $category->slug,
+                'id' => $category->id,
+                'name' => $category->name,
+                'slug' => $category->slug,
                 'description' => $category->description,
-                'color'       => $category->color,
-                'hue'         => $category->hue,
+                'color' => $category->color,
+                'hue' => $category->hue,
             ],
         ]);
     }

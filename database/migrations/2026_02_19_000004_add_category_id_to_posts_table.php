@@ -10,10 +10,10 @@ return new class extends Migration
     {
         Schema::table('posts', function (Blueprint $table) {
             $table->foreignId('category_id')
-                  ->nullable()
-                  ->after('user_id')
-                  ->constrained()
-                  ->nullOnDelete();
+                ->nullable()
+                ->after('user_id')
+                ->constrained()
+                ->nullOnDelete();
         });
     }
 

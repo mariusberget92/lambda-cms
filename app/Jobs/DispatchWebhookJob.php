@@ -26,15 +26,15 @@ class DispatchWebhookJob implements ShouldQueue
     public function handle(): void
     {
         $body = json_encode([
-            'event'     => $this->event,
-            'payload'   => $this->payload,
+            'event' => $this->event,
+            'payload' => $this->payload,
             'timestamp' => now()->toIso8601String(),
         ]);
 
         $headers = ['Content-Type' => 'application/json'];
 
         if ($this->webhook->secret) {
-            $headers['X-Lambda-Signature'] = 'sha256=' . hash_hmac('sha256', $body, $this->webhook->secret);
+            $headers['X-Lambda-Signature'] = 'sha256='.hash_hmac('sha256', $body, $this->webhook->secret);
         }
 
         try {

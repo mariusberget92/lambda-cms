@@ -9,6 +9,13 @@ class PostObserver
 {
     public function __construct(private WebhookService $webhooks) {}
 
+    public function created(Post $post): void
+    {
+        if ($post->status === 'published') {
+            $this->webhooks->dispatch('post.published', $this->payload($post));
+        }
+    }
+
     public function updated(Post $post): void
     {
         $event = $post->wasChanged('status') && $post->status === 'published'
@@ -21,21 +28,21 @@ class PostObserver
     public function deleted(Post $post): void
     {
         $this->webhooks->dispatch('post.deleted', [
-            'id'    => $post->id,
+            'id' => $post->id,
             'title' => $post->title,
-            'slug'  => $post->slug,
+            'slug' => $post->slug,
         ]);
     }
 
     private function payload(Post $post): array
     {
         return [
-            'id'           => $post->id,
-            'title'        => $post->title,
-            'slug'         => $post->slug,
-            'status'       => $post->status,
+            'id' => $post->id,
+            'title' => $post->title,
+            'slug' => $post->slug,
+            'status' => $post->status,
             'published_at' => $post->published_at?->toIso8601String(),
-            'url'          => url("/blog/{$post->slug}"),
+            'url' => url("/blog/{$post->slug}"),
         ];
     }
 }

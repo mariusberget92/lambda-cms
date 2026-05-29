@@ -61,7 +61,7 @@ class SettingServiceTest extends TestCase
         Setting::create(['group' => 'site', 'key' => 'site.name', 'value' => 'Cached', 'type' => 'string']);
 
         // Prime the cache
-        $service = new SettingService();
+        $service = new SettingService;
         $service->all();
         $this->assertTrue(Cache::has(SettingService::CACHE_KEY));
 
@@ -74,7 +74,7 @@ class SettingServiceTest extends TestCase
     {
         Setting::create(['group' => 'site', 'key' => 'site.name', 'value' => 'Test', 'type' => 'string']);
 
-        $service = new SettingService();
+        $service = new SettingService;
         $service->all(); // primes cache
 
         $this->assertTrue(Cache::has(SettingService::CACHE_KEY));

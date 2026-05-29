@@ -39,7 +39,7 @@ class FeedTest extends TestCase
     {
         Post::factory()->published()->create([
             'title' => 'Hello World',
-            'slug'  => 'hello-world',
+            'slug' => 'hello-world',
         ]);
 
         $content = $this->get('/feed')->getContent();

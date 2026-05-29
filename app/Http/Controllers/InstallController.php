@@ -32,7 +32,7 @@ class InstallController extends Controller
     public function showSite(Request $request): Response
     {
         return Inertia::render('Install/Site', [
-            'step'    => 2,
+            'step' => 2,
             'siteUrl' => $request->getSchemeAndHttpHost(),
         ]);
     }
@@ -66,16 +66,16 @@ class InstallController extends Controller
                     PDO::ATTR_TIMEOUT => 5,
                 ]);
             } catch (PDOException $e) {
-                return back()->withErrors(['database' => 'Could not connect to MySQL: ' . $e->getMessage()]);
+                return back()->withErrors(['database' => 'Could not connect to MySQL: '.$e->getMessage()]);
             }
 
             $this->writeEnv([
-                'DB_CONNECTION'  => 'mysql',
-                'DB_HOST'        => $request->host,
-                'DB_PORT'        => (string) $request->port,
-                'DB_DATABASE'    => $request->database,
-                'DB_USERNAME'    => $request->username,
-                'DB_PASSWORD'    => $request->password ?? '',
+                'DB_CONNECTION' => 'mysql',
+                'DB_HOST' => $request->host,
+                'DB_PORT' => (string) $request->port,
+                'DB_DATABASE' => $request->database,
+                'DB_USERNAME' => $request->username,
+                'DB_PASSWORD' => $request->password ?? '',
                 'DB_TABLE_PREFIX' => $request->prefix ?? '',
             ]);
         } else {
@@ -104,7 +104,7 @@ class InstallController extends Controller
 
         $this->writeEnv([
             'APP_NAME' => $request->site_name,
-            'APP_URL'  => $request->site_url,
+            'APP_URL' => $request->site_url,
         ]);
 
         Artisan::call('config:clear');
@@ -119,8 +119,8 @@ class InstallController extends Controller
     {
 
         $request->session()->put('install.admin', [
-            'name'     => $request->name,
-            'email'    => $request->email,
+            'name' => $request->name,
+            'email' => $request->email,
             'password' => $request->password,
         ]);
 
@@ -138,13 +138,13 @@ class InstallController extends Controller
         if ($mailer === 'smtp') {
 
             $this->writeEnv([
-                'MAIL_MAILER'       => 'smtp',
-                'MAIL_HOST'         => $request->host,
-                'MAIL_PORT'         => (string) $request->port,
-                'MAIL_USERNAME'     => $request->username,
-                'MAIL_PASSWORD'     => $request->password ?? '',
+                'MAIL_MAILER' => 'smtp',
+                'MAIL_HOST' => $request->host,
+                'MAIL_PORT' => (string) $request->port,
+                'MAIL_USERNAME' => $request->username,
+                'MAIL_PASSWORD' => $request->password ?? '',
                 'MAIL_FROM_ADDRESS' => $request->from_address,
-                'MAIL_FROM_NAME'    => $request->from_name,
+                'MAIL_FROM_NAME' => $request->from_name,
             ]);
         } else {
             $this->writeEnv([
@@ -160,7 +160,7 @@ class InstallController extends Controller
         // Switch session and cache to database AFTER migrations have run
         $this->writeEnv([
             'SESSION_DRIVER' => 'database',
-            'CACHE_STORE'    => 'database',
+            'CACHE_STORE' => 'database',
         ]);
 
         Artisan::call('config:clear');
@@ -177,8 +177,8 @@ class InstallController extends Controller
             $user = User::firstOrCreate(
                 ['email' => $adminData['email']],
                 [
-                    'name'              => $adminData['name'],
-                    'password'          => Hash::make($adminData['password']),
+                    'name' => $adminData['name'],
+                    'password' => Hash::make($adminData['password']),
                     'email_verified_at' => now(),
                 ]
             );
@@ -227,7 +227,7 @@ class InstallController extends Controller
                 $contents = preg_replace("/^{$key}=.*/m", $line, $contents);
             } else {
                 // Append new key
-                $contents = rtrim($contents) . "\n{$line}\n";
+                $contents = rtrim($contents)."\n{$line}\n";
             }
         }
 

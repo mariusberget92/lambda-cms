@@ -8,7 +8,9 @@ use App\Models\Post;
 use App\Models\Setting;
 use App\Models\Tag;
 use App\Models\User;
+use App\Services\SettingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class PostTest extends TestCase
@@ -46,20 +48,18 @@ class PostTest extends TestCase
 
     public function test_posts_index_includes_featured_image_url(): void
     {
-        $user  = $this->makeUser();
+        $user = $this->makeUser();
         $media = Media::factory()->create(['user_id' => $user->id]);
         Post::factory()->create([
-            'user_id'           => $user->id,
+            'user_id' => $user->id,
             'featured_image_id' => $media->id,
         ]);
 
         $response = $this->actingAs($user)->get('/posts');
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) =>
-            $page->where('posts.data.0.featured_image_url', fn ($value) =>
-                is_string($value) && strlen($value) > 0
-            )
+        $response->assertInertia(fn ($page) => $page->where('posts.data.0.featured_image_url', fn ($value) => is_string($value) && strlen($value) > 0
+        )
         );
     }
 
@@ -71,8 +71,7 @@ class PostTest extends TestCase
         $response = $this->actingAs($user)->get('/posts');
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) =>
-            $page->where('posts.data.0.featured_image_url', null)
+        $response->assertInertia(fn ($page) => $page->where('posts.data.0.featured_image_url', null)
         );
     }
 
@@ -84,8 +83,8 @@ class PostTest extends TestCase
         Post::factory()->create(['user_id' => $user->id, 'status' => 'published']);
         Post::factory()->create(['user_id' => $user->id, 'status' => 'draft']);
         $scheduled = Post::factory()->create([
-            'user_id'      => $user->id,
-            'status'       => 'scheduled',
+            'user_id' => $user->id,
+            'status' => 'scheduled',
             'published_at' => now()->addDay(),
         ]);
 
@@ -99,8 +98,8 @@ class PostTest extends TestCase
     {
         $user = $this->makeUser();
         $post = Post::factory()->create([
-            'user_id'      => $user->id,
-            'status'       => 'scheduled',
+            'user_id' => $user->id,
+            'status' => 'scheduled',
             'published_at' => now()->addDay(),
         ]);
 
@@ -120,8 +119,8 @@ class PostTest extends TestCase
         $user = $this->makeUser();
         Post::factory()->create(['user_id' => $user->id, 'status' => 'published']);
         Post::factory()->create([
-            'user_id'      => $user->id,
-            'status'       => 'scheduled',
+            'user_id' => $user->id,
+            'status' => 'scheduled',
             'published_at' => now()->addDay(),
         ]);
 
@@ -135,14 +134,14 @@ class PostTest extends TestCase
         $user = $this->makeUser();
 
         $this->actingAs($user)->post('/posts', [
-            'title'  => 'My New Post',
+            'title' => 'My New Post',
             'status' => 'draft',
-            'body'   => '<p>Hello</p>',
+            'body' => '<p>Hello</p>',
         ])->assertRedirect('/posts');
 
         $this->assertDatabaseHas('posts', [
-            'title'   => 'My New Post',
-            'status'  => 'draft',
+            'title' => 'My New Post',
+            'status' => 'draft',
             'user_id' => $user->id,
         ]);
     }
@@ -152,7 +151,7 @@ class PostTest extends TestCase
         $user = $this->makeUser();
 
         $this->actingAs($user)->post('/posts', [
-            'title'  => 'Published Post',
+            'title' => 'Published Post',
             'status' => 'published',
         ]);
 
@@ -165,7 +164,7 @@ class PostTest extends TestCase
         $user = $this->makeUser();
 
         $this->actingAs($user)->post('/posts', [
-            'title'  => 'Draft Post',
+            'title' => 'Draft Post',
             'status' => 'draft',
         ]);
 
@@ -178,7 +177,7 @@ class PostTest extends TestCase
         $user = $this->makeUser();
 
         $this->actingAs($user)->post('/posts', [
-            'title'  => 'Auto Slug Title',
+            'title' => 'Auto Slug Title',
             'status' => 'draft',
         ]);
 
@@ -213,7 +212,7 @@ class PostTest extends TestCase
     {
         $owner = $this->makeUser();
         $other = $this->makeUser();
-        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post = Post::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($other)->get("/posts/{$post->id}/edit")->assertForbidden();
     }
@@ -222,7 +221,7 @@ class PostTest extends TestCase
     {
         $owner = $this->makeUser();
         $admin = $this->makeAdmin();
-        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post = Post::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($admin)->get("/posts/{$post->id}/edit")->assertOk();
     }
@@ -233,9 +232,9 @@ class PostTest extends TestCase
         $post = Post::factory()->create(['user_id' => $user->id, 'title' => 'Old Title']);
 
         $this->actingAs($user)->put("/posts/{$post->id}", [
-            'title'  => 'New Title',
+            'title' => 'New Title',
             'status' => 'draft',
-        ])->assertRedirect('/posts');
+        ])->assertRedirect(route('posts.edit', $post));
 
         $this->assertDatabaseHas('posts', ['id' => $post->id, 'title' => 'New Title']);
     }
@@ -244,10 +243,10 @@ class PostTest extends TestCase
     {
         $owner = $this->makeUser();
         $other = $this->makeUser();
-        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post = Post::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($other)->put("/posts/{$post->id}", [
-            'title'  => 'Hacked',
+            'title' => 'Hacked',
             'status' => 'draft',
         ])->assertForbidden();
     }
@@ -256,12 +255,12 @@ class PostTest extends TestCase
     {
         $owner = $this->makeUser();
         $admin = $this->makeAdmin();
-        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post = Post::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($admin)->put("/posts/{$post->id}", [
-            'title'  => 'Admin Updated',
+            'title' => 'Admin Updated',
             'status' => 'draft',
-        ])->assertRedirect('/posts');
+        ])->assertRedirect(route('posts.edit', $post));
 
         $this->assertDatabaseHas('posts', ['id' => $post->id, 'title' => 'Admin Updated']);
     }
@@ -272,7 +271,7 @@ class PostTest extends TestCase
         $post = Post::factory()->draft()->create(['user_id' => $user->id]);
 
         $this->actingAs($user)->put("/posts/{$post->id}", [
-            'title'  => $post->title,
+            'title' => $post->title,
             'status' => 'published',
         ]);
 
@@ -285,7 +284,7 @@ class PostTest extends TestCase
         $post = Post::factory()->published()->create(['user_id' => $user->id]);
 
         $this->actingAs($user)->put("/posts/{$post->id}", [
-            'title'  => $post->title,
+            'title' => $post->title,
             'status' => 'draft',
         ]);
 
@@ -307,7 +306,7 @@ class PostTest extends TestCase
     {
         $owner = $this->makeUser();
         $other = $this->makeUser();
-        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post = Post::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($other)->delete("/posts/{$post->id}")->assertForbidden();
         $this->assertDatabaseHas('posts', ['id' => $post->id]);
@@ -317,7 +316,7 @@ class PostTest extends TestCase
     {
         $owner = $this->makeUser();
         $admin = $this->makeAdmin();
-        $post  = Post::factory()->create(['user_id' => $owner->id]);
+        $post = Post::factory()->create(['user_id' => $owner->id]);
 
         $this->actingAs($admin)->delete("/posts/{$post->id}")->assertRedirect('/posts');
         $this->assertDatabaseMissing('posts', ['id' => $post->id]);
@@ -331,8 +330,8 @@ class PostTest extends TestCase
         $tags = Tag::factory(2)->create();
 
         $this->actingAs($user)->post('/posts', [
-            'title'   => 'Tagged Post',
-            'status'  => 'draft',
+            'title' => 'Tagged Post',
+            'status' => 'draft',
             'tag_ids' => $tags->pluck('id')->toArray(),
         ]);
 
@@ -347,8 +346,8 @@ class PostTest extends TestCase
         $cat2 = Category::factory()->create();
 
         $this->actingAs($user)->post(route('posts.store'), [
-            'title'        => 'Multi cat post',
-            'status'       => 'draft',
+            'title' => 'Multi cat post',
+            'status' => 'draft',
             'category_ids' => [$cat1->id, $cat2->id],
         ]);
 
@@ -367,8 +366,8 @@ class PostTest extends TestCase
         $post->categories()->sync([$cat1->id]);
 
         $this->actingAs($user)->put(route('posts.update', $post), [
-            'title'        => $post->title,
-            'status'       => $post->status,
+            'title' => $post->title,
+            'status' => $post->status,
             'category_ids' => [$cat2->id],
         ]);
 
@@ -404,7 +403,7 @@ class PostTest extends TestCase
     public function test_post_comments_open_returns_false_when_global_setting_disabled(): void
     {
         Setting::create(['group' => 'comments', 'key' => 'comments.enabled', 'value' => '0', 'type' => 'boolean']);
-        app(\App\Services\SettingService::class)->bust();
+        app(SettingService::class)->bust();
 
         $post = Post::factory()->published()->create(['comments_enabled' => true]);
 
@@ -418,14 +417,14 @@ class PostTest extends TestCase
         $user = $this->makeUser();
 
         $this->actingAs($user)->post('/posts', [
-            'title'            => 'No Comments Post',
-            'status'           => 'draft',
-            'body'             => '<p>Hello</p>',
+            'title' => 'No Comments Post',
+            'status' => 'draft',
+            'body' => '<p>Hello</p>',
             'comments_enabled' => false,
         ])->assertRedirect('/posts');
 
         $this->assertDatabaseHas('posts', [
-            'title'            => 'No Comments Post',
+            'title' => 'No Comments Post',
             'comments_enabled' => false,
         ]);
     }
@@ -435,14 +434,14 @@ class PostTest extends TestCase
         $user = $this->makeUser();
 
         $this->actingAs($user)->post('/posts', [
-            'title'  => 'Default Comments Post',
+            'title' => 'Default Comments Post',
             'status' => 'draft',
-            'body'   => '<p>Hello</p>',
+            'body' => '<p>Hello</p>',
             // no comments_enabled field
         ])->assertRedirect('/posts');
 
         $this->assertDatabaseHas('posts', [
-            'title'            => 'Default Comments Post',
+            'title' => 'Default Comments Post',
             'comments_enabled' => true,
         ]);
     }
@@ -453,14 +452,14 @@ class PostTest extends TestCase
         $post = Post::factory()->create(['user_id' => $user->id, 'comments_enabled' => true]);
 
         $this->actingAs($user)->put("/posts/{$post->id}", [
-            'title'            => $post->title,
-            'status'           => $post->status,
-            'body'             => $post->body ?? '',
+            'title' => $post->title,
+            'status' => $post->status,
+            'body' => $post->body ?? '',
             'comments_enabled' => false,
-        ])->assertRedirect('/posts');
+        ])->assertRedirect(route('posts.edit', $post));
 
         $this->assertDatabaseHas('posts', [
-            'id'               => $post->id,
+            'id' => $post->id,
             'comments_enabled' => false,
         ]);
     }
@@ -471,14 +470,14 @@ class PostTest extends TestCase
         $post = Post::factory()->create(['user_id' => $user->id, 'comments_enabled' => false]);
 
         $this->actingAs($user)->put("/posts/{$post->id}", [
-            'title'  => $post->title,
+            'title' => $post->title,
             'status' => $post->status,
-            'body'   => $post->body ?? '',
+            'body' => $post->body ?? '',
             // comments_enabled deliberately omitted
-        ])->assertRedirect('/posts');
+        ])->assertRedirect(route('posts.edit', $post));
 
         $this->assertDatabaseHas('posts', [
-            'id'               => $post->id,
+            'id' => $post->id,
             'comments_enabled' => false,
         ]);
     }
@@ -515,18 +514,18 @@ class PostTest extends TestCase
         $category = Category::factory()->create();
 
         $this->actingAs($admin)->post(route('posts.store'), [
-            'title'            => 'SEO Test Post',
-            'body'             => '<p>body</p>',
-            'status'           => 'draft',
-            'category_ids'     => [$category->id],
-            'tag_ids'          => [],
-            'meta_title'       => 'Custom SEO Title',
+            'title' => 'SEO Test Post',
+            'body' => '<p>body</p>',
+            'status' => 'draft',
+            'category_ids' => [$category->id],
+            'tag_ids' => [],
+            'meta_title' => 'Custom SEO Title',
             'meta_description' => 'Custom meta description',
         ])->assertRedirect();
 
         $this->assertDatabaseHas('posts', [
-            'title'            => 'SEO Test Post',
-            'meta_title'       => 'Custom SEO Title',
+            'title' => 'SEO Test Post',
+            'meta_title' => 'Custom SEO Title',
             'meta_description' => 'Custom meta description',
         ]);
     }
@@ -537,11 +536,11 @@ class PostTest extends TestCase
         $category = Category::factory()->create();
 
         $this->actingAs($admin)->post(route('posts.store'), [
-            'title'        => 'No SEO Post',
-            'body'         => '<p>body</p>',
-            'status'       => 'draft',
+            'title' => 'No SEO Post',
+            'body' => '<p>body</p>',
+            'status' => 'draft',
             'category_ids' => [$category->id],
-            'tag_ids'      => [],
+            'tag_ids' => [],
         ])->assertRedirect();
 
         $post = Post::where('title', 'No SEO Post')->first();
@@ -555,12 +554,12 @@ class PostTest extends TestCase
         $post = Post::factory()->create(['user_id' => $admin->id, 'meta_title' => null]);
 
         $this->actingAs($admin)->put(route('posts.update', $post), [
-            'title'            => $post->title,
-            'body'             => $post->body,
-            'status'           => $post->status,
-            'category_ids'     => [],
-            'tag_ids'          => [],
-            'meta_title'       => 'Updated SEO Title',
+            'title' => $post->title,
+            'body' => $post->body,
+            'status' => $post->status,
+            'category_ids' => [],
+            'tag_ids' => [],
+            'meta_title' => 'Updated SEO Title',
             'meta_description' => 'Updated meta desc',
         ])->assertRedirect();
 
@@ -572,17 +571,17 @@ class PostTest extends TestCase
     {
         $admin = $this->makeAdmin();
         $post = Post::factory()->create([
-            'user_id'          => $admin->id,
-            'meta_title'       => 'Existing SEO Title',
+            'user_id' => $admin->id,
+            'meta_title' => 'Existing SEO Title',
             'meta_description' => 'Existing meta desc',
         ]);
 
         $this->actingAs($admin)->put(route('posts.update', $post), [
-            'title'        => $post->title,
-            'body'         => $post->body,
-            'status'       => $post->status,
+            'title' => $post->title,
+            'body' => $post->body,
+            'status' => $post->status,
             'category_ids' => [],
-            'tag_ids'      => [],
+            'tag_ids' => [],
         ])->assertRedirect();
 
         $this->assertSame('Existing SEO Title', $post->fresh()->meta_title);
@@ -593,8 +592,8 @@ class PostTest extends TestCase
     {
         $admin = $this->makeAdmin();
         $post = Post::factory()->create([
-            'user_id'          => $admin->id,
-            'meta_title'       => 'My SEO Title',
+            'user_id' => $admin->id,
+            'meta_title' => 'My SEO Title',
             'meta_description' => 'My meta desc',
         ]);
 
@@ -610,13 +609,13 @@ class PostTest extends TestCase
         $user = $this->makeUser();
 
         $this->actingAs($user)->post('/posts', [
-            'title'         => 'Keywords Post',
-            'status'        => 'draft',
+            'title' => 'Keywords Post',
+            'status' => 'draft',
             'meta_keywords' => 'laravel, cms, blog',
         ])->assertRedirect('/posts');
 
         $this->assertDatabaseHas('posts', [
-            'title'         => 'Keywords Post',
+            'title' => 'Keywords Post',
             'meta_keywords' => 'laravel, cms, blog',
         ]);
     }
@@ -627,10 +626,10 @@ class PostTest extends TestCase
         $post = Post::factory()->create(['user_id' => $user->id, 'meta_keywords' => 'old, keywords']);
 
         $this->actingAs($user)->put("/posts/{$post->id}", [
-            'title'         => $post->title,
-            'status'        => $post->status,
+            'title' => $post->title,
+            'status' => $post->status,
             'meta_keywords' => 'new, keywords',
-        ])->assertRedirect('/posts');
+        ])->assertRedirect(route('posts.edit', $post));
 
         $this->assertDatabaseHas('posts', ['id' => $post->id, 'meta_keywords' => 'new, keywords']);
     }
@@ -653,19 +652,19 @@ class PostTest extends TestCase
 
     public function test_can_create_scheduled_post_with_future_date(): void
     {
-        $user     = $this->makeUser();
-        $future   = now()->addDay()->format('Y-m-d\TH:i');
+        $user = $this->makeUser();
+        $future = now()->addDay()->format('Y-m-d\TH:i');
 
         $this->actingAs($user)->post('/posts', [
-            'title'        => 'Scheduled Post',
-            'status'       => 'scheduled',
+            'title' => 'Scheduled Post',
+            'status' => 'scheduled',
             'published_at' => $future,
         ])->assertRedirect('/posts');
 
         $post = Post::where('title', 'Scheduled Post')->first();
         $this->assertEquals('scheduled', $post->status);
         $this->assertEquals(
-            \Illuminate\Support\Carbon::parse($future)->toDateTimeString(),
+            Carbon::parse($future)->toDateTimeString(),
             $post->published_at->toDateTimeString()
         );
     }
@@ -675,7 +674,7 @@ class PostTest extends TestCase
         $user = $this->makeUser();
 
         $this->actingAs($user)->post('/posts', [
-            'title'  => 'Bad Schedule',
+            'title' => 'Bad Schedule',
             'status' => 'scheduled',
         ])->assertSessionHasErrors('published_at');
     }
@@ -685,8 +684,8 @@ class PostTest extends TestCase
         $user = $this->makeUser();
 
         $this->actingAs($user)->post('/posts', [
-            'title'        => 'Past Schedule',
-            'status'       => 'scheduled',
+            'title' => 'Past Schedule',
+            'status' => 'scheduled',
             'published_at' => now()->subHour()->format('Y-m-d\TH:i'),
         ])->assertSessionHasErrors('published_at');
     }
@@ -695,15 +694,15 @@ class PostTest extends TestCase
     {
         $user = $this->makeUser();
         $post = Post::factory()->create([
-            'user_id'      => $user->id,
-            'status'       => 'scheduled',
+            'user_id' => $user->id,
+            'status' => 'scheduled',
             'published_at' => now()->addDay(),
         ]);
 
         $this->actingAs($user)->put("/posts/{$post->id}", [
-            'title'  => $post->title,
+            'title' => $post->title,
             'status' => 'draft',
-        ])->assertRedirect('/posts');
+        ])->assertRedirect(route('posts.edit', $post));
 
         $this->assertNull($post->fresh()->published_at);
         $this->assertEquals('draft', $post->fresh()->status);
@@ -713,41 +712,41 @@ class PostTest extends TestCase
     {
         $user = $this->makeUser();
         $post = Post::factory()->create([
-            'user_id'      => $user->id,
-            'status'       => 'published',
+            'user_id' => $user->id,
+            'status' => 'published',
             'published_at' => now()->subDay(),
         ]);
 
         $future = now()->addDay()->format('Y-m-d\TH:i');
 
         $this->actingAs($user)->put("/posts/{$post->id}", [
-            'title'        => $post->title,
-            'status'       => 'scheduled',
+            'title' => $post->title,
+            'status' => 'scheduled',
             'published_at' => $future,
-        ])->assertRedirect('/posts');
+        ])->assertRedirect(route('posts.edit', $post));
 
         $this->assertEquals('scheduled', $post->fresh()->status);
         $this->assertEquals(
-            \Illuminate\Support\Carbon::parse($future)->toDateTimeString(),
+            Carbon::parse($future)->toDateTimeString(),
             $post->fresh()->published_at->toDateTimeString()
         );
     }
 
     public function test_republishing_preserves_original_published_at(): void
     {
-        $user      = $this->makeUser();
-        $original  = now()->subDays(5);
-        $post      = Post::factory()->create([
-            'user_id'      => $user->id,
-            'status'       => 'published',
+        $user = $this->makeUser();
+        $original = now()->subDays(5);
+        $post = Post::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'published',
             'published_at' => $original,
         ]);
 
         $this->actingAs($user)->put("/posts/{$post->id}", [
-            'title'        => $post->title,
-            'status'       => 'published',
+            'title' => $post->title,
+            'status' => 'published',
             'published_at' => now()->format('Y-m-d\TH:i'), // incoming value must be ignored
-        ])->assertRedirect('/posts');
+        ])->assertRedirect(route('posts.edit', $post));
 
         $this->assertEquals(
             $original->toDateTimeString(),
@@ -761,8 +760,8 @@ class PostTest extends TestCase
     {
         $user = $this->makeUser();
         $post = Post::factory()->create([
-            'user_id'      => $user->id,
-            'status'       => 'scheduled',
+            'user_id' => $user->id,
+            'status' => 'scheduled',
             'published_at' => now()->subMinute(),
         ]);
 
@@ -775,8 +774,8 @@ class PostTest extends TestCase
     {
         $user = $this->makeUser();
         $post = Post::factory()->create([
-            'user_id'      => $user->id,
-            'status'       => 'scheduled',
+            'user_id' => $user->id,
+            'status' => 'scheduled',
             'published_at' => now()->addHour(),
         ]);
 
@@ -787,27 +786,27 @@ class PostTest extends TestCase
 
     public function test_command_does_not_affect_draft_or_published_posts(): void
     {
-        $user    = $this->makeUser();
-        $draft   = Post::factory()->create(['user_id' => $user->id, 'status' => 'draft']);
+        $user = $this->makeUser();
+        $draft = Post::factory()->create(['user_id' => $user->id, 'status' => 'draft']);
         $published = Post::factory()->create([
-            'user_id'      => $user->id,
-            'status'       => 'published',
+            'user_id' => $user->id,
+            'status' => 'published',
             'published_at' => now()->subDay(),
         ]);
 
         $this->artisan('posts:publish-scheduled')->assertSuccessful();
 
-        $this->assertEquals('draft',     $draft->fresh()->status);
+        $this->assertEquals('draft', $draft->fresh()->status);
         $this->assertEquals('published', $published->fresh()->status);
     }
 
     public function test_command_preserves_original_published_at_after_publishing(): void
     {
-        $user   = $this->makeUser();
+        $user = $this->makeUser();
         $target = now()->subMinutes(5);
-        $post   = Post::factory()->create([
-            'user_id'      => $user->id,
-            'status'       => 'scheduled',
+        $post = Post::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'scheduled',
             'published_at' => $target,
         ]);
 
@@ -823,11 +822,11 @@ class PostTest extends TestCase
 
     public function test_index_includes_scheduled_post_with_datetime(): void
     {
-        $user   = $this->makeUser();
+        $user = $this->makeUser();
         $future = now()->addDay();
         Post::factory()->create([
-            'user_id'      => $user->id,
-            'status'       => 'scheduled',
+            'user_id' => $user->id,
+            'status' => 'scheduled',
             'published_at' => $future,
         ]);
 
@@ -847,79 +846,79 @@ class PostTest extends TestCase
 
     public function test_user_can_bulk_publish_own_posts(): void
     {
-        $user  = $this->makeUser();
-        $post1 = Post::factory()->create(["user_id" => $user->id, "status" => "draft", "published_at" => null]);
-        $post2 = Post::factory()->create(["user_id" => $user->id, "status" => "draft", "published_at" => null]);
+        $user = $this->makeUser();
+        $post1 = Post::factory()->create(['user_id' => $user->id, 'status' => 'draft', 'published_at' => null]);
+        $post2 = Post::factory()->create(['user_id' => $user->id, 'status' => 'draft', 'published_at' => null]);
 
         $this->actingAs($user)
-            ->post("/posts/bulk", ["action" => "publish", "ids" => [$post1->id, $post2->id]])
+            ->post('/posts/bulk', ['action' => 'publish', 'ids' => [$post1->id, $post2->id]])
             ->assertRedirect();
 
-        $this->assertEquals("published", $post1->fresh()->status);
-        $this->assertEquals("published", $post2->fresh()->status);
+        $this->assertEquals('published', $post1->fresh()->status);
+        $this->assertEquals('published', $post2->fresh()->status);
         $this->assertNotNull($post1->fresh()->published_at);
     }
 
     public function test_user_can_bulk_draft_own_posts(): void
     {
-        $user  = $this->makeUser();
-        $post1 = Post::factory()->create(["user_id" => $user->id, "status" => "published", "published_at" => now()->subDay()]);
-        $post2 = Post::factory()->create(["user_id" => $user->id, "status" => "published", "published_at" => now()->subDay()]);
+        $user = $this->makeUser();
+        $post1 = Post::factory()->create(['user_id' => $user->id, 'status' => 'published', 'published_at' => now()->subDay()]);
+        $post2 = Post::factory()->create(['user_id' => $user->id, 'status' => 'published', 'published_at' => now()->subDay()]);
 
         $this->actingAs($user)
-            ->post("/posts/bulk", ["action" => "draft", "ids" => [$post1->id, $post2->id]])
+            ->post('/posts/bulk', ['action' => 'draft', 'ids' => [$post1->id, $post2->id]])
             ->assertRedirect();
 
-        $this->assertEquals("draft", $post1->fresh()->status);
-        $this->assertEquals("draft", $post2->fresh()->status);
+        $this->assertEquals('draft', $post1->fresh()->status);
+        $this->assertEquals('draft', $post2->fresh()->status);
     }
 
     public function test_user_can_bulk_delete_own_posts(): void
     {
-        $user  = $this->makeUser();
-        $post1 = Post::factory()->create(["user_id" => $user->id]);
-        $post2 = Post::factory()->create(["user_id" => $user->id]);
+        $user = $this->makeUser();
+        $post1 = Post::factory()->create(['user_id' => $user->id]);
+        $post2 = Post::factory()->create(['user_id' => $user->id]);
 
         $this->actingAs($user)
-            ->post("/posts/bulk", ["action" => "delete", "ids" => [$post1->id, $post2->id]])
+            ->post('/posts/bulk', ['action' => 'delete', 'ids' => [$post1->id, $post2->id]])
             ->assertRedirect();
 
-        $this->assertDatabaseMissing("posts", ["id" => $post1->id]);
-        $this->assertDatabaseMissing("posts", ["id" => $post2->id]);
+        $this->assertDatabaseMissing('posts', ['id' => $post1->id]);
+        $this->assertDatabaseMissing('posts', ['id' => $post2->id]);
     }
 
     public function test_admin_can_bulk_action_any_posts(): void
     {
-        $admin  = $this->makeAdmin();
+        $admin = $this->makeAdmin();
         $author = $this->makeUser();
-        $post   = Post::factory()->create(["user_id" => $author->id, "status" => "draft", "published_at" => null]);
+        $post = Post::factory()->create(['user_id' => $author->id, 'status' => 'draft', 'published_at' => null]);
 
         $this->actingAs($admin)
-            ->post("/posts/bulk", ["action" => "publish", "ids" => [$post->id]])
+            ->post('/posts/bulk', ['action' => 'publish', 'ids' => [$post->id]])
             ->assertRedirect();
 
-        $this->assertEquals("published", $post->fresh()->status);
+        $this->assertEquals('published', $post->fresh()->status);
     }
 
     public function test_user_cannot_bulk_action_other_users_posts(): void
     {
-        $user  = $this->makeUser();
+        $user = $this->makeUser();
         $other = $this->makeUser();
-        $post  = Post::factory()->create(["user_id" => $other->id, "status" => "draft"]);
+        $post = Post::factory()->create(['user_id' => $other->id, 'status' => 'draft']);
 
         $this->actingAs($user)
-            ->post("/posts/bulk", ["action" => "publish", "ids" => [$post->id]])
+            ->post('/posts/bulk', ['action' => 'publish', 'ids' => [$post->id]])
             ->assertForbidden();
     }
 
     public function test_bulk_action_requires_valid_action(): void
     {
         $user = $this->makeUser();
-        $post = Post::factory()->create(["user_id" => $user->id]);
+        $post = Post::factory()->create(['user_id' => $user->id]);
 
         $this->actingAs($user)
             ->withHeaders(['Accept' => 'application/json'])
-            ->post("/posts/bulk", ["action" => "nuke", "ids" => [$post->id]])
+            ->post('/posts/bulk', ['action' => 'nuke', 'ids' => [$post->id]])
             ->assertUnprocessable();
     }
 
@@ -929,17 +928,17 @@ class PostTest extends TestCase
 
         $this->actingAs($user)
             ->withHeaders(['Accept' => 'application/json'])
-            ->post("/posts/bulk", ["action" => "publish", "ids" => []])
+            ->post('/posts/bulk', ['action' => 'publish', 'ids' => []])
             ->assertUnprocessable();
     }
 
     public function test_bulk_publish_sets_published_at_when_null(): void
     {
         $user = $this->makeUser();
-        $post = Post::factory()->create(["user_id" => $user->id, "status" => "draft", "published_at" => null]);
+        $post = Post::factory()->create(['user_id' => $user->id, 'status' => 'draft', 'published_at' => null]);
 
         $this->actingAs($user)
-            ->post("/posts/bulk", ["action" => "publish", "ids" => [$post->id]])
+            ->post('/posts/bulk', ['action' => 'publish', 'ids' => [$post->id]])
             ->assertRedirect();
 
         $this->assertNotNull($post->fresh()->published_at);
@@ -947,16 +946,16 @@ class PostTest extends TestCase
 
     public function test_bulk_publish_overwrites_existing_published_at(): void
     {
-        $user     = $this->makeUser();
+        $user = $this->makeUser();
         $original = now()->subWeek()->startOfMinute();
-        $post     = Post::factory()->create([
-            "user_id"      => $user->id,
-            "status"       => "draft",
-            "published_at" => $original,
+        $post = Post::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'draft',
+            'published_at' => $original,
         ]);
 
         $this->actingAs($user)
-            ->post("/posts/bulk", ["action" => "publish", "ids" => [$post->id]])
+            ->post('/posts/bulk', ['action' => 'publish', 'ids' => [$post->id]])
             ->assertRedirect();
 
         $publishedAt = $post->fresh()->published_at;
@@ -968,20 +967,20 @@ class PostTest extends TestCase
 
     public function test_bulk_publish_of_scheduled_post_sets_published_at_to_now(): void
     {
-        $user   = $this->makeUser();
+        $user = $this->makeUser();
         $future = now()->addDay();
-        $post   = Post::factory()->create([
-            "user_id"      => $user->id,
-            "status"       => "scheduled",
-            "published_at" => $future,
+        $post = Post::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'scheduled',
+            'published_at' => $future,
         ]);
 
         $this->actingAs($user)
-            ->post("/posts/bulk", ["action" => "publish", "ids" => [$post->id]])
+            ->post('/posts/bulk', ['action' => 'publish', 'ids' => [$post->id]])
             ->assertRedirect();
 
         $publishedAt = $post->fresh()->published_at;
-        $this->assertEquals("published", $post->fresh()->status);
+        $this->assertEquals('published', $post->fresh()->status);
         $this->assertFalse($publishedAt->equalTo($future), 'published_at must not keep the old scheduled timestamp');
         // published_at should be within the last 10 seconds, not in the future
         $this->assertTrue($publishedAt->greaterThanOrEqualTo(now()->subSeconds(10)), 'published_at must be approximately now()');
@@ -992,13 +991,13 @@ class PostTest extends TestCase
     {
         $user = $this->makeUser();
         $post = Post::factory()->create([
-            "user_id"      => $user->id,
-            "status"       => "published",
-            "published_at" => now()->subDay(),
+            'user_id' => $user->id,
+            'status' => 'published',
+            'published_at' => now()->subDay(),
         ]);
 
         $this->actingAs($user)
-            ->post("/posts/bulk", ["action" => "draft", "ids" => [$post->id]])
+            ->post('/posts/bulk', ['action' => 'draft', 'ids' => [$post->id]])
             ->assertRedirect();
 
         $this->assertNull($post->fresh()->published_at);
@@ -1007,25 +1006,24 @@ class PostTest extends TestCase
     public function test_bulk_action_returns_flash_message(): void
     {
         $user = $this->makeUser();
-        $post = Post::factory()->create(["user_id" => $user->id, "status" => "draft", "published_at" => null]);
+        $post = Post::factory()->create(['user_id' => $user->id, 'status' => 'draft', 'published_at' => null]);
 
         $this->actingAs($user)
-            ->post("/posts/bulk", ["action" => "publish", "ids" => [$post->id]])
+            ->post('/posts/bulk', ['action' => 'publish', 'ids' => [$post->id]])
             ->assertRedirect()
-            ->assertSessionHas("status", "1 post published.");
+            ->assertSessionHas('status', '1 post published.');
     }
 
     public function test_post_model_has_block_editor_fillable(): void
     {
         $user = $this->makeUser();
         $post = Post::factory()->create([
-            'user_id'          => $user->id,
+            'user_id' => $user->id,
             'use_block_editor' => true,
-            'blocks'           => [['id' => 'a1', 'type' => 'heading', 'data' => ['level' => 1, 'text' => 'Hi']]],
+            'blocks' => [['id' => 'a1', 'type' => 'heading', 'data' => ['level' => 1, 'text' => 'Hi']]],
         ]);
 
         $this->assertTrue((bool) $post->fresh()->use_block_editor);
         $this->assertIsArray($post->fresh()->blocks);
     }
-
 }

@@ -51,7 +51,7 @@ class PostApiTest extends TestCase
         $this->seedRolesAndPermissions();
 
         $user = User::factory()->create()->assignRole('user');
-        $cat  = Category::factory()->create(['slug' => 'tech']);
+        $cat = Category::factory()->create(['slug' => 'tech']);
         $postWithCat = Post::factory()->create(['user_id' => $user->id, 'status' => 'published', 'published_at' => now()]);
         $postWithCat->categories()->sync([$cat->id]);
         Post::factory()->create(['user_id' => $user->id, 'status' => 'published', 'published_at' => now()]);
@@ -68,7 +68,7 @@ class PostApiTest extends TestCase
         $this->seedRolesAndPermissions();
 
         $user = User::factory()->create()->assignRole('user');
-        $tag  = Tag::factory()->create(['slug' => 'laravel']);
+        $tag = Tag::factory()->create(['slug' => 'laravel']);
         $post = Post::factory()->create(['user_id' => $user->id, 'status' => 'published', 'published_at' => now()]);
         $post->tags()->attach($tag);
         Post::factory()->create(['user_id' => $user->id, 'status' => 'published', 'published_at' => now()]);

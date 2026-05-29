@@ -22,7 +22,7 @@ class StoreMediaRequest extends FormRequest
 
     public function rules(): array
     {
-        $maxKb    = (int) (config('media.max_upload_mb', 10) * 1024);
+        $maxKb = (int) (config('media.max_upload_mb', 10) * 1024);
         $allMimes = collect(config('media.allowed_mimes', []))->flatten()->implode(',');
 
         return [

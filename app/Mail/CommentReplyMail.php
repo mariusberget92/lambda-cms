@@ -25,7 +25,7 @@ class CommentReplyMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Someone replied to your comment on "' . $this->postTitle . '"',
+            subject: 'Someone replied to your comment on "'.$this->postTitle.'"',
         );
     }
 

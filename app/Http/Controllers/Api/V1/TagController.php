@@ -14,9 +14,9 @@ class TagController extends Controller
             ->orderBy('name')
             ->get()
             ->map(fn (Tag $t) => [
-                'id'          => $t->id,
-                'name'        => $t->name,
-                'slug'        => $t->slug,
+                'id' => $t->id,
+                'name' => $t->name,
+                'slug' => $t->slug,
                 'posts_count' => $t->posts_count,
             ]);
 
@@ -30,9 +30,9 @@ class TagController extends Controller
             ->firstOrFail();
 
         return response()->json([
-            'id'          => $tag->id,
-            'name'        => $tag->name,
-            'slug'        => $tag->slug,
+            'id' => $tag->id,
+            'name' => $tag->name,
+            'slug' => $tag->slug,
             'posts_count' => $tag->posts_count,
         ]);
     }

@@ -32,25 +32,25 @@ class PostController extends Controller
             ->paginate(15)
             ->withQueryString()
             ->through(fn ($post) => [
-                'id'           => $post->id,
-                'title'        => $post->title,
-                'slug'         => $post->slug,
-                'excerpt'      => $post->excerpt,
-                'status'       => $post->status,
+                'id' => $post->id,
+                'title' => $post->title,
+                'slug' => $post->slug,
+                'excerpt' => $post->excerpt,
+                'status' => $post->status,
                 'published_at' => $post->status === 'scheduled'
                     ? $post->published_at?->format('Y-m-d H:i')
                     : $post->published_at?->toDateString(),
-                'created_at'   => $post->created_at->toDateString(),
-                'author'       => $post->author->name,
-                'categories'     => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name])->values(),
-                'tags'           => $post->tags->pluck('name'),
+                'created_at' => $post->created_at->toDateString(),
+                'author' => $post->author->name,
+                'categories' => $post->categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name])->values(),
+                'tags' => $post->tags->pluck('name'),
                 'comments_count' => $post->comments_count,
                 'featured_image_url' => $post->featuredImage?->url,
             ]);
 
         return Inertia::render('Posts/Index', [
-            'posts'      => $posts,
-            'filters'    => $request->only('search', 'status', 'category'),
+            'posts' => $posts,
+            'filters' => $request->only('search', 'status', 'category'),
             'categories' => Category::orderBy('name')->get(['id', 'name']),
         ]);
     }
@@ -59,7 +59,7 @@ class PostController extends Controller
     {
         return Inertia::render('Posts/Create', [
             'categories' => Category::orderBy('name')->get(['id', 'name']),
-            'tags'       => Tag::orderBy('name')->get(['id', 'name']),
+            'tags' => Tag::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -67,28 +67,30 @@ class PostController extends Controller
     {
         $validated = $request->validated();
 
-        $tagIds      = $validated['tag_ids'] ?? [];
+        $tagIds = $validated['tag_ids'] ?? [];
         $categoryIds = $validated['category_ids'] ?? [];
         $newTagNames = $validated['new_tag_names'] ?? [];
         unset($validated['tag_ids'], $validated['category_ids'], $validated['new_tag_names']);
 
         foreach ($newTagNames as $name) {
             $name = trim($name);
-            if ($name === '') continue;
+            if ($name === '') {
+                continue;
+            }
             $tagIds[] = Tag::firstOrCreate(
                 ['name' => $name],
                 ['slug' => Tag::generateSlug($name)]
             )->id;
         }
 
-        $validated['body_format']      = $validated['body_format']      ?? 'html';
+        $validated['body_format'] = $validated['body_format'] ?? 'html';
         $validated['comments_enabled'] = $validated['comments_enabled'] ?? true;
-        $validated['featured']         = $validated['featured'] ?? false;
-        $validated['meta_title']       = $validated['meta_title']       ?? null;
+        $validated['featured'] = $validated['featured'] ?? false;
+        $validated['meta_title'] = $validated['meta_title'] ?? null;
         $validated['meta_description'] = $validated['meta_description'] ?? null;
-        $validated['meta_keywords']    = $validated['meta_keywords']    ?? null;
+        $validated['meta_keywords'] = $validated['meta_keywords'] ?? null;
 
-        $validated['slug']    = Post::generateSlug($validated['title']);
+        $validated['slug'] = Post::generateSlug($validated['title']);
         $validated['user_id'] = $request->user()->id;
 
         if ($validated['status'] === 'published') {
@@ -109,7 +111,7 @@ class PostController extends Controller
 
     public function edit(Request $request, Post $post)
     {
-        if ($post->user_id !== $request->user()->id && !$request->user()->hasRole('administrator')) {
+        if ($post->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
             abort(403);
         }
 
@@ -117,59 +119,61 @@ class PostController extends Controller
 
         return Inertia::render('Posts/Edit', [
             'post' => [
-                'id'                => $post->id,
-                'title'             => $post->title,
-                'slug'              => $post->slug,
-                'excerpt'           => $post->excerpt,
-                'body'              => $post->body,
-                'status'            => $post->status,
-                'published_at'      => $post->published_at?->format('Y-m-d\TH:i'),
-                'updated_at'        => $post->updated_at?->toISOString(),
-                'category_ids'      => $post->categories->pluck('id'),
-                'tag_ids'           => $post->tags->pluck('id'),
+                'id' => $post->id,
+                'title' => $post->title,
+                'slug' => $post->slug,
+                'excerpt' => $post->excerpt,
+                'body' => $post->body,
+                'status' => $post->status,
+                'published_at' => $post->published_at?->format('Y-m-d\TH:i'),
+                'updated_at' => $post->updated_at?->toISOString(),
+                'category_ids' => $post->categories->pluck('id'),
+                'tag_ids' => $post->tags->pluck('id'),
                 'featured_image_id' => $post->featured_image_id,
-                'featured_image'    => $post->featured_image_id ? [
-                    'id'  => $post->featuredImage->id,
+                'featured_image' => $post->featured_image_id ? [
+                    'id' => $post->featuredImage->id,
                     'url' => $post->featuredImage->url,
                     'alt' => $post->featuredImage->alt,
                 ] : null,
-                'comments_enabled'  => $post->comments_enabled,
-                'featured'          => (bool) $post->featured,
-                'meta_title'        => $post->meta_title,
-                'meta_description'  => $post->meta_description,
-                'meta_keywords'     => $post->meta_keywords,
-                'custom_js'         => $post->custom_js,
-                'body_format'       => $post->body_format ?? 'html',
-                'use_block_editor'  => (bool) $post->use_block_editor,
-                'blocks'            => $post->blocks,
-                'preview_token'     => $post->preview_token,
+                'comments_enabled' => $post->comments_enabled,
+                'featured' => (bool) $post->featured,
+                'meta_title' => $post->meta_title,
+                'meta_description' => $post->meta_description,
+                'meta_keywords' => $post->meta_keywords,
+                'custom_js' => $post->custom_js,
+                'body_format' => $post->body_format ?? 'html',
+                'use_block_editor' => (bool) $post->use_block_editor,
+                'blocks' => $post->blocks,
+                'preview_token' => $post->preview_token,
             ],
             'categories' => Category::orderBy('name')->get(['id', 'name']),
-            'tags'       => Tag::orderBy('name')->get(['id', 'name']),
-            'autosave'   => Autosave::where([
+            'tags' => Tag::orderBy('name')->get(['id', 'name']),
+            'autosave' => Autosave::where([
                 'autosaveable_type' => Post::class,
-                'autosaveable_id'   => $post->id,
-                'user_id'           => $request->user()->id,
+                'autosaveable_id' => $post->id,
+                'user_id' => $request->user()->id,
             ])->first()?->only(['payload', 'updated_at']),
         ]);
     }
 
     public function update(UpdatePostRequest $request, Post $post)
     {
-        if ($post->user_id !== $request->user()->id && !$request->user()->hasRole('administrator')) {
+        if ($post->user_id !== $request->user()->id && ! $request->user()->hasRole('administrator')) {
             abort(403);
         }
 
         $validated = $request->validated();
 
-        $tagIds      = $validated['tag_ids'] ?? [];
+        $tagIds = $validated['tag_ids'] ?? [];
         $categoryIds = $validated['category_ids'] ?? [];
         $newTagNames = $validated['new_tag_names'] ?? [];
         unset($validated['tag_ids'], $validated['category_ids'], $validated['new_tag_names']);
 
         foreach ($newTagNames as $name) {
             $name = trim($name);
-            if ($name === '') continue;
+            if ($name === '') {
+                continue;
+            }
             $tagIds[] = Tag::firstOrCreate(
                 ['name' => $name],
                 ['slug' => Tag::generateSlug($name)]
@@ -177,10 +181,10 @@ class PostController extends Controller
         }
 
         $validated['comments_enabled'] = $validated['comments_enabled'] ?? $post->comments_enabled;
-        $validated['featured']         = $validated['featured'] ?? $post->featured;
-        $validated['meta_title']       = $validated['meta_title']       ?? $post->meta_title;
+        $validated['featured'] = $validated['featured'] ?? $post->featured;
+        $validated['meta_title'] = $validated['meta_title'] ?? $post->meta_title;
         $validated['meta_description'] = $validated['meta_description'] ?? $post->meta_description;
-        $validated['meta_keywords']    = $validated['meta_keywords']    ?? $post->meta_keywords;
+        $validated['meta_keywords'] = $validated['meta_keywords'] ?? $post->meta_keywords;
 
         $validated['slug'] = Post::generateSlug($validated['title'], $post->id);
 
@@ -202,8 +206,8 @@ class PostController extends Controller
 
         Autosave::where([
             'autosaveable_type' => Post::class,
-            'autosaveable_id'   => $post->id,
-            'user_id'           => $request->user()->id,
+            'autosaveable_id' => $post->id,
+            'user_id' => $request->user()->id,
         ])->delete();
 
         return redirect()
@@ -213,7 +217,7 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
-        if ($post->user_id !== request()->user()->id && !request()->user()->hasRole('administrator')) {
+        if ($post->user_id !== request()->user()->id && ! request()->user()->hasRole('administrator')) {
             abort(403);
         }
 
@@ -242,22 +246,21 @@ class PostController extends Controller
         match ($validated['action']) {
             'publish' => $posts->each(function (Post $post) {
                 $post->update([
-                    'status'       => 'published',
+                    'status' => 'published',
                     'published_at' => Carbon::now(),
                 ]);
             }),
             'draft' => $posts->each(fn (Post $post) => $post->update([
-                'status'       => 'draft',
+                'status' => 'draft',
                 'published_at' => null,
             ])),
             'delete' => $posts->each->delete(),
         };
 
-        $count  = $posts->count();
+        $count = $posts->count();
         $labels = ['publish' => 'published', 'draft' => 'drafted', 'delete' => 'deleted'];
-        $label  = $labels[$validated['action']];
+        $label = $labels[$validated['action']];
 
-        return redirect()->back()->with('status', "{$count} post" . ($count === 1 ? '' : 's') . " {$label}.");
+        return redirect()->back()->with('status', "{$count} post".($count === 1 ? '' : 's')." {$label}.");
     }
-
 }

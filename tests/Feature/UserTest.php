@@ -52,9 +52,9 @@ class UserTest extends TestCase
         $admin = $this->makeAdmin();
 
         $this->actingAs($admin)->post('/users', [
-            'name'  => 'New User',
+            'name' => 'New User',
             'email' => 'newuser@example.com',
-            'role'  => 'user',
+            'role' => 'user',
         ])->assertRedirect('/users');
 
         $this->assertDatabaseHas('users', ['email' => 'newuser@example.com']);
@@ -64,9 +64,9 @@ class UserTest extends TestCase
     {
         // Spatie role middleware redirects to dashboard rather than returning 403
         $this->actingAs($this->makeUser())->post('/users', [
-            'name'  => 'Hacker',
+            'name' => 'Hacker',
             'email' => 'hacker@example.com',
-            'role'  => 'user',
+            'role' => 'user',
         ])->assertRedirect(route('dashboard'));
 
         $this->assertDatabaseMissing('users', ['email' => 'hacker@example.com']);
@@ -74,13 +74,13 @@ class UserTest extends TestCase
 
     public function test_store_validates_unique_email(): void
     {
-        $admin    = $this->makeAdmin();
+        $admin = $this->makeAdmin();
         $existing = User::factory()->create(['email' => 'taken@example.com']);
 
         $this->actingAs($admin)->post('/users', [
-            'name'  => 'Another User',
+            'name' => 'Another User',
             'email' => 'taken@example.com',
-            'role'  => 'user',
+            'role' => 'user',
         ])->assertSessionHasErrors('email');
     }
 
@@ -89,9 +89,9 @@ class UserTest extends TestCase
         $admin = $this->makeAdmin();
 
         $this->actingAs($admin)->post('/users', [
-            'name'  => 'Test',
+            'name' => 'Test',
             'email' => 'test@example.com',
-            'role'  => 'superuser',
+            'role' => 'superuser',
         ])->assertSessionHasErrors('role');
     }
 
@@ -99,13 +99,13 @@ class UserTest extends TestCase
 
     public function test_administrator_can_update_a_user(): void
     {
-        $admin  = $this->makeAdmin();
+        $admin = $this->makeAdmin();
         $target = $this->makeUser();
 
         $this->actingAs($admin)->put("/users/{$target->id}", [
-            'name'  => 'Updated Name',
+            'name' => 'Updated Name',
             'email' => $target->email,
-            'role'  => 'user',
+            'role' => 'user',
         ])->assertRedirect('/users');
 
         $this->assertDatabaseHas('users', ['id' => $target->id, 'name' => 'Updated Name']);
@@ -117,9 +117,9 @@ class UserTest extends TestCase
         // This is the only admin
 
         $this->actingAs($admin)->put("/users/{$admin->id}", [
-            'name'  => $admin->name,
+            'name' => $admin->name,
             'email' => $admin->email,
-            'role'  => 'user',
+            'role' => 'user',
         ])->assertRedirect('/users');
 
         // Role should NOT have been changed
@@ -130,7 +130,7 @@ class UserTest extends TestCase
 
     public function test_administrator_can_delete_a_user(): void
     {
-        $admin  = $this->makeAdmin();
+        $admin = $this->makeAdmin();
         $target = $this->makeUser();
 
         $this->actingAs($admin)->delete("/users/{$target->id}")->assertRedirect('/users');
@@ -156,7 +156,7 @@ class UserTest extends TestCase
 
     public function test_regular_user_cannot_delete_a_user(): void
     {
-        $user   = $this->makeUser();
+        $user = $this->makeUser();
         $target = $this->makeUser();
 
         // Spatie role middleware redirects to dashboard rather than returning 403
@@ -231,9 +231,9 @@ class UserTest extends TestCase
     {
         $user = $this->makeUser();
         $user->update([
-            'banned_at'    => now()->subDay(),
+            'banned_at' => now()->subDay(),
             'banned_until' => now()->subHour(),
-            'ban_reason'   => 'Old ban',
+            'ban_reason' => 'Old ban',
         ]);
 
         $response = $this->actingAs($user)->get('/dashboard');
@@ -248,15 +248,15 @@ class UserTest extends TestCase
     public function test_banned_user_cannot_login(): void
     {
         $user = User::factory()->create([
-            'password'     => bcrypt('password'),
-            'banned_at'    => now(),
+            'password' => bcrypt('password'),
+            'banned_at' => now(),
             'banned_until' => null,
-            'ban_reason'   => 'Abuse',
+            'ban_reason' => 'Abuse',
         ]);
         $user->assignRole('user');
 
         $response = $this->post('/login', [
-            'email'    => $user->email,
+            'email' => $user->email,
             'password' => 'password',
         ]);
 
@@ -267,15 +267,15 @@ class UserTest extends TestCase
     public function test_user_with_expired_ban_can_login(): void
     {
         $user = User::factory()->create([
-            'password'     => bcrypt('password'),
-            'banned_at'    => now()->subDay(),
+            'password' => bcrypt('password'),
+            'banned_at' => now()->subDay(),
             'banned_until' => now()->subHour(),
-            'ban_reason'   => 'Old ban',
+            'ban_reason' => 'Old ban',
         ]);
         $user->assignRole('user');
 
         $this->post('/login', [
-            'email'    => $user->email,
+            'email' => $user->email,
             'password' => 'password',
         ]);
 

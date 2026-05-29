@@ -12,7 +12,7 @@ class SettingsSeeder extends Seeder
         $defaults = [
             // Site
             ['group' => 'site', 'key' => 'site.name',         'value' => config('app.name', 'Lambda CMS'), 'type' => 'string'],
-            ['group' => 'site', 'key' => 'site.url',          'value' => config('app.url',  'http://localhost'), 'type' => 'string'],
+            ['group' => 'site', 'key' => 'site.url',          'value' => config('app.url', 'http://localhost'), 'type' => 'string'],
             ['group' => 'site', 'key' => 'site.accent_color', 'value' => '', 'type' => 'string'],
 
             // Locale

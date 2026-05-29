@@ -15,8 +15,8 @@ class BulkCommentRequest extends FormRequest
     {
         return [
             'action' => ['required', 'in:approve,reject,delete'],
-            'ids'    => ['required', 'array', 'min:1'],
-            'ids.*'  => ['integer', 'exists:comments,id'],
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:comments,id'],
         ];
     }
 }

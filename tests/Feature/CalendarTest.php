@@ -89,20 +89,20 @@ class CalendarTest extends TestCase
 
     public function test_admin_grouped_contains_all_statuses(): void
     {
-        $admin     = $this->makeAdmin();
+        $admin = $this->makeAdmin();
         $otherUser = $this->makeUser();
 
         $month = '2026-03';
-        $date  = Carbon::createFromFormat('Y-m', $month)->startOfMonth()->addDays(5);
+        $date = Carbon::createFromFormat('Y-m', $month)->startOfMonth()->addDays(5);
 
         Post::factory()->create([
-            'user_id'      => $otherUser->id,
-            'status'       => 'published',
+            'user_id' => $otherUser->id,
+            'status' => 'published',
             'published_at' => $date,
         ]);
         Post::factory()->create([
-            'user_id'      => $otherUser->id,
-            'status'       => 'scheduled',
+            'user_id' => $otherUser->id,
+            'status' => 'scheduled',
             'published_at' => $date->copy()->addDay(),
         ]);
 
@@ -127,12 +127,12 @@ class CalendarTest extends TestCase
 
     public function test_admin_unscheduled_drafts_includes_all_users_drafts(): void
     {
-        $admin     = $this->makeAdmin();
+        $admin = $this->makeAdmin();
         $otherUser = $this->makeUser();
 
         Post::factory()->create([
-            'user_id'      => $otherUser->id,
-            'status'       => 'draft',
+            'user_id' => $otherUser->id,
+            'status' => 'draft',
             'published_at' => null,
         ]);
 
@@ -147,28 +147,28 @@ class CalendarTest extends TestCase
 
     public function test_regular_user_grouped_excludes_other_users_drafts_and_scheduled(): void
     {
-        $user      = $this->makeUser();
+        $user = $this->makeUser();
         $otherUser = $this->makeUser();
 
         $month = '2026-03';
-        $date  = Carbon::createFromFormat('Y-m', $month)->startOfMonth()->addDays(3);
+        $date = Carbon::createFromFormat('Y-m', $month)->startOfMonth()->addDays(3);
 
         // Own published post — should appear
         Post::factory()->create([
-            'user_id'      => $user->id,
-            'status'       => 'published',
+            'user_id' => $user->id,
+            'status' => 'published',
             'published_at' => $date,
         ]);
         // Other user's draft with published_at — should be excluded
         Post::factory()->create([
-            'user_id'      => $otherUser->id,
-            'status'       => 'draft',
+            'user_id' => $otherUser->id,
+            'status' => 'draft',
             'published_at' => $date->copy()->addDay(),
         ]);
         // Other user's scheduled post — should be excluded
         Post::factory()->create([
-            'user_id'      => $otherUser->id,
-            'status'       => 'scheduled',
+            'user_id' => $otherUser->id,
+            'status' => 'scheduled',
             'published_at' => $date->copy()->addDays(2),
         ]);
 
@@ -184,17 +184,17 @@ class CalendarTest extends TestCase
 
     public function test_regular_user_unscheduled_drafts_excludes_other_users_drafts(): void
     {
-        $user      = $this->makeUser();
+        $user = $this->makeUser();
         $otherUser = $this->makeUser();
 
         Post::factory()->create([
-            'user_id'      => $user->id,
-            'status'       => 'draft',
+            'user_id' => $user->id,
+            'status' => 'draft',
             'published_at' => null,
         ]);
         Post::factory()->create([
-            'user_id'      => $otherUser->id,
-            'status'       => 'draft',
+            'user_id' => $otherUser->id,
+            'status' => 'draft',
             'published_at' => null,
         ]);
 

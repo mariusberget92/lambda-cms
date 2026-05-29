@@ -14,7 +14,7 @@ class UpdateMediaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'alt'         => ['nullable', 'string', 'max:255'],
+            'alt' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
         ];
     }
