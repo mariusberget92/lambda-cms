@@ -31,7 +31,7 @@ routes/api.php                         — API v1 routes
 app/Http/Middleware/HandleInertiaRequests.php — Shared props
 resources/js/Layouts/AppLayout.vue     — Admin sidebar layout
 resources/js/Layouts/BlogLayout.vue    — Public blog layout
-resources/js/Layouts/InstallLayout.vue — 5-step install wizard layout
+resources/js/Layouts/InstallLayout.vue — 4-step install wizard layout
 resources/js/Layouts/PageBuilderLayout.vue — Full-screen block editor layout
 resources/js/Components/              — Shared components (PascalCase dir)
 resources/js/components/              — Public blog + UI primitives (lowercase dir)
@@ -173,13 +173,6 @@ Block types available:
 - Pending count badge in admin header
 - Per-post `comments_enabled` flag
 
-### 🧭 Navigation
-- Custom nav items: `type = page` (internal) or `custom` (arbitrary URL)
-- Drag-and-drop reorder (`sort_order`)
-- Published-pages-only selector for internal links
-- Available as shared prop (`navItems`) on all pages via Inertia middleware
-- Admin page: `/navigation`
-
 ### ⚙️ Settings (admin-only)
 - Site name & URL
 - **Accent color** — Nord aurora palette swatches; applies to admin via `--primary`/`--sidebar-primary` and to blog frontend via `--accent`/`--accent-ink`
@@ -208,7 +201,7 @@ Block types available:
 - RSS feed (`/feed`) — 20 most recent published posts
 - Sitemap XML (`/sitemap.xml`)
 - Admin bar visible to authenticated users (hidden from public visitors)
-- Nav items from the Navigation admin shown in public header
+- Navigation links managed via the `nav-header` block's Content tab (no separate admin section)
 
 ### 🔗 REST API (`/api/v1/`)
 - `GET /posts` — paginated; filters: category slug, tag slug, search
@@ -234,24 +227,23 @@ Block types available:
 - Shared as `sharedTemplates` prop via Inertia middleware
 
 ### 🎨 Installation Wizard
-- 5-step wizard: Database → Site → Admin → Mail → Theme (Genre)
+- 4-step wizard: Database → Site → Admin → Mail
 - Tests DB connection before saving; writes `.env`; runs migrations
-- **Genre/Theme selection (Step 5)**: 20 genre options (food, travel, technology, health, gardening, programming, gaming, AI, fashion, finance, science, movies, books, music, sports, art, cars, anime, DIY, empty)
-- Seeds 10 themed posts with picsum.photos placeholder images, categories, and tags
-- "None / Start Empty" option skips seeding
+- Seeds default templates and Lambda CMS launch posts after admin creation
 - `not_installed` / `installed` middleware gate
-- Marks installed via `storage/app/installed` file
+- Marks installed via `storage/app/installed` file (gitignored — users must run the installer on fresh deployments)
 
 ---
 
 ## Database Tables
 
 ```
-users, posts, categories, tags, pages, comments, media, nav_items
+users, posts, categories, tags, pages, comments, media
 templates, webhooks, settings
 autosaves (morphable), revisions (morphable)
 Pivots: category_post, post_tag
 Spatie: roles, permissions, model_has_roles, ...
+nav_items (table exists from old migration; model/controller removed — nav lives in block data)
 ```
 
 ---
@@ -308,8 +300,9 @@ GET  /dashboard
 /users         (resource + ban/unban)
 /comments      (list, approve, reject, delete, bulk, reply)
 /settings      (index + update by group + test-email)
-/navigation    (list, store, update, delete, reorder)
 /webhooks      (index, store, update, destroy)
+/export        (index + download)
+/import        (index + preview + store)
 ```
 
 ### API
@@ -329,7 +322,6 @@ POST /api/v1/query
 /install/site     (GET/POST)
 /install/admin    (GET/POST)
 /install/mail     (GET/POST)
-/install/genre    (GET/POST)
 ```
 
 ---
@@ -349,7 +341,6 @@ Available on every page via `usePage().props`:
 | `currentRoute` | `string` | Current Laravel route name |
 | `pendingCommentsCount` | `number\|null` | Pending comment count (admins only) |
 | `accentColor` | `string\|null` | Hex accent color from site settings |
-| `navItems` | `Array<{label,url}>` | Published nav items |
 | `sharedTemplates` | `Array<Template>` | All templates (for block editor) |
 | `headerBlocks` | `Array` | Blocks from the active `header` template |
 | `footerBlocks` | `Array` | Blocks from the active `footer` template |
@@ -375,11 +366,14 @@ Available on every page via `usePage().props`:
 ## Open Issues / TODOs
 
 Potential future improvements:
-- Add more genres to GenreSeeder (interior, daily life, crypto, writing, etc.)
-- VLOG / video-focused genre template
-- Import/export pages and templates
+- Import/export for pages and templates (posts, categories, tags, media already done)
 - API write access (token-based)
 - Multi-language / i18n support
+- VLOG / video-focused genre template
+
+### Unmerged feature branches (substantial work — review before merging)
+- `claude/explore-codebase-setup-AMYo1` (~20 commits): form builder (Form block + admin CRUD + submissions), Slider/Counter/Pricing/Card/Cover/SectionHeader/CategoryChip/StatCard/Testimonial/Progress/PostList/IconBox blocks, icon picker on Paragraph/Heading, device visibility controls, copy styles, block locking, block editor UX (search, click-to-add, collapse, keyboard shortcuts), admin UI animations, various bug fixes
+- `feature/tests`: 112 tests, 282 assertions (was created before current codebase diverged significantly — may need updates to pass against current code)
 
 ### Pending major-version upgrades (deferred — require additional review)
 - `inertia-laravel` 2 → 3 + `@inertiajs/vue3` 2 → 3 (coupled upgrade)
@@ -389,4 +383,4 @@ Potential future improvements:
 
 ---
 
-*Last updated: 2026-05-28 — added header/footer template types; blog design token system; active-filter, masthead, band, nav-header, site-footer, post-card blocks; accent color applied to blog frontend; scheduled post publisher registered in scheduler; LambdaContentSeeder with real launch posts; in-browser image editor (crop, filters, adjust, replace endpoint); TOTP two-factor authentication with recovery codes*
+*Last updated: 2026-05-29 — removed Navigation admin section (nav links now live in nav-header block data); fixed installer seeder ordering (TemplateSeeder + LambdaContentSeeder now run after admin creation); fixed dark-mode token bleed into blog frontend; fixed webhook HMAC body mismatch; fixed duplicate scheduler entry; fixed welcome email step order; fixed import path traversal; added export/import for posts, categories, tags, media, templates; corrected installer to 4-step wizard; removed navItems shared prop*

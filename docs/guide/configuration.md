@@ -59,7 +59,7 @@ Use the **Send test email** button to verify your configuration before going liv
 
 ## Navigation
 
-Manage the public navigation bar at `/navigation`. Items can link to published pages (internal) or any custom URL. Drag to reorder.
+Navigation links are configured directly inside the block editor. Add a **Nav Header** block to your header template, open its Content tab, and manage links (label + URL) inline. There is no separate navigation admin page.
 
 ## Custom JavaScript
 

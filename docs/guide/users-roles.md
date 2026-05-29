@@ -12,7 +12,7 @@ Full access to everything:
 - Media library (all files)
 - Comment moderation
 - User management (create, edit, ban, delete)
-- Settings, navigation, and webhooks
+- Settings, webhooks, import/export
 
 At least one administrator must always exist. The last admin cannot be deleted or demoted.
 

@@ -35,15 +35,14 @@ Start a local server:
 php artisan serve
 ```
 
-Navigate to your site in a browser. Lambda CMS detects that it hasn't been installed and redirects you to `/install`. The five-step wizard walks you through:
+Navigate to your site in a browser. Lambda CMS detects that it hasn't been installed and redirects you to `/install`. The four-step wizard walks you through:
 
 1. **Database** — choose SQLite (zero config) or MySQL and verify the connection
 2. **Site** — set your site name and URL
 3. **Admin** — create your administrator account
 4. **Mail** — configure SMTP or leave as `log` driver for local development
-5. **Genre** — pick a content theme to pre-seed demo posts, or start empty
 
-After the wizard completes, you're redirected to the login page. Sign in with the admin credentials you just created.
+After the wizard completes, default templates and a set of launch posts are seeded automatically. You're then redirected to the login page — sign in with the admin credentials you just created.
 
 ## Local Development
 

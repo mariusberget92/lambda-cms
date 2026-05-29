@@ -41,7 +41,7 @@ Most CMSs make you choose between control and convenience. Lambda CMS doesn't. Y
 - Draft preview URLs (shareable, no login required)
 - Post scheduling with automatic publishing via Laravel scheduler
 - Autosave and revision history (up to 25 revisions)
-- Browser-based 5-step installer
+- Browser-based 4-step installer
 
 ## Next Steps
 
