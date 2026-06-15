@@ -19,6 +19,8 @@ class HandleInertiaRequests extends Middleware
 
     public function share(Request $request): array
     {
+        $installed = file_exists(storage_path('app/installed'));
+
         return array_merge(parent::share($request), [
             'appName' => config('app.name', 'Lambda CMS'),
             'auth' => [
@@ -41,12 +43,12 @@ class HandleInertiaRequests extends Middleware
             'pendingCommentsCount' => fn () => $request->user()?->hasRole('administrator')
                 ? Comment::pending()->count()
                 : null,
-            'accentColor' => fn () => Setting::get('site.accent_color') ?: null,
-            'sharedTemplates' => fn () => Template::published()
-                ->get(['id', 'title', 'type', 'blocks'])
-                ->toArray(),
-            'headerBlocks' => fn () => Template::activeFor('header')?->blocks ?? [],
-            'footerBlocks' => fn () => Template::activeFor('footer')?->blocks ?? [],
+            'accentColor' => fn () => $installed ? Setting::get('site.accent_color') ?: null : null,
+            'sharedTemplates' => fn () => $installed
+                ? Template::published()->get(['id', 'title', 'type', 'blocks'])->toArray()
+                : [],
+            'headerBlocks' => fn () => $installed ? Template::activeFor('header')?->blocks ?? [] : [],
+            'footerBlocks' => fn () => $installed ? Template::activeFor('footer')?->blocks ?? [] : [],
         ]);
     }
 }
