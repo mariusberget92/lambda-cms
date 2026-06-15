@@ -653,7 +653,6 @@ const siteForm = useForm({
 function submitSite() {
   siteForm.put(route('settings.update', 'site'), {
     preserveScroll: true,
-    onSuccess: () => notify('Settings saved.', 'success'),
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   });
 }
@@ -667,7 +666,6 @@ const localeForm = useForm({
 function submitLocale() {
   localeForm.put(route('settings.update', 'locale'), {
     preserveScroll: true,
-    onSuccess: () => notify('Settings saved.', 'success'),
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   });
 }
@@ -701,7 +699,6 @@ function removeCustomMime(mime) {
 function submitMedia() {
   mediaForm.put(route('settings.update', 'media'), {
     preserveScroll: true,
-    onSuccess: () => notify('Settings saved.', 'success'),
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   });
 }
@@ -721,7 +718,6 @@ const mailForm = useForm({
 function submitMail() {
   mailForm.put(route('settings.update', 'mail'), {
     preserveScroll: true,
-    onSuccess: () => notify('Settings saved.', 'success'),
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   });
 }
@@ -740,7 +736,6 @@ function submitComments() {
     }))
     .put(route('settings.update', 'comments'), {
       preserveScroll: true,
-      onSuccess: () => notify('Settings saved.', 'success'),
       onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
     })
 }
@@ -756,7 +751,6 @@ const seoForm = useForm({
 function submitSeo() {
   seoForm.put(route('settings.update', 'seo'), {
     preserveScroll: true,
-    onSuccess: () => notify('Settings saved.', 'success'),
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   })
 }
@@ -781,7 +775,6 @@ function submitAppearance() {
   appearanceForm.put(route('settings.update', 'appearance'), {
     preserveScroll: true,
     onSuccess: () => {
-      notify('Settings saved.', 'success')
       if (color && swatch) {
         document.documentElement.style.setProperty('--primary', color)
         document.documentElement.style.setProperty('--primary-hover', swatch.hover)
@@ -804,7 +797,6 @@ const codeForm = useForm({
 function submitCode() {
   codeForm.put(route('settings.update', 'code'), {
     preserveScroll: true,
-    onSuccess: () => notify('Settings saved.', 'success'),
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   })
 }
