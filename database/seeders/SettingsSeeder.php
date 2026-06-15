@@ -45,6 +45,9 @@ class SettingsSeeder extends Seeder
             ['group' => 'seo', 'key' => 'seo.default_og_image_url',  'value' => '',     'type' => 'string'],
             ['group' => 'seo', 'key' => 'seo.default_keywords',      'value' => '',     'type' => 'string'],
 
+            // Code
+            ['group' => 'code', 'key' => 'code.custom_js', 'value' => '', 'type' => 'string'],
+
             // License
             ['group' => 'license', 'key' => 'license.key',          'value' => '', 'type' => 'string'],
             ['group' => 'license', 'key' => 'license.status',       'value' => 'inactive', 'type' => 'string'],
