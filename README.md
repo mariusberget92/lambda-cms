@@ -180,6 +180,215 @@ GET  /api/v1/tags/{slug}
 POST /api/v1/query        ← block editor loop data source
 ```
 
+### 📦 Import / Export
+
+Export your content as a portable ZIP and re-import it into any Lambda CMS instance.
+
+**Supported entities:** Posts, Pages, Categories, Tags, Media, Templates
+
+**Export** — pick which entities to include, optionally bundle media files, and download a `.zip`. **Import** — upload a ZIP, preview what's inside, select entities, choose a conflict strategy (`skip`, `overwrite`, or `duplicate`), and run.
+
+<details>
+<summary><strong>ZIP structure and JSON schemas</strong></summary>
+
+The export ZIP contains a `manifest.json`, one JSON file per entity type, and an optional `media/` folder:
+
+```
+lambda-cms-export-2026-06-15-120000.zip
+├── manifest.json
+├── posts.json
+├── pages.json
+├── categories.json
+├── tags.json
+├── media.json
+├── templates.json
+└── media/
+    ├── a1b2c3d4-photo.jpg
+    └── e5f6g7h8-document.pdf
+```
+
+#### manifest.json
+
+```json
+{
+  "version": "1.0",
+  "app": "lambda-cms",
+  "exported_at": "2026-06-15T12:00:00.000000Z",
+  "entities": ["posts", "pages", "categories", "tags", "media", "templates"],
+  "include_media_files": true,
+  "counts": {
+    "posts": 12,
+    "pages": 3,
+    "categories": 5,
+    "tags": 8,
+    "media": 20,
+    "templates": 4
+  }
+}
+```
+
+#### posts.json
+
+```json
+[
+  {
+    "title": "My First Post",
+    "slug": "my-first-post",
+    "excerpt": "A short summary",
+    "body": "<p>HTML content</p>",
+    "body_format": "html",
+    "status": "published",
+    "featured": false,
+    "published_at": "2026-06-01T10:00:00.000000Z",
+    "comments_enabled": true,
+    "use_block_editor": false,
+    "blocks": [],
+    "meta_title": null,
+    "meta_description": null,
+    "meta_keywords": null,
+    "custom_js": null,
+    "categories": ["tutorials", "laravel"],
+    "tags": ["php", "cms"],
+    "featured_image": "a1b2c3d4-photo.jpg"
+  }
+]
+```
+
+| Field | Type | Notes |
+|---|---|---|
+| `title` | string | Required |
+| `slug` | string | Used for conflict detection. Auto-generated on duplicate strategy |
+| `excerpt` | string\|null | Plain text summary |
+| `body` | string\|null | HTML content (when `body_format` is `html`) |
+| `body_format` | `"html"` \| `"blocks"` | Determines whether `body` or `blocks` holds the content |
+| `status` | `"draft"` \| `"published"` \| `"scheduled"` | Defaults to `draft` on import |
+| `featured` | boolean | |
+| `published_at` | ISO 8601\|null | |
+| `comments_enabled` | boolean | |
+| `use_block_editor` | boolean | |
+| `blocks` | array | Block editor JSON (when `body_format` is `blocks`) |
+| `meta_title` | string\|null | SEO title override |
+| `meta_description` | string\|null | SEO description |
+| `meta_keywords` | string\|null | SEO keywords |
+| `custom_js` | string\|null | Per-post JavaScript |
+| `categories` | string[] | Array of category slugs — resolved on import |
+| `tags` | string[] | Array of tag slugs — resolved on import |
+| `featured_image` | string\|null | Media filename — resolved to a media ID on import |
+
+#### pages.json
+
+```json
+[
+  {
+    "title": "About Us",
+    "slug": "about-us",
+    "status": "published",
+    "blocks": [
+      { "type": "heading", "data": { "text": "About Us", "level": 1 } },
+      { "type": "paragraph", "data": { "text": "Welcome to our site." } }
+    ],
+    "meta_title": null,
+    "meta_description": null,
+    "meta_keywords": null,
+    "custom_js": null
+  }
+]
+```
+
+| Field | Type | Notes |
+|---|---|---|
+| `title` | string | Required |
+| `slug` | string | Used for conflict detection |
+| `status` | `"draft"` \| `"published"` | Defaults to `draft` on import |
+| `blocks` | array | Block editor JSON |
+| `meta_title` | string\|null | SEO title override |
+| `meta_description` | string\|null | SEO description |
+| `meta_keywords` | string\|null | SEO keywords |
+| `custom_js` | string\|null | Per-page JavaScript |
+
+#### categories.json
+
+```json
+[
+  {
+    "name": "Tutorials",
+    "slug": "tutorials",
+    "description": "Step-by-step guides",
+    "color": "#5e81ac",
+    "hue": 213
+  }
+]
+```
+
+#### tags.json
+
+```json
+[
+  {
+    "name": "PHP",
+    "slug": "php"
+  }
+]
+```
+
+#### media.json
+
+```json
+[
+  {
+    "id": 1,
+    "filename": "a1b2c3d4-photo.jpg",
+    "original_filename": "photo.jpg",
+    "disk": "public",
+    "path": "media/a1b2c3d4-photo.jpg",
+    "mime_type": "image/jpeg",
+    "type": "image",
+    "size": 204800,
+    "width": 1920,
+    "height": 1080,
+    "alt": "A landscape photo",
+    "description": null
+  }
+]
+```
+
+When `include_media_files` is enabled, the actual files are bundled under `media/` in the ZIP, keyed by `filename`.
+
+#### templates.json
+
+```json
+[
+  {
+    "title": "Default Blog Index",
+    "type": "index",
+    "loop_source": "posts",
+    "status": "published",
+    "blocks": [],
+    "meta_title": null,
+    "meta_description": null,
+    "meta_keywords": null
+  }
+]
+```
+
+| Field | Type | Notes |
+|---|---|---|
+| `title` | string | Used with `type` for conflict detection |
+| `type` | `"index"` \| `"single"` \| `"archive"` \| `"search"` \| `"header"` \| `"footer"` \| `"partial"` | Template type |
+| `loop_source` | string\|null | Data source for loop blocks (e.g. `"posts"`) |
+| `status` | `"draft"` \| `"published"` | When importing a published non-partial template, other published templates of the same type are demoted to draft |
+| `blocks` | array | Block editor JSON |
+
+#### Conflict strategies
+
+| Strategy | Behavior |
+|---|---|
+| **Skip** | Leave existing records untouched. Only create records that don't exist yet. |
+| **Overwrite** | Update existing records with the imported data. Matched by slug (posts, pages, categories, tags), filename (media), or title + type (templates). |
+| **Duplicate** | Always create new records, generating a unique slug when needed. |
+
+</details>
+
 ### 🧙 Installer
 
 - 4-step browser wizard: **Database → Site → Admin → Mail**
@@ -240,7 +449,7 @@ Add a cron entry to run the scheduler (handles auto-publishing):
 
 ## 🗺️ Roadmap
 
-- [x] Post and template import / export
+- [x] Full import / export (posts, pages, categories, tags, media, templates)
 - [ ] API write access — token-based auth for creating and updating content
 - [ ] Multi-language / i18n content support
 
