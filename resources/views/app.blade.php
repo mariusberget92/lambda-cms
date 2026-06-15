@@ -8,7 +8,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @routes
 @php
-    $accentColor = \App\Models\Setting::get('site.accent_color');
+    $installed = file_exists(storage_path('app/installed'));
+    $accentColor = $installed ? \App\Models\Setting::get('site.accent_color') : null;
     // Re-validate: only emit if it is a valid 6-digit hex color
     if (!preg_match('/^#[0-9a-fA-F]{6}$/', $accentColor ?? '')) {
         $accentColor = null;
@@ -35,7 +36,7 @@
 </head>
 <body class="antialiased">
     @inertia
-@php $globalCustomJs = \App\Models\Setting::get('code.custom_js'); @endphp
+@php $globalCustomJs = $installed ? \App\Models\Setting::get('code.custom_js') : null; @endphp
 @if($globalCustomJs)
 <script>{!! $globalCustomJs !!}</script>
 @endif
