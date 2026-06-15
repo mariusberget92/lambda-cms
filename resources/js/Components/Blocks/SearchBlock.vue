@@ -37,7 +37,7 @@ const currentQ = typeof window !== 'undefined'
 .search-block__heading { color: var(--ink); }
 .search-block__input {
   width: 100%;
-  background: var(--bg);
+  background: var(--panel);
   color: var(--ink);
   border: 1px solid var(--line-strong);
   border-radius: var(--blog-radius);
