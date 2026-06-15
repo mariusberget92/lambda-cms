@@ -25,16 +25,5 @@ class DatabaseSeeder extends Seeder
 
         $adminRole->syncPermissions(Permission::all());
         $userRole->syncPermissions(['manage posts', 'manage categories', 'manage tags']);
-
-        // ── Dev fixtures + admin-dependent seeders (local only) ──────────────
-        // TemplateSeeder and LambdaContentSeeder both require an administrator
-        // to exist. DevSeeder creates those users, so it must run first.
-        // In production the installer calls these two seeders directly after
-        // creating the admin account (see InstallController::mail).
-        if (app()->environment('local')) {
-            $this->call(DevSeeder::class);
-            $this->call(TemplateSeeder::class);
-            $this->call(LambdaContentSeeder::class);
-        }
     }
 }
