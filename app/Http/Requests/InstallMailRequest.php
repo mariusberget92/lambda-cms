@@ -27,8 +27,6 @@ class InstallMailRequest extends FormRequest
 
         return [
             'mailer' => ['required', 'in:smtp,log'],
-            'from_address' => ['required', 'email'],
-            'from_name' => ['required', 'string', 'max:255'],
         ];
     }
 }
