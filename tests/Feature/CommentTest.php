@@ -206,8 +206,7 @@ class CommentTest extends TestCase
         $admin = $this->makeAdmin();
 
         $this->actingAs($admin)->put(route('settings.update', 'comments'), [
-            'comments.enabled' => '1',
-            'comments.per_page' => 20,
+            'comments' => ['enabled' => '1', 'per_page' => 20],
         ])->assertRedirect();
 
         $this->assertDatabaseHas('settings', ['key' => 'comments.enabled',  'value' => '1']);
@@ -220,13 +219,11 @@ class CommentTest extends TestCase
         $admin = $this->makeAdmin();
 
         $this->actingAs($admin)->put(route('settings.update', 'comments'), [
-            'comments.enabled' => '1',
-            'comments.per_page' => 999,
+            'comments' => ['enabled' => '1', 'per_page' => 999],
         ])->assertSessionHasErrors('comments.per_page');
 
         $this->actingAs($admin)->put(route('settings.update', 'comments'), [
-            'comments.enabled' => '1',
-            'comments.per_page' => 2,
+            'comments' => ['enabled' => '1', 'per_page' => 2],
         ])->assertSessionHasErrors('comments.per_page');
     }
 

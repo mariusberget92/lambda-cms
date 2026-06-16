@@ -7,6 +7,7 @@ use App\Mail\TestMail;
 use App\Models\Setting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -35,12 +36,14 @@ class SettingsController extends Controller
 
     public function update(string $group, UpdateSettingsRequest $request): RedirectResponse
     {
-        $validated = $request->validated();
+        $nested = $request->validated();
 
         if ($group === 'media') {
-            $validated['media.allowed_categories'] = json_encode($validated['media.allowed_categories'] ?? []);
-            $validated['media.custom_mimes'] = json_encode($validated['media.custom_mimes'] ?? []);
+            Arr::set($nested, 'media.allowed_categories', json_encode(Arr::get($nested, 'media.allowed_categories', [])));
+            Arr::set($nested, 'media.custom_mimes', json_encode(Arr::get($nested, 'media.custom_mimes', [])));
         }
+
+        $validated = Arr::dot($nested);
 
         foreach ($validated as $key => $value) {
             Setting::set($key, $value ?? '');

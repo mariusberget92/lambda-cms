@@ -86,8 +86,7 @@ class SettingsTest extends TestCase
         $admin = $this->makeAdmin();
 
         $this->actingAs($admin)->put('/settings/site', [
-            'site.name' => 'New Site Name',
-            'site.url' => 'https://example.com',
+            'site' => ['name' => 'New Site Name', 'url' => 'https://example.com'],
         ])->assertRedirect();
 
         $this->assertDatabaseHas('settings', ['key' => 'site.name', 'value' => 'New Site Name']);
@@ -98,8 +97,7 @@ class SettingsTest extends TestCase
         $admin = $this->makeAdmin();
 
         $this->actingAs($admin)->put('/settings/site', [
-            'site.name' => 'Test',
-            'site.url' => 'not-a-url',
+            'site' => ['name' => 'Test', 'url' => 'not-a-url'],
         ])->assertSessionHasErrors('site.url');
     }
 
@@ -108,8 +106,7 @@ class SettingsTest extends TestCase
         $admin = $this->makeAdmin();
 
         $this->actingAs($admin)->put('/settings/media', [
-            'media.max_upload_mb' => 25,
-            'media.resize_max_width' => 2560,
+            'media' => ['max_upload_mb' => 25, 'resize_max_width' => 2560],
         ])->assertRedirect();
 
         $this->assertDatabaseHas('settings', ['key' => 'media.max_upload_mb', 'value' => '25']);
@@ -120,8 +117,7 @@ class SettingsTest extends TestCase
         $admin = $this->makeAdmin();
 
         $this->actingAs($admin)->put('/settings/media', [
-            'media.max_upload_mb' => 999,
-            'media.resize_max_width' => 1920,
+            'media' => ['max_upload_mb' => 999, 'resize_max_width' => 1920],
         ])->assertSessionHasErrors('media.max_upload_mb');
     }
 
@@ -130,8 +126,7 @@ class SettingsTest extends TestCase
         $user = $this->makeUser();
 
         $this->actingAs($user)->put('/settings/site', [
-            'site.name' => 'Hacked',
-            'site.url' => 'https://hacked.com',
+            'site' => ['name' => 'Hacked', 'url' => 'https://hacked.com'],
         ])->assertRedirect(route('dashboard'));
 
         $this->assertDatabaseMissing('settings', ['key' => 'site.name', 'value' => 'Hacked']);
@@ -164,9 +159,11 @@ class SettingsTest extends TestCase
         $admin = $this->makeAdmin();
 
         $this->actingAs($admin)->put('/settings/seo', [
-            'seo.title_separator' => '|',
-            'seo.default_description' => 'My site about things',
-            'seo.default_og_image_url' => 'https://example.com/og.jpg',
+            'seo' => [
+                'title_separator' => '|',
+                'default_description' => 'My site about things',
+                'default_og_image_url' => 'https://example.com/og.jpg',
+            ],
         ])->assertRedirect();
 
         $this->assertDatabaseHas('settings', [
@@ -188,9 +185,11 @@ class SettingsTest extends TestCase
         $user = $this->makeUser();
 
         $this->actingAs($user)->put('/settings/seo', [
-            'seo.title_separator' => '–',
-            'seo.default_description' => 'Hacked',
-            'seo.default_og_image_url' => 'https://evil.com/img.jpg',
+            'seo' => [
+                'title_separator' => '–',
+                'default_description' => 'Hacked',
+                'default_og_image_url' => 'https://evil.com/img.jpg',
+            ],
         ])->assertRedirect(route('dashboard'));
 
         $this->assertDatabaseMissing('settings', ['key' => 'seo.default_description', 'value' => 'Hacked']);
@@ -201,10 +200,12 @@ class SettingsTest extends TestCase
         $admin = $this->makeAdmin();
 
         $this->actingAs($admin)->put('/settings/seo', [
-            'seo.title_separator' => ' | ',
-            'seo.default_description' => '',
-            'seo.default_og_image_url' => '',
-            'seo.default_keywords' => 'laravel, cms',
+            'seo' => [
+                'title_separator' => ' | ',
+                'default_description' => '',
+                'default_og_image_url' => '',
+                'default_keywords' => 'laravel, cms',
+            ],
         ])->assertRedirect();
 
         $this->assertDatabaseHas('settings', [
@@ -217,7 +218,7 @@ class SettingsTest extends TestCase
     {
         $admin = $this->makeAdmin();
         $this->actingAs($admin)
-            ->put('/settings/appearance', ['site.accent_color' => '#a3be8c'])
+            ->put('/settings/appearance', ['site' => ['accent_color' => '#a3be8c']])
             ->assertRedirect();
 
         $this->assertDatabaseHas('settings', [
