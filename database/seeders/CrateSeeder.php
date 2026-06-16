@@ -23,6 +23,7 @@ class CrateSeeder extends Seeder
     private function lpRand(float $s): float
     {
         $x = sin($s * 99.13 + 7.7) * 43758.5453;
+
         return $x - floor($x);
     }
 
@@ -36,6 +37,7 @@ class CrateSeeder extends Seeder
             $c = ($isAccent && $accentColor !== '') ? $accentColor : $color;
             $out .= sprintf('<div style="flex:1 1 0;min-width:0;height:%s%%;background:%s;"></div>', $h, $c);
         }
+
         return $out;
     }
 
@@ -43,12 +45,13 @@ class CrateSeeder extends Seeder
 
     private function logoUri(int $size = 28): string
     {
-        $svg = '<svg width="' . $size . '" height="' . $size . '" viewBox="0 0 120 120" fill="none" '
-             . 'xmlns="http://www.w3.org/2000/svg">'
-             . '<path d="M88 31 H40 V89 H88" stroke="#e9e4dc" stroke-width="13"/>'
-             . '<rect x="72" y="52" width="16" height="16" fill="#e0913f"/>'
-             . '</svg>';
-        return 'data:image/svg+xml,' . rawurlencode($svg);
+        $svg = '<svg width="'.$size.'" height="'.$size.'" viewBox="0 0 120 120" fill="none" '
+             .'xmlns="http://www.w3.org/2000/svg">'
+             .'<path d="M88 31 H40 V89 H88" stroke="#e9e4dc" stroke-width="13"/>'
+             .'<rect x="72" y="52" width="16" height="16" fill="#e0913f"/>'
+             .'</svg>';
+
+        return 'data:image/svg+xml,'.rawurlencode($svg);
     }
 
     // ── Block / section helpers ───────────────────────────────────────────────
@@ -56,17 +59,29 @@ class CrateSeeder extends Seeder
     private function section(int $id, array $data, array $children, string $customId = ''): array
     {
         $s = ['id' => $id, 'type' => 'section', 'data' => $data, 'children' => $children];
-        if ($customId !== '') $s['customId'] = $customId;
+        if ($customId !== '') {
+            $s['customId'] = $customId;
+        }
+
         return $s;
     }
 
     private function block(int $id, string $type, array $data, array $children = [], array $bindings = [], string $customClasses = '', string $customCss = ''): array
     {
         $b = ['id' => $id, 'type' => $type, 'data' => $data];
-        if (!empty($children))  $b['children']     = $children;
-        if (!empty($bindings))  $b['bindings']     = $bindings;
-        if ($customClasses !== '') $b['customClasses'] = $customClasses;
-        if ($customCss !== '')     $b['customCss']     = $customCss;
+        if (! empty($children)) {
+            $b['children'] = $children;
+        }
+        if (! empty($bindings)) {
+            $b['bindings'] = $bindings;
+        }
+        if ($customClasses !== '') {
+            $b['customClasses'] = $customClasses;
+        }
+        if ($customCss !== '') {
+            $b['customCss'] = $customCss;
+        }
+
         return $b;
     }
 
@@ -86,10 +101,10 @@ class CrateSeeder extends Seeder
     {
         return [
             $this->block(400, 'nav-header', [
-                'logoText'   => 'CRATE',
+                'logoText' => 'CRATE',
                 'showSearch' => false,
-                'sticky'     => true,
-                'links'      => [
+                'sticky' => true,
+                'links' => [
                     ['label' => 'Features',     'url' => '#features'],
                     ['label' => 'How It Works', 'url' => '#how'],
                     ['label' => 'Pricing',      'url' => '#pricing'],
@@ -103,10 +118,10 @@ class CrateSeeder extends Seeder
     {
         return [
             $this->block(500, 'site-footer', [
-                'tagline'   => 'A sample organizer for people with too many samples.',
-                'copyright' => '© ' . date('Y') . ' CRATE',
-                'showRss'   => false,
-                'columns'   => [
+                'tagline' => 'A sample organizer for people with too many samples.',
+                'copyright' => '© '.date('Y').' CRATE',
+                'showRss' => false,
+                'columns' => [
                     ['heading' => 'Product', 'links' => [
                         ['label' => 'Features',     'url' => '#features'],
                         ['label' => 'How It Works', 'url' => '#how'],
@@ -124,11 +139,11 @@ class CrateSeeder extends Seeder
     private function landingPageBlocks(): array
     {
         return [
-            $this->section(10,  $this->nopad(), [$this->html(11,  $this->globalCss())]),
+            $this->section(10, $this->nopad(), [$this->html(11, $this->globalCss())]),
             $this->section(100, $this->nopad(), [$this->html(101, $this->heroHtml())]),
             $this->section(200, $this->nopad(), [$this->html(201, $this->featuresHtml())], 'features'),
             $this->section(300, $this->nopad(), [$this->html(301, $this->showcaseHtml())], 'how'),
-            $this->section(600, $this->nopad(), [$this->html(601, $this->pricingHtml())],  'pricing'),
+            $this->section(600, $this->nopad(), [$this->html(601, $this->pricingHtml())], 'pricing'),
         ];
     }
 
@@ -136,7 +151,7 @@ class CrateSeeder extends Seeder
 
     private function globalCss(): string
     {
-        $nav  = $this->logoUri(28);
+        $nav = $this->logoUri(28);
         $foot = $this->logoUri(22);
 
         return <<<CSS
@@ -313,7 +328,7 @@ HTML;
     {
         $rows = [
             //  name                    seed  bpm   key      type    playing  sel
-            ['dusty_rhodes_loop_01',    4,   '88', 'F min', 'LOOP', false,   true ],
+            ['dusty_rhodes_loop_01',    4,   '88', 'F min', 'LOOP', false,   true],
             ['tape_kick_punch',         12,  '—',  '—',     'ONE',  true,    false],
             ['vinyl_crackle_bed',       31,  '—',  '—',     'FX',   false,   false],
             ['rim_shuffle_92',          7,   '92', 'A min', 'PERC', false,   false],
@@ -322,14 +337,14 @@ HTML;
 
         $rowsHtml = '';
         foreach ($rows as [$name, $seed, $bpm, $key, $type, $playing, $sel]) {
-            $waveColor  = $playing ? '#e0913f' : '#6b6358';
-            $waveHtml   = $this->wave(48, (int)$seed, $waveColor);
-            $cls        = 'c-row' . ($sel ? ' sel' : '') . ($playing ? ' playing' : '');
-            $icon       = $playing
+            $waveColor = $playing ? '#e0913f' : '#6b6358';
+            $waveHtml = $this->wave(48, (int) $seed, $waveColor);
+            $cls = 'c-row'.($sel ? ' sel' : '').($playing ? ' playing' : '');
+            $icon = $playing
                 ? '<span class="c-dot"></span>'
                 : '<span class="c-star">·</span>';
-            $nameColor  = ($sel || $playing) ? '#e9e4dc' : '#948b7f';
-            $rowsHtml  .= <<<ROW
+            $nameColor = ($sel || $playing) ? '#e9e4dc' : '#948b7f';
+            $rowsHtml .= <<<ROW
 
         <div class="{$cls}">
             <span class="c-rn">{$icon}<span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:{$nameColor};">{$name}.wav</span></span>
