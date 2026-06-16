@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Category;
 use App\Models\Media;
+use App\Models\Page;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\Template;
@@ -34,7 +35,7 @@ class ImportService
         }
 
         $available = [];
-        foreach (['categories', 'tags', 'media', 'templates', 'posts'] as $entity) {
+        foreach (['categories', 'tags', 'media', 'templates', 'pages', 'posts'] as $entity) {
             if ($zip->locateName("{$entity}.json") !== false) {
                 $data = json_decode($zip->getFromName("{$entity}.json"), true);
                 $available[$entity] = count($data ?? []);
@@ -78,6 +79,11 @@ class ImportService
         if (in_array('templates', $entities) && $zip->locateName('templates.json') !== false) {
             $data = json_decode($zip->getFromName('templates.json'), true) ?? [];
             $results['templates'] = $this->importTemplates($data, $conflictStrategy, $userId);
+        }
+
+        if (in_array('pages', $entities) && $zip->locateName('pages.json') !== false) {
+            $data = json_decode($zip->getFromName('pages.json'), true) ?? [];
+            $results['pages'] = $this->importPages($data, $conflictStrategy, $userId);
         }
 
         if (in_array('posts', $entities) && $zip->locateName('posts.json') !== false) {
@@ -291,6 +297,55 @@ class ImportService
             'meta_title' => $item['meta_title'] ?? null,
             'meta_description' => $item['meta_description'] ?? null,
             'meta_keywords' => $item['meta_keywords'] ?? null,
+        ];
+    }
+
+    private function importPages(array $data, string $strategy, int $userId): array
+    {
+        $created = $updated = $skipped = $failed = 0;
+
+        foreach ($data as $item) {
+            try {
+                $existing = Page::where('slug', $item['slug'])->first();
+
+                if ($existing) {
+                    if ($strategy === 'skip') {
+                        $skipped++;
+
+                        continue;
+                    } elseif ($strategy === 'overwrite') {
+                        $existing->update($this->pageFields($item, $userId));
+                        $updated++;
+
+                        continue;
+                    }
+                    $item['slug'] = Page::generateSlug($item['title']);
+                }
+
+                Page::create(array_merge(
+                    $this->pageFields($item, $userId),
+                    ['slug' => $item['slug']]
+                ));
+                $created++;
+            } catch (\Throwable) {
+                $failed++;
+            }
+        }
+
+        return compact('created', 'updated', 'skipped', 'failed');
+    }
+
+    private function pageFields(array $item, int $userId): array
+    {
+        return [
+            'user_id' => $userId,
+            'title' => $item['title'],
+            'status' => $item['status'] ?? 'draft',
+            'blocks' => $item['blocks'] ?? [],
+            'meta_title' => $item['meta_title'] ?? null,
+            'meta_description' => $item['meta_description'] ?? null,
+            'meta_keywords' => $item['meta_keywords'] ?? null,
+            'custom_js' => $item['custom_js'] ?? null,
         ];
     }
 

@@ -105,11 +105,12 @@ const props = defineProps({
   counts: Object,
 })
 
-const selectedEntities = ref(['posts', 'categories', 'tags', 'media', 'templates'])
+const selectedEntities = ref(['posts', 'pages', 'categories', 'tags', 'media', 'templates'])
 const includeMediaFiles = ref(false)
 
 const entityOptions = [
   { value: 'posts',      label: 'Posts',      description: 'Post content, metadata, status, and taxonomy relationships.' },
+  { value: 'pages',      label: 'Pages',      description: 'Static pages with block editor content and metadata.' },
   { value: 'categories', label: 'Categories', description: 'Category names, slugs, descriptions, and colors.' },
   { value: 'tags',       label: 'Tags',       description: 'Tag names and slugs.' },
   { value: 'media',      label: 'Media',      description: 'Media library metadata (alt text, descriptions, file info).' },

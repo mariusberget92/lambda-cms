@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ExportDownloadRequest;
 use App\Models\Category;
 use App\Models\Media;
+use App\Models\Page;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\Template;
@@ -18,6 +19,7 @@ class ExportController extends Controller
         return Inertia::render('Export/Index', [
             'counts' => [
                 'posts' => Post::count(),
+                'pages' => Page::count(),
                 'categories' => Category::count(),
                 'tags' => Tag::count(),
                 'media' => Media::count(),

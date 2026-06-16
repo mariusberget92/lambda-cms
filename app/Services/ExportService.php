@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Category;
 use App\Models\Media;
+use App\Models\Page;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\Template;
@@ -70,6 +71,12 @@ class ExportService
             $zip->addFromString('templates.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         }
 
+        if (in_array('pages', $entities)) {
+            $data = $this->exportPages();
+            $manifest['counts']['pages'] = count($data);
+            $zip->addFromString('pages.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        }
+
         if (in_array('posts', $entities)) {
             $data = $this->exportPosts();
             $manifest['counts']['posts'] = count($data);
@@ -130,6 +137,20 @@ class ExportService
             'meta_title' => $t->meta_title,
             'meta_description' => $t->meta_description,
             'meta_keywords' => $t->meta_keywords,
+        ])->values()->toArray();
+    }
+
+    private function exportPages(): array
+    {
+        return Page::all()->map(fn ($p) => [
+            'title' => $p->title,
+            'slug' => $p->slug,
+            'status' => $p->status,
+            'blocks' => $p->blocks ?? [],
+            'meta_title' => $p->meta_title,
+            'meta_description' => $p->meta_description,
+            'meta_keywords' => $p->meta_keywords,
+            'custom_js' => $p->custom_js,
         ])->values()->toArray();
     }
 
