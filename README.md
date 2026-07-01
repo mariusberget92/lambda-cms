@@ -1,6 +1,6 @@
 <div align="center">
 
-# Lambda CMS
+# 🔺 Lambda CMS
 
 **A modern, self-hosted CMS + CRM built for developers.**
 Block editor · CRM · Email campaigns · In-browser image editor · 2FA · Headless API · No cloud lock-in.
@@ -10,13 +10,13 @@ Block editor · CRM · Email campaigns · In-browser image editor · 2FA · Head
 [![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4.svg?logo=php&logoColor=white)](https://php.net)
 [![Vue](https://img.shields.io/badge/Vue-3-42b883.svg?logo=vue.js&logoColor=white)](https://vuejs.org)
 
-**[Read the Docs](https://lambdacms.darkleaks.net)**
+**[📖 Read the Docs](https://lambdacms.darkleaks.net)**
 
 </div>
 
 ---
 
-## Screenshots
+## 📸 Screenshots
 
 <table>
   <tr>
@@ -61,11 +61,11 @@ Block editor · CRM · Email campaigns · In-browser image editor · 2FA · Head
 
 ---
 
-## What is Lambda CMS?
+## 💡 What is Lambda CMS?
 
 Lambda CMS is a clean, fast, fully self-hosted content management system with a built-in CRM and email marketing toolkit. No subscriptions, no SaaS lock-in — you own your data and your stack. Built with **Laravel 12**, **Vue 3**, and **Inertia.js**, it feels like a modern SPA while keeping the server-side simplicity of a traditional Laravel app.
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -77,9 +77,9 @@ Lambda CMS is a clean, fast, fully self-hosted content management system with a 
 
 ---
 
-## Features
+## ✨ Features
 
-### Content Management
+### 📝 Content Management
 
 - **Posts** — full CRUD with Tiptap rich text or the drag-and-drop block editor
 - **Pages** — static pages built entirely with the block editor
@@ -90,7 +90,7 @@ Lambda CMS is a clean, fast, fully self-hosted content management system with a 
 - **Draft previews** — shareable token-based URLs, no login required
 - **Bulk actions** — publish, draft, or delete multiple posts at once
 
-### Block Editor
+### 🧱 Block Editor
 
 30+ block types across six categories:
 
@@ -112,7 +112,7 @@ Lambda CMS is a clean, fast, fully self-hosted content management system with a 
 - Conditional block visibility based on loop field values
 - Block labels shown in canvas and layers panel
 
-### Media Library & Image Editor
+### 🖼️ Media Library & Image Editor
 
 - Upload images, documents, video, and audio (configurable size limit, default 10 MB)
 - **In-browser image editor** — crop with 9 aspect ratio presets, rotate, flip, 8 filter presets (Normal, Vivid, Muted, B&W, Warm, Cool, Fade, Drama), and manual brightness / contrast / saturation / blur controls. Opens before upload and on any existing library item.
@@ -120,13 +120,13 @@ Lambda CMS is a clean, fast, fully self-hosted content management system with a 
 - Alt text and description per file; UUID-based filenames with dimension tracking
 - Admins see all files; users see their own
 
-### Template System
+### 🎨 Template System
 
 - **7 pre-shipped system templates** — Post Card, Default Blog Index, Default Single Post, Default Archive, Default Search Results, Default Header, Default Footer
 - Custom templates share the same block editor, autosave, and revisions
 - Loop blocks correctly inherit context for dynamic bindings
 
-### Public Frontend
+### 🌐 Public Frontend
 
 - Every public page rendered from editable block templates
 - Header and footer rendered from dedicated block templates
@@ -135,14 +135,14 @@ Lambda CMS is a clean, fast, fully self-hosted content management system with a 
 - Design token system — accent color applies live to both admin and blog
 - Admin bar visible to authenticated users only
 
-### Comments
+### 💬 Comments
 
 - Public submission with honeypot spam protection and rate limiting
 - Admin moderation — approve, reject, or delete individually or in bulk
 - Nested replies with email notifications
 - Per-post toggle to enable/disable comments
 
-### CRM
+### 👥 CRM
 
 A built-in customer relationship management system with fine-grained, permission-based access control. Each CRM module has its own permission that can be granted independently to non-admin users.
 
@@ -156,7 +156,7 @@ A built-in customer relationship management system with fine-grained, permission
 
 **Permissions:** `manage contacts`, `manage companies`, `manage deals`, `manage call lists` — each grantable independently to any user role.
 
-### Email System
+### 📧 Email System
 
 Customizable transactional emails, subscriber management, and email campaigns — all in one place.
 
@@ -168,7 +168,7 @@ Customizable transactional emails, subscriber management, and email campaigns �
 
 **Permission:** `manage email` — covers templates, subscribers, and campaigns.
 
-### Users & Roles
+### 👤 Users & Roles
 
 - Two roles: **administrator** and **user**
 - Admins manage all content, users, settings, pages, and templates
@@ -179,7 +179,7 @@ Customizable transactional emails, subscriber management, and email campaigns �
 - User banning with reason and optional expiry (auto-lifted on next login)
 - Online status tracking
 
-### Auth & Security
+### 🔐 Auth & Security
 
 - Email + password login with rate limiting (5 attempts / 60 s per email + IP)
 - **Two-factor authentication** — TOTP-based 2FA compatible with Google Authenticator, Authy, 1Password, and any RFC 6238 app. Includes 8 single-use recovery codes.
@@ -187,19 +187,19 @@ Customizable transactional emails, subscriber management, and email campaigns �
 - Email verification required before dashboard access
 - Author-scoped post and media access
 
-### Webhooks
+### 🔗 Webhooks
 
 - Events: `post.published`, `post.updated`, `post.deleted`, `page.published`, `page.updated`, `page.deleted`
 - HMAC-SHA256 request signature (`X-Lambda-Signature`) when a secret is set
 - Dispatched via queued jobs; `last_triggered_at` tracked per webhook
 
-### Editorial Calendar
+### 📅 Editorial Calendar
 
 - Month-view calendar with published, scheduled, and draft posts
 - Unscheduled drafts panel alongside the calendar
 - Admins see all; users see their own
 
-### Settings
+### ⚙️ Settings
 
 - Site name, URL, timezone, and date format
 - SEO defaults (meta description, OG image, keywords, title separator)
@@ -210,7 +210,7 @@ Customizable transactional emails, subscriber management, and email campaigns �
 - UI density: default, compact, or comfortable
 - Custom JS injection on every public page
 
-### REST API (Headless)
+### 🔌 REST API (Headless)
 
 ```
 GET  /api/v1/posts
@@ -222,7 +222,7 @@ GET  /api/v1/tags/{slug}
 POST /api/v1/query        <- block editor loop data source
 ```
 
-### Import / Export
+### 📦 Import / Export
 
 Export your content as a portable ZIP and re-import it into any Lambda CMS instance.
 
@@ -231,7 +231,7 @@ Export your content as a portable ZIP and re-import it into any Lambda CMS insta
 **Export** — pick which entities to include, optionally bundle media files, and download a `.zip`. **Import** — upload a ZIP, preview what's inside, select entities, choose a conflict strategy (`skip`, `overwrite`, or `duplicate`), and run.
 
 <details>
-<summary><strong>ZIP structure and JSON schemas</strong></summary>
+<summary><strong>📋 ZIP structure and JSON schemas</strong></summary>
 
 The export ZIP contains a `manifest.json`, one JSON file per entity type, and an optional `media/` folder:
 
@@ -431,7 +431,7 @@ When `include_media_files` is enabled, the actual files are bundled under `media
 
 </details>
 
-### Installer
+### 🧙 Installer
 
 - 4-step browser wizard: **Database > Site > Admin > Mail**
 - Supports SQLite and MySQL; tests the DB connection before writing `.env`
@@ -439,7 +439,7 @@ When `include_media_files` is enabled, the actual files are bundled under `media
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Requirements
 
@@ -493,7 +493,7 @@ For email campaigns, webhook dispatches, and other queued jobs, start a queue wo
 php artisan queue:work
 ```
 
-### Testing
+### 🧪 Testing
 
 ```bash
 php artisan test
@@ -503,7 +503,7 @@ The test suite covers 677 tests across content management, CRM, email system, ca
 
 ---
 
-## Roadmap
+## 🗺️ Roadmap
 
 - [x] Full import / export (posts, pages, categories, tags, media, templates)
 - [x] CRM (contacts, companies, deals, call lists, activities, import/export)
@@ -514,6 +514,6 @@ The test suite covers 677 tests across content management, CRM, email system, ca
 
 ---
 
-## License
+## 📄 License
 
 MIT — do whatever you want with it.
