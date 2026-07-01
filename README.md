@@ -24,24 +24,40 @@ Block editor · CRM · Email campaigns · In-browser image editor · 2FA · Head
     <td><img src=".github/screenshots/02-posts.png" alt="Posts" /></td>
   </tr>
   <tr>
-    <td align="center"><sub>Dashboard — post stats and recent activity</sub></td>
+    <td align="center"><sub>Dashboard — stats, charts, and recent activity</sub></td>
     <td align="center"><sub>Posts — list with search, filters, and bulk actions</sub></td>
   </tr>
   <tr>
     <td><img src=".github/screenshots/03-post-editor.png" alt="Post editor" /></td>
-    <td><img src=".github/screenshots/05-categories.png" alt="Categories" /></td>
+    <td><img src=".github/screenshots/04-media-library.png" alt="Media library" /></td>
   </tr>
   <tr>
     <td align="center"><sub>Post editor — Tiptap rich-text with sidebar metadata</sub></td>
-    <td align="center"><sub>Categories — color-coded with cloud and table view</sub></td>
+    <td align="center"><sub>Media library — upload, edit, and manage files</sub></td>
   </tr>
   <tr>
+    <td><img src=".github/screenshots/05-categories.png" alt="Categories" /></td>
     <td><img src=".github/screenshots/06-tags.png" alt="Tags" /></td>
-    <td><img src=".github/screenshots/08-export.png" alt="Export" /></td>
   </tr>
   <tr>
+    <td align="center"><sub>Categories — color-coded with cloud and table view</sub></td>
     <td align="center"><sub>Tags — weighted tag cloud with post counts</sub></td>
+  </tr>
+  <tr>
+    <td><img src=".github/screenshots/07-templates.png" alt="Templates" /></td>
+    <td><img src=".github/screenshots/10-public-homepage.png" alt="Public frontend" /></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Templates — block editor for site layout templates</sub></td>
+    <td align="center"><sub>Public frontend — rendered from editable block templates</sub></td>
+  </tr>
+  <tr>
+    <td><img src=".github/screenshots/08-export.png" alt="Export" /></td>
+    <td><img src=".github/screenshots/09-import.png" alt="Import" /></td>
+  </tr>
+  <tr>
     <td align="center"><sub>Export — select entities and download a portable ZIP</sub></td>
+    <td align="center"><sub>Import — upload, preview, and merge content</sub></td>
   </tr>
 </table>
 
@@ -130,14 +146,17 @@ Lambda CMS is a clean, fast, fully self-hosted content management system with a 
 
 ### CRM
 
-A built-in customer relationship management system with permission-based access control. Each module can be granted independently to non-admin users.
+A built-in customer relationship management system with fine-grained, permission-based access control. Each CRM module has its own permission that can be granted independently to non-admin users.
 
-- **Contacts** — manage people with name, email, phone, notes, and company association. Full-text search across all fields.
-- **Companies** — organize contacts under companies. Link contacts to companies with one-click association.
-- **Deals** — track sales opportunities through a 5-stage pipeline: Lead, Qualified, Proposal, Won, Lost. Each deal tracks value, expected close date, and links to a contact and company. Activity timeline per deal.
-- **Call Lists** — create lists of contacts for outreach campaigns. Add/remove contacts, track call status per contact (pending, called, no answer, callback, completed), record notes, and work through the list with a dedicated calling interface.
-- **CRM Import** — upload a CSV, preview rows, map columns to contact/company/deal fields, choose a conflict strategy (skip or overwrite), and import in bulk.
-- **CRM Export** — select which CRM entities to include and download as CSV.
+- **Contacts** — manage people with name, email, phone, position, notes, and company association. Statuses: active, inactive, archived. Full-text search across all fields. Activity timeline on the edit page.
+- **Companies** — organize contacts under companies with domain, phone, and address. Contacts and deals counts shown in the list view.
+- **Deals** — track sales opportunities through a 5-stage pipeline: Lead, Qualified, Proposal, Won, Lost. Each deal tracks monetary value, expected close date, and links to a contact and company. Closing a deal as Won or Lost auto-stamps `closed_at`; reopening clears it. Activity timeline per deal.
+- **Call Lists** — create lists of contacts for outreach campaigns. Add/remove contacts, track call status per contact (not called, called, no answer, callback, completed), record notes per call, and work through the list with a dedicated calling interface.
+- **Activities** — log notes, calls, emails, meetings, and tasks against any contact, company, or deal. Shown as a timeline on the entity's edit page.
+- **CRM Import** — upload a CSV, preview rows, map columns to contact or company fields, choose a conflict strategy (skip or overwrite), and import in bulk.
+- **CRM Export** — download contacts, companies, or call lists as CSV files.
+
+**Permissions:** `manage contacts`, `manage companies`, `manage deals`, `manage call lists` — each grantable independently to any user role.
 
 ### Email System
 
@@ -145,15 +164,18 @@ Customizable transactional emails, subscriber management, and email campaigns �
 
 - **Editable system email templates** — 5 built-in templates (password reset, email verification, welcome, new comment, comment reply) stored in the database with a WYSIWYG editor. Each template supports merge tags (e.g. `{{user_name}}`, `{{reset_url}}`), live preview, and one-click reset to default. All Laravel system emails (password reset, verification, welcome, comment notifications) route through these templates automatically.
 - **Subscriber management** — a standalone subscribers table (separate from CRM contacts) for newsletter signups. Public subscribe form (Blade page at `/subscribe`) and token-based unsubscribe link. Admin interface with search, status filtering (active / unsubscribed), bulk delete, CSV export, and CSV import with column mapping and conflict strategy.
-- **Email campaigns** — create newsletters with the Tiptap editor, save as draft, and send to all active subscribers with one click. Sending is handled by a queued job that processes each recipient individually. Per-recipient tracking with sent/failed/pending status and error messages. Campaign report page with stat cards and a recipients table. Campaigns that have been sent cannot be edited or re-sent.
+- **Email campaigns** — create newsletters with the Tiptap editor, save as draft, and send to all active subscribers. Sending is handled by a queued job that processes each recipient individually. Per-recipient tracking with sent/failed/pending status and error messages. Campaign report page with stat cards and a recipients table.
+- **Campaign scheduling** — schedule campaigns for a future date and time instead of sending immediately. The Laravel scheduler checks every minute and auto-dispatches due campaigns. Scheduled campaigns can be edited (resets to draft), unscheduled back to draft, or sent immediately.
 - **Unsubscribe footer** — every campaign email includes an unsubscribe link with the subscriber's unique token.
+
+**Permission:** `manage email` — covers templates, subscribers, and campaigns.
 
 ### Users & Roles
 
 - Two roles: **administrator** and **user**
 - Admins manage all content, users, settings, pages, and templates
 - Users manage their own posts, categories, tags, and media
-- Fine-grained CRM and email permissions: manage contacts, manage companies, manage deals, manage call lists, manage email
+- Fine-grained permissions: `manage contacts`, `manage companies`, `manage deals`, `manage call lists`, `manage email` — each independently assignable
 - Avatar upload per profile
 - User invite flow — auto-generated password + welcome email
 - User banning with reason and optional expiry (auto-lifted on next login)
@@ -461,25 +483,34 @@ php artisan view:cache
 npm run build
 ```
 
-Add a cron entry to run the scheduler (handles auto-publishing and queued emails):
+Add a cron entry to run the scheduler (handles auto-publishing scheduled posts and dispatching scheduled campaigns):
 
 ```
 * * * * * cd /path/to/lambda-cms && php artisan schedule:run >> /dev/null 2>&1
 ```
 
-For email campaigns and other queued jobs, start a queue worker:
+For email campaigns, webhook dispatches, and other queued jobs, start a queue worker:
 
 ```bash
 php artisan queue:work
 ```
+
+### Testing
+
+```bash
+php artisan test
+```
+
+The test suite covers 677 tests across content management, CRM, email system, campaign scheduling, and public-facing features.
 
 ---
 
 ## Roadmap
 
 - [x] Full import / export (posts, pages, categories, tags, media, templates)
-- [x] CRM (contacts, companies, deals, call lists, import/export)
-- [x] Email system (editable templates, subscribers, campaigns)
+- [x] CRM (contacts, companies, deals, call lists, activities, import/export)
+- [x] Email system (editable templates, subscribers, campaigns with scheduling)
+- [x] Comprehensive test suite (677 tests)
 - [ ] API write access — token-based auth for creating and updating content
 - [ ] Multi-language / i18n content support
 

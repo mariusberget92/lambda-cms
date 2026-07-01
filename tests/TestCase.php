@@ -41,7 +41,7 @@ abstract class TestCase extends BaseTestCase
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        foreach (['manage posts', 'manage categories', 'manage tags', 'manage users', 'manage email'] as $name) {
+        foreach (['manage posts', 'manage categories', 'manage tags', 'manage users', 'manage contacts', 'manage companies', 'manage deals', 'manage call lists', 'manage email'] as $name) {
             Permission::firstOrCreate(['name' => $name]);
         }
 
