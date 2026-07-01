@@ -28,32 +28,40 @@ Block editor · CRM · Email campaigns · In-browser image editor · 2FA · Head
     <td align="center"><sub>Posts — list with search, filters, and bulk actions</sub></td>
   </tr>
   <tr>
-    <td><img src=".github/screenshots/03-post-editor.png" alt="Post editor" /></td>
-    <td><img src=".github/screenshots/04-media-library.png" alt="Media library" /></td>
+    <td><img src=".github/screenshots/03-contacts.png" alt="CRM Contacts" /></td>
+    <td><img src=".github/screenshots/04-companies.png" alt="CRM Companies" /></td>
   </tr>
   <tr>
+    <td align="center"><sub>CRM Contacts — manage people, companies, and activities</sub></td>
+    <td align="center"><sub>CRM Companies — organize contacts under companies</sub></td>
+  </tr>
+  <tr>
+    <td><img src=".github/screenshots/05-deals.png" alt="CRM Deals" /></td>
+    <td><img src=".github/screenshots/06-call-lists.png" alt="CRM Call Lists" /></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Deals — pipeline board with Lead → Won stages</sub></td>
+    <td align="center"><sub>Call Lists — organize contacts for outreach</sub></td>
+  </tr>
+  <tr>
+    <td><img src=".github/screenshots/07-email-templates.png" alt="Email Templates" /></td>
+    <td><img src=".github/screenshots/08-subscribers.png" alt="Subscribers" /></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Email Templates — customize system email content</sub></td>
+    <td align="center"><sub>Subscribers — manage newsletter signups</sub></td>
+  </tr>
+  <tr>
+    <td><img src=".github/screenshots/09-campaigns.png" alt="Campaigns" /></td>
+    <td><img src=".github/screenshots/10-post-editor.png" alt="Post editor" /></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Campaigns — create and send email newsletters</sub></td>
     <td align="center"><sub>Post editor — Tiptap rich-text with sidebar metadata</sub></td>
-    <td align="center"><sub>Media library — upload, edit, and manage files</sub></td>
   </tr>
   <tr>
-    <td><img src=".github/screenshots/05-categories.png" alt="Categories" /></td>
-    <td><img src=".github/screenshots/06-tags.png" alt="Tags" /></td>
-  </tr>
-  <tr>
-    <td align="center"><sub>Categories — color-coded with cloud and table view</sub></td>
-    <td align="center"><sub>Tags — weighted tag cloud with post counts</sub></td>
-  </tr>
-  <tr>
-    <td><img src=".github/screenshots/07-templates.png" alt="Templates" /></td>
-    <td><img src=".github/screenshots/10-public-homepage.png" alt="Public frontend" /></td>
-  </tr>
-  <tr>
-    <td align="center"><sub>Templates — block editor for site layout templates</sub></td>
-    <td align="center"><sub>Public frontend — rendered from editable block templates</sub></td>
-  </tr>
-  <tr>
-    <td><img src=".github/screenshots/08-export.png" alt="Export" /></td>
-    <td><img src=".github/screenshots/09-import.png" alt="Import" /></td>
+    <td><img src=".github/screenshots/15-export.png" alt="Export" /></td>
+    <td><img src=".github/screenshots/16-import.png" alt="Import" /></td>
   </tr>
   <tr>
     <td align="center"><sub>Export — select entities and download a portable ZIP</sub></td>
