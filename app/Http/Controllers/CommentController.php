@@ -29,8 +29,8 @@ class CommentController extends Controller
             ->when($request->filled('search'), fn ($q) => $q->where(function ($q2) use ($request) {
                 $s = '%'.$request->input('search').'%';
                 $q2->where('author_name', 'like', $s)
-                   ->orWhere('author_email', 'like', $s)
-                   ->orWhere('body', 'like', $s);
+                    ->orWhere('author_email', 'like', $s)
+                    ->orWhere('body', 'like', $s);
             }))
             ->latest()
             ->paginate(25)

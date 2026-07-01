@@ -49,7 +49,7 @@ class CrmExportController extends Controller
 
         return new StreamedResponse(function () use ($entity) {
             $handle = fopen('php://output', 'w');
-            $this->{"export".ucfirst(str_replace('_', '', $entity))}($handle);
+            $this->{'export'.ucfirst(str_replace('_', '', $entity))}($handle);
             fclose($handle);
         }, 200, [
             'Content-Type' => 'text/csv; charset=UTF-8',

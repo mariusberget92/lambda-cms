@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\SendCampaignJob;
 use App\Models\Campaign;
 use App\Models\Subscriber;
 use App\Models\User;
@@ -207,7 +208,7 @@ class CampaignTest extends TestCase
         $campaign->refresh();
         $this->assertEquals('sending', $campaign->status);
 
-        Queue::assertPushed(\App\Jobs\SendCampaignJob::class);
+        Queue::assertPushed(SendCampaignJob::class);
     }
 
     public function test_cannot_send_already_sent_campaign(): void

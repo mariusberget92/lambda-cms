@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Activity;
+use App\Models\Company;
+use App\Models\Contact;
+use App\Models\Deal;
 use Illuminate\Http\Request;
 
 class ActivityController extends Controller
@@ -18,9 +21,9 @@ class ActivityController extends Controller
         ]);
 
         $modelMap = [
-            'contact' => \App\Models\Contact::class,
-            'company' => \App\Models\Company::class,
-            'deal' => \App\Models\Deal::class,
+            'contact' => Contact::class,
+            'company' => Company::class,
+            'deal' => Deal::class,
         ];
 
         $subjectClass = $modelMap[$request->input('subject_type')];
@@ -49,9 +52,9 @@ class ActivityController extends Controller
     public function destroy(Request $request, Activity $activity)
     {
         $permissionMap = [
-            \App\Models\Contact::class => 'manage contacts',
-            \App\Models\Company::class => 'manage companies',
-            \App\Models\Deal::class => 'manage deals',
+            Contact::class => 'manage contacts',
+            Company::class => 'manage companies',
+            Deal::class => 'manage deals',
         ];
 
         $permission = $permissionMap[$activity->subject_type] ?? null;
