@@ -24,13 +24,13 @@ class CallListController extends Controller
             ->paginate(25)
             ->withQueryString()
             ->through(fn (CallList $list) => [
-            'id' => $list->id,
-            'name' => $list->name,
-            'status' => $list->status,
-            'contacts_count' => $list->contacts_count,
-            'completed_count' => $list->completed_count,
-            'created_at' => $list->created_at->toISOString(),
-        ]);
+                'id' => $list->id,
+                'name' => $list->name,
+                'status' => $list->status,
+                'contacts_count' => $list->contacts_count,
+                'completed_count' => $list->completed_count,
+                'created_at' => $list->created_at->toISOString(),
+            ]);
 
         return Inertia::render('CallLists/Index', [
             'callLists' => $callLists,
