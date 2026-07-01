@@ -53,19 +53,9 @@ Block editor · CRM · Email campaigns · In-browser image editor · 2FA · Head
   </tr>
   <tr>
     <td><img src=".github/screenshots/09-campaigns.png" alt="Campaigns" /></td>
-    <td><img src=".github/screenshots/10-post-editor.png" alt="Post editor" /></td>
   </tr>
   <tr>
     <td align="center"><sub>Campaigns — create and send email newsletters</sub></td>
-    <td align="center"><sub>Post editor — Tiptap rich-text with sidebar metadata</sub></td>
-  </tr>
-  <tr>
-    <td><img src=".github/screenshots/15-export.png" alt="Export" /></td>
-    <td><img src=".github/screenshots/16-import.png" alt="Import" /></td>
-  </tr>
-  <tr>
-    <td align="center"><sub>Export — select entities and download a portable ZIP</sub></td>
-    <td align="center"><sub>Import — upload, preview, and merge content</sub></td>
   </tr>
 </table>
 
