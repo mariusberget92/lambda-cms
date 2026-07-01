@@ -80,8 +80,8 @@
         <div>
           <label class="text-[10px] text-muted-foreground block mb-1">Bg color</label>
           <ColorPicker
-            :model-value="block.data.button?.bgColor ?? '#5e81ac'"
-            default="#5e81ac"
+            :model-value="block.data.button?.bgColor ?? '#3898ec'"
+            default="#3898ec"
             :show-value="false"
             @update:model-value="v => updateNested('button', 'bgColor', v)"
           />
@@ -89,8 +89,8 @@
         <div>
           <label class="text-[10px] text-muted-foreground block mb-1">Text color</label>
           <ColorPicker
-            :model-value="block.data.button?.textColor ?? '#eceff4'"
-            default="#eceff4"
+            :model-value="block.data.button?.textColor ?? '#ffffff'"
+            default="#ffffff"
             :show-value="false"
             @update:model-value="v => updateNested('button', 'textColor', v)"
           />

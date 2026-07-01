@@ -16,10 +16,35 @@
       </template>
     </PageHeader>
 
+    <!-- Filters -->
+    <div class="flex items-center gap-3 mb-4">
+      <div class="relative flex-1 max-w-xs">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input
+          v-model="search"
+          type="search"
+          placeholder="Search users..."
+          class="w-full rounded-md border bg-background pl-9 pr-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          @input="applyFilters"
+        />
+      </div>
+    </div>
+
     <!-- Table -->
     <DataTable :empty="users.data.length === 0">
       <template #empty>No users found.</template>
       <template #headers>
+        <th class="w-10">
+          <input
+            type="checkbox"
+            :checked="isAllSelected"
+            :indeterminate="selectedIds.length > 0 && !isAllSelected"
+            @change="toggleAll"
+           
+          />
+        </th>
         <th class="text-left">User</th>
         <th class="text-left">Role</th>
         <th class="text-left">Verified</th>
@@ -30,8 +55,18 @@
         <tr
           v-for="user in users.data"
           :key="user.id"
-          class="hover:bg-muted/30 transition-colors group"
+          class="group"
+          :class="{ 'bg-muted/20': selectedIds.includes(user.id) }"
         >
+          <td class="w-10">
+            <input
+              type="checkbox"
+              :checked="selectedIds.includes(user.id)"
+              :disabled="user.id === currentUserId || isLastAdmin(user)"
+              @change="toggleRow(user.id)"
+             
+            />
+          </td>
           <!-- User -->
           <td>
             <div class="flex items-center gap-3">
@@ -138,49 +173,46 @@
     </DataTable>
 
     <!-- Pagination -->
-    <div v-if="users.last_page > 1" class="flex justify-end gap-1 mt-4">
-      <a
-        v-for="link in users.links"
-        :key="link.label"
-        :href="link.url ?? '#'"
-        class="inline-flex items-center justify-center px-3 py-1.5 rounded-md text-sm transition-colors"
-        :class="link.active
-          ? 'bg-primary text-primary-foreground font-medium'
-          : link.url
-            ? 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-            : 'text-muted-foreground/40 cursor-not-allowed pointer-events-none'"
-      >{{ decodeHtmlEntities(link.label) }}</a>
+    <div v-if="users.last_page > 1" class="flex items-center justify-between mt-4 text-sm">
+      <p class="text-muted-foreground">
+        Showing {{ users.from }}–{{ users.to }} of {{ users.total }}
+      </p>
+      <div class="flex gap-1">
+        <component
+          :is="link.url ? 'a' : 'span'"
+          v-for="link in users.links"
+          :key="link.label"
+          :href="link.url || undefined"
+          class="inline-flex items-center justify-center px-3 py-1.5 rounded-md text-sm transition-colors"
+          :class="link.active
+            ? 'bg-primary text-primary-foreground font-medium'
+            : link.url
+              ? 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+              : 'text-muted-foreground/40 cursor-default'"
+        >{{ decodeHtmlEntities(link.label) }}</component>
+      </div>
     </div>
 
-    <!-- Delete confirmation modal -->
-    <Transition name="fade">
-      <div v-if="deleteTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="deleteTarget = null" />
-        <div class="relative bg-card border rounded-xl shadow-xl w-full max-w-sm p-6">
-          <h3 class="font-semibold text-base mb-2">Delete user?</h3>
-          <p class="text-sm text-muted-foreground mb-5">
-            <strong>{{ deleteTarget.name }}</strong> ({{ deleteTarget.email }}) will be permanently removed. This action cannot be undone.
-          </p>
-          <div class="flex gap-3 justify-end">
-            <button
-              type="button"
-              @click="deleteTarget = null"
-              class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              @click="deleteUser"
-              :disabled="deleting"
-              class="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50 transition-colors"
-            >
-              {{ deleting ? 'Deleting...' : 'Delete' }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </Transition>
+    <ConfirmModal
+      :open="!!deleteTarget"
+      title="Delete user?"
+      confirm-label="Delete"
+      processing-label="Deleting..."
+      :processing="deleting"
+      @close="deleteTarget = null"
+      @confirm="deleteUser"
+    >
+      <strong>{{ deleteTarget?.name }}</strong> ({{ deleteTarget?.email }}) will be permanently removed. This action cannot be undone.
+    </ConfirmModal>
+
+    <ConfirmModal
+      :open="showBulkDeleteModal"
+      :title="`Delete ${selectedIds.length} user${selectedIds.length === 1 ? '' : 's'}?`"
+      description="This cannot be undone. Administrators and yourself will be skipped."
+      confirm-label="Delete"
+      @close="showBulkDeleteModal = false"
+      @confirm="executeBulkDelete"
+    />
 
     <!-- Ban modal -->
     <Transition
@@ -227,8 +259,39 @@
 
           <div class="flex justify-end gap-2 pt-2">
             <button type="button" class="rounded-md border px-4 py-2 text-sm hover:bg-accent transition-colors" @click="banModal.open = false">Cancel</button>
-            <button type="button" class="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-white hover:bg-destructive/90 transition-colors" :disabled="banForm.processing" @click="submitBan">Ban user</button>
+            <button type="button" class="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors" :disabled="banForm.processing" @click="submitBan">Ban user</button>
           </div>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- Sticky bulk action toolbar -->
+    <Transition name="slide-up">
+      <div
+        v-if="selectedIds.length > 0"
+        class="fixed bottom-0 left-0 right-0 z-40 bg-card border-t shadow-lg"
+      >
+        <div class="max-w-screen-xl mx-auto px-4 py-3 flex items-center gap-3">
+          <span class="text-sm font-medium text-muted-foreground">
+            {{ selectedIds.length }} selected
+          </span>
+          <div class="flex items-center gap-2 ml-2">
+            <button
+              type="button"
+              @click="confirmBulkDelete"
+              class="rounded-md border border-destructive/30 px-3 py-1.5 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
+            >
+              Delete
+            </button>
+          </div>
+          <button
+            type="button"
+            @click="selectedIds = []"
+            class="ml-auto text-sm text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Clear selection"
+          >
+            ✕
+          </button>
         </div>
       </div>
     </Transition>
@@ -236,17 +299,19 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { Head, router, usePage, useForm } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PageHeader from '@/Components/PageHeader.vue'
 import DataTable from '@/Components/DataTable.vue'
+import ConfirmModal from '@/Components/ConfirmModal.vue'
 import { useNotifications } from '@/composables/useNotifications'
 import { decodeHtmlEntities } from '@/lib/utils.js'
 
 const props = defineProps({
   users:      { type: Object, required: true },
   adminCount: { type: Number, default: 0 },
+  filters:    { type: Object, default: () => ({}) },
 });
 
 const page          = usePage();
@@ -254,10 +319,88 @@ const currentUserId = computed(() => page.props.auth.user?.id);
 
 const { notify } = useNotifications()
 
+// -- Search --
+
+const search = ref(props.filters?.search ?? '')
+
+let searchTimeout = null
+function applyFilters() {
+  clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    router.get(
+      route('users.index'),
+      { search: search.value },
+      { preserveState: true, replace: true }
+    )
+  }, 300)
+}
+
+// -- Selection --
+
+const selectedIds = ref([])
+const showBulkDeleteModal = ref(false)
+
+watch(() => props.users, () => { selectedIds.value = [] })
+
+const selectableUsers = computed(() =>
+  props.users.data.filter(u => u.id !== currentUserId.value && !isLastAdmin(u))
+)
+
+const isAllSelected = computed(() =>
+  selectableUsers.value.length > 0 &&
+  selectableUsers.value.every(u => selectedIds.value.includes(u.id))
+)
+
+function toggleAll() {
+  selectedIds.value = isAllSelected.value ? [] : selectableUsers.value.map(u => u.id)
+}
+
+function toggleRow(id) {
+  const idx = selectedIds.value.indexOf(id)
+  if (idx === -1) selectedIds.value.push(id)
+  else selectedIds.value.splice(idx, 1)
+}
+
+// -- Bulk actions --
+
+function confirmBulkDelete() { showBulkDeleteModal.value = true }
+
+function executeBulkDelete() {
+  showBulkDeleteModal.value = false
+  router.post(
+    route('users.bulk'),
+    { action: 'delete', ids: selectedIds.value },
+    { onSuccess: () => { selectedIds.value = [] } }
+  )
+}
+
+// -- Single delete --
+
 const deleteTarget = ref(null);
 const deleting     = ref(false);
 
-// Ban modal state
+function isLastAdmin(user) {
+  return user.role === 'administrator' && props.adminCount <= 1;
+}
+
+function handleDeleteClick(user) {
+  if (isLastAdmin(user)) return;
+  deleteTarget.value = user;
+}
+
+function deleteUser() {
+  if (!deleteTarget.value) return;
+  deleting.value = true;
+  router.delete(route("users.destroy", deleteTarget.value.id), {
+    onFinish: () => {
+      deleting.value = false;
+      deleteTarget.value = null;
+    },
+  });
+}
+
+// -- Ban --
+
 const banModal = ref({ open: false, user: null })
 const banForm  = useForm({ reason: '', duration: '' })
 
@@ -279,7 +422,6 @@ function handleUnban(user) {
   })
 }
 
-// Time-left helper: returns "3d left", "2h left", "5m left"
 function timeLeft(isoString) {
   const until = new Date(isoString)
   const diffMs = until - Date.now()
@@ -295,33 +437,9 @@ function timeLeft(isoString) {
 function initials(name) {
   return name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase();
 }
-
-function isLastAdmin(user) {
-  return user.role === 'administrator' && props.adminCount <= 1;
-}
-
-function handleDeleteClick(user) {
-  if (isLastAdmin(user)) return;
-  confirmDelete(user);
-}
-
-function confirmDelete(user) {
-  deleteTarget.value = user;
-}
-
-function deleteUser() {
-  if (!deleteTarget.value) return;
-  deleting.value = true;
-  router.delete(route("users.destroy", deleteTarget.value.id), {
-    onFinish: () => {
-      deleting.value = false;
-      deleteTarget.value = null;
-    },
-  });
-}
 </script>
 
 <style scoped>
-.fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
+.slide-up-enter-active, .slide-up-leave-active { transition: transform 0.2s ease; }
+.slide-up-enter-from, .slide-up-leave-to { transform: translateY(100%); }
 </style>

@@ -84,6 +84,25 @@
         </div>
       </div>
 
+      <!-- CRM Permissions -->
+      <div v-if="form.role === 'user'" class="rounded-lg border bg-card p-6 space-y-4 mt-4">
+        <h3 class="text-sm font-semibold">CRM Permissions</h3>
+        <p class="text-xs text-muted-foreground">
+          Administrators have all permissions automatically. Select which CRM modules this user can access.
+        </p>
+        <div class="space-y-2">
+          <label v-for="perm in crmPermissions" :key="perm.value" class="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              :value="perm.value"
+              v-model="form.permissions"
+             
+            />
+            <span class="text-sm">{{ perm.label }}</span>
+          </label>
+        </div>
+      </div>
+
       <!-- Account Status -->
       <div v-if="isEditing && user.role !== 'administrator'" class="rounded-lg border bg-card p-6 space-y-4 mt-4">
         <h3 class="text-sm font-semibold">Account Status</h3>
@@ -138,7 +157,7 @@
           </div>
           <button
             type="button"
-            class="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-white hover:bg-destructive/90 transition-colors"
+            class="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors"
             :disabled="banForm.processing"
             @click="submitBan"
           >
@@ -187,6 +206,14 @@ const isLastAdmin = computed(
   () => props.user?.role === 'administrator' && props.adminCount <= 1
 );
 
+const crmPermissions = [
+  { value: 'manage contacts',   label: 'Manage Contacts' },
+  { value: 'manage companies',  label: 'Manage Companies' },
+  { value: 'manage deals',      label: 'Manage Deals' },
+  { value: 'manage call lists', label: 'Manage Call Lists' },
+  { value: 'manage email',      label: 'Manage Email' },
+]
+
 const roleOptions = computed(() => props.roles.map(r => ({
   value: r,
   label: r === 'administrator' ? 'Administrator' : 'User',
@@ -196,6 +223,7 @@ const form = useForm({
   name:  props.user?.name  ?? "",
   email: props.user?.email ?? "",
   role:  props.user?.role  ?? "",
+  permissions: props.user?.permissions ?? [],
 });
 
 const banForm = useForm({ reason: '', duration: '' })

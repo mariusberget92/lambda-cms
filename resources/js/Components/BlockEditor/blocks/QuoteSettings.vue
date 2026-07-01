@@ -61,8 +61,8 @@
         <div>
           <label class="text-xs font-medium text-muted-foreground block mb-1">Color</label>
           <ColorPicker
-            :model-value="block.data.accentBar?.color ?? '#5e81ac'"
-            default="#5e81ac"
+            :model-value="block.data.accentBar?.color ?? '#3898ec'"
+            default="#3898ec"
             @update:model-value="v => updateNested('accentBar', 'color', v)"
           />
         </div>

@@ -184,7 +184,7 @@
                   type="checkbox"
                   :value="entity"
                   v-model="selectedEntities"
-                  class="h-4 w-4 rounded border-border accent-primary"
+                 
                 />
                 <div class="flex items-center gap-2">
                   <span class="text-sm font-medium capitalize">{{ entity }}</span>
@@ -210,7 +210,7 @@
                   type="radio"
                   :value="strategy.value"
                   v-model="conflictStrategy"
-                  class="mt-0.5 h-4 w-4 border-border accent-primary"
+                  class="mt-0.5"
                 />
                 <div>
                   <span class="text-sm font-medium">{{ strategy.label }}</span>

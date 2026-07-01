@@ -43,15 +43,16 @@ defineProps({
 
 <style scoped>
 :deep(thead th) {
-  padding: 0.625rem 1rem;
-  font-size: 0.7rem;
+  padding: var(--density-table-th-py) var(--density-table-th-px);
+  font-size: var(--density-table-th-text);
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--muted-foreground);
 }
 :deep(tbody td) {
-  padding: 0.875rem 1rem;
+  padding: var(--density-table-td-py) var(--density-table-td-px);
+  font-size: var(--density-table-td-text);
 }
 :deep(tbody tr) {
   transition: background-color 0.15s;

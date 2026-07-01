@@ -18,6 +18,8 @@ class UpdateUserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($this->route('user'))],
             'role' => ['required', 'string', Rule::in(['administrator', 'user'])],
+            'permissions' => ['nullable', 'array'],
+            'permissions.*' => ['string', Rule::in(['manage contacts', 'manage companies', 'manage deals'])],
         ];
     }
 }

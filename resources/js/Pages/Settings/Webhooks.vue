@@ -44,7 +44,7 @@
                   type="checkbox"
                   :value="ev"
                   v-model="addForm.events"
-                  class="rounded border-border"
+                 
                 />
                 <code class="text-xs">{{ ev }}</code>
               </label>
@@ -53,7 +53,7 @@
           </div>
 
           <div class="flex items-center gap-2">
-            <input id="add_active" v-model="addForm.is_active" type="checkbox" class="rounded border-border" />
+            <input id="add_active" v-model="addForm.is_active" type="checkbox" />
             <label for="add_active" class="text-sm">Active</label>
           </div>
 
@@ -135,13 +135,13 @@
                 <label class="text-xs font-medium block mb-1">Events</label>
                 <div class="flex flex-wrap gap-2">
                   <label v-for="ev in ALL_EVENTS" :key="ev" class="flex items-center gap-1.5 text-sm cursor-pointer">
-                    <input type="checkbox" :value="ev" v-model="editForm.events" class="rounded border-border" />
+                    <input type="checkbox" :value="ev" v-model="editForm.events" />
                     <code class="text-xs">{{ ev }}</code>
                   </label>
                 </div>
               </div>
               <div class="flex items-center gap-2">
-                <input :id="`edit_active_${webhook.id}`" v-model="editForm.is_active" type="checkbox" class="rounded border-border" />
+                <input :id="`edit_active_${webhook.id}`" v-model="editForm.is_active" type="checkbox" />
                 <label :for="`edit_active_${webhook.id}`" class="text-sm">Active</label>
               </div>
               <div class="flex gap-2">

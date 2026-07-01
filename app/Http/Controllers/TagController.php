@@ -2,27 +2,37 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BulkTagRequest;
 use App\Http\Requests\StoreTagRequest;
 use App\Http\Requests\UpdateTagRequest;
 use App\Models\Tag;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class TagController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $tags = Tag::withCount('posts')
+            ->search($request->input('search'))
             ->orderBy('name')
-            ->get()
-            ->map(fn ($t) => [
+            ->paginate(20)
+            ->withQueryString()
+            ->through(fn ($t) => [
                 'id' => $t->id,
                 'name' => $t->name,
                 'slug' => $t->slug,
                 'posts_count' => $t->posts_count,
             ]);
 
+        $allTags = Tag::withCount('posts')
+            ->orderBy('name')
+            ->get(['id', 'name', 'posts_count']);
+
         return Inertia::render('Tags/Index', [
             'tags' => $tags,
+            'allTags' => $allTags,
+            'filters' => $request->only('search'),
         ]);
     }
 
@@ -75,5 +85,19 @@ class TagController extends Controller
         return redirect()
             ->route('tags.index')
             ->with('status', 'Tag deleted.');
+    }
+
+    public function bulk(BulkTagRequest $request)
+    {
+        $validated = $request->validated();
+        $tags = Tag::whereIn('id', $validated['ids'])->get();
+
+        match ($validated['action']) {
+            'delete' => $tags->each->delete(),
+        };
+
+        $count = $tags->count();
+
+        return redirect()->back()->with('status', "{$count} tag".($count === 1 ? '' : 's').' deleted.');
     }
 }

@@ -9,6 +9,7 @@ import { filterEmptyBlocks } from '@/lib/utils.js'
 import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue'
 import axios from 'axios'
 import { useNotifications } from '@/composables/useNotifications.js'
+import ConfirmModal from '@/Components/ConfirmModal.vue'
 
 const authUser = usePage().props.auth.user
 const { notify, dismiss } = useNotifications()
@@ -48,6 +49,7 @@ const defaultLoopSource = computed(() => hasNoLoopSource.value ? null : form.loo
 function submit() {
   form.blocks = filterEmptyBlocks(form.blocks)
   form.put(route('templates.update', props.template.id), {
+    onSuccess: () => notify('Template saved.', 'success'),
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   })
 }
@@ -180,32 +182,13 @@ async function confirmRestore() {
 
   </PageBuilderLayout>
 
-  <!-- Restore revision confirmation modal -->
-  <Transition
-    enter-active-class="transition ease-out duration-150"
-    enter-from-class="opacity-0"
-    enter-to-class="opacity-100"
-    leave-active-class="transition ease-in duration-100"
-    leave-from-class="opacity-100"
-    leave-to-class="opacity-0"
-  >
-    <div v-if="restoreTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" @click.self="restoreTarget = null">
-      <div class="w-full max-w-sm rounded-lg border bg-card p-6 shadow-lg space-y-4">
-        <h3 class="text-base font-semibold">Restore version?</h3>
-        <p class="text-sm text-muted-foreground">Your current unsaved changes will be replaced with the selected revision. This cannot be undone.</p>
-        <div class="flex justify-end gap-2">
-          <button
-            type="button"
-            class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent transition-colors"
-            @click="restoreTarget = null"
-          >Cancel</button>
-          <button
-            type="button"
-            class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-[var(--primary-hover)] transition-colors"
-            @click="confirmRestore"
-          >Restore</button>
-        </div>
-      </div>
-    </div>
-  </Transition>
+  <ConfirmModal
+    :open="!!restoreTarget"
+    title="Restore version?"
+    description="Your current unsaved changes will be replaced with the selected revision. This cannot be undone."
+    confirm-label="Restore"
+    variant="primary"
+    @close="restoreTarget = null"
+    @confirm="confirmRestore"
+  />
 </template>

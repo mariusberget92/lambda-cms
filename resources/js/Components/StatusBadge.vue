@@ -52,6 +52,31 @@ const MAP = {
     dotClass: 'bg-status-error-fg',
     label:    'Banned',
   },
+  active: {
+    classes:  'bg-status-success-bg text-status-success-fg',
+    dotClass: 'bg-status-success-fg',
+    label:    'Active',
+  },
+  unsubscribed: {
+    classes:  'bg-status-warning-bg text-status-warning-fg',
+    dotClass: 'bg-status-warning-fg',
+    label:    'Unsubscribed',
+  },
+  sending: {
+    classes:  'bg-status-info-bg text-status-info-fg',
+    dotClass: 'bg-status-info-fg',
+    label:    'Sending',
+  },
+  sent: {
+    classes:  'bg-status-success-bg text-status-success-fg',
+    dotClass: 'bg-status-success-fg',
+    label:    'Sent',
+  },
+  failed: {
+    classes:  'bg-status-error-bg text-status-error-fg',
+    dotClass: 'bg-status-error-fg',
+    label:    'Failed',
+  },
 }
 
 const entry   = computed(() => MAP[props.status] ?? MAP.draft)

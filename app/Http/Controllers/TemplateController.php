@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BulkTemplateRequest;
 use App\Http\Requests\StoreTemplateRequest;
 use App\Http\Requests\TemplateTypeRequest;
 use App\Http\Requests\UpdateTemplateRequest;
@@ -11,23 +12,27 @@ use Inertia\Inertia;
 
 class TemplateController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $templates = Template::with('creator:id,name')
+            ->when($request->filled('search'), fn ($q) => $q->where('title', 'like', '%'.$request->input('search').'%'))
             ->latest()
-            ->get()
-            ->map(fn (Template $t) => [
+            ->paginate(25)
+            ->withQueryString()
+            ->through(fn (Template $t) => [
                 'id' => $t->id,
                 'title' => $t->title,
                 'type' => $t->type,
                 'status' => $t->status,
                 'is_system' => $t->is_system,
                 'updated_at' => $t->updated_at->toDateString(),
-                'creator' => $t->creator->name,
-            ])
-            ->groupBy('type');
+                'creator' => $t->creator?->name ?? '—',
+            ]);
 
-        return Inertia::render('Templates/Index', ['templates' => $templates]);
+        return Inertia::render('Templates/Index', [
+            'templates' => $templates,
+            'filters' => $request->only('search'),
+        ]);
     }
 
     public function create(TemplateTypeRequest $request)
@@ -115,5 +120,21 @@ class TemplateController extends Controller
         $template->delete();
 
         return redirect()->route('templates.index')->with('status', 'Template deleted.');
+    }
+
+    public function bulk(BulkTemplateRequest $request)
+    {
+        $validated = $request->validated();
+        $templates = Template::whereIn('id', $validated['ids'])
+            ->where('is_system', false)
+            ->get();
+
+        match ($validated['action']) {
+            'delete' => $templates->each->delete(),
+        };
+
+        $count = $templates->count();
+
+        return redirect()->back()->with('status', "{$count} template".($count === 1 ? '' : 's').' deleted.');
     }
 }

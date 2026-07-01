@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -9,10 +10,18 @@ use App\Http\Controllers\Auth\TwoFactorController;
 use App\Http\Controllers\AutosaveController;
 use App\Http\Controllers\BanController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\CallListController;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\CrmExportController;
+use App\Http\Controllers\CrmImportController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DealController;
+use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\ImportController;
@@ -27,6 +36,8 @@ use App\Http\Controllers\RevisionController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\SubscribeController;
+use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TemplateController;
 use App\Http\Controllers\UserController;
@@ -64,6 +75,13 @@ Route::middleware('installed')->group(function () {
     Route::post('/blog/{post:slug}/comments', [CommentController::class, 'store'])
         ->middleware('throttle:comments')
         ->name('comments.store');
+
+    // Public subscribe / unsubscribe
+    Route::post('/subscribe', [SubscribeController::class, 'store'])
+        ->middleware('throttle:6,1')
+        ->name('subscribe');
+    Route::get('/subscribe', fn () => view('subscribe'))->name('subscribe.form');
+    Route::get('/unsubscribe/{token}', [SubscribeController::class, 'unsubscribe'])->name('unsubscribe');
 
     // ── Preview (public, token-based) ────────────────────────────────────────
     Route::get('/preview/posts/{token}', [PreviewController::class, 'post'])->name('preview.post');
@@ -119,7 +137,9 @@ Route::middleware('installed')->group(function () {
         // Revisions
         Route::get('/posts/{post}/revisions', [RevisionController::class, 'indexPost'])->name('posts.revisions');
         Route::get('/revisions/{revision}/restore', [RevisionController::class, 'restore'])->name('revisions.restore');
+        Route::post('/categories/bulk', [CategoryController::class, 'bulk'])->name('categories.bulk');
         Route::resource('categories', CategoryController::class)->except(['show']);
+        Route::post('/tags/bulk', [TagController::class, 'bulk'])->name('tags.bulk');
         Route::resource('tags', TagController::class)->except(['show']);
 
         Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
@@ -137,6 +157,56 @@ Route::middleware('installed')->group(function () {
         Route::get('/profile/two-factor/recovery-codes', [TwoFactorController::class, 'recoveryCodes'])->name('profile.two-factor.recovery-codes');
         Route::post('/profile/two-factor/recovery-codes', [TwoFactorController::class, 'regenerateRecoveryCodes'])->name('profile.two-factor.regenerate-recovery-codes');
 
+        // ── CRM ──────────────────────────────────────────────────────────────
+        Route::post('/contacts/bulk', [ContactController::class, 'bulk'])->name('contacts.bulk');
+        Route::resource('contacts', ContactController::class)->except(['show']);
+
+        Route::post('/companies/bulk', [CompanyController::class, 'bulk'])->name('companies.bulk');
+        Route::resource('companies', CompanyController::class)->except(['show']);
+
+        Route::post('/deals/bulk', [DealController::class, 'bulk'])->name('deals.bulk');
+        Route::resource('deals', DealController::class)->except(['show']);
+
+        Route::post('/activities', [ActivityController::class, 'store'])->name('activities.store');
+        Route::delete('/activities/{activity}', [ActivityController::class, 'destroy'])->name('activities.destroy');
+
+        // Call Lists
+        Route::post('/call-lists/bulk', [CallListController::class, 'bulk'])->name('call-lists.bulk');
+        Route::resource('call-lists', CallListController::class)->except(['show']);
+        Route::get('/call-lists/{call_list}/work', [CallListController::class, 'work'])->name('call-lists.work');
+        Route::post('/call-lists/{call_list}/contacts', [CallListController::class, 'addContacts'])->name('call-lists.add-contacts');
+        Route::post('/call-lists/{call_list}/contacts/remove', [CallListController::class, 'removeContacts'])->name('call-lists.remove-contacts');
+        Route::put('/call-lists/{call_list}/contacts/{contact}/status', [CallListController::class, 'updateContactStatus'])->name('call-lists.update-contact-status');
+
+        // CRM CSV Export/Import
+        Route::get('/crm/export', [CrmExportController::class, 'index'])->name('crm-export.index');
+        Route::get('/crm/export/download', [CrmExportController::class, 'download'])->name('crm-export.download');
+        Route::get('/crm/import', [CrmImportController::class, 'index'])->name('crm-import.index');
+        Route::post('/crm/import/preview', [CrmImportController::class, 'preview'])->name('crm-import.preview');
+        Route::post('/crm/import', [CrmImportController::class, 'store'])->name('crm-import.store');
+
+        // Subscribers
+        Route::post('/subscribers/bulk', [SubscriberController::class, 'bulk'])->name('subscribers.bulk');
+        Route::get('/subscribers/export', [SubscriberController::class, 'export'])->name('subscribers.export');
+        Route::get('/subscribers/import', [SubscriberController::class, 'importForm'])->name('subscribers.import');
+        Route::post('/subscribers/import/preview', [SubscriberController::class, 'importPreview'])->name('subscribers.import.preview');
+        Route::post('/subscribers/import', [SubscriberController::class, 'importStore'])->name('subscribers.import.store');
+        Route::get('/subscribers', [SubscriberController::class, 'index'])->name('subscribers.index');
+        Route::delete('/subscribers/{subscriber}', [SubscriberController::class, 'destroy'])->name('subscribers.destroy');
+
+        // Campaigns
+        Route::post('/campaigns/bulk', [CampaignController::class, 'bulk'])->name('campaigns.bulk');
+        Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
+        Route::get('/campaigns/create', [CampaignController::class, 'create'])->name('campaigns.create');
+        Route::post('/campaigns', [CampaignController::class, 'store'])->name('campaigns.store');
+        Route::get('/campaigns/{campaign}/edit', [CampaignController::class, 'edit'])->name('campaigns.edit');
+        Route::put('/campaigns/{campaign}', [CampaignController::class, 'update'])->name('campaigns.update');
+        Route::delete('/campaigns/{campaign}', [CampaignController::class, 'destroy'])->name('campaigns.destroy');
+        Route::post('/campaigns/{campaign}/send', [CampaignController::class, 'send'])->name('campaigns.send');
+        Route::post('/campaigns/{campaign}/schedule', [CampaignController::class, 'schedule'])->name('campaigns.schedule');
+        Route::post('/campaigns/{campaign}/unschedule', [CampaignController::class, 'unschedule'])->name('campaigns.unschedule');
+        Route::get('/campaigns/{campaign}/report', [CampaignController::class, 'report'])->name('campaigns.report');
+
         // Media library
         Route::get('/media', [MediaController::class, 'index'])->name('media.index');
         Route::post('/media', [MediaController::class, 'store'])->name('media.store');
@@ -149,16 +219,26 @@ Route::middleware('installed')->group(function () {
 
     // ── Auth + verified + administrator role ─────────────────────────────────
     Route::middleware(['auth', 'verified', 'role:administrator'])->group(function () {
+        // Email Templates
+        Route::get('/email-templates', [EmailTemplateController::class, 'index'])->name('email-templates.index');
+        Route::get('/email-templates/{emailTemplate}/edit', [EmailTemplateController::class, 'edit'])->name('email-templates.edit');
+        Route::put('/email-templates/{emailTemplate}', [EmailTemplateController::class, 'update'])->name('email-templates.update');
+        Route::post('/email-templates/{emailTemplate}/reset', [EmailTemplateController::class, 'reset'])->name('email-templates.reset');
+        Route::post('/email-templates/{emailTemplate}/preview', [EmailTemplateController::class, 'preview'])->name('email-templates.preview');
+
+        Route::post('/pages/bulk', [PageController::class, 'bulk'])->name('pages.bulk');
         Route::resource('pages', PageController::class)->except(['show']);
         Route::post('/pages/{page}/autosave', [AutosaveController::class, 'storePage'])->name('pages.autosave');
         Route::delete('/pages/{page}/autosave', [AutosaveController::class, 'destroyPage'])->name('pages.autosave.destroy');
         Route::get('/pages/{page}/revisions', [RevisionController::class, 'indexPage'])->name('pages.revisions');
 
+        Route::post('/templates/bulk', [TemplateController::class, 'bulk'])->name('templates.bulk');
         Route::resource('templates', TemplateController::class)->except(['show']);
         Route::post('/templates/{template}/autosave', [AutosaveController::class, 'storeTemplate'])->name('templates.autosave');
         Route::delete('/templates/{template}/autosave', [AutosaveController::class, 'destroyTemplate'])->name('templates.autosave.destroy');
         Route::get('/templates/{template}/revisions', [RevisionController::class, 'indexTemplate'])->name('templates.revisions');
 
+        Route::post('/users/bulk', [UserController::class, 'bulk'])->name('users.bulk');
         Route::resource('users', UserController::class)->except(['show']);
 
         Route::post('/users/{user}/ban', [BanController::class, 'ban'])->name('users.ban');
@@ -190,7 +270,7 @@ Route::middleware('installed')->group(function () {
 
     // ── Public custom pages (catch-all — must be last inside this group) ─────
     Route::get('/{slug}', [PublicPageController::class, 'show'])
-        ->where('slug', '^(?!login|logout|dashboard|blog|feed|sitemap\.xml|posts|categories|tags|users|profile|settings|media|comments|pages|templates|calendar|password|register|verify|install|email|forgot-password|reset-password|search|export|import|navigation|webhooks).*$')
+        ->where('slug', '^(?!login|logout|dashboard|blog|feed|sitemap\.xml|posts|categories|tags|users|profile|settings|media|comments|pages|templates|calendar|password|register|verify|install|email|forgot-password|reset-password|search|export|import|navigation|webhooks|contacts|companies|deals|activities|call-lists|crm|email-templates|subscribers|campaigns|subscribe|unsubscribe).*$')
         ->name('pages.show');
 
 });

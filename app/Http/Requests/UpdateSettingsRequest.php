@@ -55,6 +55,7 @@ class UpdateSettingsRequest extends FormRequest
             ],
             'appearance' => [
                 'site.accent_color' => ['nullable', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
+                'site.ui_density' => ['nullable', 'string', Rule::in(['compact', 'default', 'comfortable'])],
             ],
             'code' => [
                 'code.custom_js' => ['nullable', 'string'],

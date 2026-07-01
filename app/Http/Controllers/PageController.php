@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BulkPageRequest;
 use App\Http\Requests\StorePageRequest;
 use App\Http\Requests\UpdatePageRequest;
 use App\Models\Autosave;
@@ -13,11 +14,17 @@ use Inertia\Inertia;
 
 class PageController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $pages = Page::with('creator:id,name')
+            ->search($request->input('search'))
+            ->when(
+                $request->input('status'),
+                fn ($q, $status) => $q->where('status', $status)
+            )
             ->latest()
             ->paginate(20)
+            ->withQueryString()
             ->through(fn ($page) => [
                 'id' => $page->id,
                 'title' => $page->title,
@@ -27,7 +34,10 @@ class PageController extends Controller
                 'creator' => $page->creator->name,
             ]);
 
-        return Inertia::render('Pages/Index', ['pages' => $pages]);
+        return Inertia::render('Pages/Index', [
+            'pages' => $pages,
+            'filters' => $request->only('search', 'status'),
+        ]);
     }
 
     public function create()
@@ -98,5 +108,22 @@ class PageController extends Controller
         $page->delete();
 
         return redirect()->route('pages.index')->with('status', 'Page deleted.');
+    }
+
+    public function bulk(BulkPageRequest $request)
+    {
+        $validated = $request->validated();
+        $pages = Page::whereIn('id', $validated['ids'])->get();
+
+        match ($validated['action']) {
+            'publish' => $pages->each(fn (Page $page) => $page->update(['status' => 'published'])),
+            'draft' => $pages->each(fn (Page $page) => $page->update(['status' => 'draft'])),
+            'delete' => $pages->each->delete(),
+        };
+
+        $count = $pages->count();
+        $labels = ['publish' => 'published', 'draft' => 'drafted', 'delete' => 'deleted'];
+
+        return redirect()->back()->with('status', "{$count} page".($count === 1 ? '' : 's')." {$labels[$validated['action']]}.");
     }
 }

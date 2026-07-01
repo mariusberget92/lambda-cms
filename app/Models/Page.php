@@ -60,6 +60,18 @@ class Page extends Model
         return $query->where('status', 'draft');
     }
 
+    public function scopeSearch($query, ?string $term)
+    {
+        if (blank($term)) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($term) {
+            $q->where('title', 'like', "%{$term}%")
+                ->orWhere('slug', 'like', "%{$term}%");
+        });
+    }
+
     // ─── Helpers ──────────────────────────────────────────────────────────────
 
     public static function generateSlug(string $title, ?int $excludeId = null): string

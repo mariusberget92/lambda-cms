@@ -124,7 +124,7 @@ function blockWrapperStyle(block) {
   } else if (bgType === 'gradient' && block.data?.advBgGradient) {
     const g = block.data.advBgGradient
     const dir = { 'to-r': 'to right', 'to-l': 'to left', 'to-b': 'to bottom', 'to-t': 'to top', 'to-br': 'to bottom right', 'to-bl': 'to bottom left' }[g.direction ?? 'to-r'] ?? 'to right'
-    style.backgroundImage = `linear-gradient(${dir}, ${g.from ?? '#3b4252'}, ${g.to ?? '#4c566a'})`
+    style.backgroundImage = `linear-gradient(${dir}, ${g.from ?? '#1a1d27'}, ${g.to ?? '#2a2d37'})`
   } else if (bgType === 'image') {
     const img = block.data.advBgImage ?? {}
     // Resolve dynamic binding first, fall back to static URL

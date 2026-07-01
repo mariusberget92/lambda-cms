@@ -28,11 +28,11 @@ defineProps({
 })
 
 const colorMap = {
-  blue:   { bg: 'color-mix(in srgb, #5e81ac 15%, transparent)', fg: '#5e81ac' },
-  green:  { bg: 'color-mix(in srgb, #a3be8c 20%, transparent)', fg: '#638a47' },
-  cyan:   { bg: 'color-mix(in srgb, #88c0d0 15%, transparent)', fg: '#4a8fa0' },
-  yellow: { bg: 'color-mix(in srgb, #ebcb8b 20%, transparent)', fg: '#a07c20' },
-  red:    { bg: 'color-mix(in srgb, #bf616a 15%, transparent)', fg: '#bf616a' },
-  purple: { bg: 'color-mix(in srgb, #b48ead 15%, transparent)', fg: '#8a5f89' },
+  blue:   { bg: 'color-mix(in srgb, #3898ec 12%, transparent)', fg: '#3898ec' },
+  green:  { bg: 'color-mix(in srgb, #22c55e 12%, transparent)', fg: '#16a34a' },
+  cyan:   { bg: 'color-mix(in srgb, #06b6d4 12%, transparent)', fg: '#0891b2' },
+  yellow: { bg: 'color-mix(in srgb, #f59e0b 12%, transparent)', fg: '#d97706' },
+  red:    { bg: 'color-mix(in srgb, #e05368 10%, transparent)', fg: '#e05368' },
+  purple: { bg: 'color-mix(in srgb, #8b5cf6 12%, transparent)', fg: '#7c3aed' },
 }
 </script>

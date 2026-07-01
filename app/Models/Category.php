@@ -22,6 +22,20 @@ class Category extends Model
         return $this->belongsToMany(Post::class);
     }
 
+    // ─── Scopes ───────────────────────────────────────────────────────────────
+
+    public function scopeSearch($query, ?string $term)
+    {
+        if (blank($term)) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($term) {
+            $q->where('name', 'like', "%{$term}%")
+                ->orWhere('description', 'like', "%{$term}%");
+        });
+    }
+
     // ─── Helpers ──────────────────────────────────────────────────────────────
 
     public static function generateSlug(string $name, ?int $excludeId = null): string

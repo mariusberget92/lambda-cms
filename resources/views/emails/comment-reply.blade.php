@@ -8,7 +8,7 @@
     {{ $parent->body }}
   </blockquote>
   <p style="color: #666;">Reply from <strong>{{ $reply->author_name }}</strong>:</p>
-  <blockquote style="border-left: 3px solid #5e81ac; margin: 8px 0; padding: 8px 16px; color: #333;">
+  <blockquote style="border-left: 3px solid #3898ec; margin: 8px 0; padding: 8px 16px; color: #333;">
     {{ $reply->body }}
   </blockquote>
 </body>

@@ -1,5 +1,27 @@
+@php
+    $installed = file_exists(storage_path('app/installed'));
+    $accentColor = $installed ? \App\Models\Setting::get('site.accent_color') : null;
+    if (!preg_match('/^#[0-9a-fA-F]{6}$/', $accentColor ?? '')) {
+        $accentColor = null;
+    }
+    $hoverMap = [
+        '#3898ec' => '#2b7fcc',
+        '#22c55e' => '#16a34a',
+        '#f59e0b' => '#d97706',
+        '#f97316' => '#ea580c',
+        '#e05368' => '#c93d52',
+        '#8b5cf6' => '#7c3aed',
+    ];
+    $accentHover = $hoverMap[$accentColor] ?? null;
+    $uiDensity = $installed ? \App\Models\Setting::get('site.ui_density') : null;
+    $densityClass = match($uiDensity) {
+        'compact' => 'density-compact',
+        'comfortable' => 'density-comfortable',
+        default => '',
+    };
+@endphp
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="{{ $densityClass }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,23 +29,6 @@
     <title inertia>{{ config('app.name', 'Lambda CMS') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @routes
-@php
-    $installed = file_exists(storage_path('app/installed'));
-    $accentColor = $installed ? \App\Models\Setting::get('site.accent_color') : null;
-    // Re-validate: only emit if it is a valid 6-digit hex color
-    if (!preg_match('/^#[0-9a-fA-F]{6}$/', $accentColor ?? '')) {
-        $accentColor = null;
-    }
-    $hoverMap = [
-        '#5e81ac' => '#4a6d92',
-        '#a3be8c' => '#8aaa70',
-        '#ebcb8b' => '#d4b06a',
-        '#d08770' => '#bb6f58',
-        '#bf616a' => '#a84d56',
-        '#b48ead' => '#9d7596',
-    ];
-    $accentHover = $hoverMap[$accentColor] ?? null;
-@endphp
 @if($accentColor)
 <style>
 :root {

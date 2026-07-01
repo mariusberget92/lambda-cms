@@ -173,7 +173,7 @@ const toggle = () => {
             v-if="multiple"
             type="checkbox"
             :checked="isSelected(item.value)"
-            class="shrink-0 accent-nord-green"
+            class="shrink-0"
             tabindex="-1"
             @click.stop
           />

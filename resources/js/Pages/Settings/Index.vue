@@ -308,7 +308,6 @@
                       type="checkbox"
                       :value="cat.key"
                       v-model="mediaForm.media_allowed_categories"
-                      class="rounded border-border"
                     />
                     {{ cat.label }}
                   </label>
@@ -375,7 +374,7 @@
                   id="comments_enabled"
                   v-model="commentsForm['comments.enabled']"
                   type="checkbox"
-                  class="w-4 h-4 rounded border-border accent-nord-green"
+                 
                 />
               </div>
 
@@ -511,9 +510,9 @@
         <form @submit.prevent="submitAppearance">
           <ContentCard
             title="Appearance"
-            description="Choose an accent color for the admin interface and public site."
+            description="Customize accent color and interface density."
           >
-            <div class="space-y-4">
+            <div class="space-y-6">
               <div class="space-y-2">
                 <label class="text-sm font-medium">Accent color</label>
                 <div class="flex flex-wrap gap-3 mt-2">
@@ -539,6 +538,27 @@
                   </button>
                 </div>
               </div>
+
+              <div class="space-y-2">
+                <label class="text-sm font-medium">Interface density</label>
+                <p class="text-xs text-muted-foreground">Controls spacing, padding and sizing across the sidebar and dashboard.</p>
+                <div class="flex gap-2 mt-2">
+                  <button
+                    v-for="opt in DENSITY_OPTIONS"
+                    :key="opt.value"
+                    type="button"
+                    @click="appearanceForm['site.ui_density'] = opt.value"
+                    class="flex-1 rounded-lg border-2 px-4 py-3 text-center transition-all focus:outline-none"
+                    :class="appearanceForm['site.ui_density'] === opt.value
+                      ? 'border-primary bg-primary/5 shadow-sm'
+                      : 'border-border hover:border-muted-foreground/30'"
+                  >
+                    <component :is="opt.icon" class="w-5 h-5 mx-auto mb-1.5" :class="appearanceForm['site.ui_density'] === opt.value ? 'text-primary' : 'text-muted-foreground'" />
+                    <span class="block text-sm font-medium">{{ opt.label }}</span>
+                    <span class="block text-[11px] text-muted-foreground mt-0.5">{{ opt.description }}</span>
+                  </button>
+                </div>
+              </div>
             </div>
 
             <template #footer>
@@ -560,7 +580,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { Loader2 } from '@lucide/vue'
+import { Loader2, Rows3, Rows4, AlignJustify } from '@lucide/vue'
 import { Head, useForm, usePage, router } from "@inertiajs/vue3";
 import { Icon } from '@iconify/vue'
 import { useNotifications } from '@/composables/useNotifications.js'
@@ -757,20 +777,28 @@ function submitSeo() {
 
 // ── Appearance form ───────────────────────────────────────────────────────────
 const ACCENT_SWATCHES = [
-  { label: 'Frost Blue (default)', value: '#5e81ac', hover: '#4a6d92' },
-  { label: 'Nord Green',           value: '#a3be8c', hover: '#8aaa70' },
-  { label: 'Nord Yellow',          value: '#ebcb8b', hover: '#d4b06a' },
-  { label: 'Nord Orange',          value: '#d08770', hover: '#bb6f58' },
-  { label: 'Nord Red',             value: '#bf616a', hover: '#a84d56' },
-  { label: 'Nord Purple',          value: '#b48ead', hover: '#9d7596' },
+  { label: 'Dodger Blue (default)', value: '#3898ec', hover: '#2b7fcc' },
+  { label: 'Lime Green',            value: '#22c55e', hover: '#16a34a' },
+  { label: 'Amber',                 value: '#f59e0b', hover: '#d97706' },
+  { label: 'Coral',                 value: '#f97316', hover: '#ea580c' },
+  { label: 'Rose',                  value: '#e05368', hover: '#c93d52' },
+  { label: 'Violet',                value: '#8b5cf6', hover: '#7c3aed' },
+]
+
+const DENSITY_OPTIONS = [
+  { value: 'compact',     label: 'Compact',     description: 'Tighter spacing', icon: Rows4 },
+  { value: 'default',     label: 'Default',     description: 'Balanced layout',  icon: Rows3 },
+  { value: 'comfortable', label: 'Comfortable', description: 'More breathing room', icon: AlignJustify },
 ]
 
 const appearanceForm = useForm({
-  'site.accent_color': props.settings['site.accent_color'] || '#5e81ac',
+  'site.accent_color': props.settings['site.accent_color'] || '#3898ec',
+  'site.ui_density': props.settings['site.ui_density'] || 'default',
 })
 
 function submitAppearance() {
   const color = appearanceForm['site.accent_color']
+  const density = appearanceForm['site.ui_density']
   const swatch = ACCENT_SWATCHES.find(s => s.value === color)
   appearanceForm.put(route('settings.update', 'appearance'), {
     preserveScroll: true,
@@ -780,10 +808,14 @@ function submitAppearance() {
         document.documentElement.style.setProperty('--primary-hover', swatch.hover)
         document.documentElement.style.setProperty('--primary-foreground', '#ffffff')
         document.documentElement.style.setProperty('--sidebar-primary', color)
-        document.documentElement.style.setProperty('--sidebar-primary-foreground', '#eceff4')
+        document.documentElement.style.setProperty('--sidebar-primary-foreground', '#ffffff')
         document.documentElement.style.setProperty('--ring', color)
         document.documentElement.style.setProperty('--sidebar-ring', color)
       }
+      const densityClasses = ['density-compact', 'density-comfortable']
+      densityClasses.forEach(c => document.documentElement.classList.remove(c))
+      if (density === 'compact') document.documentElement.classList.add('density-compact')
+      else if (density === 'comfortable') document.documentElement.classList.add('density-comfortable')
     },
     onError: (errors) => notify('Please fix the following:', 'error', { items: Object.values(errors) }),
   })

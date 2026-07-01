@@ -40,11 +40,11 @@ function submit() {
         <label class="block text-sm font-medium mb-1.5">Mail Driver</label>
         <div class="flex gap-3">
           <label class="flex items-center gap-2 cursor-pointer">
-            <input v-model="form.mailer" type="radio" value="log" class="accent-primary" />
+            <input v-model="form.mailer" type="radio" value="log" />
             <span class="text-sm">Log (development)</span>
           </label>
           <label class="flex items-center gap-2 cursor-pointer">
-            <input v-model="form.mailer" type="radio" value="smtp" class="accent-primary" />
+            <input v-model="form.mailer" type="radio" value="smtp" />
             <span class="text-sm">SMTP</span>
           </label>
         </div>

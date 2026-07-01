@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BulkUserRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
@@ -13,11 +14,18 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $users = User::with('roles')
+            ->when($request->input('search'), function ($q, $term) {
+                $q->where(function ($q) use ($term) {
+                    $q->where('name', 'like', "%{$term}%")
+                        ->orWhere('email', 'like', "%{$term}%");
+                });
+            })
             ->latest()
             ->paginate(20)
+            ->withQueryString()
             ->through(fn ($user) => [
                 'id' => $user->id,
                 'name' => $user->name,
@@ -35,6 +43,7 @@ class UserController extends Controller
         return Inertia::render('Users/Index', [
             'users' => $users,
             'adminCount' => $this->adminCount(),
+            'filters' => $request->only('search'),
         ]);
     }
 
@@ -57,6 +66,11 @@ class UserController extends Controller
         ]);
 
         $user->assignRole($validated['role']);
+
+        if ($validated['role'] === 'user' && ! empty($validated['permissions'])) {
+            $user->syncPermissions($validated['permissions']);
+        }
+
         $user->notify(new WelcomeNotification);
 
         return redirect()
@@ -72,6 +86,7 @@ class UserController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'role' => $user->getRoleNames()->first(),
+                'permissions' => $user->getDirectPermissions()->pluck('name')->values(),
                 'is_banned' => $user->isBanned(),
                 'ban_reason' => $user->ban_reason,
                 'banned_until' => $user->banned_until?->toISOString(),
@@ -102,6 +117,12 @@ class UserController extends Controller
 
         $user->syncRoles([$validated['role']]);
 
+        if ($validated['role'] === 'user') {
+            $user->syncPermissions($validated['permissions'] ?? []);
+        } else {
+            $user->syncPermissions([]);
+        }
+
         return redirect()
             ->route('users.index')
             ->with('status', 'User updated.');
@@ -131,5 +152,34 @@ class UserController extends Controller
         return redirect()
             ->route('users.index')
             ->with('status', 'User deleted.');
+    }
+
+    public function bulk(BulkUserRequest $request)
+    {
+        $validated = $request->validated();
+        $currentUserId = $request->user()->id;
+        $users = User::whereIn('id', $validated['ids'])
+            ->where('id', '!=', $currentUserId)
+            ->get();
+
+        $adminCount = $this->adminCount();
+        $users = $users->reject(function (User $user) use (&$adminCount) {
+            if ($user->hasRole('administrator') && $adminCount <= 1) {
+                return true;
+            }
+            if ($user->hasRole('administrator')) {
+                $adminCount--;
+            }
+
+            return false;
+        });
+
+        match ($validated['action']) {
+            'delete' => $users->each->delete(),
+        };
+
+        $count = $users->count();
+
+        return redirect()->back()->with('status', "{$count} user".($count === 1 ? '' : 's').' deleted.');
     }
 }

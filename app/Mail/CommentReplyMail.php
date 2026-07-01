@@ -3,36 +3,33 @@
 namespace App\Mail;
 
 use App\Models\Comment;
+use App\Models\Setting;
+use App\Services\TemplateMailer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 class CommentReplyMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public string $postTitle;
-
     public function __construct(
         public readonly Comment $parent,
         public readonly Comment $reply,
-    ) {
-        $this->postTitle = $parent->post->title;
-    }
+    ) {}
 
-    public function envelope(): Envelope
+    public function build(): static
     {
-        return new Envelope(
-            subject: 'Someone replied to your comment on "'.$this->postTitle.'"',
-        );
-    }
+        $template = app(TemplateMailer::class)->build('comment-reply', [
+            'post_title' => $this->parent->post->title,
+            'original_comment' => $this->parent->body,
+            'reply_author' => $this->reply->author_name,
+            'reply_body' => $this->reply->body,
+            'site_name' => Setting::get('site.name', config('app.name')),
+        ]);
 
-    public function content(): Content
-    {
-        return new Content(
-            view: 'emails.comment-reply',
-        );
+        return $this
+            ->subject($template->mailSubject)
+            ->view('emails.template', ['body' => $template->htmlBody]);
     }
 }

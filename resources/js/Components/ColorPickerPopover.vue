@@ -7,10 +7,10 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:modelValue'])
 
-const NORD_SWATCHES = [
-  '#5e81ac', '#81a1c1', '#88c0d0', '#8fbcbb',
-  '#a3be8c', '#ebcb8b', '#d08770', '#bf616a',
-  '#b48ead', '#4c566a',
+const SWATCHES = [
+  '#3898ec', '#5aacf2', '#22c55e', '#4ade80',
+  '#f59e0b', '#f97316', '#e05368', '#8b5cf6',
+  '#f472b6', '#6b7280',
 ]
 
 const open        = ref(false)
@@ -86,7 +86,7 @@ onUnmounted(() => document.removeEventListener('keydown', onKeydown))
           <p class="text-xs text-muted-foreground mb-2 font-medium">Nord palette</p>
           <div class="grid grid-cols-5 gap-2">
             <button
-              v-for="hex in NORD_SWATCHES"
+              v-for="hex in SWATCHES"
               :key="hex"
               type="button"
               @click="pick(hex)"
@@ -118,7 +118,7 @@ onUnmounted(() => document.removeEventListener('keydown', onKeydown))
           <div v-if="showCustom" class="flex items-center gap-2 mt-2">
             <input
               type="color"
-              :value="selected ?? '#5e81ac'"
+              :value="selected ?? '#3898ec'"
               @input="onCustomInput"
               class="h-8 w-10 cursor-pointer rounded border border-border"
             />

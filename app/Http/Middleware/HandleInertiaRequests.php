@@ -28,6 +28,7 @@ class HandleInertiaRequests extends Middleware
                     $request->user()->only('id', 'name', 'email', 'avatar_url'),
                     [
                         'role' => $request->user()->getRoleNames()->first(),
+                        'permissions' => $request->user()->getAllPermissions()->pluck('name')->values(),
                         'email_verified' => $request->user()->hasVerifiedEmail(),
                         'two_factor_enabled' => $request->user()->hasTwoFactorEnabled(),
                     ]
@@ -44,6 +45,7 @@ class HandleInertiaRequests extends Middleware
                 ? Comment::pending()->count()
                 : null,
             'accentColor' => fn () => $installed ? Setting::get('site.accent_color') ?: null : null,
+            'uiDensity' => fn () => $installed ? Setting::get('site.ui_density') ?: 'default' : 'default',
             'sharedTemplates' => fn () => $installed
                 ? Template::published()->get(['id', 'title', 'type', 'blocks'])->toArray()
                 : [],

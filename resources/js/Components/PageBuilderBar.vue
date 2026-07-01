@@ -1,42 +1,42 @@
 <!-- resources/js/Components/PageBuilderBar.vue -->
 <template>
-  <header class="flex items-center gap-3 px-3 h-11 shrink-0 border-b border-white/10 bg-[#181825] z-10">
+  <header class="flex items-center gap-3 px-3 h-11 shrink-0 border-b border-border bg-card z-10">
 
     <!-- Back -->
     <a
       :href="backHref"
-      class="inline-flex items-center justify-center w-7 h-7 rounded text-white/50 hover:text-white hover:bg-white/10 transition-colors shrink-0"
+      class="inline-flex items-center justify-center w-7 h-7 rounded text-muted-foreground hover:text-foreground hover:bg-accent transition-colors shrink-0"
       title="Back to pages"
     >
       <ArrowLeft class="w-4 h-4" />
     </a>
 
-    <div class="w-px h-5 bg-white/10 shrink-0" />
+    <div class="w-px h-5 bg-border shrink-0" />
 
     <!-- Title -->
     <input
       :value="title"
       type="text"
       placeholder="Page title…"
-      class="flex-1 min-w-0 bg-transparent rounded px-2 py-1 text-sm font-medium text-white placeholder:text-white/30 focus:outline-none"
+      class="flex-1 min-w-0 bg-transparent rounded px-2 py-1 text-sm font-medium text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
       @input="$emit('update:title', $event.target.value)"
     />
 
-    <div class="w-px h-5 bg-white/10 shrink-0" />
+    <div class="w-px h-5 bg-border shrink-0" />
 
     <!-- Slug -->
     <div class="flex items-center gap-1.5 shrink-0">
-      <span class="text-xs text-white/40">/</span>
+      <span class="text-xs text-muted-foreground">/</span>
       <input
         :value="slug"
         type="text"
         placeholder="page-slug"
-        class="w-36 bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white/80 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-colors"
+        class="w-36 bg-muted/50 border border-border rounded px-2 py-1 text-xs text-foreground/80 focus:outline-none focus:border-muted-foreground focus:bg-muted transition-colors"
         @input="$emit('update:slug', $event.target.value)"
       />
     </div>
 
-    <div class="w-px h-5 bg-white/10 shrink-0" />
+    <div class="w-px h-5 bg-border shrink-0" />
 
     <!-- Status pills -->
     <div class="flex items-center gap-1 shrink-0">
@@ -45,7 +45,7 @@
         class="px-2.5 py-1 rounded text-xs font-medium transition-colors"
         :class="status === 'draft'
           ? 'bg-primary text-primary-foreground'
-          : 'text-white/50 hover:text-white hover:bg-white/10'"
+          : 'text-muted-foreground hover:text-foreground hover:bg-accent'"
         @click="$emit('update:status', 'draft')"
       >Draft</button>
       <button
@@ -53,19 +53,19 @@
         class="px-2.5 py-1 rounded text-xs font-medium transition-colors"
         :class="status === 'published'
           ? 'bg-primary text-primary-foreground'
-          : 'text-white/50 hover:text-white hover:bg-white/10'"
+          : 'text-muted-foreground hover:text-foreground hover:bg-accent'"
         @click="$emit('update:status', 'published')"
       >Published</button>
     </div>
 
-    <div class="w-px h-5 bg-white/10 shrink-0" />
+    <div class="w-px h-5 bg-border shrink-0" />
 
     <!-- Custom JS popover -->
     <div class="relative shrink-0" ref="customJsRef">
       <button
         type="button"
         class="flex items-center gap-1.5 px-2 py-1 rounded text-xs transition-colors"
-        :class="customJs ? 'text-primary hover:text-primary/80 hover:bg-white/10' : 'text-white/50 hover:text-white hover:bg-white/10'"
+        :class="customJs ? 'text-primary hover:text-primary/80 hover:bg-accent' : 'text-muted-foreground hover:text-foreground hover:bg-accent'"
         @click="customJsOpen = !customJsOpen"
       >
         <Code2 class="w-3.5 h-3.5" />
@@ -75,10 +75,10 @@
       <Transition name="popover">
         <div
           v-if="customJsOpen"
-          class="absolute right-0 top-full mt-1 w-96 rounded-lg border border-white/10 bg-[#181825] shadow-2xl p-4 z-50 space-y-3"
+          class="absolute right-0 top-full mt-1 w-96 rounded-lg border border-border bg-card shadow-2xl p-4 z-50 space-y-3"
         >
-          <p class="text-xs font-semibold text-white/50 uppercase tracking-wider">Custom JavaScript</p>
-          <p class="text-xs text-white/30">JavaScript injected on this page only.</p>
+          <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Custom JavaScript</p>
+          <p class="text-xs text-muted-foreground/60">JavaScript injected on this page only.</p>
           <JsEditor
             :model-value="customJs"
             @update:model-value="$emit('update:customJs', $event)"
@@ -91,7 +91,7 @@
     <div class="relative shrink-0" ref="seoRef">
       <button
         type="button"
-        class="flex items-center gap-1 px-2 py-1 rounded text-xs text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+        class="flex items-center gap-1 px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
         @click="seoOpen = !seoOpen"
       >
         SEO
@@ -100,33 +100,33 @@
       <Transition name="popover">
         <div
           v-if="seoOpen"
-          class="absolute right-0 top-full mt-1 w-80 rounded-lg border border-white/10 bg-[#181825] shadow-2xl p-4 z-50 space-y-3"
+          class="absolute right-0 top-full mt-1 w-80 rounded-lg border border-border bg-card shadow-2xl p-4 z-50 space-y-3"
         >
-          <p class="text-xs font-semibold text-white/50 uppercase tracking-wider">SEO</p>
+          <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">SEO</p>
           <div>
-            <label class="text-xs text-white/40 block mb-1">Meta title</label>
+            <label class="text-xs text-muted-foreground block mb-1">Meta title</label>
             <input
               :value="metaTitle"
               type="text"
-              class="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-white/30 transition-colors"
+              class="w-full bg-muted/50 border border-border rounded px-2 py-1.5 text-xs text-foreground focus:outline-none focus:border-muted-foreground transition-colors"
               @input="$emit('update:metaTitle', $event.target.value)"
             />
           </div>
           <div>
-            <label class="text-xs text-white/40 block mb-1">Meta description</label>
+            <label class="text-xs text-muted-foreground block mb-1">Meta description</label>
             <textarea
               :value="metaDescription"
               rows="2"
-              class="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-xs text-white resize-none focus:outline-none focus:border-white/30 transition-colors"
+              class="w-full bg-muted/50 border border-border rounded px-2 py-1.5 text-xs text-foreground resize-none focus:outline-none focus:border-muted-foreground transition-colors"
               @input="$emit('update:metaDescription', $event.target.value)"
             />
           </div>
           <div>
-            <label class="text-xs text-white/40 block mb-1">Meta keywords</label>
+            <label class="text-xs text-muted-foreground block mb-1">Meta keywords</label>
             <input
               :value="metaKeywords"
               type="text"
-              class="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-white/30 transition-colors"
+              class="w-full bg-muted/50 border border-border rounded px-2 py-1.5 text-xs text-foreground focus:outline-none focus:border-muted-foreground transition-colors"
               @input="$emit('update:metaKeywords', $event.target.value)"
             />
           </div>
@@ -138,7 +138,7 @@
     <div v-if="showRevisions" class="relative shrink-0" ref="revisionsRef">
       <button
         type="button"
-        class="flex items-center gap-1 px-2 py-1 rounded text-xs text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+        class="flex items-center gap-1 px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
         @click="onRevisionsToggle"
       >
         Revisions
@@ -147,24 +147,24 @@
       <Transition name="popover">
         <div
           v-if="revisionsOpen"
-          class="absolute right-0 top-full mt-1 w-72 rounded-lg border border-white/10 bg-[#181825] shadow-2xl p-4 z-50"
+          class="absolute right-0 top-full mt-1 w-72 rounded-lg border border-border bg-card shadow-2xl p-4 z-50"
         >
-          <p class="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">Revisions</p>
-          <div v-if="revisionsLoading" class="text-xs text-white/40 text-center py-3">Loading…</div>
-          <div v-else-if="!revisions.length" class="text-xs text-white/40 text-center py-3">No revisions yet.</div>
+          <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Revisions</p>
+          <div v-if="revisionsLoading" class="text-xs text-muted-foreground text-center py-3">Loading…</div>
+          <div v-else-if="!revisions.length" class="text-xs text-muted-foreground text-center py-3">No revisions yet.</div>
           <div v-else class="space-y-1.5 max-h-60 overflow-y-auto">
             <div
               v-for="rev in revisions"
               :key="rev.id"
-              class="flex items-center justify-between gap-2 rounded border border-white/10 px-2.5 py-1.5 hover:bg-white/5"
+              class="flex items-center justify-between gap-2 rounded border border-border px-2.5 py-1.5 hover:bg-muted/50"
             >
               <div class="min-w-0">
-                <p class="text-xs font-medium text-white truncate">{{ rev.user?.name ?? 'Unknown' }}</p>
-                <p class="text-[11px] text-white/40">{{ new Date(rev.created_at).toLocaleString() }}</p>
+                <p class="text-xs font-medium text-foreground truncate">{{ rev.user?.name ?? 'Unknown' }}</p>
+                <p class="text-[11px] text-muted-foreground">{{ new Date(rev.created_at).toLocaleString() }}</p>
               </div>
               <button
                 type="button"
-                class="shrink-0 rounded border border-white/20 px-2 py-0.5 text-xs text-white/70 hover:bg-white/10 transition-colors"
+                class="shrink-0 rounded border border-border px-2 py-0.5 text-xs text-muted-foreground hover:bg-accent transition-colors"
                 @click="$emit('restoreRevision', rev)"
               >Restore</button>
             </div>
@@ -173,7 +173,7 @@
       </Transition>
     </div>
 
-    <div class="w-px h-5 bg-white/10 shrink-0" />
+    <div class="w-px h-5 bg-border shrink-0" />
 
     <!-- Preview -->
     <a
@@ -181,7 +181,7 @@
       :href="previewHref"
       target="_blank"
       rel="noopener"
-      class="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded text-xs text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+      class="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
       title="Preview page"
     >
       <ExternalLink class="w-3.5 h-3.5" />

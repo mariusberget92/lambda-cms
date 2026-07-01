@@ -223,7 +223,7 @@ const DEFAULT_DATA = {
     bgType: 'none',
     bgColor: '#ffffff',
     bgImage: { url: '', position: 'center', size: 'cover' },
-    bgGradient: { from: '#3b4252', to: '#4c566a', direction: 'to-r' },
+    bgGradient: { from: '#1a1d27', to: '#2a2d37', direction: 'to-r' },
     fullWidth: false,
     innerMaxWidth: 'xl',
     padding: { top: '4rem', right: '2rem', bottom: '4rem', left: '2rem' },

@@ -40,11 +40,11 @@ function submit() {
         <label class="block text-sm font-medium mb-1.5">Database Driver</label>
         <div class="flex gap-3">
           <label class="flex items-center gap-2 cursor-pointer">
-            <input v-model="form.driver" type="radio" value="sqlite" class="accent-primary" />
+            <input v-model="form.driver" type="radio" value="sqlite" />
             <span class="text-sm">SQLite</span>
           </label>
           <label class="flex items-center gap-2 cursor-pointer">
-            <input v-model="form.driver" type="radio" value="mysql" class="accent-primary" />
+            <input v-model="form.driver" type="radio" value="mysql" />
             <span class="text-sm">MySQL / MariaDB</span>
           </label>
         </div>

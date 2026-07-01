@@ -1,5 +1,5 @@
 <script setup>
-import { watch } from 'vue'
+import { watch, nextTick } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import { useNotifications } from '@/composables/useNotifications.js'
 import NotificationItem from '@/Components/NotificationItem.vue'
@@ -10,8 +10,10 @@ const { notifications, notify, dismiss } = useNotifications()
 watch(
   () => page.props.flash,
   (flash) => {
-    if (flash?.status) notify(flash.status, 'success')
-    if (flash?.error)  notify(flash.error,  'error')
+    nextTick(() => {
+      if (flash?.status) notify(flash.status, 'success')
+      if (flash?.error)  notify(flash.error,  'error')
+    })
   },
   { deep: true, immediate: true }
 )

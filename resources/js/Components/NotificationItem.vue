@@ -12,7 +12,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['dismiss'])
 
-const ACCENT = { success: '#a3be8c', error: '#bf616a', warning: '#ebcb8b', info: '#5e81ac' }
+const ACCENT = { success: '#22c55e', error: '#e05368', warning: '#f59e0b', info: '#3898ec' }
 const ICONS  = { success: CircleCheck, error: CircleX, warning: TriangleAlert, info: Info }
 
 const accent = ACCENT[props.type] ?? ACCENT.info
@@ -41,13 +41,18 @@ function handleAction(handler) {
 </script>
 
 <template>
-  <div class="relative w-80 rounded-md border shadow-lg bg-white text-gray-900 overflow-hidden"
-       :style="{ borderLeftColor: accent, borderLeftWidth: '4px' }">
+  <div class="notification-toast relative w-80 rounded-lg border bg-card text-card-foreground overflow-hidden"
+       :style="{ '--toast-accent': accent }">
+    <!-- Accent strip -->
+    <div class="absolute left-0 top-0 bottom-0 w-1 rounded-l-lg" :style="{ backgroundColor: accent }" />
     <!-- Icon + message -->
-    <div class="flex items-start gap-2 p-3 pr-8">
-      <component :is="Icon" class="w-4 h-4 mt-0.5 shrink-0" :style="{ color: accent }" />
+    <div class="flex items-start gap-2.5 p-3.5 pl-4 pr-9">
+      <div class="shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5"
+           :style="{ backgroundColor: accent + '18' }">
+        <component :is="Icon" class="w-3.5 h-3.5" :style="{ color: accent }" />
+      </div>
       <div class="min-w-0 flex-1">
-        <span class="text-sm leading-snug">{{ message }}</span>
+        <span class="text-sm font-medium leading-snug">{{ message }}</span>
         <ul v-if="items.length" class="mt-1.5 space-y-0.5 list-disc list-inside">
           <li v-for="(item, i) in items" :key="i" class="text-xs text-muted-foreground leading-snug">
             {{ item }}
@@ -56,23 +61,26 @@ function handleAction(handler) {
       </div>
     </div>
     <!-- Actions -->
-    <div v-if="actions.length" class="flex gap-2 px-3 pb-2">
+    <div v-if="actions.length" class="flex gap-2 px-3.5 pl-4 pb-3">
       <button
         type="button"
         v-for="action in actions"
         :key="action.label"
-        class="text-xs underline"
+        class="text-xs font-medium hover:underline"
+        :style="{ color: accent }"
         @click="handleAction(action.handler)"
       >{{ action.label }}</button>
     </div>
     <!-- Progress bar -->
-    <div v-if="duration !== null"
-         class="h-0.5"
-         :style="{ backgroundColor: accent, width: progressWidth + '%', transition: `width ${duration}ms linear` }" />
+    <div v-if="duration !== null" class="h-0.5 bg-border/30">
+      <div class="h-full rounded-full"
+           :style="{ backgroundColor: accent, width: progressWidth + '%', transition: `width ${duration}ms linear` }" />
+    </div>
     <!-- Dismiss -->
-    <button type="button" aria-label="Dismiss" class="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
+    <button type="button" aria-label="Dismiss"
+            class="absolute top-3 right-3 w-5 h-5 rounded-md flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
             @click="emit('dismiss', id)">
-      <X class="w-3.5 h-3.5" />
+      <X class="w-3 h-3" />
     </button>
   </div>
 </template>

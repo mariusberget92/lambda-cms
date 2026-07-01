@@ -1,5 +1,4 @@
 <!-- resources/js/Components/ScrollArea.vue -->
-<!-- Thin wrapper around OverlayScrollbars with Nord-palette styling -->
 <template>
   <OverlayScrollbarsComponent
     :element="element"

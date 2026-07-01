@@ -32,7 +32,7 @@
               type="checkbox"
               :value="entity.value"
               v-model="selectedEntities"
-              class="mt-0.5 h-4 w-4 rounded border-border accent-primary"
+              class="mt-0.5"
             />
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2">
@@ -55,7 +55,7 @@
           <input
             type="checkbox"
             v-model="includeMediaFiles"
-            class="mt-0.5 h-4 w-4 rounded border-border accent-primary"
+            class="mt-0.5"
           />
           <div>
             <span class="text-sm font-medium">Include media files</span>

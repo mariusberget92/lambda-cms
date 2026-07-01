@@ -26,6 +26,12 @@ class CommentController extends Controller
         $comments = Comment::with(['post:id,title,slug', 'user:id,name', 'replies.user:id,name'])
             ->whereNull('parent_id')
             ->when($filter !== 'all', fn ($q) => $q->where('status', $filter))
+            ->when($request->filled('search'), fn ($q) => $q->where(function ($q2) use ($request) {
+                $s = '%'.$request->input('search').'%';
+                $q2->where('author_name', 'like', $s)
+                   ->orWhere('author_email', 'like', $s)
+                   ->orWhere('body', 'like', $s);
+            }))
             ->latest()
             ->paginate(25)
             ->withQueryString()
@@ -52,6 +58,7 @@ class CommentController extends Controller
             'comments' => $comments,
             'filter' => $filter,
             'pendingCount' => Comment::pending()->whereNull('parent_id')->count(),
+            'filters' => $request->only('search'),
         ]);
     }
 

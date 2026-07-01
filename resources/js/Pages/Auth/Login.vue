@@ -37,7 +37,7 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <input id="remember" v-model="form.remember" type="checkbox" class="rounded border accent-nord-green" />
+        <input id="remember" v-model="form.remember" type="checkbox" />
         <label for="remember" class="text-sm">Remember me</label>
       </div>
 

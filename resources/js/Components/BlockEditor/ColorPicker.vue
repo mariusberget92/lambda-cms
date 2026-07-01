@@ -37,7 +37,7 @@
     >
       <div
         v-if="open"
-        class="absolute left-0 top-8 z-50 w-52 rounded-lg border border-[#4c566a] bg-[#2e3440] p-3 shadow-2xl"
+        class="absolute left-0 top-8 z-50 w-52 rounded-lg border border-[#2a2d37] bg-[#1a1d27] p-3 shadow-2xl"
       >
         <!-- Large native color picker -->
         <input
@@ -54,7 +54,7 @@
           maxlength="7"
           placeholder="#000000"
           spellcheck="false"
-          class="w-full rounded-md border border-[#4c566a] bg-[#3b4252] px-2 py-1.5 text-xs font-mono text-[#eceff4] placeholder-[#616e88] focus:outline-none focus:ring-1 focus:ring-[#88c0d0]"
+          class="w-full rounded-md border border-[#2a2d37] bg-[#0f1117] px-2 py-1.5 text-xs font-mono text-[#e5e7eb] placeholder-[#6b7280] focus:outline-none focus:ring-1 focus:ring-[#5aacf2]"
           @input.stop
           @change="onHexChange"
         />

@@ -126,21 +126,21 @@
             <h3 class="text-sm font-medium mb-3">Status</h3>
             <div class="space-y-2">
               <label class="flex items-center gap-3 cursor-pointer">
-                <input type="radio" v-model="form.status" value="draft" class="accent-primary" @change="onStatusChange('draft')" />
+                <input type="radio" v-model="form.status" value="draft" @change="onStatusChange('draft')" />
                 <div>
                   <span class="text-sm font-medium">Draft</span>
                   <p class="text-xs text-muted-foreground">Only visible to you</p>
                 </div>
               </label>
               <label class="flex items-center gap-3 cursor-pointer">
-                <input type="radio" v-model="form.status" value="scheduled" class="accent-primary" />
+                <input type="radio" v-model="form.status" value="scheduled" />
                 <div class="flex-1 min-w-0">
                   <span class="text-sm font-medium">Scheduled</span>
                   <p class="text-xs text-muted-foreground">Auto-publishes at a set time</p>
                 </div>
               </label>
               <label class="flex items-center gap-3 cursor-pointer">
-                <input type="radio" v-model="form.status" value="published" class="accent-primary" />
+                <input type="radio" v-model="form.status" value="published" />
                 <div>
                   <span class="text-sm font-medium">Published</span>
                   <p class="text-xs text-muted-foreground">Visible to everyone</p>
@@ -217,7 +217,7 @@
               <input
                 type="checkbox"
                 v-model="form.comments_enabled"
-                class="w-4 h-4 rounded border-border accent-nord-green"
+               
               />
               <div>
                 <span class="text-sm font-medium">Allow comments</span>
@@ -233,7 +233,7 @@
               <input
                 type="checkbox"
                 v-model="form.featured"
-                class="w-4 h-4 rounded border-border accent-nord-green"
+               
               />
               <div>
                 <span class="text-sm font-medium">Featured post</span>

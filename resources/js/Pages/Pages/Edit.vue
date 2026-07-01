@@ -8,6 +8,7 @@ import { filterEmptyBlocks } from '@/lib/utils.js'
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import axios from 'axios'
 import { useNotifications } from '@/composables/useNotifications.js'
+import ConfirmModal from '@/Components/ConfirmModal.vue'
 
 const authUser = usePage().props.auth.user
 const { notify, dismiss } = useNotifications()
@@ -166,25 +167,14 @@ async function confirmRestore() {
       @update:model-value="form.blocks = $event"
     />
 
-    <!-- Restore revision confirmation modal -->
-    <Transition name="fade">
-      <div v-if="restoreTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="restoreTarget = null" />
-        <div class="relative bg-[#181825] border border-white/10 rounded-xl shadow-2xl w-full max-w-sm p-6">
-          <h3 class="font-semibold text-base text-white mb-2">Restore this version?</h3>
-          <p class="text-sm text-white/60 mb-5">Your current changes will be replaced with the selected revision.</p>
-          <div class="flex gap-3 justify-end">
-            <button type="button" @click="restoreTarget = null"
-              class="rounded-md border border-white/20 px-4 py-2 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors">
-              Cancel
-            </button>
-            <button type="button" @click="confirmRestore"
-              class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-[var(--primary-hover)] transition-colors">
-              Restore
-            </button>
-          </div>
-        </div>
-      </div>
-    </Transition>
+    <ConfirmModal
+      :open="!!restoreTarget"
+      title="Restore this version?"
+      description="Your current changes will be replaced with the selected revision."
+      confirm-label="Restore"
+      variant="primary"
+      @close="restoreTarget = null"
+      @confirm="confirmRestore"
+    />
   </PageBuilderLayout>
 </template>

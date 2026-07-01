@@ -1,16 +1,16 @@
 <div align="center">
 
-# ⚡ Lambda CMS
+# Lambda CMS
 
-**A modern, self-hosted CMS built for developers.**
-Block editor · In-browser image editor · 2FA · Headless API · No cloud lock-in.
+**A modern, self-hosted CMS + CRM built for developers.**
+Block editor · CRM · Email campaigns · In-browser image editor · 2FA · Headless API · No cloud lock-in.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20.svg?logo=laravel&logoColor=white)](https://laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4.svg?logo=php&logoColor=white)](https://php.net)
 [![Vue](https://img.shields.io/badge/Vue-3-42b883.svg?logo=vue.js&logoColor=white)](https://vuejs.org)
 
-**[📖 Read the Docs →](https://lambdacms.darkleaks.net)**
+**[Read the Docs](https://lambdacms.darkleaks.net)**
 
 </div>
 
@@ -47,25 +47,25 @@ Block editor · In-browser image editor · 2FA · Headless API · No cloud lock-
 
 ---
 
-## 🤔 What is Lambda CMS?
+## What is Lambda CMS?
 
-Lambda CMS is a clean, fast, fully self-hosted content management system. No subscriptions, no SaaS lock-in — you own your data and your stack. Built with **Laravel 12**, **Vue 3**, and **Inertia.js**, it feels like a modern SPA while keeping the server-side simplicity of a traditional Laravel app.
+Lambda CMS is a clean, fast, fully self-hosted content management system with a built-in CRM and email marketing toolkit. No subscriptions, no SaaS lock-in — you own your data and your stack. Built with **Laravel 12**, **Vue 3**, and **Inertia.js**, it feels like a modern SPA while keeping the server-side simplicity of a traditional Laravel app.
 
-## 🧰 Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
-| 🔧 Backend | Laravel 12, PHP 8.2+ |
-| 🎨 Frontend | Vue 3 (Composition API), Inertia.js 2, Tailwind CSS 4, Vite 7 |
-| 🧩 UI | shadcn-vue, reka-ui, Lucide icons |
-| ✍️ Rich Text | Tiptap |
-| 🗄️ Database | SQLite (default) or MySQL |
+| Backend | Laravel 12, PHP 8.2+ |
+| Frontend | Vue 3 (Composition API), Inertia.js 2, Tailwind CSS 4, Vite 7 |
+| UI | shadcn-vue, reka-ui, Lucide icons |
+| Rich Text | Tiptap |
+| Database | SQLite (default) or MySQL |
 
 ---
 
-## ✨ Features
+## Features
 
-### 📝 Content Management
+### Content Management
 
 - **Posts** — full CRUD with Tiptap rich text or the drag-and-drop block editor
 - **Pages** — static pages built entirely with the block editor
@@ -76,29 +76,29 @@ Lambda CMS is a clean, fast, fully self-hosted content management system. No sub
 - **Draft previews** — shareable token-based URLs, no login required
 - **Bulk actions** — publish, draft, or delete multiple posts at once
 
-### 🧱 Block Editor
+### Block Editor
 
 30+ block types across six categories:
 
 | Category | Blocks |
 |---|---|
-| 📄 Content | Paragraph, Heading, Quote, Code, Divider, Spacer, HTML, Accordion, Tabs, Embed |
-| 🖼️ Media | Image, Gallery, Video |
-| 📐 Layout | Section, Container (flex / grid / inline-flex) |
-| 🖱️ Interactive | Button, CTA, Link, Navigation, Search, Filter Link, Active Filter, Icon List |
-| 📊 Data | Loop, Pagination, Post Card, Post Title, Post Body, Post Featured Image, Post Meta, Post Author, Post Taxonomy, Post Comments, Archive Title |
-| 🌐 Site | Nav Header, Site Footer, Masthead, Band, Template |
+| Content | Paragraph, Heading, Quote, Code, Divider, Spacer, HTML, Accordion, Tabs, Embed |
+| Media | Image, Gallery, Video |
+| Layout | Section, Container (flex / grid / inline-flex) |
+| Interactive | Button, CTA, Link, Navigation, Search, Filter Link, Active Filter, Icon List |
+| Data | Loop, Pagination, Post Card, Post Title, Post Body, Post Featured Image, Post Meta, Post Author, Post Taxonomy, Post Comments, Archive Title |
+| Site | Nav Header, Site Footer, Masthead, Band, Template |
 
 **What makes it nice to use:**
 
-- 🖱️ Drag-and-drop canvas with cross-list nesting and a layers panel tree
-- 🎨 Per-block Style tab — typography, colors, background (solid / gradient / image), border, shadow, spacing
-- 🔗 Dynamic field bindings — link block content to loop or post-context data sources
-- 💻 Per-block Advanced settings — custom CSS classes, inline CSS, font family
-- 👁️ Conditional block visibility based on loop field values
-- 🏷️ Block labels shown in canvas and layers panel
+- Drag-and-drop canvas with cross-list nesting and a layers panel tree
+- Per-block Style tab — typography, colors, background (solid / gradient / image), border, shadow, spacing
+- Dynamic field bindings — link block content to loop or post-context data sources
+- Per-block Advanced settings — custom CSS classes, inline CSS, font family
+- Conditional block visibility based on loop field values
+- Block labels shown in canvas and layers panel
 
-### 🖼️ Media Library & Image Editor
+### Media Library & Image Editor
 
 - Upload images, documents, video, and audio (configurable size limit, default 10 MB)
 - **In-browser image editor** — crop with 9 aspect ratio presets, rotate, flip, 8 filter presets (Normal, Vivid, Muted, B&W, Warm, Cool, Fade, Drama), and manual brightness / contrast / saturation / blur controls. Opens before upload and on any existing library item.
@@ -106,13 +106,13 @@ Lambda CMS is a clean, fast, fully self-hosted content management system. No sub
 - Alt text and description per file; UUID-based filenames with dimension tracking
 - Admins see all files; users see their own
 
-### 🎨 Template System
+### Template System
 
 - **7 pre-shipped system templates** — Post Card, Default Blog Index, Default Single Post, Default Archive, Default Search Results, Default Header, Default Footer
 - Custom templates share the same block editor, autosave, and revisions
 - Loop blocks correctly inherit context for dynamic bindings
 
-### 🌍 Public Frontend
+### Public Frontend
 
 - Every public page rendered from editable block templates
 - Header and footer rendered from dedicated block templates
@@ -121,24 +121,45 @@ Lambda CMS is a clean, fast, fully self-hosted content management system. No sub
 - Design token system — accent color applies live to both admin and blog
 - Admin bar visible to authenticated users only
 
-### 💬 Comments
+### Comments
 
 - Public submission with honeypot spam protection and rate limiting
 - Admin moderation — approve, reject, or delete individually or in bulk
 - Nested replies with email notifications
 - Per-post toggle to enable/disable comments
 
-### 👥 Users & Roles
+### CRM
+
+A built-in customer relationship management system with permission-based access control. Each module can be granted independently to non-admin users.
+
+- **Contacts** — manage people with name, email, phone, notes, and company association. Full-text search across all fields.
+- **Companies** — organize contacts under companies. Link contacts to companies with one-click association.
+- **Deals** — track sales opportunities through a 5-stage pipeline: Lead, Qualified, Proposal, Won, Lost. Each deal tracks value, expected close date, and links to a contact and company. Activity timeline per deal.
+- **Call Lists** — create lists of contacts for outreach campaigns. Add/remove contacts, track call status per contact (pending, called, no answer, callback, completed), record notes, and work through the list with a dedicated calling interface.
+- **CRM Import** — upload a CSV, preview rows, map columns to contact/company/deal fields, choose a conflict strategy (skip or overwrite), and import in bulk.
+- **CRM Export** — select which CRM entities to include and download as CSV.
+
+### Email System
+
+Customizable transactional emails, subscriber management, and email campaigns — all in one place.
+
+- **Editable system email templates** — 5 built-in templates (password reset, email verification, welcome, new comment, comment reply) stored in the database with a WYSIWYG editor. Each template supports merge tags (e.g. `{{user_name}}`, `{{reset_url}}`), live preview, and one-click reset to default. All Laravel system emails (password reset, verification, welcome, comment notifications) route through these templates automatically.
+- **Subscriber management** — a standalone subscribers table (separate from CRM contacts) for newsletter signups. Public subscribe form (Blade page at `/subscribe`) and token-based unsubscribe link. Admin interface with search, status filtering (active / unsubscribed), bulk delete, CSV export, and CSV import with column mapping and conflict strategy.
+- **Email campaigns** — create newsletters with the Tiptap editor, save as draft, and send to all active subscribers with one click. Sending is handled by a queued job that processes each recipient individually. Per-recipient tracking with sent/failed/pending status and error messages. Campaign report page with stat cards and a recipients table. Campaigns that have been sent cannot be edited or re-sent.
+- **Unsubscribe footer** — every campaign email includes an unsubscribe link with the subscriber's unique token.
+
+### Users & Roles
 
 - Two roles: **administrator** and **user**
 - Admins manage all content, users, settings, pages, and templates
 - Users manage their own posts, categories, tags, and media
+- Fine-grained CRM and email permissions: manage contacts, manage companies, manage deals, manage call lists, manage email
 - Avatar upload per profile
 - User invite flow — auto-generated password + welcome email
 - User banning with reason and optional expiry (auto-lifted on next login)
 - Online status tracking
 
-### 🔒 Auth & Security
+### Auth & Security
 
 - Email + password login with rate limiting (5 attempts / 60 s per email + IP)
 - **Two-factor authentication** — TOTP-based 2FA compatible with Google Authenticator, Authy, 1Password, and any RFC 6238 app. Includes 8 single-use recovery codes.
@@ -146,29 +167,30 @@ Lambda CMS is a clean, fast, fully self-hosted content management system. No sub
 - Email verification required before dashboard access
 - Author-scoped post and media access
 
-### 🔔 Webhooks
+### Webhooks
 
 - Events: `post.published`, `post.updated`, `post.deleted`, `page.published`, `page.updated`, `page.deleted`
 - HMAC-SHA256 request signature (`X-Lambda-Signature`) when a secret is set
 - Dispatched via queued jobs; `last_triggered_at` tracked per webhook
 
-### 📅 Editorial Calendar
+### Editorial Calendar
 
 - Month-view calendar with published, scheduled, and draft posts
 - Unscheduled drafts panel alongside the calendar
 - Admins see all; users see their own
 
-### ⚙️ Settings
+### Settings
 
 - Site name, URL, timezone, and date format
 - SEO defaults (meta description, OG image, keywords, title separator)
-- SMTP mail with test-send
+- SMTP mail configuration with test-send
 - Media upload limits and image resize threshold
 - Comments (enabled toggle, items per page)
 - Appearance: accent color applied live to admin and blog frontend
+- UI density: default, compact, or comfortable
 - Custom JS injection on every public page
 
-### 🔌 REST API (Headless)
+### REST API (Headless)
 
 ```
 GET  /api/v1/posts
@@ -177,10 +199,10 @@ GET  /api/v1/categories
 GET  /api/v1/categories/{slug}
 GET  /api/v1/tags
 GET  /api/v1/tags/{slug}
-POST /api/v1/query        ← block editor loop data source
+POST /api/v1/query        <- block editor loop data source
 ```
 
-### 📦 Import / Export
+### Import / Export
 
 Export your content as a portable ZIP and re-import it into any Lambda CMS instance.
 
@@ -389,15 +411,15 @@ When `include_media_files` is enabled, the actual files are bundled under `media
 
 </details>
 
-### 🧙 Installer
+### Installer
 
-- 4-step browser wizard: **Database → Site → Admin → Mail**
+- 4-step browser wizard: **Database > Site > Admin > Mail**
 - Supports SQLite and MySQL; tests the DB connection before writing `.env`
 - Runs migrations, seeds system templates, and creates the first admin account
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Requirements
 
@@ -439,22 +461,30 @@ php artisan view:cache
 npm run build
 ```
 
-Add a cron entry to run the scheduler (handles auto-publishing):
+Add a cron entry to run the scheduler (handles auto-publishing and queued emails):
 
 ```
 * * * * * cd /path/to/lambda-cms && php artisan schedule:run >> /dev/null 2>&1
 ```
 
+For email campaigns and other queued jobs, start a queue worker:
+
+```bash
+php artisan queue:work
+```
+
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
 - [x] Full import / export (posts, pages, categories, tags, media, templates)
+- [x] CRM (contacts, companies, deals, call lists, import/export)
+- [x] Email system (editable templates, subscribers, campaigns)
 - [ ] API write access — token-based auth for creating and updating content
 - [ ] Multi-language / i18n content support
 
 ---
 
-## 📄 License
+## License
 
-MIT — do whatever you want with it. ✌️
+MIT — do whatever you want with it.

@@ -334,8 +334,8 @@ function onBgUrlUnbind(fieldName) {
           <div>
             <label class="text-[10px] text-muted-foreground block mb-1">From</label>
             <ColorPicker
-              :model-value="block.data?.advBgGradient?.from ?? '#3b4252'"
-              default="#3b4252"
+              :model-value="block.data?.advBgGradient?.from ?? '#1a1d27'"
+              default="#1a1d27"
               :show-value="false"
               @update:model-value="v => updateNestedData('advBgGradient', 'from', v)"
             />
@@ -343,8 +343,8 @@ function onBgUrlUnbind(fieldName) {
           <div>
             <label class="text-[10px] text-muted-foreground block mb-1">To</label>
             <ColorPicker
-              :model-value="block.data?.advBgGradient?.to ?? '#4c566a'"
-              default="#4c566a"
+              :model-value="block.data?.advBgGradient?.to ?? '#2a2d37'"
+              default="#2a2d37"
               :show-value="false"
               @update:model-value="v => updateNestedData('advBgGradient', 'to', v)"
             />

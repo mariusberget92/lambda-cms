@@ -4,12 +4,28 @@
 
     <PageHeader title="Comments" description="Moderate reader comments" />
 
+    <!-- Search -->
+    <div class="flex items-center gap-3 mb-4">
+      <div class="relative flex-1 max-w-xs">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input
+          v-model="search"
+          type="search"
+          placeholder="Search comments..."
+          class="w-full rounded-md border bg-background pl-9 pr-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          @input="applySearch"
+        />
+      </div>
+    </div>
+
     <!-- Filter tabs -->
     <div class="flex gap-1 mb-4 border-b">
       <a
         v-for="tab in tabs"
         :key="tab.value"
-        :href="route('comments.index') + (tab.value !== 'pending' ? '?filter=' + tab.value : '')"
+        :href="tabHref(tab.value)"
         class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors"
         :class="filter === tab.value
           ? 'border-primary text-foreground'
@@ -20,17 +36,6 @@
       </a>
     </div>
 
-    <!-- Bulk actions bar -->
-    <Transition name="fade">
-      <div v-if="selected.length" class="flex items-center gap-3 mb-4 rounded-md border bg-muted/50 px-4 py-2.5 text-sm">
-        <span class="text-muted-foreground">{{ selected.length }} selected</span>
-        <div class="flex gap-2 ml-auto">
-          <button type="button" @click="bulkAction('approve')" class="rounded-md bg-status-success-bg px-3 py-1.5 text-xs font-medium text-status-success-fg hover:opacity-80 transition-opacity">Approve</button>
-          <button type="button" @click="bulkAction('reject')" class="rounded-md bg-status-warning-bg px-3 py-1.5 text-xs font-medium text-status-warning-fg hover:opacity-80 transition-opacity">Reject</button>
-          <button type="button" @click="bulkAction('delete')" class="rounded-md bg-destructive/10 px-3 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/20 transition-colors">Delete</button>
-        </div>
-      </div>
-    </Transition>
 
     <!-- Empty state -->
     <div v-if="comments.data.length === 0" class="py-16 text-center">
@@ -52,7 +57,7 @@
             type="checkbox"
             :value="comment.id"
             v-model="selected"
-            class="mt-1 rounded border-border accent-nord-green"
+            class="mt-1"
           />
 
           <!-- Avatar -->
@@ -169,42 +174,77 @@
 
     <!-- Pagination -->
     <div v-if="comments.last_page > 1" class="mt-6 flex justify-center gap-2">
-      <a
-        v-for="page in comments.links"
-        :key="page.label"
-        :href="page.url"
+      <component
+        :is="link.url ? 'a' : 'span'"
+        v-for="link in comments.links"
+        :key="link.label"
+        :href="link.url || undefined"
         class="rounded-md border px-3 py-1.5 text-sm transition-colors"
-        :class="page.active
+        :class="link.active
           ? 'bg-primary text-primary-foreground border-primary'
-          : page.url ? 'hover:bg-accent' : 'opacity-40 cursor-default pointer-events-none'"
-      >{{ decodeHtmlEntities(page.label) }}</a>
+          : link.url ? 'hover:bg-accent' : 'opacity-40 cursor-default'"
+      >{{ decodeHtmlEntities(link.label) }}</component>
     </div>
 
-    <!-- Delete confirmation modal -->
-    <Transition name="fade">
-      <div v-if="deleteTarget" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="deleteTarget = null" />
-        <div class="relative bg-card border rounded-xl shadow-xl w-full max-w-sm p-6">
-          <h3 class="font-semibold text-base mb-2">Delete comment?</h3>
-          <p class="text-sm text-muted-foreground mb-5">
-            This comment will be permanently deleted.
-          </p>
-          <div class="flex gap-3 justify-end">
+    <ConfirmModal
+      :open="!!deleteTarget"
+      title="Delete comment?"
+      description="This comment will be permanently deleted."
+      confirm-label="Delete"
+      @close="deleteTarget = null"
+      @confirm="doDelete"
+    />
+
+    <ConfirmModal
+      :open="showBulkDeleteModal"
+      :title="`Delete ${selected.length} comment${selected.length === 1 ? '' : 's'}?`"
+      description="This cannot be undone."
+      confirm-label="Delete"
+      @close="showBulkDeleteModal = false"
+      @confirm="executeBulkDelete"
+    />
+
+    <!-- Sticky bulk action toolbar -->
+    <Transition name="slide-up">
+      <div
+        v-if="selected.length > 0"
+        class="fixed bottom-0 left-0 right-0 z-40 bg-card border-t shadow-lg"
+      >
+        <div class="max-w-screen-xl mx-auto px-4 py-3 flex items-center gap-3">
+          <span class="text-sm font-medium text-muted-foreground">
+            {{ selected.length }} selected
+          </span>
+          <div class="flex items-center gap-2 ml-2">
             <button
               type="button"
-              @click="deleteTarget = null"
-              class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent transition-colors"
+              @click="bulkAction('approve')"
+              class="rounded-md bg-status-success-bg px-3 py-1.5 text-sm font-medium text-status-success-fg hover:opacity-80 transition-opacity"
             >
-              Cancel
+              Approve
             </button>
             <button
               type="button"
-              @click="doDelete"
-              class="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 transition-colors"
+              @click="bulkAction('reject')"
+              class="rounded-md bg-status-warning-bg px-3 py-1.5 text-sm font-medium text-status-warning-fg hover:opacity-80 transition-opacity"
+            >
+              Reject
+            </button>
+            <button
+              type="button"
+              @click="confirmBulkDelete"
+              class="rounded-md border border-destructive/30 px-3 py-1.5 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
             >
               Delete
             </button>
           </div>
+          <button
+            type="button"
+            @click="selected = []"
+            class="ml-auto text-sm text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Clear selection"
+          >
+            ✕
+          </button>
         </div>
       </div>
     </Transition>
@@ -212,18 +252,19 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import { Head, router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import PageHeader from '@/Components/PageHeader.vue'
 import StatusBadge from '@/Components/StatusBadge.vue'
+import ConfirmModal from '@/Components/ConfirmModal.vue'
 import { MessageSquare } from '@lucide/vue'
 import { decodeHtmlEntities, formatDateTime } from '@/lib/utils.js'
-
 const props = defineProps({
   comments:     Object,
   filter:       { type: String, default: 'pending' },
   pendingCount: { type: Number, default: 0 },
+  filters:      Object,
 })
 
 const tabs = [
@@ -233,11 +274,48 @@ const tabs = [
   { value: 'all',      label: 'All' },
 ]
 
+function tabHref(value) {
+  const params = new URLSearchParams()
+  if (value !== 'pending') params.set('filter', value)
+  if (search.value) params.set('search', search.value)
+  const qs = params.toString()
+  return route('comments.index') + (qs ? '?' + qs : '')
+}
+
+// Search
+const search = ref(props.filters?.search ?? '')
+
+let searchTimeout = null
+function applySearch() {
+  clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    const params = { search: search.value }
+    if (props.filter !== 'pending') params.filter = props.filter
+    router.get(route('comments.index'), params, { preserveState: true, replace: true })
+  }, 300)
+}
+
 // Selection
 const selected = ref([])
+const showBulkDeleteModal = ref(false)
+
+watch(() => props.comments, () => { selected.value = [] })
 
 function bulkAction(action) {
+  if (action === 'delete') {
+    showBulkDeleteModal.value = true
+    return
+  }
   router.post(route('comments.bulk'), { action, ids: selected.value }, {
+    onSuccess: () => { selected.value = [] },
+  })
+}
+
+function confirmBulkDelete() { showBulkDeleteModal.value = true }
+
+function executeBulkDelete() {
+  showBulkDeleteModal.value = false
+  router.post(route('comments.bulk'), { action: 'delete', ids: selected.value }, {
     onSuccess: () => { selected.value = [] },
   })
 }
@@ -285,9 +363,8 @@ function doDelete() {
   })
 }
 
-// Avatar helpers — Nord accent color palette
 const AVATAR_COLORS = [
-  '#5e81ac', '#88c0d0', '#a3be8c', '#ebcb8b', '#d08770', '#b48ead',
+  '#3898ec', '#22c55e', '#f59e0b', '#e05368', '#8b5cf6', '#f472b6',
 ]
 
 function avatarColor(name) {
@@ -307,6 +384,7 @@ function initials(name) {
 </script>
 
 <style scoped>
-.fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
+.slide-up-enter-active, .slide-up-leave-active { transition: transform 0.2s ease; }
+.slide-up-enter-from, .slide-up-leave-to { transform: translateY(100%); }
 </style>
+
