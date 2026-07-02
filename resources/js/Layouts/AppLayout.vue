@@ -273,7 +273,7 @@ import {
   MessageSquare, CircleUser, Users, Settings, Zap, Download, Upload, LogOut,
   UserRound, Building2, Handshake, Phone, Mail, Send,
 } from '@lucide/vue';
-import SidebarLink from "@/components/SidebarLink.vue";
+import SidebarLink from "@/Components/SidebarLink.vue";
 import ScrollArea from "@/Components/ScrollArea.vue";
 import { useTheme } from "@/composables/useTheme.js";
 import Notifications from "@/Components/Notifications.vue";

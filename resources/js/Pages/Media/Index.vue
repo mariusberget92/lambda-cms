@@ -301,13 +301,13 @@ import { useDropZone } from '@vueuse/core'
 import axios from 'axios'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import PageHeader from '@/Components/PageHeader.vue'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogContent } from '@/Components/ui/dialog'
 import SelectBox from '@/Components/SelectBox.vue'
 import { decodeHtmlEntities } from '@/lib/utils.js'
 import { useNotifications } from '@/composables/useNotifications'
 import MediaLightbox from './MediaLightbox.vue'
 import MediaDetailContent from './MediaDetailContent.vue'
-import ImageEditor from '@/components/ImageEditor.vue'
+import ImageEditor from '@/Components/ImageEditor.vue'
 
 const { notify } = useNotifications()
 

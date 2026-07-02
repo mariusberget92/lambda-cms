@@ -299,9 +299,9 @@ import { ref, computed, watch } from 'vue'
 import { Head, useForm, usePage, Link } from "@inertiajs/vue3";
 import { Icon } from '@iconify/vue'
 import AppLayout from "@/Layouts/AppLayout.vue";
-import TiptapEditor from "@/components/TiptapEditor.vue";
+import TiptapEditor from "@/Components/TiptapEditor.vue";
 import MarkdownEditor from "@/Components/MarkdownEditor.vue";
-import MediaPicker from '@/components/MediaPicker.vue'
+import MediaPicker from '@/Components/MediaPicker.vue'
 import DateTimePicker from '@/Components/DateTimePicker.vue'
 import TagInput from '@/Components/TagInput.vue'
 import CategoryInput from '@/Components/CategoryInput.vue'
