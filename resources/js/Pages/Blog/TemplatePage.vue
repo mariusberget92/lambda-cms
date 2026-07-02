@@ -43,7 +43,7 @@ onUnmounted(() => {
   <Head :title="seo.title ?? ''" />
   <SeoHead v-if="seo.title" :seo="seo" />
 
-  <div class="py-10">
+  <div>
     <BlockRenderer v-if="blocks.length" :blocks="blocks" />
     <p v-else class="px-4 sm:px-6 text-muted-foreground">This template has no content yet.</p>
   </div>

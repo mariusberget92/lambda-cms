@@ -101,24 +101,126 @@ class TemplateSeeder extends Seeder
 
     private function blogIndexBlocks(): array
     {
+        $postCardId = $this->postCardTemplateId() ?? 0;
+
         return [
-            // Hero masthead — dark full-width panel with title and subtitle
+            // ── 1. Hero masthead with stats ──────────────────────────────
             $this->section(40, ['paddingY' => ['default' => 0], 'paddingX' => ['default' => 0], 'fullWidth' => true, 'minHeight' => 'auto'], [
                 $this->block(41, 'masthead', [
-                    'eyebrow' => 'Open Source Blog',
-                    'title' => 'Share your ideas ||with the world||',
-                    'subtitle' => 'A fast, beautiful blog built on Lambda CMS. Write, publish, and connect with your audience.',
-                    'stats' => [],
+                    'eyebrow' => 'Lambda CMS',
+                    'title' => 'Build something ||remarkable||',
+                    'subtitle' => 'An open-source CMS with a visual block editor, built-in CRM, and email campaigns. Everything you need to publish, engage, and grow.',
+                    'stats' => [
+                        ['value' => '47+', 'label' => 'Block Types'],
+                        ['value' => '∞', 'label' => 'Templates'],
+                        ['value' => '0', 'label' => 'Vendor Lock-in'],
+                    ],
                 ]),
             ]),
 
-            $this->section(1, [
-                'paddingY' => ['default' => 10],
-                'paddingX' => ['default' => 0],
-                'fullWidth' => true,
-                'minHeight' => 'auto',
-            ], [
-                // Outer flex-row container — splits into main + sidebar
+            // ── 2. Features — 3 icon-list cards in a grid ────────────────
+            $this->section(50, ['paddingY' => ['default' => 8], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => 'full', 'minHeight' => 'auto'], [
+                $this->block(51, 'heading', ['level' => 2, 'text' => 'Everything is a block']),
+                $this->block(52, 'paragraph', ['content' => 'Every section on this page — including this one — was built with the visual block editor. What you see is what your users can create.']),
+                $this->block(53, 'spacer', ['height' => '1.5rem']),
+                $this->block(54, 'container', [
+                    'mode' => 'flex',
+                    'direction' => 'row',
+                    'wrap' => true,
+                    'gap' => '1.5rem',
+                    'padding' => 0,
+                    'maxWidth' => 'full',
+                ], [
+                    // Feature card 1: Content
+                    $this->block(55, 'container', [
+                        'mode' => 'flex',
+                        'direction' => 'column',
+                        'gap' => '0.75rem',
+                        'padding' => 0,
+                        'maxWidth' => 'full',
+                    ], [
+                        $this->block(56, 'heading', ['level' => 3, 'text' => 'Content Management']),
+                        $this->block(57, 'icon-list', [
+                            'direction' => 'vertical',
+                            'gap' => '0.5rem',
+                            'iconSize' => '1.1em',
+                            'iconColor' => 'var(--accent)',
+                            'items' => [
+                                ['icon' => 'lucide:file-text', 'text' => 'Rich text & markdown posts'],
+                                ['icon' => 'lucide:layout-grid', 'text' => 'Visual block editor with 47+ blocks'],
+                                ['icon' => 'lucide:image', 'text' => 'Drag-and-drop media library'],
+                                ['icon' => 'lucide:tags', 'text' => 'Categories, tags & taxonomies'],
+                            ],
+                        ]),
+                    ], [], 'sidebar-card', 'flex:1;min-width:280px'),
+
+                    // Feature card 2: CRM
+                    $this->block(60, 'container', [
+                        'mode' => 'flex',
+                        'direction' => 'column',
+                        'gap' => '0.75rem',
+                        'padding' => 0,
+                        'maxWidth' => 'full',
+                    ], [
+                        $this->block(61, 'heading', ['level' => 3, 'text' => 'Built-in CRM']),
+                        $this->block(62, 'icon-list', [
+                            'direction' => 'vertical',
+                            'gap' => '0.5rem',
+                            'iconSize' => '1.1em',
+                            'iconColor' => 'var(--accent)',
+                            'items' => [
+                                ['icon' => 'lucide:users', 'text' => 'Contacts & companies'],
+                                ['icon' => 'lucide:kanban', 'text' => 'Deal pipeline with drag-and-drop'],
+                                ['icon' => 'lucide:phone', 'text' => 'Call lists with work mode'],
+                                ['icon' => 'lucide:activity', 'text' => 'Activity timeline & notes'],
+                            ],
+                        ]),
+                    ], [], 'sidebar-card', 'flex:1;min-width:280px'),
+
+                    // Feature card 3: Email
+                    $this->block(65, 'container', [
+                        'mode' => 'flex',
+                        'direction' => 'column',
+                        'gap' => '0.75rem',
+                        'padding' => 0,
+                        'maxWidth' => 'full',
+                    ], [
+                        $this->block(66, 'heading', ['level' => 3, 'text' => 'Email Campaigns']),
+                        $this->block(67, 'icon-list', [
+                            'direction' => 'vertical',
+                            'gap' => '0.5rem',
+                            'iconSize' => '1.1em',
+                            'iconColor' => 'var(--accent)',
+                            'items' => [
+                                ['icon' => 'lucide:mail', 'text' => 'Customizable email templates'],
+                                ['icon' => 'lucide:send', 'text' => 'Campaign builder & scheduling'],
+                                ['icon' => 'lucide:user-plus', 'text' => 'Subscriber management'],
+                                ['icon' => 'lucide:bar-chart-3', 'text' => 'Delivery tracking & reports'],
+                            ],
+                        ]),
+                    ], [], 'sidebar-card', 'flex:1;min-width:280px'),
+                ]),
+            ]),
+
+            // ── 3. Stat cards row ────────────────────────────────────────
+            $this->section(70, ['paddingY' => ['default' => 8], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => 'full', 'minHeight' => 'auto'], [
+                $this->block(71, 'container', [
+                    'mode' => 'flex',
+                    'direction' => 'row',
+                    'wrap' => true,
+                    'gap' => '1.5rem',
+                    'padding' => 0,
+                    'maxWidth' => 'full',
+                ], [
+                    $this->block(72, 'stat-card', ['value' => '47+', 'label' => 'Block Types', 'trend' => 'Sections, loops, tabs, accordions & more', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:200px'),
+                    $this->block(73, 'stat-card', ['value' => '7', 'label' => 'Template Types', 'trend' => 'Blog, post, archive, header, footer, partial, search', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:200px'),
+                    $this->block(74, 'stat-card', ['value' => '42', 'label' => 'Permissions', 'trend' => 'Granular role-based access control', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:200px'),
+                    $this->block(75, 'stat-card', ['value' => 'REST', 'label' => 'API', 'trend' => 'Full headless API with authentication', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:200px'),
+                ]),
+            ]),
+
+            // ── 4. Latest posts + sidebar ────────────────────────────────
+            $this->section(1, ['paddingY' => ['default' => 6], 'paddingX' => ['default' => 0], 'fullWidth' => true, 'minHeight' => 'auto'], [
                 $this->block(2, 'container', [
                     'mode' => 'flex',
                     'direction' => 'row',
@@ -128,7 +230,7 @@ class TemplateSeeder extends Seeder
                     'align' => 'start',
                     'maxWidth' => 'full',
                 ], [
-                    // ── Main column (flex: 3) ────────────────────────────
+                    // Main column
                     $this->block(3, 'container', [
                         'mode' => 'flex',
                         'direction' => 'column',
@@ -141,7 +243,7 @@ class TemplateSeeder extends Seeder
                             'source' => 'posts',
                             'filters' => [
                                 ['field' => 'category_slug', 'op' => '=', 'urlParam' => 'category'],
-                                ['field' => 'tag_slug',      'op' => '=', 'urlParam' => 'tag'],
+                                ['field' => 'tag_slug', 'op' => '=', 'urlParam' => 'tag'],
                             ],
                             'filter_logic' => 'and',
                             'sort' => ['field' => 'published_at', 'direction' => 'desc'],
@@ -149,7 +251,7 @@ class TemplateSeeder extends Seeder
                             'columns' => 2,
                             'gap' => 'lg',
                             'pageParam' => 'page',
-                        ], [$this->templateBlock(10, $this->postCardTemplateId() ?? 0)]),
+                        ], [$this->templateBlock(10, $postCardId)]),
                         $this->block(6, 'pagination', [
                             'pageParam' => 'page',
                             'style' => 'numbered',
@@ -158,7 +260,7 @@ class TemplateSeeder extends Seeder
                         ]),
                     ], [], '', 'flex:3;min-width:0'),
 
-                    // ── Sidebar column (flex: 1) ─────────────────────────
+                    // Sidebar
                     $this->block(20, 'container', [
                         'mode' => 'flex',
                         'direction' => 'column',
@@ -167,14 +269,11 @@ class TemplateSeeder extends Seeder
                         'padding' => 0,
                         'maxWidth' => 'full',
                     ], [
-                        // Search widget (SearchBlock renders its own card)
                         $this->block(21, 'search', [
                             'placeholder' => 'Search posts…',
                             'buttonLabel' => 'Search',
                             'scope' => 'posts',
                         ]),
-
-                        // Categories card
                         $this->block(36, 'container', [
                             'mode' => 'flex',
                             'direction' => 'column',
@@ -197,8 +296,6 @@ class TemplateSeeder extends Seeder
                                 ),
                             ]),
                         ], [], 'sidebar-card', ''),
-
-                        // Tags card
                         $this->block(37, 'container', [
                             'mode' => 'flex',
                             'direction' => 'column',
@@ -223,6 +320,47 @@ class TemplateSeeder extends Seeder
                             ]),
                         ], [], 'sidebar-card', ''),
                     ], [], '', 'flex:1;min-width:0'),
+                ]),
+            ]),
+
+            // ── 5. Testimonial quote ─────────────────────────────────────
+            $this->section(80, ['paddingY' => ['default' => 8], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => '2xl', 'minHeight' => 'auto'], [
+                $this->block(81, 'quote', [
+                    'text' => 'Lambda CMS gave us a publishing workflow that feels like it was built for our team. The block editor is incredibly flexible, and having CRM and email built in means we don\'t need five different SaaS subscriptions.',
+                    'attribution' => 'A happy Lambda CMS user',
+                ]),
+            ]),
+
+            // ── 6. FAQ accordion ─────────────────────────────────────────
+            $this->section(90, ['paddingY' => ['default' => 8], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => '2xl', 'minHeight' => 'auto'], [
+                $this->block(91, 'heading', ['level' => 2, 'text' => 'Frequently Asked Questions']),
+                $this->block(92, 'spacer', ['height' => '0.5rem']),
+                $this->block(93, 'accordion', [
+                    'defaultState' => 'first-open',
+                    'borderStyle' => 'separated',
+                ], [
+                    ['id' => 94, 'type' => 'accordion-item', 'data' => ['title' => 'What is the block editor?'], 'children' => [
+                        $this->block(95, 'paragraph', ['content' => 'The block editor is a visual page builder with 47+ block types. You can create complex layouts by combining sections, containers, loops, tabs, accordions, and content blocks — without writing any code. This entire landing page was built with it.']),
+                    ]],
+                    ['id' => 96, 'type' => 'accordion-item', 'data' => ['title' => 'Can I use Lambda CMS as a headless CMS?'], 'children' => [
+                        $this->block(97, 'paragraph', ['content' => 'Yes. Lambda CMS includes a full REST API with authentication. You can use it as a headless CMS to power any frontend — React, Vue, Next.js, mobile apps, or anything else that can consume a JSON API.']),
+                    ]],
+                    ['id' => 98, 'type' => 'accordion-item', 'data' => ['title' => 'How does the template system work?'], 'children' => [
+                        $this->block(99, 'paragraph', ['content' => 'Templates are reusable block layouts for different page types: blog index, single post, archive, search results, header, and footer. You can also create partial templates to use as reusable components inside other templates. Every template is fully editable in the block editor.']),
+                    ]],
+                    ['id' => 100, 'type' => 'accordion-item', 'data' => ['title' => 'Is Lambda CMS free?'], 'children' => [
+                        $this->block(101, 'paragraph', ['content' => 'Lambda CMS is open source and free to use. You can self-host it on any server that runs PHP 8.4+ and a database. There are no license fees, no premium tiers, and no vendor lock-in.']),
+                    ]],
+                ]),
+            ]),
+
+            // ── 7. CTA ───────────────────────────────────────────────────
+            $this->section(105, ['paddingY' => ['default' => 8], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => '2xl', 'minHeight' => 'auto'], [
+                $this->block(106, 'cta', [
+                    'headline' => 'Ready to get started?',
+                    'text' => 'Lambda CMS is open source, self-hosted, and built for developers who want full control over their content platform.',
+                    'button_label' => 'View on GitHub',
+                    'button_url' => 'https://github.com/mariusberget92/lambda-cms',
                 ]),
             ]),
         ];
