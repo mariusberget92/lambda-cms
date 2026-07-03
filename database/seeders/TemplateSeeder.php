@@ -104,26 +104,101 @@ class TemplateSeeder extends Seeder
         $postCardId = $this->postCardTemplateId() ?? 0;
 
         return [
-            // ── 1. Hero masthead with stats ──────────────────────────────
-            $this->section(40, ['paddingY' => ['default' => 0], 'paddingX' => ['default' => 0], 'fullWidth' => true, 'minHeight' => 'auto'], [
-                $this->block(41, 'masthead', [
-                    'eyebrow' => 'Lambda CMS',
-                    'title' => 'Build something ||remarkable||',
-                    'subtitle' => 'An open-source CMS with a visual block editor, built-in CRM, and email campaigns. Everything you need to publish, engage, and grow.',
-                    'stats' => [
-                        ['value' => '47+', 'label' => 'Block Types'],
-                        ['value' => '∞', 'label' => 'Templates'],
-                        ['value' => '0', 'label' => 'Vendor Lock-in'],
-                    ],
+            // ── 1. Hero — light background, large headline ──────────────
+            $this->section(40, ['paddingY' => ['default' => 16], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => '2xl', 'minHeight' => 'auto'], [
+                $this->block(41, 'paragraph', ['content' => '<span style="display:inline-flex;align-items:center;gap:0.5rem;font-family:\'JetBrains Mono\',monospace;font-size:0.75rem;letter-spacing:0.05em;color:var(--soft);border:1px solid var(--line-strong);border-radius:9999px;padding:0.25rem 0.875rem;"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);"></span> OPEN SOURCE &middot; MIT &middot; SELF-HOSTED</span>']),
+                $this->block(42, 'spacer', ['height' => '1.5rem']),
+                $this->block(43, 'paragraph', ['content' => '<span style="font-family:\'Space Grotesk\',sans-serif;font-weight:700;font-size:clamp(2.5rem,6vw,4.5rem);line-height:1.05;letter-spacing:-0.04em;color:var(--ink);display:block;">Build the whole site.<br><span style="color:var(--accent);">Drag, drop, schedule,</span><br>ship.</span>']),
+                $this->block(44, 'spacer', ['height' => '1rem']),
+                $this->block(45, 'paragraph', ['content' => '<span style="font-size:1.125rem;line-height:1.7;color:var(--soft);max-width:40rem;display:block;">Lambda CMS is a fast, self-hosted CMS <strong style="color:var(--ink);">+ CRM + email</strong> with a real drag-and-drop block editor and scheduled publishing baked in. No SaaS. No lock-in. You own the stack.</span>']),
+                $this->block(46, 'spacer', ['height' => '1.5rem']),
+                $this->block(47, 'container', [
+                    'mode' => 'flex',
+                    'direction' => 'row',
+                    'wrap' => true,
+                    'gap' => '0.75rem',
+                    'padding' => 0,
+                    'align' => 'center',
+                    'maxWidth' => 'full',
+                ], [
+                    $this->block(48, 'button', [
+                        'label' => 'Self-host in minutes',
+                        'url' => 'https://github.com/mariusberget92/lambda-cms',
+                        'variant' => 'filled',
+                        'size' => 'lg',
+                        'icon' => ['name' => 'lucide:arrow-right', 'position' => 'suffix'],
+                    ]),
+                    $this->block(49, 'button', [
+                        'label' => 'Star on GitHub',
+                        'url' => 'https://github.com/mariusberget92/lambda-cms',
+                        'variant' => 'outline',
+                        'size' => 'lg',
+                        'icon' => ['name' => 'lucide:star', 'position' => 'prefix'],
+                    ]),
+                ]),
+                $this->block(39, 'spacer', ['height' => '1rem']),
+                $this->block(38, 'paragraph', ['content' => '<span style="font-family:\'JetBrains Mono\',monospace;font-size:0.8rem;color:var(--soft);letter-spacing:0.02em;">Laravel 12 &middot; Vue 3 &middot; Tailwind 4</span>']),
+            ]),
+
+            // ── 2. Block editor showcase ────────────────────────────────
+            $this->section(50, ['paddingY' => ['default' => 10], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => 'full', 'minHeight' => 'auto'], [
+                $this->block(51, 'section-header', ['number' => '01', 'meta' => 'BLOCK EDITOR']),
+                $this->block(52, 'spacer', ['height' => '1rem']),
+                $this->block(53, 'heading', ['level' => 2, 'text' => 'Compose anything from 30+ blocks.']),
+                $this->block(54, 'paragraph', ['content' => 'Six categories, drag-and-drop reordering, a layers tree, and a per-block style tab. Bind block content to live data with loops and post context. Click a block below to drop it on the canvas.']),
+                $this->block(55, 'spacer', ['height' => '1.5rem']),
+                $this->block(56, 'container', [
+                    'mode' => 'flex',
+                    'direction' => 'row',
+                    'wrap' => true,
+                    'gap' => '0.75rem',
+                    'padding' => 0,
+                    'maxWidth' => 'full',
+                ], [
+                    $this->block(501, 'button', ['label' => 'Heading', 'variant' => 'outline', 'size' => 'sm', 'icon' => ['name' => 'lucide:heading']]),
+                    $this->block(502, 'button', ['label' => 'Paragraph', 'variant' => 'outline', 'size' => 'sm', 'icon' => ['name' => 'lucide:text']]),
+                    $this->block(503, 'button', ['label' => 'Image', 'variant' => 'outline', 'size' => 'sm', 'icon' => ['name' => 'lucide:image']]),
+                    $this->block(504, 'button', ['label' => 'Button', 'variant' => 'outline', 'size' => 'sm', 'icon' => ['name' => 'lucide:mouse-pointer-click']]),
+                    $this->block(505, 'button', ['label' => 'Quote', 'variant' => 'outline', 'size' => 'sm', 'icon' => ['name' => 'lucide:quote']]),
+                    $this->block(506, 'button', ['label' => 'Accordion', 'variant' => 'outline', 'size' => 'sm', 'icon' => ['name' => 'lucide:chevrons-down-up']]),
+                    $this->block(507, 'button', ['label' => 'Tabs', 'variant' => 'outline', 'size' => 'sm', 'icon' => ['name' => 'lucide:panel-top']]),
+                    $this->block(508, 'button', ['label' => 'Loop', 'variant' => 'outline', 'size' => 'sm', 'icon' => ['name' => 'lucide:repeat']]),
+                    $this->block(509, 'button', ['label' => 'Stats', 'variant' => 'outline', 'size' => 'sm', 'icon' => ['name' => 'lucide:bar-chart-3']]),
+                    $this->block(510, 'button', ['label' => 'Code', 'variant' => 'outline', 'size' => 'sm', 'icon' => ['name' => 'lucide:code']]),
+                    $this->block(511, 'button', ['label' => 'Divider', 'variant' => 'outline', 'size' => 'sm', 'icon' => ['name' => 'lucide:minus']]),
+                    $this->block(512, 'button', ['label' => 'List', 'variant' => 'outline', 'size' => 'sm', 'icon' => ['name' => 'lucide:list']]),
                 ]),
             ]),
 
-            // ── 2. Features — 3 icon-list cards in a grid ────────────────
-            $this->section(50, ['paddingY' => ['default' => 8], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => 'full', 'minHeight' => 'auto'], [
-                $this->block(51, 'heading', ['level' => 2, 'text' => 'Everything is a block']),
-                $this->block(52, 'paragraph', ['content' => 'Every section on this page — including this one — was built with the visual block editor. What you see is what your users can create.']),
-                $this->block(53, 'spacer', ['height' => '1.5rem']),
-                $this->block(54, 'container', [
+            // ── 3. Scheduling ───────────────────────────────────────────
+            $this->section(60, ['paddingY' => ['default' => 10], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => 'full', 'minHeight' => 'auto'], [
+                $this->block(61, 'section-header', ['number' => '02', 'meta' => 'SCHEDULING']),
+                $this->block(62, 'spacer', ['height' => '1rem']),
+                $this->block(63, 'heading', ['level' => 2, 'text' => 'Write today. Publish exactly when you mean to.']),
+                $this->block(64, 'paragraph', ['content' => 'Queue posts and email campaigns for a future date and the scheduler dispatches them automatically — down to the minute. Autosave keeps drafts safe, revisions let you roll back up to 20 versions, and a one-click editorial approval ensures the entire team stays on the same page.']),
+                $this->block(65, 'spacer', ['height' => '1.5rem']),
+                $this->block(66, 'container', [
+                    'mode' => 'flex',
+                    'direction' => 'row',
+                    'wrap' => true,
+                    'gap' => '1rem',
+                    'padding' => 0,
+                    'maxWidth' => 'full',
+                ], [
+                    $this->block(67, 'stat-card', ['value' => '128', 'label' => 'Published', 'trend' => 'Posts shipped on schedule', 'trendTone' => 'positive'], [], [], '', 'flex:1;min-width:200px'),
+                    $this->block(68, 'stat-card', ['value' => '20', 'label' => 'Revisions', 'trend' => 'Roll back any time', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:200px'),
+                    $this->block(69, 'stat-card', ['value' => '∞', 'label' => 'Drafts', 'trend' => 'Autosave keeps your work safe', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:200px'),
+                ]),
+            ]),
+
+            // ── 4. CRM & Email ──────────────────────────────────────────
+            $this->section(70, ['paddingY' => ['default' => 10], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => 'full', 'minHeight' => 'auto'], [
+                $this->block(71, 'section-header', ['number' => '03', 'meta' => 'CRM & EMAIL']),
+                $this->block(72, 'spacer', ['height' => '1rem']),
+                $this->block(73, 'heading', ['level' => 2, 'text' => 'Content, customers, and campaigns — one app.']),
+                $this->block(74, 'paragraph', ['content' => 'A full CRM with contacts, companies, deals, and call lists — and fully editable, subscriber-managed, and scheduled email campaigns. Click a card to see how it works.']),
+                $this->block(75, 'spacer', ['height' => '1.5rem']),
+                $this->block(76, 'container', [
                     'mode' => 'flex',
                     'direction' => 'row',
                     'wrap' => true,
@@ -131,95 +206,160 @@ class TemplateSeeder extends Seeder
                     'padding' => 0,
                     'maxWidth' => 'full',
                 ], [
-                    // Feature card 1: Content
-                    $this->block(55, 'container', [
+                    $this->block(77, 'container', [
                         'mode' => 'flex',
                         'direction' => 'column',
                         'gap' => '0.75rem',
                         'padding' => 0,
                         'maxWidth' => 'full',
                     ], [
-                        $this->block(56, 'heading', ['level' => 3, 'text' => 'Content Management']),
-                        $this->block(57, 'icon-list', [
+                        $this->block(78, 'heading', ['level' => 3, 'text' => 'Email campaigns']),
+                        $this->block(79, 'icon-list', [
                             'direction' => 'vertical',
                             'gap' => '0.5rem',
                             'iconSize' => '1.1em',
                             'iconColor' => 'var(--accent)',
                             'items' => [
-                                ['icon' => 'lucide:file-text', 'text' => 'Rich text & markdown posts'],
-                                ['icon' => 'lucide:layout-grid', 'text' => 'Visual block editor with 47+ blocks'],
-                                ['icon' => 'lucide:image', 'text' => 'Drag-and-drop media library'],
-                                ['icon' => 'lucide:tags', 'text' => 'Categories, tags & taxonomies'],
+                                ['icon' => 'lucide:mail', 'text' => 'Compose in TipTap editor'],
+                                ['icon' => 'lucide:send', 'text' => 'Schedule or send instantly'],
+                                ['icon' => 'lucide:bar-chart-3', 'text' => 'Delivery tracking with reports'],
                             ],
                         ]),
-                    ], [], 'sidebar-card', 'flex:1;min-width:280px'),
+                    ], [], 'sidebar-card', 'flex:1;min-width:260px'),
 
-                    // Feature card 2: CRM
-                    $this->block(60, 'container', [
+                    $this->block(80, 'container', [
                         'mode' => 'flex',
                         'direction' => 'column',
                         'gap' => '0.75rem',
                         'padding' => 0,
                         'maxWidth' => 'full',
                     ], [
-                        $this->block(61, 'heading', ['level' => 3, 'text' => 'Built-in CRM']),
-                        $this->block(62, 'icon-list', [
+                        $this->block(81, 'heading', ['level' => 3, 'text' => 'Editable system mail']),
+                        $this->block(82, 'icon-list', [
                             'direction' => 'vertical',
                             'gap' => '0.5rem',
                             'iconSize' => '1.1em',
                             'iconColor' => 'var(--accent)',
                             'items' => [
-                                ['icon' => 'lucide:users', 'text' => 'Contacts & companies'],
-                                ['icon' => 'lucide:kanban', 'text' => 'Deal pipeline with drag-and-drop'],
-                                ['icon' => 'lucide:phone', 'text' => 'Call lists with work mode'],
-                                ['icon' => 'lucide:activity', 'text' => 'Activity timeline & notes'],
+                                ['icon' => 'lucide:file-edit', 'text' => 'Five customizable templates'],
+                                ['icon' => 'lucide:braces', 'text' => 'Merge-tag placeholders'],
+                                ['icon' => 'lucide:rotate-ccw', 'text' => 'Reset to default any time'],
                             ],
                         ]),
-                    ], [], 'sidebar-card', 'flex:1;min-width:280px'),
+                    ], [], 'sidebar-card', 'flex:1;min-width:260px'),
 
-                    // Feature card 3: Email
-                    $this->block(65, 'container', [
+                    $this->block(83, 'container', [
                         'mode' => 'flex',
                         'direction' => 'column',
                         'gap' => '0.75rem',
                         'padding' => 0,
                         'maxWidth' => 'full',
                     ], [
-                        $this->block(66, 'heading', ['level' => 3, 'text' => 'Email Campaigns']),
-                        $this->block(67, 'icon-list', [
+                        $this->block(84, 'heading', ['level' => 3, 'text' => 'CSV in, CSV out']),
+                        $this->block(85, 'icon-list', [
                             'direction' => 'vertical',
                             'gap' => '0.5rem',
                             'iconSize' => '1.1em',
                             'iconColor' => 'var(--accent)',
                             'items' => [
-                                ['icon' => 'lucide:mail', 'text' => 'Customizable email templates'],
-                                ['icon' => 'lucide:send', 'text' => 'Campaign builder & scheduling'],
-                                ['icon' => 'lucide:user-plus', 'text' => 'Subscriber management'],
-                                ['icon' => 'lucide:bar-chart-3', 'text' => 'Delivery tracking & reports'],
+                                ['icon' => 'lucide:upload', 'text' => 'Bulk-import contacts or subscribers'],
+                                ['icon' => 'lucide:download', 'text' => 'One-click CSV export'],
+                                ['icon' => 'lucide:shield-check', 'text' => 'No vendor lock-in on your data'],
                             ],
                         ]),
-                    ], [], 'sidebar-card', 'flex:1;min-width:280px'),
+                    ], [], 'sidebar-card', 'flex:1;min-width:260px'),
                 ]),
             ]),
 
-            // ── 3. Stat cards row ────────────────────────────────────────
-            $this->section(70, ['paddingY' => ['default' => 8], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => 'full', 'minHeight' => 'auto'], [
-                $this->block(71, 'container', [
+            // ── 5. Batteries fully included — feature grid ──────────────
+            $this->section(90, ['paddingY' => ['default' => 10], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => 'full', 'minHeight' => 'auto'], [
+                $this->block(91, 'section-header', ['number' => '04', 'meta' => 'EVERYTHING ELSE']),
+                $this->block(92, 'spacer', ['height' => '1rem']),
+                $this->block(93, 'heading', ['level' => 2, 'text' => 'Batteries fully included.']),
+                $this->block(94, 'spacer', ['height' => '1.5rem']),
+                $this->block(95, 'container', [
                     'mode' => 'flex',
                     'direction' => 'row',
                     'wrap' => true,
-                    'gap' => '1.5rem',
+                    'gap' => '1rem',
                     'padding' => 0,
                     'maxWidth' => 'full',
                 ], [
-                    $this->block(72, 'stat-card', ['value' => '47+', 'label' => 'Block Types', 'trend' => 'Sections, loops, tabs, accordions & more', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:200px'),
-                    $this->block(73, 'stat-card', ['value' => '7', 'label' => 'Template Types', 'trend' => 'Blog, post, archive, header, footer, partial, search', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:200px'),
-                    $this->block(74, 'stat-card', ['value' => '42', 'label' => 'Permissions', 'trend' => 'Granular role-based access control', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:200px'),
-                    $this->block(75, 'stat-card', ['value' => 'REST', 'label' => 'API', 'trend' => 'Full headless API with authentication', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:200px'),
+                    $this->block(601, 'stat-card', ['value' => 'Image editor', 'label' => 'MEDIA', 'trend' => 'Crop, resize, flip & filter — right in the media library', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
+                    $this->block(602, 'stat-card', ['value' => 'Template system', 'label' => 'STRUCTURE', 'trend' => '7 reusable template types that control the entire site', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
+                    $this->block(603, 'stat-card', ['value' => 'Comments', 'label' => 'COMMUNITY', 'trend' => 'Threaded comments with moderation, reply-by-email', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
+                    $this->block(604, 'stat-card', ['value' => 'ZIP & recovery', 'label' => 'BACKUPS', 'trend' => 'Export the entire site as a downloadable ZIP archive', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
+                    $this->block(605, 'stat-card', ['value' => 'Signed webhooks', 'label' => 'INTEGRATION', 'trend' => 'HMAC-signed outbound webhooks on any event', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
+                    $this->block(606, 'stat-card', ['value' => 'Bitwise roles', 'label' => 'SECURITY', 'trend' => '42 granular permissions with role-based access control', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
+                    $this->block(607, 'stat-card', ['value' => 'Users & roles', 'label' => 'ADMIN', 'trend' => 'Invite users, assign roles, set per-permission access', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
+                    $this->block(608, 'stat-card', ['value' => 'Import / export', 'label' => 'DATA', 'trend' => 'Bulk CSV import and export for contacts and subscribers', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
+                    $this->block(609, 'stat-card', ['value' => 'Full text search', 'label' => 'SEARCH', 'trend' => 'Instant full-text search across posts and pages', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
+                    $this->block(610, 'stat-card', ['value' => 'Design tokens', 'label' => 'THEMING', 'trend' => 'CSS custom properties power the entire frontend look', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
+                    $this->block(611, 'stat-card', ['value' => 'REST API', 'label' => 'HEADLESS', 'trend' => 'Full API with token auth for headless frontends', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
+                    $this->block(612, 'stat-card', ['value' => 'SEO & feeds', 'label' => 'GROWTH', 'trend' => 'Per-page SEO meta, RSS feed, and XML sitemap', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
                 ]),
             ]),
 
-            // ── 4. Latest posts + sidebar ────────────────────────────────
+            // ── 6. For developers — code example ────────────────────────
+            $this->section(100, ['paddingY' => ['default' => 10], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => 'full', 'minHeight' => 'auto'], [
+                $this->block(101, 'section-header', ['number' => '05', 'meta' => 'FOR DEVELOPERS']),
+                $this->block(102, 'spacer', ['height' => '1rem']),
+                $this->block(103, 'heading', ['level' => 2, 'text' => 'Headless when you want it. Yours, always.']),
+                $this->block(104, 'paragraph', ['content' => 'A clean REST API, git-friendly, HMAC-signed webhooks, and a design-token engine that themes admin and frontend from one file. Self-host on any server that runs PHP 8.4+.']),
+                $this->block(105, 'spacer', ['height' => '1.5rem']),
+                $this->block(106, 'code', [
+                    'language' => 'bash',
+                    'code' => "$ git clone lambda-cms.git && cd lambda-cms\n$ composer install && npm install\n$ cp .env.example .env\n$ php artisan key:generate\n$ php artisan serve\n\n# Visit http://localhost:8000/install",
+                ]),
+                $this->block(107, 'spacer', ['height' => '1.5rem']),
+                $this->block(108, 'container', [
+                    'mode' => 'flex',
+                    'direction' => 'row',
+                    'wrap' => true,
+                    'gap' => '1rem',
+                    'padding' => 0,
+                    'maxWidth' => 'full',
+                ], [
+                    $this->block(109, 'stat-card', ['value' => 'Laravel 12', 'label' => 'Framework'], [], [], '', 'flex:1;min-width:140px'),
+                    $this->block(110, 'stat-card', ['value' => 'PHP 8.4', 'label' => 'Runtime'], [], [], '', 'flex:1;min-width:140px'),
+                    $this->block(111, 'stat-card', ['value' => 'Inertia 2', 'label' => 'Bridge'], [], [], '', 'flex:1;min-width:140px'),
+                    $this->block(112, 'stat-card', ['value' => 'Vue 3', 'label' => 'Frontend'], [], [], '', 'flex:1;min-width:140px'),
+                    $this->block(113, 'stat-card', ['value' => 'Tailwind 4', 'label' => 'CSS'], [], [], '', 'flex:1;min-width:140px'),
+                ]),
+            ]),
+
+            // ── 7. CTA ──────────────────────────────────────────────────
+            $this->section(120, ['paddingY' => ['default' => 12], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => '2xl', 'minHeight' => 'auto'], [
+                $this->block(121, 'heading', ['level' => 2, 'text' => 'Own your CMS. Start in minutes.']),
+                $this->block(122, 'paragraph', ['content' => 'Free, open source, MIT. No vendors, no cloud, no cards.']),
+                $this->block(123, 'spacer', ['height' => '1rem']),
+                $this->block(124, 'container', [
+                    'mode' => 'flex',
+                    'direction' => 'row',
+                    'wrap' => true,
+                    'gap' => '0.75rem',
+                    'padding' => 0,
+                    'align' => 'center',
+                    'maxWidth' => 'full',
+                ], [
+                    $this->block(125, 'button', [
+                        'label' => 'Self-host in minutes',
+                        'url' => 'https://github.com/mariusberget92/lambda-cms',
+                        'variant' => 'filled',
+                        'size' => 'lg',
+                        'icon' => ['name' => 'lucide:arrow-right', 'position' => 'suffix'],
+                    ]),
+                    $this->block(126, 'button', [
+                        'label' => 'Star on GitHub',
+                        'url' => 'https://github.com/mariusberget92/lambda-cms',
+                        'variant' => 'outline',
+                        'size' => 'lg',
+                        'icon' => ['name' => 'lucide:star', 'position' => 'prefix'],
+                    ]),
+                ]),
+            ]),
+
+            // ── 8. Latest posts + sidebar ───────────────────────────────
             $this->section(1, ['paddingY' => ['default' => 6], 'paddingX' => ['default' => 0], 'fullWidth' => true, 'minHeight' => 'auto'], [
                 $this->block(2, 'container', [
                     'mode' => 'flex',
@@ -230,7 +370,6 @@ class TemplateSeeder extends Seeder
                     'align' => 'start',
                     'maxWidth' => 'full',
                 ], [
-                    // Main column
                     $this->block(3, 'container', [
                         'mode' => 'flex',
                         'direction' => 'column',
@@ -247,7 +386,7 @@ class TemplateSeeder extends Seeder
                             ],
                             'filter_logic' => 'and',
                             'sort' => ['field' => 'published_at', 'direction' => 'desc'],
-                            'limit' => 8,
+                            'limit' => 6,
                             'columns' => 2,
                             'gap' => 'lg',
                             'pageParam' => 'page',
@@ -260,7 +399,6 @@ class TemplateSeeder extends Seeder
                         ]),
                     ], [], '', 'flex:3;min-width:0'),
 
-                    // Sidebar
                     $this->block(20, 'container', [
                         'mode' => 'flex',
                         'direction' => 'column',
@@ -320,47 +458,6 @@ class TemplateSeeder extends Seeder
                             ]),
                         ], [], 'sidebar-card', ''),
                     ], [], '', 'flex:1;min-width:0'),
-                ]),
-            ]),
-
-            // ── 5. Testimonial quote ─────────────────────────────────────
-            $this->section(80, ['paddingY' => ['default' => 8], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => '2xl', 'minHeight' => 'auto'], [
-                $this->block(81, 'quote', [
-                    'text' => 'Lambda CMS gave us a publishing workflow that feels like it was built for our team. The block editor is incredibly flexible, and having CRM and email built in means we don\'t need five different SaaS subscriptions.',
-                    'attribution' => 'A happy Lambda CMS user',
-                ]),
-            ]),
-
-            // ── 6. FAQ accordion ─────────────────────────────────────────
-            $this->section(90, ['paddingY' => ['default' => 8], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => '2xl', 'minHeight' => 'auto'], [
-                $this->block(91, 'heading', ['level' => 2, 'text' => 'Frequently Asked Questions']),
-                $this->block(92, 'spacer', ['height' => '0.5rem']),
-                $this->block(93, 'accordion', [
-                    'defaultState' => 'first-open',
-                    'borderStyle' => 'separated',
-                ], [
-                    ['id' => 94, 'type' => 'accordion-item', 'data' => ['title' => 'What is the block editor?'], 'children' => [
-                        $this->block(95, 'paragraph', ['content' => 'The block editor is a visual page builder with 47+ block types. You can create complex layouts by combining sections, containers, loops, tabs, accordions, and content blocks — without writing any code. This entire landing page was built with it.']),
-                    ]],
-                    ['id' => 96, 'type' => 'accordion-item', 'data' => ['title' => 'Can I use Lambda CMS as a headless CMS?'], 'children' => [
-                        $this->block(97, 'paragraph', ['content' => 'Yes. Lambda CMS includes a full REST API with authentication. You can use it as a headless CMS to power any frontend — React, Vue, Next.js, mobile apps, or anything else that can consume a JSON API.']),
-                    ]],
-                    ['id' => 98, 'type' => 'accordion-item', 'data' => ['title' => 'How does the template system work?'], 'children' => [
-                        $this->block(99, 'paragraph', ['content' => 'Templates are reusable block layouts for different page types: blog index, single post, archive, search results, header, and footer. You can also create partial templates to use as reusable components inside other templates. Every template is fully editable in the block editor.']),
-                    ]],
-                    ['id' => 100, 'type' => 'accordion-item', 'data' => ['title' => 'Is Lambda CMS free?'], 'children' => [
-                        $this->block(101, 'paragraph', ['content' => 'Lambda CMS is open source and free to use. You can self-host it on any server that runs PHP 8.4+ and a database. There are no license fees, no premium tiers, and no vendor lock-in.']),
-                    ]],
-                ]),
-            ]),
-
-            // ── 7. CTA ───────────────────────────────────────────────────
-            $this->section(105, ['paddingY' => ['default' => 8], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => '2xl', 'minHeight' => 'auto'], [
-                $this->block(106, 'cta', [
-                    'headline' => 'Ready to get started?',
-                    'text' => 'Lambda CMS is open source, self-hosted, and built for developers who want full control over their content platform.',
-                    'button_label' => 'View on GitHub',
-                    'button_url' => 'https://github.com/mariusberget92/lambda-cms',
                 ]),
             ]),
         ];
