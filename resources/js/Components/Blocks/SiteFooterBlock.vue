@@ -10,10 +10,11 @@ const year      = new Date().getFullYear()
 const copyright = computed(() => props.block.data?.copyright || `© ${year} ${appName.value}`)
 const columns   = computed(() => props.block.data?.columns ?? [])
 const showRss   = computed(() => props.block.data?.showRss !== false)
+const isDark    = computed(() => props.block.data?.theme === 'dark')
 </script>
 
 <template>
-  <footer class="site-footer">
+  <footer class="site-footer" :class="{ 'site-footer--dark': isDark }">
     <div class="max-w-[1320px] mx-auto px-8 py-10">
 
       <!-- Columns grid -->
@@ -72,4 +73,19 @@ const showRss   = computed(() => props.block.data?.showRss !== false)
 .footer-link:hover { color: var(--ink); }
 .footer-sep     { color: var(--line-strong); }
 .footer-bottom  { border-top: 1px solid var(--line); }
+
+.site-footer--dark {
+  background: var(--code);
+  border-color: rgba(255,255,255,0.08);
+}
+.site-footer--dark .footer-brand__mark {
+  border-color: rgba(255,255,255,0.15);
+  color: var(--code-ink);
+}
+.site-footer--dark span[style] { color: var(--code-ink) !important; }
+.site-footer--dark .footer-soft { color: rgba(255,255,255,0.45); }
+.site-footer--dark .footer-link { color: rgba(255,255,255,0.55); }
+.site-footer--dark .footer-link:hover { color: #fff; }
+.site-footer--dark .footer-sep { color: rgba(255,255,255,0.2); }
+.site-footer--dark .footer-bottom { border-color: rgba(255,255,255,0.08); }
 </style>

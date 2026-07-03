@@ -10,6 +10,7 @@ const appName    = computed(() => props.block.data?.logoText || page.props.appNa
 const navItems   = computed(() => props.block.data?.links ?? [])
 const showSearch = computed(() => props.block.data?.showSearch !== false)
 const isSticky   = computed(() => props.block.data?.sticky !== false)
+const isDark     = computed(() => props.block.data?.theme === 'dark')
 
 const mobileOpen    = ref(false)
 const searchOpen    = ref(false)
@@ -52,7 +53,7 @@ function onSearchInput(v) {
 </script>
 
 <template>
-  <header class="nav-header" :class="{ 'nav-header--sticky': isSticky }">
+  <header class="nav-header" :class="{ 'nav-header--sticky': isSticky, 'nav-header--dark': isDark }">
     <div class="nav-header__inner max-w-[1320px] mx-auto px-8 h-14 flex items-center justify-between gap-8">
 
       <!-- Brand -->
@@ -207,6 +208,21 @@ function onSearchInput(v) {
   color: var(--soft);
 }
 .nav-mobile { border-top: 1px solid var(--line-strong); }
+
+.nav-header--dark {
+  background: var(--code);
+  border-color: rgba(255,255,255,0.08);
+}
+.nav-header--dark .nav-brand__mark { border-color: rgba(255,255,255,0.15); color: var(--code-ink); }
+.nav-header--dark .nav-brand__name { color: var(--code-ink); }
+.nav-header--dark .nav-link { color: rgba(255,255,255,0.55); }
+.nav-header--dark .nav-link:hover { color: #fff; }
+.nav-header--dark .nav-search-pill { border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.55); }
+.nav-header--dark .nav-search-pill:hover { border-color: var(--accent); color: #fff; }
+.nav-header--dark .nav-kbd { border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.4); }
+.nav-header--dark .nav-icon-btn { color: rgba(255,255,255,0.55); }
+.nav-header--dark .nav-icon-btn:hover { color: #fff; }
+.nav-header--dark .nav-mobile { border-color: rgba(255,255,255,0.08); }
 
 .nav-soft { color: var(--soft); }
 .nav-ink  { color: var(--ink); }

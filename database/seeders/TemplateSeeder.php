@@ -78,6 +78,14 @@ class TemplateSeeder extends Seeder
                 'logoText' => '',
                 'showSearch' => true,
                 'sticky' => true,
+                'theme' => 'dark',
+                'links' => [
+                    ['label' => 'Block editor', 'url' => '#block-editor'],
+                    ['label' => 'Scheduling',   'url' => '#scheduling'],
+                    ['label' => 'CRM & Email',  'url' => '#crm-email'],
+                    ['label' => 'Features',     'url' => '#features'],
+                    ['label' => 'Developers',   'url' => '#developers'],
+                ],
             ]),
         ];
     }
@@ -86,16 +94,27 @@ class TemplateSeeder extends Seeder
     {
         return [
             $this->block(410, 'site-footer', [
-                'tagline' => '',
+                'tagline' => 'A modern, self-hosted CMS + CRM built on Laravel, React, Tailwind — for teams who want to own everything, from content to the infra it runs on.',
                 'copyright' => '',
                 'showRss' => true,
+                'theme' => 'dark',
                 'columns' => [
-                    ['heading' => 'Content', 'links' => [
-                        ['label' => 'Home',     'url' => '/'],
-                        ['label' => 'RSS Feed', 'url' => '/feed'],
+                    ['heading' => 'Product', 'links' => [
+                        ['label' => 'Block editor',  'url' => '#block-editor'],
+                        ['label' => 'Scheduling',    'url' => '#scheduling'],
+                        ['label' => 'CRM & Email',   'url' => '#crm-email'],
+                    ]],
+                    ['heading' => 'Developers', 'links' => [
+                        ['label' => 'Documentation', 'url' => '#developers'],
+                        ['label' => 'REST / Head',   'url' => '#developers'],
+                        ['label' => 'MIT License',   'url' => 'https://opensource.org/licenses/MIT'],
+                    ]],
+                    ['heading' => 'Voices', 'links' => [
+                        ['label' => 'GitHub',     'url' => 'https://github.com/mariusberget92/lambda-cms'],
+                        ['label' => 'RSS Feed',   'url' => '/feed'],
                     ]],
                 ],
-            ]),
+            ], [], [], '', ''),
         ];
     }
 
@@ -138,6 +157,25 @@ class TemplateSeeder extends Seeder
                 ]),
                 $this->block(39, 'spacer', ['height' => '1rem']),
                 $this->block(38, 'paragraph', ['content' => '<span style="font-family:\'JetBrains Mono\',monospace;font-size:0.8rem;color:var(--soft);letter-spacing:0.02em;">Laravel 12 &middot; Vue 3 &middot; Tailwind 4</span>']),
+            ]),
+
+            // ── 1b. Dark stats bar ─────────────────────────────────────
+            $this->block(700, 'section', ['paddingY' => ['default' => 4], 'paddingX' => ['default' => 4], 'fullWidth' => true, 'minHeight' => 'auto', 'theme' => 'dark'], [
+                $this->block(701, 'container', [
+                    'mode' => 'flex',
+                    'direction' => 'row',
+                    'wrap' => true,
+                    'gap' => '2rem',
+                    'padding' => 0,
+                    'align' => 'center',
+                    'justify' => 'center',
+                    'maxWidth' => 'full',
+                ], [
+                    $this->block(702, 'paragraph', ['content' => '<span style="font-family:\'JetBrains Mono\',monospace;font-size:0.75rem;letter-spacing:0.03em;color:rgba(255,255,255,0.6);"><strong style="color:#fff;">28+</strong> recovery roles</span>']),
+                    $this->block(703, 'paragraph', ['content' => '<span style="font-family:\'JetBrains Mono\',monospace;font-size:0.75rem;letter-spacing:0.03em;color:rgba(255,255,255,0.6);"><strong style="color:#fff;">Headless</strong> REST API</span>']),
+                    $this->block(704, 'paragraph', ['content' => '<span style="font-family:\'JetBrains Mono\',monospace;font-size:0.75rem;letter-spacing:0.03em;color:rgba(255,255,255,0.6);"><strong style="color:#fff;">MIT</strong> Licensed</span>']),
+                    $this->block(705, 'paragraph', ['content' => '<span style="font-family:\'JetBrains Mono\',monospace;font-size:0.75rem;letter-spacing:0.03em;color:rgba(255,255,255,0.6);"><strong style="color:#fff;">35+</strong> Blocks</span>']),
+                ]),
             ]),
 
             // ── 2. Block editor showcase ────────────────────────────────
@@ -285,54 +323,87 @@ class TemplateSeeder extends Seeder
                     'padding' => 0,
                     'maxWidth' => 'full',
                 ], [
-                    $this->block(601, 'stat-card', ['value' => 'Image editor', 'label' => 'MEDIA', 'trend' => 'Crop, resize, flip & filter — right in the media library', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
-                    $this->block(602, 'stat-card', ['value' => 'Template system', 'label' => 'STRUCTURE', 'trend' => '7 reusable template types that control the entire site', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
-                    $this->block(603, 'stat-card', ['value' => 'Comments', 'label' => 'COMMUNITY', 'trend' => 'Threaded comments with moderation, reply-by-email', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
-                    $this->block(604, 'stat-card', ['value' => 'ZIP & recovery', 'label' => 'BACKUPS', 'trend' => 'Export the entire site as a downloadable ZIP archive', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
-                    $this->block(605, 'stat-card', ['value' => 'Signed webhooks', 'label' => 'INTEGRATION', 'trend' => 'HMAC-signed outbound webhooks on any event', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
-                    $this->block(606, 'stat-card', ['value' => 'Bitwise roles', 'label' => 'SECURITY', 'trend' => '42 granular permissions with role-based access control', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
-                    $this->block(607, 'stat-card', ['value' => 'Users & roles', 'label' => 'ADMIN', 'trend' => 'Invite users, assign roles, set per-permission access', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
-                    $this->block(608, 'stat-card', ['value' => 'Import / export', 'label' => 'DATA', 'trend' => 'Bulk CSV import and export for contacts and subscribers', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
-                    $this->block(609, 'stat-card', ['value' => 'Full text search', 'label' => 'SEARCH', 'trend' => 'Instant full-text search across posts and pages', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
-                    $this->block(610, 'stat-card', ['value' => 'Design tokens', 'label' => 'THEMING', 'trend' => 'CSS custom properties power the entire frontend look', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
-                    $this->block(611, 'stat-card', ['value' => 'REST API', 'label' => 'HEADLESS', 'trend' => 'Full API with token auth for headless frontends', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
-                    $this->block(612, 'stat-card', ['value' => 'SEO & feeds', 'label' => 'GROWTH', 'trend' => 'Per-page SEO meta, RSS feed, and XML sitemap', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px'),
+                    $this->block(601, 'stat-card', ['value' => 'Image editor', 'label' => 'MEDIA', 'trend' => 'Crop, resize, flip & filter — right in the media library', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px;--accent:#7C3AED'),
+                    $this->block(602, 'stat-card', ['value' => 'Template system', 'label' => 'STRUCTURE', 'trend' => '7 reusable template types that control the entire site', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px;--accent:#2563eb'),
+                    $this->block(603, 'stat-card', ['value' => 'Comments', 'label' => 'COMMUNITY', 'trend' => 'Threaded comments with moderation, reply-by-email', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px;--accent:#16a34a'),
+                    $this->block(604, 'stat-card', ['value' => 'ZIP & recovery', 'label' => 'BACKUPS', 'trend' => 'Export the entire site as a downloadable ZIP archive', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px;--accent:#ea580c'),
+                    $this->block(605, 'stat-card', ['value' => 'Signed webhooks', 'label' => 'INTEGRATION', 'trend' => 'HMAC-signed outbound webhooks on any event', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px;--accent:#0891b2'),
+                    $this->block(606, 'stat-card', ['value' => 'Editorial calendar', 'label' => 'PLANNING', 'trend' => 'Visual calendar view for scheduled and draft posts', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px;--accent:#dc2626'),
+                    $this->block(607, 'stat-card', ['value' => 'Users & roles', 'label' => 'ADMIN', 'trend' => 'Invite users, assign roles, set per-permission access', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px;--accent:#9333ea'),
+                    $this->block(608, 'stat-card', ['value' => 'Import / export', 'label' => 'DATA', 'trend' => 'Bulk CSV import and export for contacts and subscribers', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px;--accent:#7C3AED'),
+                    $this->block(609, 'stat-card', ['value' => 'Full text search', 'label' => 'SEARCH', 'trend' => 'Instant full-text search across posts and pages', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px;--accent:#2563eb'),
+                    $this->block(610, 'stat-card', ['value' => 'Design tokens', 'label' => 'THEMING', 'trend' => 'CSS custom properties power the entire frontend look', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px;--accent:#16a34a'),
+                    $this->block(611, 'stat-card', ['value' => 'REST API', 'label' => 'HEADLESS', 'trend' => 'Full API with token auth for headless frontends', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px;--accent:#ea580c'),
+                    $this->block(612, 'stat-card', ['value' => 'SEO & feeds', 'label' => 'GROWTH', 'trend' => 'Per-page SEO meta, RSS feed, and XML sitemap', 'trendTone' => 'neutral'], [], [], '', 'flex:1;min-width:240px;--accent:#0891b2'),
                 ]),
             ]),
 
-            // ── 6. For developers — code example ────────────────────────
+            // ── 6. For developers — split layout ────────────────────────
             $this->section(100, ['paddingY' => ['default' => 10], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => 'full', 'minHeight' => 'auto'], [
                 $this->block(101, 'section-header', ['number' => '05', 'meta' => 'FOR DEVELOPERS']),
                 $this->block(102, 'spacer', ['height' => '1rem']),
-                $this->block(103, 'heading', ['level' => 2, 'text' => 'Headless when you want it. Yours, always.']),
-                $this->block(104, 'paragraph', ['content' => 'A clean REST API, git-friendly, HMAC-signed webhooks, and a design-token engine that themes admin and frontend from one file. Self-host on any server that runs PHP 8.4+.']),
-                $this->block(105, 'spacer', ['height' => '1.5rem']),
-                $this->block(106, 'code', [
-                    'language' => 'bash',
-                    'code' => "$ git clone lambda-cms.git && cd lambda-cms\n$ composer install && npm install\n$ cp .env.example .env\n$ php artisan key:generate\n$ php artisan serve\n\n# Visit http://localhost:8000/install",
-                ]),
-                $this->block(107, 'spacer', ['height' => '1.5rem']),
-                $this->block(108, 'container', [
+                $this->block(800, 'container', [
                     'mode' => 'flex',
                     'direction' => 'row',
                     'wrap' => true,
-                    'gap' => '1rem',
+                    'gap' => '3rem',
                     'padding' => 0,
+                    'align' => 'start',
                     'maxWidth' => 'full',
                 ], [
-                    $this->block(109, 'stat-card', ['value' => 'Laravel 12', 'label' => 'Framework'], [], [], '', 'flex:1;min-width:140px'),
-                    $this->block(110, 'stat-card', ['value' => 'PHP 8.4', 'label' => 'Runtime'], [], [], '', 'flex:1;min-width:140px'),
-                    $this->block(111, 'stat-card', ['value' => 'Inertia 2', 'label' => 'Bridge'], [], [], '', 'flex:1;min-width:140px'),
-                    $this->block(112, 'stat-card', ['value' => 'Vue 3', 'label' => 'Frontend'], [], [], '', 'flex:1;min-width:140px'),
-                    $this->block(113, 'stat-card', ['value' => 'Tailwind 4', 'label' => 'CSS'], [], [], '', 'flex:1;min-width:140px'),
+                    // Left: text + stats
+                    $this->block(801, 'container', [
+                        'mode' => 'flex',
+                        'direction' => 'column',
+                        'gap' => '1rem',
+                        'padding' => 0,
+                        'maxWidth' => 'full',
+                    ], [
+                        $this->block(103, 'heading', ['level' => 2, 'text' => 'Headless when you want it. Yours, always.']),
+                        $this->block(104, 'paragraph', ['content' => 'A clean REST API, HMAC-signed webhooks, and a design-token system that themes admin and frontend from one file. Self-host on any server that runs PHP 8.4+.']),
+                        $this->block(107, 'spacer', ['height' => '0.5rem']),
+                        $this->block(108, 'container', [
+                            'mode' => 'flex',
+                            'direction' => 'row',
+                            'wrap' => true,
+                            'gap' => '0.75rem',
+                            'padding' => 0,
+                            'maxWidth' => 'full',
+                        ], [
+                            $this->block(109, 'paragraph', ['content' => '<span style="font-family:\'JetBrains Mono\',monospace;font-size:0.7rem;padding:0.25rem 0.625rem;border:1px solid var(--line-strong);border-radius:9999px;color:var(--soft);">Laravel 12</span>']),
+                            $this->block(110, 'paragraph', ['content' => '<span style="font-family:\'JetBrains Mono\',monospace;font-size:0.7rem;padding:0.25rem 0.625rem;border:1px solid var(--line-strong);border-radius:9999px;color:var(--soft);">Vue 3</span>']),
+                            $this->block(111, 'paragraph', ['content' => '<span style="font-family:\'JetBrains Mono\',monospace;font-size:0.7rem;padding:0.25rem 0.625rem;border:1px solid var(--line-strong);border-radius:9999px;color:var(--soft);">Inertia 2</span>']),
+                            $this->block(112, 'paragraph', ['content' => '<span style="font-family:\'JetBrains Mono\',monospace;font-size:0.7rem;padding:0.25rem 0.625rem;border:1px solid var(--line-strong);border-radius:9999px;color:var(--soft);">Tailwind 4</span>']),
+                        ]),
+                    ], [], '', 'flex:1;min-width:280px'),
+
+                    // Right: code block
+                    $this->block(802, 'container', [
+                        'mode' => 'flex',
+                        'direction' => 'column',
+                        'gap' => '0',
+                        'padding' => 0,
+                        'maxWidth' => 'full',
+                    ], [
+                        $this->block(106, 'code', [
+                            'language' => 'bash',
+                            'code' => "$ git clone lambda-cms.git\n$ cd lambda-cms\n$ composer install && npm install\n$ cp .env.example .env\n$ php artisan key:generate\n$ php artisan serve\n\n# Visit localhost:8000/install",
+                        ]),
+                    ], [], '', 'flex:1;min-width:320px'),
                 ]),
             ]),
 
-            // ── 7. CTA ──────────────────────────────────────────────────
-            $this->section(120, ['paddingY' => ['default' => 12], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => '2xl', 'minHeight' => 'auto'], [
-                $this->block(121, 'heading', ['level' => 2, 'text' => 'Own your CMS. Start in minutes.']),
-                $this->block(122, 'paragraph', ['content' => 'Free, open source, MIT. No vendors, no cloud, no cards.']),
-                $this->block(123, 'spacer', ['height' => '1rem']),
+            // ── 7. CTA — dark background ────────────────────────────────
+            $this->block(120, 'section', ['paddingY' => ['default' => 14], 'paddingX' => ['default' => 4], 'fullWidth' => false, 'innerMaxWidth' => '2xl', 'minHeight' => 'auto', 'theme' => 'dark'], [
+                $this->block(121, 'paragraph', ['content' => '<span style="font-family:\'Space Grotesk\',sans-serif;font-weight:700;font-size:clamp(2rem,5vw,3rem);line-height:1.1;letter-spacing:-0.03em;color:#fff;display:block;">Own your CMS.<br>Start in minutes.</span>']),
+                $this->block(122, 'spacer', ['height' => '0.75rem']),
+                $this->block(123, 'paragraph', ['content' => '<span style="font-size:1rem;color:rgba(255,255,255,0.55);">Free, open source, MIT. No vendors, no cloud, no cards.</span>']),
+                $this->block(900, 'spacer', ['height' => '1.5rem']),
+                $this->block(901, 'code', [
+                    'language' => 'bash',
+                    'code' => "$ git clone lambda-cms.git",
+                ]),
+                $this->block(902, 'spacer', ['height' => '1.5rem']),
                 $this->block(124, 'container', [
                     'mode' => 'flex',
                     'direction' => 'row',

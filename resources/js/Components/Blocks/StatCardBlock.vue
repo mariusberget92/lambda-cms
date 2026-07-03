@@ -32,7 +32,7 @@ const trendColor = (tone) => TONE_COLORS[tone] || TONE_COLORS.neutral
     >{{ block.data?.value || '—' }}</div>
 
     <!-- Label -->
-    <p class="font-mono-blog text-[11px] uppercase tracking-widest mt-1" style="color:var(--soft);">
+    <p class="font-mono-blog text-[11px] uppercase tracking-widest mt-1" style="color:var(--accent, var(--soft));">
       {{ block.data?.label || 'metric' }}
     </p>
 

@@ -14,8 +14,19 @@ const MIN_HEIGHT_MAP = {
   auto: '', screen: 'min-h-screen', '1/2': 'min-h-[50vh]',
 }
 
+const isDark = computed(() => props.block.data?.theme === 'dark')
+
 const outerStyle = computed(() => {
-  return outerPaddingStyle.value
+  const s = { ...outerPaddingStyle.value }
+  if (isDark.value) {
+    s.background = 'var(--code)'
+    s['--ink'] = 'var(--code-ink)'
+    s['--soft'] = 'rgba(255,255,255,0.55)'
+    s['--line'] = 'rgba(255,255,255,0.1)'
+    s['--line-strong'] = 'rgba(255,255,255,0.15)'
+    s['--panel'] = 'rgba(255,255,255,0.06)'
+  }
+  return s
 })
 
 // New format: d.padding = { top, right, bottom, left } with CSS strings
