@@ -7,10 +7,6 @@ const loopItem = inject('loopItem', null)
 const post     = computed(() => loopItem?.value ?? null)
 
 const primaryCat = computed(() => post.value?.categories?.[0] ?? null)
-const filepath   = computed(() => post.value?.slug ? `~/posts/${post.value.slug}.md` : '~/posts/untitled.md')
-const callsign   = computed(() => post.value?.id ? `λ.${String(post.value.id).padStart(3,'0')}` : 'λ.—')
-const glyph      = computed(() => primaryCat.value?.name?.toLowerCase() || 'posts')
-const issueNo    = computed(() => post.value?.id ? `№ ${String(post.value.id).padStart(3,'0')}` : '№ —')
 
 const readingTime = computed(() => {
   const text  = post.value?.excerpt || post.value?.body || ''
@@ -21,44 +17,28 @@ const readingTime = computed(() => {
 
 <template>
   <article v-if="post" class="post-card flex flex-col h-full">
+    <div class="post-card__accent"></div>
 
-    <!-- Terminal cover -->
-    <a :href="post.url" tabindex="-1" aria-hidden="true" class="post-card__cover block relative shrink-0">
-      <div class="post-card__cover-bar flex items-center justify-between px-4 pt-3 pb-2">
-        <span class="font-mono-blog text-[10px] truncate post-card__filepath">{{ filepath }}</span>
-        <span class="font-mono-blog text-[10px] shrink-0 ml-3 post-card__callsign">{{ callsign }}</span>
-      </div>
-      <div class="px-4 py-4">
-        <span class="font-mono-blog text-[9px] uppercase tracking-widest block mb-1 post-card__issue">{{ issueNo }}</span>
-        <div class="post-card__glyph font-display font-bold leading-none">{{ glyph }}</div>
-      </div>
-      <div class="post-card__status absolute bottom-0 left-0 right-0 flex items-center gap-2 px-4 py-1.5">
-        <span class="post-card__dot w-1.5 h-1.5 rounded-full inline-block"></span>
-        <span class="font-mono-blog text-[9px] post-card__status-text">build · ok</span>
-      </div>
-    </a>
-
-    <!-- Card body -->
     <div class="flex-1 flex flex-col p-5">
       <div v-if="primaryCat" class="mb-3">
-        <a :href="`/blog/category/${primaryCat.slug}`" class="post-card__chip font-mono-blog text-[10px] px-2.5 py-1 rounded-full inline-flex transition-all duration-150">
+        <a :href="`/blog/category/${primaryCat.slug}`" class="post-card__chip">
           {{ primaryCat.name }}
         </a>
       </div>
 
-      <h2 class="font-display font-semibold leading-snug mb-2 flex-1" style="font-family:'Space Grotesk', sans-serif; letter-spacing:-0.025em;">
-        <a :href="post.url" class="post-card__title transition-colors duration-150" style="font-size:clamp(1rem, 2vw, 1.15rem);">
+      <h2 class="post-card__heading flex-1">
+        <a :href="post.url" class="post-card__title">
           {{ post.title }}
         </a>
       </h2>
 
-      <p v-if="post.excerpt" class="text-sm leading-relaxed line-clamp-2 mb-4 post-card__excerpt" style="font-family:'Inter', sans-serif;">
+      <p v-if="post.excerpt" class="post-card__excerpt">
         {{ post.excerpt }}
       </p>
 
-      <div class="flex items-center gap-3 pt-3 mt-auto font-mono-blog text-[10px] post-card__meta">
+      <div class="post-card__meta">
         <span class="truncate">{{ post.author_name ?? 'Unknown' }}</span>
-        <span class="post-card__dot-sep">·</span>
+        <span class="post-card__dot">·</span>
         <span class="shrink-0">{{ post.published_at_formatted }}</span>
         <span class="ml-auto shrink-0 tabular-nums">{{ readingTime }} min</span>
       </div>
@@ -69,49 +49,78 @@ const readingTime = computed(() => {
 <style scoped>
 .post-card {
   background: var(--panel);
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line);
   border-radius: var(--blog-radius);
   overflow: hidden;
-  transition: border-color 150ms;
+  transition: border-color 150ms, box-shadow 150ms;
 }
-.post-card:hover { border-color: var(--accent); }
-
-.post-card__cover {
-  background: var(--code);
-  min-height: 9rem;
-}
-.post-card__cover-bar { border-bottom: 1px solid rgba(255,255,255,0.06); }
-
-.post-card__filepath  { color: var(--code-ink); opacity: 0.45; }
-.post-card__callsign  { color: var(--code-ink); opacity: 0.55; }
-.post-card__issue     { color: var(--code-ink); opacity: 0.30; }
-
-.post-card__glyph {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(1.4rem, 3.5vw, 2rem);
-  color: var(--code-ink);
-  opacity: 0.75;
-  letter-spacing: -0.04em;
+.post-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 12px rgba(124, 58, 237, 0.08);
 }
 
-.post-card__status { border-top: 1px solid rgba(255,255,255,0.06); }
-.post-card__dot    { background: var(--accent); opacity: 0.7; }
-.post-card__status-text { color: var(--code-ink); opacity: 0.35; }
+.post-card__accent {
+  height: 3px;
+  background: var(--accent);
+  opacity: 0.6;
+  transition: opacity 150ms;
+}
+.post-card:hover .post-card__accent { opacity: 1; }
 
 .post-card__chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
   border: 1px solid var(--line-strong);
   color: var(--soft);
+  display: inline-flex;
+  transition: all 150ms;
 }
 .post-card__chip:hover {
   border-color: var(--accent);
   color: var(--accent);
 }
 
-.post-card__title { color: var(--ink); }
+.post-card__heading {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  line-height: 1.35;
+  letter-spacing: -0.025em;
+  margin-bottom: 0.5rem;
+}
+
+.post-card__title {
+  color: var(--ink);
+  transition: color 150ms;
+}
 .post-card__title:hover { color: var(--accent); }
 
-.post-card__excerpt { color: var(--soft); }
+.post-card__excerpt {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--soft);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
 
-.post-card__meta    { border-top: 1px solid var(--line); color: var(--soft); }
-.post-card__dot-sep { color: var(--line-strong); }
+.post-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  margin-top: auto;
+  border-top: 1px solid var(--line);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.625rem;
+  color: var(--soft);
+}
+.post-card__dot { color: var(--line-strong); }
 </style>
